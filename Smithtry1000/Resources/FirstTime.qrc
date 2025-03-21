@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="Images">
+    <file>Copy.png</file>
+    <file>load.bmp</file>
+    <file>MinusSize.png</file>
+    <file>OneToOne.png</file>
+    <file>Open.jpg</file>
+    <file>PlusSize.png</file>
+    <file>print.png</file>
+    <file>Save.png</file>
+    <file>series_c.bmp</file>
+    <file>series_l.bmp</file>
+    <file>series_li.bmp</file>
+    <file>series_r.bmp</file>
+    <file>shunt_c.bmp</file>
+    <file>shunt_l.bmp</file>
+    <file>shunt_li.bmp</file>
+    <file>shunt_r.bmp</file>
+    <file>source.bmp</file>
+    <file>StepBack.png</file>
+    <file>StepForward.png</file>
+  </qresource>
+</RCC>
