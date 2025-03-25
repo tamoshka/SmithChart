@@ -21,6 +21,9 @@ set(PROJECT_SOURCES
     Smithtry1000.h
     Smithtry1000.cpp
     Resources/FirstTime.qrc
+    general.h
+    renderarea.h
+    renderarea.cpp
 )
 
 SET(UI_RESOURCES
