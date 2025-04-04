@@ -226,7 +226,7 @@ public:
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
 
-    enum Mode { Impedence, Admittance, Superimpose, Hide };
+    enum Mode { Impedence, Admittance, Superimpose, Hide, Both };
 
 
 

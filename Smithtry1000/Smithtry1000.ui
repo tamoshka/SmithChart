@@ -39,6 +39,16 @@
       </rect>
      </property>
     </widget>
+    <widget class="RenderArea" name="renderArea" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1071</width>
+       <height>691</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
@@ -877,6 +887,14 @@ background-color: rgb(170, 255, 255);</string>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>RenderArea</class>
+   <extends>QWidget</extends>
+   <header>renderarea.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="Resources/FirstTime.qrc"/>
  </resources>
