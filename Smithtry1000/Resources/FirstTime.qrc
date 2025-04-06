@@ -1,7 +1,13 @@
 <RCC>
-  <qresource prefix="Images">
+  <qresource prefix="/Images">
     <file>Copy.png</file>
     <file>load.bmp</file>
+    <file>horizontal_i.svg</file>
+    <file>horizontal_r.svg</file>
+    <file>source.svg</file>
+    <file>vertical_c.svg</file>
+    <file>vertical_i.svg</file>
+    <file>vertical_r.svg</file>
     <file>MinusSize.png</file>
     <file>OneToOne.png</file>
     <file>Open.jpg</file>

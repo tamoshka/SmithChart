@@ -778,7 +778,7 @@ background-color: rgb(170, 255, 255);</string>
         </property>
         <property name="icon">
          <iconset resource="Resources/FirstTime.qrc">
-          <normaloff>:/Images/load.bmp</normaloff>:/Images/load.bmp</iconset>
+          <normaloff>:/Images/vertical_r.svg</normaloff>:/Images/vertical_r.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -801,7 +801,7 @@ background-color: rgb(170, 255, 255);</string>
         </property>
         <property name="icon">
          <iconset resource="Resources/FirstTime.qrc">
-          <normaloff>:/Images/shunt_l.bmp</normaloff>:/Images/shunt_l.bmp</iconset>
+          <normaloff>:/Images/horizontal_i.svg</normaloff>:/Images/horizontal_i.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -824,7 +824,7 @@ background-color: rgb(170, 255, 255);</string>
         </property>
         <property name="icon">
          <iconset resource="Resources/FirstTime.qrc">
-          <normaloff>:/Images/shunt_c.bmp</normaloff>:/Images/shunt_c.bmp</iconset>
+          <normaloff>:/Images/source.svg</normaloff>:/Images/source.svg</iconset>
         </property>
         <property name="iconSize">
          <size>

@@ -1,0 +1,12 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Белый фон -->
+  <rect x="0" y="0" width="40" height="40" fill="#fff"/>
+
+  <!-- Вертикальные линии -->
+  <line x1="20" y1="0" x2="20" y2="14.76" stroke="#000" stroke-width="1.5"/>
+  <line x1="20" y1="23.22" x2="20" y2="40" stroke="#000" stroke-width="1.5"/>
+
+  <!-- Горизонтальные линии -->
+  <line x1="5.65" y1="15.43" x2="34.35" y2="15.43" stroke="#000" stroke-width="1.5"/>
+  <line x1="12.71" y1="22.53" x2="27.29" y2="22.53" stroke="#000" stroke-width="3"/>
+</svg>

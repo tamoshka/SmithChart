@@ -12,6 +12,7 @@ find_package(Qt${QT_VERSION_MAJOR}
         Core
         Gui
         Widgets
+        SvgWidgets
 )
 qt_standard_project_setup()
 
@@ -44,5 +45,6 @@ target_link_libraries(${PROJECT_NAME}
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::SvgWidgets
 )
 

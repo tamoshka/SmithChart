@@ -1,0 +1,13 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Белый задний фон -->
+  <rect x="0" y="0" width="40" height="40" fill="#ffffff"/>
+
+  <!-- Центральный прямоугольник -->
+  <rect x="7.8" y="16.25" width="24.41" height="7.5" stroke="#000" stroke-width="1.5" fill="none"/>
+
+  <!-- Левая горизонтальная линия -->
+  <line x1="0" y1="20" x2="7.07" y2="20" stroke="#000" stroke-width="1.5"/>
+
+  <!-- Правая горизонтальная линия -->
+  <line x1="32.66" y1="20" x2="40" y2="20" stroke="#000" stroke-width="1.5"/>
+</svg>

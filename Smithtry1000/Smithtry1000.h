@@ -4,7 +4,7 @@
 #include "ui_Smithtry1000.h"
 #include <qgraphicsscene.h>
 #include <qpainterpath.h>
-
+#include <QtSvg>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Smithtry1000Class; };
