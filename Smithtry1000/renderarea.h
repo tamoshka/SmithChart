@@ -3,6 +3,11 @@
 #include <QColor>
 #include <QVector>
 #include <QMessageBox>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QCursor>
+#include <QTimer>
+
 using namespace std;
 
 class RenderArea : public QWidget
@@ -256,7 +261,6 @@ signals:
 public slots:
 
 private:
-
 
     float r;
     float scale = 300;

@@ -2,13 +2,21 @@
 
 Smithtry1000::Smithtry1000(QWidget* parent)
     : QMainWindow(parent)
-    , ui(new Ui::Smithtry1000Class())
+    , ui(new Ui::Smithtry1000Class()),
+    trackingEnabled(false)
 {
     ui->setupUi(this);
     this->resize(1600, 900);
     this->setMaximumSize(1600, 900);
 
-    scene = new QGraphicsScene;
+    connect(ui->button, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
+    // Создаем таймер для отслеживания положения курсора
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
+    timer->start(10); // Обновление каждые 50 миллисекунд
+
+
+    /*scene = new QGraphicsScene;
     ui->graphicsView->setScene(scene);
 
     QPainterPath mainCircle;
@@ -34,64 +42,6 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     }
     resistance.moveTo(200, 200);
     resistance.lineTo(-200, 200);
-    /*resistance.arcTo(175, 150, 50, 50, -90, -167.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(175, 200, 50, 50, 90, 167.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(150, 100, 100, 100, -90, -152.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(150, 200, 100, 100, 90, 152.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(100, 0, 200, 200, -90, -127.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(100, 200, 200, 200, 90, 127.5);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(0, -200, 400, 400, -90, -90);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(0, 200, 400, 400, 90, 90);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(-200, -600, 800, 800, -90, -53);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(-200, 200, 800, 800, 90, 53);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(-600, -1400, 1600, 1600, -90, -28);
-    resistance.moveTo(200, 200);
-    resistance.arcTo(-600, 200, 1600, 1600, 90, 28);
-    resistance.moveTo(200, 200);
-    resistance.lineTo(-200, 200);*/
-    /// QPainterPath impendance;
-     ///impendance.moveTo(-150, 200);
-     ///impendance.arcTo(-200, 175, 50, 50, 0, 360);
-     /*impendance.arcTo(-200, 150, 100, 100, 0, 360);
-     impendance.arcTo(-200, 125, 150, 150, 0, 360);
-     impendance.arcTo(-200, 100, 200, 200, 0, 360);
-     impendance.arcTo(-200, 75, 250, 250, 0, 360);
-     impendance.arcTo(-200, 50, 300, 300, 0, 360);
-     impendance.arcTo(-200, 25, 350, 350, 0, 360);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-225, 150, 50, 50, 270, 167.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-225, 200, 50, 50, -270, -167.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-250, 100, 100, 100, 270, 152.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-250, 200, 100, 100, -270, -152.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-300, 0, 200, 200, 270, 127.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-300, 200, 200, 200, -270, -127.5);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-400, -200, 400, 400, 270, 90);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-400, 200, 400, 400, -270, -90);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-600, -600, 800, 800, 270, 53);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-600, 200, 800, 800, -270, -53);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-1000, -1400, 1600, 1600, 270, 28);
-     impendance.moveTo(-200, 200);
-     impendance.arcTo(-1000, 200, 1600, 1600, -270, -28);*/
     QPen blackPen;
     blackPen.setColor(Qt::black);
     QPen bluePen;
@@ -100,10 +50,69 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     redPen.setColor(Qt::red);
     scene->addPath(mainCircle, blackPen);
     scene->addPath(resistance, bluePen);
-    scene->addPath(impendance, redPen);
+    scene->addPath(impendance, redPen);*/
 }
 
 Smithtry1000::~Smithtry1000()
 {
     delete ui;
 }
+
+
+void Smithtry1000::onButtonClicked()
+{
+    // Переключаем состояние отслеживания
+    trackingEnabled = !trackingEnabled;
+
+    // Обновляем текст кнопки в зависимости от состояния
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    if (trackingEnabled) {
+        button->setText("Stop");
+    }
+    else {
+        button->setText("Start");
+    }
+}
+
+
+void Smithtry1000::onTimeout()
+{
+    if (!trackingEnabled) return;  // Если отслеживание выключено, ничего не делаем
+
+    // Получаем текущую позицию курсора
+    QPoint currentPos = QCursor::pos();
+
+    // Ограничиваем движение мыши по траектории
+    QPoint newPos = getPointOnTrajectory(currentPos);
+
+    // Получаем размеры окна
+    QRect windowRect = ui->renderArea->rect();
+
+    // Получаем глобальные координаты верхнего левого угла окна
+    QPoint windowGlobalPos = ui->renderArea->mapToGlobal(QPoint(0, 0));
+
+    // Переводим новые координаты в локальные для окна
+    int newX = newPos.x() - windowGlobalPos.x();
+    int newY = newPos.y() - windowGlobalPos.y();
+
+    // Ограничиваем новые координаты курсора в пределах окна
+    newX = std::max(0, std::min(newX, windowRect.width() - 1));
+    newY = std::max(0, std::min(newY, windowRect.height() - 1));
+
+    // Переводим обратно в глобальные координаты для установки позиции курсора
+    QCursor::setPos(windowGlobalPos + QPoint(newX, newY));
+}
+
+QPoint Smithtry1000::getPointOnTrajectory(const QPoint& currentPos)
+{
+    // Пример траектории: синусоида, ограничиваем диапазон по оси Y
+    int x = currentPos.x();
+    int y = 200 + 100 * std::sin(x * 0.05);  // Измените на нужную функцию
+
+    // Ограничиваем диапазон по оси Y
+    if (y < 100) y = 100;  // Нижняя граница траектории
+    if (y > 400) y = 400;  // Верхняя граница траектории
+
+    return QPoint(x, y);
+}
+

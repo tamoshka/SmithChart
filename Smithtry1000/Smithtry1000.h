@@ -15,10 +15,16 @@ class Smithtry1000 : public QMainWindow
     Q_OBJECT
 
 public:
+    bool trackingEnabled;
     Smithtry1000(QWidget* parent = nullptr);
     ~Smithtry1000();
 
 private:
+
+    QPoint getPointOnTrajectory(const QPoint& currentPos);
+    void onTimeout();
     Ui::Smithtry1000Class* ui;
     QGraphicsScene* scene;
+private slots:
+    void onButtonClicked();  // Обработчик нажатия кнопки
 };
