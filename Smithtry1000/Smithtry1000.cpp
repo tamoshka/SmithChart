@@ -1,56 +1,23 @@
-#include "Smithtry1000.h"
+п»ї#include "Smithtry1000.h"
+#include <QCursor>
+#include <QPoint>
+#include <QRect>
+#include <QtMath>
 
 Smithtry1000::Smithtry1000(QWidget* parent)
     : QMainWindow(parent)
-    , ui(new Ui::Smithtry1000Class()),
-    trackingEnabled(false)
+    , ui(new Ui::Smithtry1000Class())
+    , trackingEnabled(false)
 {
     ui->setupUi(this);
     this->resize(1600, 900);
     this->setMaximumSize(1600, 900);
 
     connect(ui->button, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
-    // Создаем таймер для отслеживания положения курсора
+
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
-    timer->start(10); // Обновление каждые 50 миллисекунд
-
-
-    /*scene = new QGraphicsScene;
-    ui->graphicsView->setScene(scene);
-
-    QPainterPath mainCircle;
-
-    mainCircle.moveTo(200, 200);
-    mainCircle.arcTo(-200, 0, 400, 400, 0, 360);
-
-    QPainterPath resistance;
-    QPainterPath impendance;
-    for (double i = 0; i < 6; i += 1)
-    {
-        resistance.moveTo(200, 200);
-        resistance.arcTo(150 - i * 50, 175 - i * 25, 50 + 50 * i, 50 + 50 * i, 0, 360);
-        resistance.arcTo(200 - 25 * pow(2, i), 200 - 50 * pow(2, i), 0 + 50 * pow(2, i), 0 + 50 * pow(2, i), -90, -75.07 * cos(0.5 * i + 0.1) - 92.23);
-        resistance.moveTo(200, 200);
-        resistance.arcTo(200 - 25 * pow(2, i), 200, 0 + 50 * pow(2, i), 0 + 50 * pow(2, i), 90, 75.07 * cos(0.5 * i + 0.1) + 92.23);
-        impendance.moveTo(-150 + 50 * i, 200);
-        impendance.arcTo(-200, 175 - 25 * i, 50 + 50 * i, 50 + 50 * i, 0, 360);
-        impendance.moveTo(-200, 200);
-        impendance.arcTo(-200 - 25 * pow(2, i), 200 - 50 * pow(2, i), 0 + 50 * pow(2, i), 0 + 50 * pow(2, i), 270, 75.07 * cos(0.5 * i + 0.1) + 92.23);
-        impendance.moveTo(-200, 200);
-        impendance.arcTo(-200 - 25 * pow(2, i), 200, 0 + 50 * pow(2, i), 0 + 50 * pow(2, i), -270, -75.07 * cos(0.5 * i + 0.1) - 92.23);
-    }
-    resistance.moveTo(200, 200);
-    resistance.lineTo(-200, 200);
-    QPen blackPen;
-    blackPen.setColor(Qt::black);
-    QPen bluePen;
-    bluePen.setColor(Qt::blue);
-    QPen redPen;
-    redPen.setColor(Qt::red);
-    scene->addPath(mainCircle, blackPen);
-    scene->addPath(resistance, bluePen);
-    scene->addPath(impendance, redPen);*/
+    timer->start(10);  // Р§Р°СЃС‚РѕРµ РѕР±РЅРѕРІР»РµРЅРёРµ РґР»СЏ РїР»Р°РІРЅРѕСЃС‚Рё
 }
 
 Smithtry1000::~Smithtry1000()
@@ -58,61 +25,160 @@ Smithtry1000::~Smithtry1000()
     delete ui;
 }
 
-
 void Smithtry1000::onButtonClicked()
 {
-    // Переключаем состояние отслеживания
     trackingEnabled = !trackingEnabled;
 
-    // Обновляем текст кнопки в зависимости от состояния
-    QPushButton* button = qobject_cast<QPushButton*>(sender());
-    if (trackingEnabled) {
-        button->setText("Stop");
+    if (trackingEnabled)
+    {
+        this->setCursor(Qt::BlankCursor); // СЃРєСЂС‹РІР°РµРј СЃРёСЃС‚РµРјРЅС‹Р№ РєСѓСЂСЃРѕСЂ
+        t = intervalLength/2;
+        QPoint initialPos = getPointOnCircle(0, 0);
+        QCursor::setPos(ui->renderArea->mapToGlobal(initialPos));
+        ui->button->setText("Stop");
     }
-    else {
-        button->setText("Start");
+    else
+    {
+        this->unsetCursor(); // РІРѕР·РІСЂР°С‰Р°РµРј РєСѓСЂСЃРѕСЂ
+        ui->button->setText("Start");
     }
 }
-
 
 void Smithtry1000::onTimeout()
 {
-    if (!trackingEnabled) return;  // Если отслеживание выключено, ничего не делаем
+    if (!trackingEnabled) return;
 
-    // Получаем текущую позицию курсора
-    QPoint currentPos = QCursor::pos();
+    // Р¦РµРЅС‚СЂ РѕРєРЅР° РІ РіР»РѕР±Р°Р»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
+    QPoint centerLocal = ui->renderArea->rect().center();
+    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
 
-    // Ограничиваем движение мыши по траектории
-    QPoint newPos = getPointOnTrajectory(currentPos);
+    // Р¤РёР·РёС‡РµСЃРєР°СЏ РїРѕР·РёС†РёСЏ РєСѓСЂСЃРѕСЂР°
+    QPoint currentGlobal = QCursor::pos();
 
-    // Получаем размеры окна
-    QRect windowRect = ui->renderArea->rect();
+    // РЎРјРµС‰РµРЅРёРµ РјС‹С€Рё РѕС‚ С†РµРЅС‚СЂР°
+    int dx = currentGlobal.x() - centerGlobal.x();
+    int dy = currentGlobal.y() - centerGlobal.y();
 
-    // Получаем глобальные координаты верхнего левого угла окна
-    QPoint windowGlobalPos = ui->renderArea->mapToGlobal(QPoint(0, 0));
-
-    // Переводим новые координаты в локальные для окна
-    int newX = newPos.x() - windowGlobalPos.x();
-    int newY = newPos.y() - windowGlobalPos.y();
-
-    // Ограничиваем новые координаты курсора в пределах окна
-    newX = std::max(0, std::min(newX, windowRect.width() - 1));
-    newY = std::max(0, std::min(newY, windowRect.height() - 1));
-
-    // Переводим обратно в глобальные координаты для установки позиции курсора
-    QCursor::setPos(windowGlobalPos + QPoint(newX, newY));
+    if (dx != 0 || dy != 0)
+    {
+        // Р’С‹С‡РёСЃР»СЏРµРј С‚РѕС‡РєСѓ РЅР° РѕРєСЂСѓР¶РЅРѕСЃС‚Рё Рё СЃС‚Р°РІРёРј С‚СѓРґР° РєСѓСЂСЃРѕСЂ
+        QPoint posOnCircle = getPointOnCircle(dx, dy);
+        QCursor::setPos(ui->renderArea->mapToGlobal(posOnCircle));
+        ui->renderArea->setCursorPosOnCircle(posOnCircle);
+        // Р’РѕР·РІСЂР°С‰Р°РµРј СЃРёСЃС‚РµРјРЅС‹Р№ РєСѓСЂСЃРѕСЂ РѕР±СЂР°С‚РЅРѕ РІ С†РµРЅС‚СЂ
+        QCursor::setPos(centerGlobal);
+    }
 }
 
-QPoint Smithtry1000::getPointOnTrajectory(const QPoint& currentPos)
+QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 {
-    // Пример траектории: синусоида, ограничиваем диапазон по оси Y
-    int x = currentPos.x();
-    int y = 200 + 100 * std::sin(x * 0.05);  // Измените на нужную функцию
-
-    // Ограничиваем диапазон по оси Y
-    if (y < 100) y = 100;  // Нижняя граница траектории
-    if (y > 400) y = 400;  // Верхняя граница траектории
-
+    float x, y;
+    int dxABS = abs(dx);
+    int dyABS = abs(dy);
+    float dif = max(dxABS, dyABS);
+    step = 0.02 + dif/200;
+    dy = dy * -1;
+    bool flag = false;
+    if (dyABS == dif)
+    {
+        flag = true;
+    }
+    x = ui->renderArea->rect().center().x();
+    y = ui->renderArea->rect().center().y();
+    if (dx == 0 && dy == 0)
+    {
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = (1 / (r + 1)) * sin_t;
+        y = y * 300 + ui->renderArea->rect().center().y();
+    }
+    else if ((t == intervalLength / 2) && dy > 0 && flag == true)
+    {
+        t += step;
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = (1 / (r + 1)) * sin_t;
+        y = y * 300 + ui->renderArea->rect().center().y();
+    }
+    else if (t == intervalLength / 2 && dy < 0 && flag == true)
+    {
+        t -= step;
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = (1 / (r + 1)) * sin_t;
+        y = y * 300 + ui->renderArea->rect().center().y();
+    }
+    else if (t < intervalLength / 2 && t > 0)
+    {
+        if ((dx > 0 && flag == false) || (dy > 0 && flag == true && t < intervalLength / 4) || (dy<0 && flag == true && t>intervalLength / 4))
+        {
+            t -= step;
+            float cos_t = cos(t);
+            float sin_t = sin(t);
+            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+            x = x * 300 + ui->renderArea->rect().center().x();
+            y = (1 / (r + 1)) * sin_t;
+            y = y * 300 + ui->renderArea->rect().center().y();
+        }
+        else if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t > intervalLength / 4) || (dy < 0 && flag == true && t < intervalLength / 4))
+        {
+            t += step;
+            float cos_t = cos(t);
+            float sin_t = sin(t);
+            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+            x = x * 300 + ui->renderArea->rect().center().x();
+            y = (1 / (r + 1)) * sin_t;
+            y = y * 300 + ui->renderArea->rect().center().y();
+        }
+    }
+    else if (t > intervalLength / 2 && t < intervalLength)
+    {
+        if ((dx > 0 && flag == false) || (dy > 0 && flag == true && t < intervalLength*3/4) || (dy < 0 && flag==true && t > intervalLength*3/4))
+        {
+            t += step;
+            float cos_t = cos(t);
+            float sin_t = sin(t);
+            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+            x = x * 300 + ui->renderArea->rect().center().x();
+            y = (1 / (r + 1)) * sin_t;
+            y = y * 300 + ui->renderArea->rect().center().y();
+        }
+        else if ((dx < 0 && flag == false) || (dy < 0 && flag == true && t < intervalLength * 3 / 4) || (dy > 0 && flag == true && t > intervalLength * 3 / 4))
+        {
+            t -= step;
+            float cos_t = cos(t);
+            float sin_t = sin(t);
+            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+            x = x * 300 + ui->renderArea->rect().center().x();
+            y = (1 / (r + 1)) * sin_t;
+            y = y * 300 + ui->renderArea->rect().center().y();
+        }
+    }
+    else if (t >= intervalLength)
+    {
+        t -= step;
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = (1 / (r + 1)) * sin_t;
+        y = y * 300 + ui->renderArea->rect().center().y();
+    }
+    else if (t<=0)
+    {
+        t += step;
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = (1 / (r + 1)) * sin_t;
+        y = y * 300 + ui->renderArea->rect().center().y();
+    }
     return QPoint(x, y);
 }
-

@@ -5,26 +5,28 @@
 #include <qgraphicsscene.h>
 #include <qpainterpath.h>
 #include <QtSvg>
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class Smithtry1000Class; };
-QT_END_NAMESPACE
+#include <QTimer>
+#include <QMouseEvent>
 
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    bool trackingEnabled;
     Smithtry1000(QWidget* parent = nullptr);
     ~Smithtry1000();
 
-private:
-
-    QPoint getPointOnTrajectory(const QPoint& currentPos);
-    void onTimeout();
-    Ui::Smithtry1000Class* ui;
-    QGraphicsScene* scene;
 private slots:
-    void onButtonClicked();  // Обработчик нажатия кнопки
+    void onButtonClicked();
+    void onTimeout();
+
+private:
+    Ui::Smithtry1000Class* ui;
+    bool trackingEnabled;
+    float t;
+    float step = 0.02;
+    const float r = 1.0;  // радиус в единицах
+    const float intervalLength = 2 * M_PI;
+
+    QPoint getPointOnCircle(int, int);
 };

@@ -14,7 +14,7 @@ RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
     mBackGroundColor(255, 255, 255),
     mShapeColor(0, 0, 0),
-    mMode(Superimpose)
+    mMode(Impedence)
 {
 }
 
@@ -34,8 +34,8 @@ QPointF RenderArea::compute_real(float t)
     //std::cout << r;
     float cos_t = cos(t);
     float sin_t = sin(t);
-    float x = (r / (1 + r)) + (1 / (r + 1)) * pow(cos_t, 1);
-    float y = (1 / (r + 1)) * pow(sin_t, 1);
+    float x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+    float y = (1 / (r + 1)) * sin_t;
 
 
     return QPointF(x, y);
@@ -351,7 +351,10 @@ void RenderArea::paintEvent(QPaintEvent* event)
         break;
 
     }
-
+    // курсор (точка)
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::red);
+    painter.drawEllipse(cursorPos, 5, 5);
 
     for (int i = 0; i < 5; i++) {
 
@@ -1030,4 +1033,10 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
 
 
+}
+
+void RenderArea::setCursorPosOnCircle(const QPoint& pos)
+{
+    cursorPos = pos;
+    update();  // перерисовать
 }

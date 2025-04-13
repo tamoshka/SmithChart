@@ -14,9 +14,11 @@ class RenderArea : public QWidget
 {
     Q_OBJECT
 public:
+    void setCursorPosOnCircle(const QPoint& pos);
     class complex {
     private:
         float real, imag;
+
     public:
         complex() {
 
@@ -273,6 +275,7 @@ private:
     QPointF compute_imaginary(float r);
     QPointF compute(float t);
     Topology mTopology;
+    QPoint cursorPos;
 
 
 
