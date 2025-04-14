@@ -76,7 +76,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     int dxABS = abs(dx);
     int dyABS = abs(dy);
     float dif = max(dxABS, dyABS);
-    step = 0.02 + dif/200;
+    step = 0.01 + dif/400;
     dy = dy * -1;
     bool flag = false;
     if (dyABS == dif)
@@ -96,7 +96,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if ((t == intervalLength / 2) && dy > 0 && flag == true)
     {
-        t += step;
+        if (t + step > intervalLength)
+        {
+            t = intervalLength;
+        }
+        else
+        {
+            t += step;
+        }
         float cos_t = cos(t);
         float sin_t = sin(t);
         x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -106,7 +113,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if (t == intervalLength / 2 && dy < 0 && flag == true)
     {
-        t -= step;
+        if (t - step < 0)
+        {
+            t = 0;
+        }
+        else
+        {
+            t -= step;
+        }
         float cos_t = cos(t);
         float sin_t = sin(t);
         x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -118,7 +132,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     {
         if ((dx > 0 && flag == false) || (dy > 0 && flag == true && t < intervalLength / 4) || (dy<0 && flag == true && t>intervalLength / 4))
         {
-            t -= step;
+            if (t - step < 0)
+            {
+                t = 0;
+            }
+            else
+            {
+                t -= step;
+            }
             float cos_t = cos(t);
             float sin_t = sin(t);
             x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -128,7 +149,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         else if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t > intervalLength / 4) || (dy < 0 && flag == true && t < intervalLength / 4))
         {
-            t += step;
+            if (t + step > intervalLength)
+            {
+                t = intervalLength;
+            }
+            else
+            {
+                t += step;
+            }
             float cos_t = cos(t);
             float sin_t = sin(t);
             x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -141,7 +169,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     {
         if ((dx > 0 && flag == false) || (dy > 0 && flag == true && t < intervalLength*3/4) || (dy < 0 && flag==true && t > intervalLength*3/4))
         {
-            t += step;
+            if (t + step > intervalLength)
+            {
+                t = intervalLength;
+            }
+            else
+            {
+                t += step;
+            }
             float cos_t = cos(t);
             float sin_t = sin(t);
             x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -151,7 +186,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         else if ((dx < 0 && flag == false) || (dy < 0 && flag == true && t < intervalLength * 3 / 4) || (dy > 0 && flag == true && t > intervalLength * 3 / 4))
         {
-            t -= step;
+            if (t - step < 0)
+            {
+                t = 0;
+            }
+            else
+            {
+                t -= step;
+            }
             float cos_t = cos(t);
             float sin_t = sin(t);
             x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
@@ -162,6 +204,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if (t >= intervalLength)
     {
+        step = 0.01;
         t -= step;
         float cos_t = cos(t);
         float sin_t = sin(t);
@@ -172,6 +215,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if (t<=0)
     {
+        step = 0.01;
         t += step;
         float cos_t = cos(t);
         float sin_t = sin(t);
