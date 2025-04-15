@@ -24,9 +24,8 @@ private:
     Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
     float t;
-    float step = 0.02;
-    const float r = 1.0;  // радиус в единицах
-    const float intervalLength = 2 * M_PI;
-
+    float step;
+    float r;  // радиус в единицах
+    float intervalLength = 2 * M_PI;
     QPoint getPointOnCircle(int, int);
 };

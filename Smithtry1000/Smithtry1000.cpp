@@ -3,6 +3,8 @@
 #include <QPoint>
 #include <QRect>
 #include <QtMath>
+#include <cmath>
+#include <exception>
 
 Smithtry1000::Smithtry1000(QWidget* parent)
     : QMainWindow(parent)
@@ -27,15 +29,69 @@ Smithtry1000::~Smithtry1000()
 
 void Smithtry1000::onButtonClicked()
 {
+    QPoint centerLocal = ui->renderArea->rect().center();
+    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    r = 4;
+    t = M_PI/2;
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    float x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+    float y = (1 / (r + 1)) * sin_t;
     trackingEnabled = !trackingEnabled;
-
     if (trackingEnabled)
     {
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        t = intervalLength/2;
-        QPoint initialPos = getPointOnCircle(0, 0);
-        QCursor::setPos(ui->renderArea->mapToGlobal(initialPos));
+        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x-1)));
+        double xCenter = 1 - circleRadius;
+        double dx = x - xCenter;
+        double dy = y;
+        sin_t = dy;
+        cos_t = dx;
+        if (y<1e-6 && y>0)
+        {
+            if (y == 0)
+            {
+                t = 0;
+            }
+            else if (x == 1)
+            {
+                t = 2 * M_PI;
+            }
+            else
+            {
+                t = M_PI;
+            }
+        }
+        else
+        {
+            t = atan(sin_t / cos_t);
+            if (cos_t < 0 && sin_t < 0)
+            {
+                t += M_PI;
+            }
+            else if (cos_t > 0 && sin_t < 0)
+            {
+                t = 2 * M_PI - abs(t);
+            }
+            else if (sin_t > 0 && cos_t < 0)
+            {
+                t = M_PI - abs(t);
+            }
+        }
+        if (x - 1 != 0)
+        {
+            r = (cos(t) - x) / (x - 1);
+        }
+        double cos_t2 = cos(t);
+        double sin_t2 = sin(t);
+        double x2 = (r / (1 + r)) + (1 / (r + 1)) * cos_t2;
+        double y2 = (1 / (r + 1)) * sin_t2;
+
         ui->button->setText("Stop");
+
+        QCursor::setPos(centerGlobal);
+        QPoint temp = QPoint(x2 * 300 + ui->renderArea->rect().center().x(), y2 * 300 + ui->renderArea->rect().center().y());
+        ui->renderArea->setCursorPosOnCircle(temp);
     }
     else
     {
@@ -47,7 +103,6 @@ void Smithtry1000::onButtonClicked()
 void Smithtry1000::onTimeout()
 {
     if (!trackingEnabled) return;
-
     // Центр окна в глобальных координатах
     QPoint centerLocal = ui->renderArea->rect().center();
     QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
@@ -72,6 +127,7 @@ void Smithtry1000::onTimeout()
 
 QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 {
+    t = t;
     float x, y;
     int dxABS = abs(dx);
     int dyABS = abs(dy);
@@ -83,16 +139,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     {
         flag = true;
     }
-    x = ui->renderArea->rect().center().x();
-    y = ui->renderArea->rect().center().y();
+    x = 0;
+    y = 0;
     if (dx == 0 && dy == 0)
     {
-        float cos_t = cos(t);
-        float sin_t = sin(t);
-        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = (1 / (r + 1)) * sin_t;
-        y = y * 300 + ui->renderArea->rect().center().y();
     }
     else if ((t == intervalLength / 2) && dy > 0 && flag == true)
     {
@@ -104,12 +154,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             t += step;
         }
-        float cos_t = cos(t);
-        float sin_t = sin(t);
-        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = (1 / (r + 1)) * sin_t;
-        y = y * 300 + ui->renderArea->rect().center().y();
     }
     else if (t == intervalLength / 2 && dy < 0 && flag == true)
     {
@@ -121,12 +165,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             t -= step;
         }
-        float cos_t = cos(t);
-        float sin_t = sin(t);
-        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = (1 / (r + 1)) * sin_t;
-        y = y * 300 + ui->renderArea->rect().center().y();
     }
     else if (t < intervalLength / 2 && t > 0)
     {
@@ -140,12 +178,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 t -= step;
             }
-            float cos_t = cos(t);
-            float sin_t = sin(t);
-            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-            x = x * 300 + ui->renderArea->rect().center().x();
-            y = (1 / (r + 1)) * sin_t;
-            y = y * 300 + ui->renderArea->rect().center().y();
         }
         else if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t > intervalLength / 4) || (dy < 0 && flag == true && t < intervalLength / 4))
         {
@@ -157,12 +189,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 t += step;
             }
-            float cos_t = cos(t);
-            float sin_t = sin(t);
-            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-            x = x * 300 + ui->renderArea->rect().center().x();
-            y = (1 / (r + 1)) * sin_t;
-            y = y * 300 + ui->renderArea->rect().center().y();
         }
     }
     else if (t > intervalLength / 2 && t < intervalLength)
@@ -177,12 +203,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 t += step;
             }
-            float cos_t = cos(t);
-            float sin_t = sin(t);
-            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-            x = x * 300 + ui->renderArea->rect().center().x();
-            y = (1 / (r + 1)) * sin_t;
-            y = y * 300 + ui->renderArea->rect().center().y();
         }
         else if ((dx < 0 && flag == false) || (dy < 0 && flag == true && t < intervalLength * 3 / 4) || (dy > 0 && flag == true && t > intervalLength * 3 / 4))
         {
@@ -194,35 +214,27 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 t -= step;
             }
-            float cos_t = cos(t);
-            float sin_t = sin(t);
-            x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-            x = x * 300 + ui->renderArea->rect().center().x();
-            y = (1 / (r + 1)) * sin_t;
-            y = y * 300 + ui->renderArea->rect().center().y();
         }
     }
     else if (t >= intervalLength)
     {
         step = 0.01;
+        t = intervalLength;
         t -= step;
-        float cos_t = cos(t);
-        float sin_t = sin(t);
-        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = (1 / (r + 1)) * sin_t;
-        y = y * 300 + ui->renderArea->rect().center().y();
     }
     else if (t<=0)
     {
+        t = 0;
         step = 0.01;
         t += step;
-        float cos_t = cos(t);
-        float sin_t = sin(t);
-        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = (1 / (r + 1)) * sin_t;
-        y = y * 300 + ui->renderArea->rect().center().y();
     }
+
+    float cos_t = cos(t);
+    float sin_t = sin(t);
+    x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+    x = x * 300 + ui->renderArea->rect().center().x();
+    y = (1 / (r + 1)) * sin_t;
+    y = y * 300 + ui->renderArea->rect().center().y();
     return QPoint(x, y);
 }
+
