@@ -18,12 +18,24 @@ public:
 
 private slots:
     void onButtonClicked();
+    void onCapacitor_buttonClicked();
+    void onInduction_buttonClicked();
     void onTimeout();
 
 private:
+    void mousePressEvent(QMouseEvent* event) override;
     Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
+    bool leftClicked;
+    bool rightClicked;
+    bool firstPoint = true;
+    double lastPointX;
+    double lastPointY;
+    QList<float> pointsX;
+    QList<float> pointsY;
     float t;
+    float tmin;
+    float tmax;
     float step;
     float r;  // радиус в единицах
     float intervalLength = 2 * M_PI;
