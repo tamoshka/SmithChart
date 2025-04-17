@@ -2,8 +2,9 @@
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
-
-QVector<QPointF> points(4);
+QList<QPoint> morePoints;
+int index = 0;
+map<int, tuple<QPoint, float, float>> points;
 
 int main(int argc, char *argv[])
 {

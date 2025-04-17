@@ -5,6 +5,7 @@
 #include <QtMath>
 #include <cmath>
 #include <exception>
+#include "general.h"
 
 Smithtry1000::Smithtry1000(QWidget* parent)
     : QMainWindow(parent)
@@ -109,9 +110,15 @@ void Smithtry1000::onButtonClicked()
             pointsX.append(x);
             pointsY.append(y);
             firstPoint = false;
+            points[index]=make_tuple(temp, r, t);
+            index++;
+            ui->renderArea->setCursorPosOnCircle(temp);
         }
-        lastPointX = x;
-        lastPointY = y;
+        else
+        {
+            morePoints.append(temp);
+            ui->renderArea->setCursorPosOnCircle(temp);
+        }
     }
     ui->button->setText("Start");
 }
@@ -182,6 +189,10 @@ void Smithtry1000::onInduction_buttonClicked()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            points[index] = make_tuple(temp, r, t);
+            index++;
+            ui->renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {
@@ -258,6 +269,10 @@ void Smithtry1000::onCapacitor_buttonClicked()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            points[index] = make_tuple(temp, r, t);
+            index++;
+            ui->renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {

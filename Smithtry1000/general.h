@@ -1,4 +1,8 @@
 #pragma once
-#include <QVector>
+#include <QList>
+#include <QMap>
 #include <QPointF>
-extern QVector<QPointF> points;
+#include <tuple>
+extern map<int, tuple<QPoint, float, float>> points;
+extern QList<QPoint> morePoints;
+extern int index;

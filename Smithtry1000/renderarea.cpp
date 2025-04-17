@@ -355,8 +355,84 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::red);
     painter.drawEllipse(cursorPos, 5, 5);
+    for (int ii = 0; ii < index; ii++)
+    {
+        painter.drawEllipse(get<0>(points[ii]), 5, 5);
+    }
+    painter.setPen(QPen(Qt::red, 2));
+    for (int ll = 0; ll < index-1; ll++)
+    {
+        r = get<1>(points[ll]);
+        float t = get<2>(points[ll]);
+        float t2 = get<2>(points[ll + 1]);
+        iPoint = compute_real(t);
+        iPixel.setX(iPoint.x() * scale + this->rect().center().x());
+        iPixel.setY(iPoint.y() * scale + this->rect().center().y());
+        bool flagi = false;
+        step = abs(t2 - t)/100;
+        if (t2 > t)
+        {
+            for (t; t < t2; t += step) {
 
-    for (int i = 0; i < 5; i++) {
+                QPointF point = compute_real(t);
+                QPointF pixel;
+                pixel.setX(point.x() * scale + this->rect().center().x());
+                pixel.setY(point.y() * scale + this->rect().center().y());
+
+                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
+                {
+                    painter.setPen(QPen(Qt::red, 2));
+                    QString s1 = QString::number(r);
+                    painter.setFont(QFont("Arial", 8));
+                    painter.drawText(point.x() * scale + this->rect().center().x(), this->rect().center().y(), s1);
+                    flagi == true;
+                }
+
+
+
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+
+                //painter.drawPoint(pixel);
+
+            }
+        }
+        else
+        {
+            for (t; t > t2; t -= step) {
+
+                QPointF point = compute_real(t);
+                QPointF pixel;
+                pixel.setX(point.x() * scale + center.x());
+                pixel.setY(point.y() * scale + center.y());
+
+                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
+                {
+                    painter.setPen(QPen(Qt::red, 2));
+                    QString s1 = QString::number(r);
+                    painter.setFont(QFont("Arial", 8));
+                    painter.drawText(point.x() * scale + center.x(), center.y(), s1);
+                    painter.setPen(Qt::blue);
+                    flagi == true;
+                }
+
+
+
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+
+                //painter.drawPoint(pixel);
+
+            }
+        }
+    }
+    
+    for (int jj = 0; jj < morePoints.size(); jj++)
+    {
+        painter.drawEllipse(morePoints[jj], 5, 5);
+    }
+
+    /*for (int i = 0; i < 5; i++) {
 
         if (flag[i]) {
 
@@ -1029,7 +1105,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
 
 
-    }
+    }*/
 
 
 
