@@ -4,7 +4,7 @@
 #include <QThread>
 QList<QPoint> morePoints;
 int index = 0;
-map<int, tuple<QPoint, float, float>> points;
+map<int, tuple<QPoint, float, float, mode>> points;
 
 int main(int argc, char *argv[])
 {

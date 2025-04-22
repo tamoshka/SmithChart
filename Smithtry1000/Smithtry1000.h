@@ -20,6 +20,7 @@ private slots:
     void onButtonClicked();
     void onCapacitor_buttonClicked();
     void onInduction_buttonClicked();
+    void onResistor_buttonClicked();
     void onTimeout();
 
 private:
@@ -31,6 +32,8 @@ private:
     bool firstPoint = true;
     double lastPointX;
     double lastPointY;
+    double tempX=0;
+    double tempY=0;
     QList<float> pointsX;
     QList<float> pointsY;
     float t;

@@ -72,11 +72,11 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
     float intervalLength = 2 * M_PI;
     int stepCount = 2000;
-
-    float step = intervalLength / stepCount;
+    float step;
     QPointF iPoint;
     QPointF iPixel;
-
+    step = intervalLength / stepCount;
+    painter.setPen(Qt::blue);
     switch (mMode) {
 
     case Superimpose:
@@ -269,7 +269,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
             (iPoint.x() * scale + center.x());
             iPixel.setY(-iPoint.y() * scale + center.y());
             bool flagi = false;
-            for (float t = step; t < intervalLength; t += step) {
+            for (float t = step; t<intervalLength; t += step) {
                 
                 QPointF point = compute_imaginary(t);
                 //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
@@ -297,6 +297,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
 
                 painter.setPen(Qt::blue);
+
                 if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
                 {
                     painter.drawLine(iPixel, pixel);
@@ -362,22 +363,68 @@ void RenderArea::paintEvent(QPaintEvent* event)
     painter.setPen(QPen(Qt::red, 2));
     for (int ll = 0; ll < index-1; ll++)
     {
-        r = get<1>(points[ll]);
-        float t = get<2>(points[ll]);
-        float t2 = get<2>(points[ll + 1]);
-        iPoint = compute_real(t);
-        iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-        iPixel.setY(iPoint.y() * scale + this->rect().center().y());
-        bool flagi = false;
-        step = abs(t2 - t)/100;
-        if (t2 > t)
+        if (get<3>(points[ll+1])==mode::InductionShunt)
         {
+            r = get<1>(points[ll+1]);
+            float x = get<0>(points[ll]).x();
+            float y = get<0>(points[ll]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            float t;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            double sin_t = dy;
+            double cos_t = dx;
+            if (y < 1e-6 && y >= 0)
+            {
+                if (y == 0 && x == 1)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(sin_t / cos_t);
+                if (cos_t < 0 && sin_t < 0)
+                {
+                    t += M_PI;
+                }
+                else if (cos_t > 0 && sin_t < 0)
+                {
+                    t = 2 * M_PI - abs(t);
+                }
+                else if (sin_t > 0 && cos_t < 0)
+                {
+                    t = M_PI - abs(t);
+                }
+            }
+            if (x - 1 != 0)
+            {
+                r = (cos(t) - x) / (x - 1);
+            }
+            float t2 = get<2>(points[ll + 1]);
+            iPoint = compute_real(t);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(iPoint.y()* scale + this->rect().center().y());
+            bool flagi = false;
+            step = abs(t2 - t) / 100;
             for (t; t < t2; t += step) {
 
                 QPointF point = compute_real(t);
                 QPointF pixel;
-                pixel.setX(point.x() * scale + this->rect().center().x());
-                pixel.setY(point.y() * scale + this->rect().center().y());
+
+                pixel.setX(point.x()* scale + center.x());
+                pixel.setY(point.y()* scale + center.y());
 
                 if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
                 {
@@ -397,8 +444,61 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
             }
         }
-        else
+        else if (get<3>(points[ll + 1]) == mode::CapacitorShunt)
         {
+            r = get<1>(points[ll + 1]);
+            float x = get<0>(points[ll]).x();
+            float y = get<0>(points[ll]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            float t;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            double sin_t = dy;
+            double cos_t = dx;
+            if (y < 1e-6 && y >= 0)
+            {
+                if (y == 0 && x == 1)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(sin_t / cos_t);
+                if (cos_t < 0 && sin_t < 0)
+                {
+                    t += M_PI;
+                }
+                else if (cos_t > 0 && sin_t < 0)
+                {
+                    t = 2 * M_PI - abs(t);
+                }
+                else if (sin_t > 0 && cos_t < 0)
+                {
+                    t = M_PI - abs(t);
+                }
+            }
+            if (x - 1 != 0)
+            {
+                r = (cos(t) - x) / (x - 1);
+            }
+            float t2 = get<2>(points[ll + 1]);
+            iPoint = compute_real(t);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(iPoint.y()* scale + this->rect().center().y());
+            bool flagi = false;
+            step = abs(t2 - t) / 100;
             for (t; t > t2; t -= step) {
 
                 QPointF point = compute_real(t);
@@ -425,11 +525,311 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
             }
         }
+        else if (get<3>(points[ll + 1]) == mode::ResistorShunt)
+        {
+            r = get<1>(points[ll+1]);
+            float t2 = get<2>(points[ll + 1]);
+            float t;
+            float x = get<0>(points[ll]).x();
+            float y = get<0>(points[ll]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            float sin_t = dy;
+            float cos_t = dx;
+            if (y < 1e-6 && y>0)
+            {
+                if (y == 0)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(cos_t / sin_t);
+                if (y < 0)
+                {
+                    t += M_PI;
+                }
+                else
+                {
+                    t += 2 * M_PI;
+                }
+            }
+            step = abs(t2 - t) / 100;
+            float tmin, tmax;
+            if (t2 > t)
+            {
+                tmax = t2;
+                tmin = t;
+            }
+            else
+            {
+                tmax = t;
+                tmin = t2;
+            }
+            iPoint = compute_imaginary(tmin);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(-iPoint.y()* scale + this->rect().center().y());
+            for (tmin=tmin+step; tmin< tmax; tmin += step) {
+
+                QPointF point = compute_imaginary(tmin);
+                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
+                QPointF pixel;
+                pixel.setX(point.x()* scale + center.x());
+                pixel.setY(-point.y() * scale + center.y());
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+
+            }
+        }
     }
     
     for (int jj = 0; jj < morePoints.size(); jj++)
     {
         painter.drawEllipse(morePoints[jj], 5, 5);
+    }
+    if (index > 0 && Model != mode::AddPoint)
+    {
+        painter.setPen(QPen(Qt::green, 2));
+        float tmax, tmin;
+        if (Model == mode::InductionShunt)
+        {
+            float t;
+            float x = get<0>(points[index - 1]).x();
+            float y = get<0>(points[index - 1]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            double sin_t = dy;
+            double cos_t = dx;
+            if (y < 1e-6 && y >= 0)
+            {
+                if (y == 0 && x == 1)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(sin_t / cos_t);
+                if (cos_t < 0 && sin_t < 0)
+                {
+                    t += M_PI;
+                }
+                else if (cos_t > 0 && sin_t < 0)
+                {
+                    t = 2 * M_PI - abs(t);
+                }
+                else if (sin_t > 0 && cos_t < 0)
+                {
+                    t = M_PI - abs(t);
+                }
+            }
+            if (x - 1 != 0)
+            {
+                r = (cos(t) - x) / (x - 1);
+            }
+            tmax = 2 * M_PI;
+            tmin = t;
+            iPoint = compute_real(tmin);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(iPoint.y()* scale + this->rect().center().y());
+            bool flagi = false;
+            step = abs(tmax - tmin) / 100;
+            for (tmin; tmin < tmax; tmin += step) {
+
+                QPointF point = compute_real(tmin);
+                QPointF pixel;
+                pixel.setX(point.x() * scale + this->rect().center().x());
+                pixel.setY(point.y() * scale + this->rect().center().y());
+
+
+
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+
+                //painter.drawPoint(pixel);
+
+            }
+        }
+        else if (Model == mode::CapacitorShunt)
+        {
+            float t;
+            float x = get<0>(points[index - 1]).x();
+            float y = get<0>(points[index - 1]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            double sin_t = dy;
+            double cos_t = dx;
+            if (y < 1e-6 && y >= 0)
+            {
+                if (y == 0 && x == 1)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(sin_t / cos_t);
+                if (cos_t < 0 && sin_t < 0)
+                {
+                    t += M_PI;
+                }
+                else if (cos_t > 0 && sin_t < 0)
+                {
+                    t = 2 * M_PI - abs(t);
+                }
+                else if (sin_t > 0 && cos_t < 0)
+                {
+                    t = M_PI - abs(t);
+                }
+            }
+            if (x - 1 != 0)
+            {
+                r = (cos(t) - x) / (x - 1);
+            }
+            tmax = t;
+            tmin = 0;
+            iPoint = compute_real(tmin);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(iPoint.y()* scale + this->rect().center().y());
+            bool flagi = false;
+            step = abs(tmax - tmin) / 100;
+            for (tmin; tmin < tmax; tmin += step) {
+
+                QPointF point = compute_real(tmin);
+                QPointF pixel;
+                pixel.setX(point.x() * scale + this->rect().center().x());
+                pixel.setY(point.y() * scale + this->rect().center().y());
+
+
+
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+
+                //painter.drawPoint(pixel);
+
+            }
+        }
+        else if (Model == mode::ResistorShunt)
+        {
+            float t;
+            float x = get<0>(points[index - 1]).x();
+            float y = get<0>(points[index - 1]).y();
+            x = (x - this->rect().center().x()) / 300;
+            y = (y - this->rect().center().y()) / 300;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            float sin_t = dy;
+            float cos_t = dx;
+            if (y < 1e-6 && y>0)
+            {
+                if (y == 0)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
+            }
+            else
+            {
+                t = atan(cos_t / sin_t);
+                if (y < 0)
+                {
+                    t += M_PI;
+                }
+                else
+                {
+                    t += 2 * M_PI;
+                }
+            }
+            if (x - 1 != 0)
+            {
+                r = cos(t) / (x - 1);
+            }
+            else
+            {
+                r = (1 + sin(t)) / y;
+            }
+            if (y < 0)
+            {
+                r = abs(r);
+                tmin = t;
+                tmax = 2 * M_PI;
+            }
+            else
+            {
+                r = abs(r) * (-1);
+                tmax = t;
+                tmin = 0;
+            }
+            step = intervalLength / stepCount;
+            iPoint = compute_imaginary(tmin);
+            iPixel.setX// mBackGroundColor = Qt::green;
+            (iPoint.x()* scale + center.x());
+            iPixel.setY(-iPoint.y() * scale + center.y());
+            bool flagi = false;
+            for (tmin; tmin<tmax; tmin += step) {
+
+                QPointF point = compute_imaginary(tmin);
+                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
+                QPointF pixel;
+                pixel.setX(point.x() * scale + center.x());
+                pixel.setY(-point.y() * scale + center.y());
+
+
+                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
+                {
+                    painter.drawLine(iPixel, pixel);
+                }
+                iPixel = pixel;
+                //painter.drawPoint(pixel);
+            }
+        }
+        
     }
 
     /*for (int i = 0; i < 5; i++) {
