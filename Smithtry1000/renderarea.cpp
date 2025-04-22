@@ -426,14 +426,6 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 pixel.setX(point.x()* scale + center.x());
                 pixel.setY(point.y()* scale + center.y());
 
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::red, 2));
-                    QString s1 = QString::number(r);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + this->rect().center().x(), this->rect().center().y(), s1);
-                    flagi == true;
-                }
 
 
 
@@ -506,15 +498,6 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 pixel.setX(point.x() * scale + center.x());
                 pixel.setY(point.y() * scale + center.y());
 
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::red, 2));
-                    QString s1 = QString::number(r);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + center.x(), center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi == true;
-                }
 
 
 
@@ -804,7 +787,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
             {
                 r = abs(r) * (-1);
                 tmax = t;
-                tmin = 0;
+                tmin = M_PI;
             }
             step = intervalLength / stepCount;
             iPoint = compute_imaginary(tmin);
