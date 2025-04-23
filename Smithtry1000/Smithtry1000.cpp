@@ -67,12 +67,12 @@ void Smithtry1000::onButtonClicked()
         point = QCursor::pos();
         if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(300, 2))
         {
-            QCursor::setPos(lastPointX, lastPointY);
-            point.setX(lastPointX);
-            point.setY(lastPointY);
+            QCursor::setPos(tempPointX, tempPointY);
+            point.setX(tempPointX);
+            point.setY(tempPointY);
         }
-        lastPointX = point.x();
-        lastPointY = point.y();
+        tempPointX = point.x();
+        tempPointY = point.y();
     }
     if (leftClicked)
     {
@@ -562,11 +562,11 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         double sin_t;
         float x = pointsX.back();
         float y = pointsY.back();
-        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-        double xCenter = 1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        sin_t = dy;
+        double circleRadius = (pow(x,2)+2*x+1+pow(y,2))/(-2*y);
+        double yCenter = -circleRadius;
+        double dx = x+1;
+        double dy = y - yCenter;
+        sin_t = -dy;
         cos_t = dx;
         if (y < 1e-6 && y>0)
         {
@@ -574,7 +574,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             {
                 t = 0;
             }
-            else if (x == 1)
+            else if (x == -1)
             {
                 t = 2 * M_PI;
             }
@@ -585,35 +585,34 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         }
         else
         {
-            t = atan(cos_t / sin_t);
-            if (y < 0)
+            t = atan(sin_t/ cos_t);
+            /*if (y > 0)
             {
-                t += M_PI;
+                t += M_PI / 2;
             }
             else
             {
-                t += 2 * M_PI;
-            }
+                t +=M_PI*3/2;
+            }*/
         }
-        if (x - 1 != 0)
+        if (x + 1 != 0)
         {
-            r = cos(t) / (x - 1);
+            r = cos(t) / (x + 1);
         }
         else
         {
             r = (1 + sin(t)) / y;
         }
-        if (y < 0)
+        if (y > 0)
         {
-            r = abs(r);
+            r *= -1;
             tmin = t;
-            tmax = 2 * M_PI;
+            tmax = M_PI/2;
         }
         else
         {
-            r = abs(r) * (-1);
             tmax = t;
-            tmin = 0;
+            tmin = -M_PI/2;
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -941,5 +940,76 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         y = y * 300 + ui->renderArea->rect().center().y();
         return QPoint(x, y);
     }
+    else if (Model == mode::ResistorParallel)
+    {
+        t = t;
+        float x, y;
+        int dxABS = abs(dx);
+        int dyABS = abs(dy);
+        dy = dy * -1;
+
+        step = 0.01 + dxABS / 800;
+        x = 0;
+        y = 0;
+        if (lastPointY > 0)
+        {
+            dx *= -1;
+        }
+        if (dx == 0)
+        {
+        }
+        else if (dx < 0)
+        {
+            if (t - step < tmin)
+            {
+                t = tmin;
+            }
+            else
+            {
+                t -= step;
+            }
+        }
+        else if (dx > 0)
+        {
+            if (t + step > tmax)
+            {
+                t = tmax;
+            }
+            else
+            {
+                t += step;
+            }
+        }
+        else if (t >= tmax)
+        {
+            step = 0.01;
+            t = tmax;
+            t -= step;
+        }
+        else if (t <= tmin)
+        {
+            t = tmin;
+            step = 0.01;
+            t += step;
+        }
+        float cos_t = cos(t);
+        float sin_t = sin(t);
+        if (lastPointY < 0)
+        {
+            x = (cos_t - abs(r)) / r;
+            y = (1 / r) + (1 / r) * sin_t;
+            y *= -1;
+        }
+        else
+        {
+            x = -(cos_t - abs(r)) / r;
+            y = -(1 / r) + (1 / r) * sin_t;
+        }
+        lastPointX = x;
+        lastPointY = y;
+        x = x * 300 + ui->renderArea->rect().center().x();
+        y = y * 300 + ui->renderArea->rect().center().y();
+        return QPoint(x, y);
+        }
 }
 

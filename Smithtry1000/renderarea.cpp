@@ -14,7 +14,7 @@ RenderArea::RenderArea(QWidget* parent) :
     QWidget(parent),
     mBackGroundColor(255, 255, 255),
     mShapeColor(0, 0, 0),
-    mMode(Admittance)
+    mMode(Impedence)
 {
 }
 
@@ -94,7 +94,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
 
     case Superimpose:
     {
-        for (RenderArea::r = -2; RenderArea::r <= 2; RenderArea::r += 0.5) {
+        for (RenderArea::r = -2; RenderArea::r <= 2; RenderArea::r += 0.2) {
 
             iPoint = compute_imaginary(0);
             iPixel.setX// mBackGroundColor = Qt::green;

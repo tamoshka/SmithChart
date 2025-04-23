@@ -35,6 +35,8 @@ private:
     bool firstPoint = true;
     double lastPointX;
     double lastPointY;
+    double tempPointX;
+    double tempPointY;
     double tempX=0;
     double tempY=0;
     QList<float> pointsX;
