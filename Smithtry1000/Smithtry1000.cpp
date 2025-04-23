@@ -586,14 +586,6 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         else
         {
             t = atan(sin_t/ cos_t);
-            /*if (y > 0)
-            {
-                t += M_PI / 2;
-            }
-            else
-            {
-                t +=M_PI*3/2;
-            }*/
         }
         if (x + 1 != 0)
         {

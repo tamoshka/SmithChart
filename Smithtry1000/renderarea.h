@@ -273,7 +273,8 @@ private:
     float mScale;
     QPointF compute_real(float t);
     QPointF compute_realParallel(float t);
-    QPointF compute_imaginary(float r);
+    QPointF compute_imaginary(float t);
+    QPointF compute_imaginaryParallel(float t);
     QPointF compute(float t);
     Topology mTopology;
     QPoint cursorPos;

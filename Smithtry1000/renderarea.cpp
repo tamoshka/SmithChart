@@ -66,6 +66,27 @@ QPointF RenderArea::compute_imaginary(float t)
 
 }
 
+QPointF RenderArea::compute_imaginaryParallel(float t)
+{
+    float cos_t = cos(t);
+    float sin_t = sin(t);
+    float x;
+    float y;
+    if (r > 0)
+    {
+        x = (cos_t - abs(r)) / r;
+        y = (1 / r) + (1 / r) * sin_t;
+        y *= -1;
+    }
+    else
+    {
+        x = -(cos_t - abs(r)) / r;
+        y = -(1 / r) + (1 / r) * sin_t;
+    }
+
+    return QPointF(x, y);
+}
+
 
 void RenderArea::paintEvent(QPaintEvent* event)
 {
@@ -745,11 +766,11 @@ void RenderArea::paintEvent(QPaintEvent* event)
             float y = get<0>(points[ll]).y();
             x = (x - this->rect().center().x()) / 300;
             y = (y - this->rect().center().y()) / 300;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            float sin_t = dy;
+            double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+            double yCenter = -circleRadius;
+            double dx = x + 1;
+            double dy = y - yCenter;
+            float sin_t = -dy;
             float cos_t = dx;
             if (y < 1e-6 && y>0)
             {
@@ -757,7 +778,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 {
                     t = 0;
                 }
-                else if (x == 1)
+                else if (x == -1)
                 {
                     t = 2 * M_PI;
                 }
@@ -768,15 +789,19 @@ void RenderArea::paintEvent(QPaintEvent* event)
             }
             else
             {
-                t = atan(cos_t / sin_t);
-                if (y < 0)
-                {
-                    t += M_PI;
-                }
-                else
-                {
-                    t += 2 * M_PI;
-                }
+                t = atan(sin_t / cos_t);
+            }
+            if (x + 1 != 0)
+            {
+                r = cos(t) / (x + 1);
+            }
+            else
+            {
+                r = (1 + sin(t)) / y;
+            }
+            if (y > 0)
+            {
+                r *= -1;
             }
             step = abs(t2 - t) / 100;
             float tmin, tmax;
@@ -790,16 +815,16 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 tmax = t;
                 tmin = t2;
             }
-            iPoint = compute_imaginary(tmin);
-            iPixel.setX(-iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
+            iPoint = compute_imaginaryParallel(tmin);
+            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
+            iPixel.setY(iPoint.y() * scale + this->rect().center().y());
             for (tmin = tmin + step; tmin < tmax; tmin += step) {
 
-                QPointF point = compute_imaginary(tmin);
+                QPointF point = compute_imaginaryParallel(tmin);
                 //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
                 QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
+                pixel.setX(point.x() * scale + center.x());
+                pixel.setY(point.y() * scale + center.y());
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
 
@@ -1181,11 +1206,11 @@ void RenderArea::paintEvent(QPaintEvent* event)
             float y = get<0>(points[index - 1]).y();
             x = (x - this->rect().center().x()) / 300;
             y = (y - this->rect().center().y()) / 300;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            float sin_t = dy;
+            double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+            double yCenter = -circleRadius;
+            double dx = x + 1;
+            double dy = y - yCenter;
+            float sin_t = -dy;
             float cos_t = dx;
             if (y < 1e-6 && y>0)
             {
@@ -1193,7 +1218,7 @@ void RenderArea::paintEvent(QPaintEvent* event)
                 {
                     t = 0;
                 }
-                else if (x == 1)
+                else if (x == -1)
                 {
                     t = 2 * M_PI;
                 }
@@ -1204,49 +1229,40 @@ void RenderArea::paintEvent(QPaintEvent* event)
             }
             else
             {
-                t = atan(cos_t / sin_t);
-                if (y < 0)
-                {
-                    t += M_PI;
-                }
-                else
-                {
-                    t += 2 * M_PI;
-                }
+                t = atan(sin_t / cos_t);
             }
-            if (x - 1 != 0)
+            if (x + 1 != 0)
             {
-                r = cos(t) / (x - 1);
+                r = cos(t) / (x + 1);
             }
             else
             {
                 r = (1 + sin(t)) / y;
             }
-            if (y < 0)
+            if (y > 0)
             {
-                r = abs(r);
+                r *= -1;
                 tmin = t;
-                tmax = 2 * M_PI;
+                tmax = M_PI / 2;
             }
             else
             {
-                r = abs(r) * (-1);
                 tmax = t;
-                tmin = M_PI;
+                tmin = -M_PI / 2;
             }
-            step = intervalLength / stepCount;
-            iPoint = compute_imaginary(tmin);
+            step = (tmax-tmin)/100;
+            iPoint = compute_imaginaryParallel(tmin);
             iPixel.setX// mBackGroundColor = Qt::green;
-            (-iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
+            (iPoint.x() * scale + center.x());
+            iPixel.setY(iPoint.y() * scale + center.y());
             bool flagi = false;
             for (tmin; tmin < tmax; tmin += step) {
 
-                QPointF point = compute_imaginary(tmin);
+                QPointF point = compute_imaginaryParallel(tmin);
                 //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
                 QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
+                pixel.setX(point.x() * scale + center.x());
+                pixel.setY(point.y() * scale + center.y());
 
 
                 if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
