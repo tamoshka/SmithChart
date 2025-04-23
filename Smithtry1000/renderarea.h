@@ -272,6 +272,7 @@ private:
     Mode mMode;
     float mScale;
     QPointF compute_real(float t);
+    QPointF compute_realParallel(float t);
     QPointF compute_imaginary(float r);
     QPointF compute(float t);
     Topology mTopology;

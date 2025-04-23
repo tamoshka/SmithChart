@@ -21,6 +21,9 @@ private slots:
     void onCapacitor_buttonClicked();
     void onInduction_buttonClicked();
     void onResistor_buttonClicked();
+    void onCapacitorParallel_buttonClicked();
+    void onInductionParallel_buttonClicked();
+    void onResistorParallel_buttonClicked();
     void onTimeout();
 
 private:
