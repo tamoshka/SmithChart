@@ -6,7 +6,6 @@
 #include <QThread>
 #include <cmath>
 #include <exception>
-#include "general.h"
 
 
 mode Model;
@@ -17,8 +16,15 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     , trackingEnabled(false)
 {
     ui->setupUi(this);
+    Model = Default;
     this->resize(1600, 900);
     this->setMaximumSize(1600, 900);
+    ui->rTable->setRowCount(3);
+    ui->rTable->setColumnCount(3);
+    ui->rTable->setItem(0, 1, new QTableWidgetItem("Real"));
+    ui->rTable->setItem(0, 2, new QTableWidgetItem("Imag"));
+    ui->rTable->setItem(1, 0, new QTableWidgetItem("Z"));
+    ui->rTable->setItem(2, 0, new QTableWidgetItem("Y"));
     tmin = 0;
     tmax = 2 * M_PI;
     lastPointX = 0;
@@ -30,6 +36,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     connect(ui->CapacitorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitorParallel_buttonClicked);
     connect(ui->InductionParallel_button, &QPushButton::clicked, this, &Smithtry1000::onInductionParallel_buttonClicked);
     connect(ui->ResistorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onResistorParallel_buttonClicked);
+    connect(ui->Delete_button, &QPushButton::clicked, this, &Smithtry1000::onDelete_buttonClicked);
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
@@ -123,11 +130,10 @@ void Smithtry1000::onButtonClicked()
         }
         QPoint temp = QPoint(x * 300 + ui->renderArea->rect().center().x(), y * 300 + ui->renderArea->rect().center().y());
         ui->renderArea->setCursorPosOnCircle(temp);
-        if (firstPoint == true)
+        if (index == 0)
         {
             pointsX.append(x);
             pointsY.append(y);
-            firstPoint = false;
             points[index]=make_tuple(temp, r, t, mode::AddPoint);
             index++;
             ui->renderArea->setCursorPosOnCircle(temp);
@@ -139,166 +145,19 @@ void Smithtry1000::onButtonClicked()
         }
     }
     ui->button->setText("Start");
+    Model = Default;
 }
 
 void Smithtry1000::onInduction_buttonClicked()
 {
     Model = mode::InductionShunt;
-    leftClicked = false;
-    rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
-    if (pointsX.size() > 0)
-    {
-        QCursor::setPos(centerGlobal);
-        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
-        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-        double xCenter = 1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        double sin_t = dy;
-        double cos_t = dx;
-        if (y < 1e-6 && y >= 0)
-        {
-            if (y == 0 && x == 1)
-            {
-                t = 0;
-            }
-            else if (x == 1)
-            {
-                t = 2 * M_PI;
-            }
-            else
-            {
-                t = M_PI;
-            }
-        }
-        else
-        {
-            t = atan(sin_t / cos_t);
-            if (cos_t < 0 && sin_t < 0)
-            {
-                t += M_PI;
-            }
-            else if (cos_t > 0 && sin_t < 0)
-            {
-                t = 2 * M_PI - abs(t);
-            }
-            else if (sin_t > 0 && cos_t < 0)
-            {
-                t = M_PI - abs(t);
-            }
-        }
-        if (x - 1 != 0)
-        {
-            r = (cos(t) - x) / (x - 1);
-        }
-        tmin = t;
-        tmax = 2 * M_PI;
-        trackingEnabled = !trackingEnabled;
-        while (!leftClicked && !rightClicked)
-        {
-            QCoreApplication::processEvents();
-        }
-        if (leftClicked)
-        {
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::InductionShunt);
-            index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        if (rightClicked)
-        {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        Model = mode::AddPoint;
-        this->unsetCursor(); // возвращаем курсор
-    }
+    ImaginaryImpedance();
 }
 
 void Smithtry1000::onCapacitor_buttonClicked()
 {
     Model = mode::CapacitorShunt;
-    leftClicked = false;
-    rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
-    if (pointsX.size() > 0)
-    {
-        QCursor::setPos(centerGlobal);
-        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
-        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-        double xCenter = 1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        double sin_t = dy;
-        double cos_t = dx;
-        if (y < 1e-6 && y >= 0)
-        {
-            if (y == 0 && x == 1)
-            {
-                t = 0;
-            }
-            else if (x == 1)
-            {
-                t = 2 * M_PI;
-            }
-            else
-            {
-                t = M_PI;
-            }
-        }
-        else
-        {
-            t = atan(sin_t / cos_t);
-            if (cos_t < 0 && sin_t < 0)
-            {
-                t += M_PI;
-            }
-            else if (cos_t > 0 && sin_t < 0)
-            {
-                t = 2 * M_PI - abs(t);
-            }
-            else if (sin_t > 0 && cos_t < 0)
-            {
-                t = M_PI - abs(t);
-            }
-        }
-        if (x - 1 != 0)
-        {
-            r = (cos(t) - x) / (x - 1);
-        }
-        tmax = t;
-        tmin = 0;
-        trackingEnabled = !trackingEnabled;
-        while (!leftClicked && !rightClicked)
-        {
-            QCoreApplication::processEvents();
-        }
-        if (leftClicked)
-        {
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::CapacitorShunt);
-            index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        if (rightClicked)
-        {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        Model = mode::AddPoint;
-        this->unsetCursor(); // возвращаем курсор
-    }
+    ImaginaryImpedance();
 }
 
 void Smithtry1000::onResistor_buttonClicked()
@@ -388,7 +247,7 @@ void Smithtry1000::onResistor_buttonClicked()
             QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
         }
-        Model = mode::AddPoint;
+        Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
 }
@@ -396,155 +255,13 @@ void Smithtry1000::onResistor_buttonClicked()
 void Smithtry1000::onInductionParallel_buttonClicked()
 {
     Model = mode::InductionParallel;
-    leftClicked = false;
-    rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
-    if (pointsX.size() > 0)
-    {
-        QCursor::setPos(centerGlobal);
-        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
-        double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2+2*x));
-        double xCenter = -1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        dy *= -1;
-        double sin_t = dy;
-        double cos_t = dx;
-        if (y < 1e-6 && y >= 0)
-        {
-            if (y == 0 && x == -1)
-            {
-                t = 0;
-            }
-            else if (x == -1)
-            {
-                t = 2 * M_PI;
-            }
-            else if (x==0)
-            {
-                t = M_PI;
-            }
-        }
-        else
-        {
-            t = atan(sin_t / cos_t);
-            if (cos_t < 0 && sin_t < 0)
-            {
-                t = abs(t)-M_PI;
-            }
-            else if (sin_t > 0 && cos_t < 0)
-            {
-                t = M_PI-abs(t);
-            }
-        }
-        if (x - 1 != 0)
-        {
-            r = (cos(t) - x) / (x + 1);
-        }
-        tmin = t;
-        tmax = M_PI;
-        trackingEnabled = !trackingEnabled;
-        while (!leftClicked && !rightClicked)
-        {
-            QCoreApplication::processEvents();
-        }
-        if (leftClicked)
-        {
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::InductionParallel);
-            index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        if (rightClicked)
-        {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        Model = mode::AddPoint;
-        this->unsetCursor(); // возвращаем курсор
-    }
-}
+    ImaginaryAdmitance();
+} 
 
 void Smithtry1000::onCapacitorParallel_buttonClicked()
 {
     Model = mode::CapacitorParallel;
-    leftClicked = false;
-    rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
-    if (pointsX.size() > 0)
-    {
-        QCursor::setPos(centerGlobal);
-        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
-        double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-        double xCenter = -1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        dy *= -1;
-        double sin_t = dy;
-        double cos_t = dx;
-        if (y < 1e-6 && y >= 0)
-        {
-            if (y == 0 && x == -1)
-            {
-                t = 0;
-            }
-            else if (x == -1)
-            {
-                t = 2 * M_PI;
-            }
-            else if (x == 0)
-            {
-                t = M_PI;
-            }
-        }
-        else
-        {
-            t = atan(sin_t / cos_t);
-            if (cos_t < 0 && sin_t < 0)
-            {
-                t = abs(t) - M_PI;
-            }
-            else if (sin_t > 0 && cos_t < 0)
-            {
-                t = M_PI - abs(t);
-            }
-        }
-        if (x - 1 != 0)
-        {
-            r = (cos(t) - x) / (x + 1);
-        }
-        tmax = t;
-        tmin = -M_PI;
-        trackingEnabled = !trackingEnabled;
-        while (!leftClicked && !rightClicked)
-        {
-            QCoreApplication::processEvents();
-        }
-        if (leftClicked)
-        {
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::CapacitorParallel);
-            index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        if (rightClicked)
-        {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        Model = mode::AddPoint;
-        this->unsetCursor(); // возвращаем курсор
-    }
+    ImaginaryAdmitance();
 }
 
 void Smithtry1000::onResistorParallel_buttonClicked()
@@ -625,22 +342,446 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
         }
-        Model = mode::AddPoint;
+        Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
 }
 
-void Smithtry1000::onTimeout()
+void Smithtry1000::onDelete_buttonClicked()
 {
-    if (!trackingEnabled) return;
-    // Центр окна в глобальных координатах
+    if (index > 0)
+    {
+        points.erase(index-1);
+        index--;
+        pointsX.pop_back();
+        pointsY.pop_back();
+        ui->renderArea->update();
+    }
+}
+
+void Smithtry1000::ImaginaryImpedance()
+{
+    leftClicked = false;
+    rightClicked = false;
     QPoint centerLocal = ui->renderArea->rect().center();
     QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    if (pointsX.size() > 0)
+    {
+        QCursor::setPos(centerGlobal);
+        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
+        float x = pointsX.back();
+        float y = pointsY.back();
+        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+        double xCenter = 1 - circleRadius;
+        double dx = x - xCenter;
+        double dy = y;
+        double sin_t = dy;
+        double cos_t = dx;
+        if (y < 1e-6 && y >= 0)
+        {
+            if (y == 0 && x == 1)
+            {
+                t = 0;
+            }
+            else if (x == 1)
+            {
+                t = 2 * M_PI;
+            }
+            else
+            {
+                t = M_PI;
+            }
+        }
+        else
+        {
+            t = atan(sin_t / cos_t);
+            if (cos_t < 0 && sin_t < 0)
+            {
+                t += M_PI;
+            }
+            else if (cos_t > 0 && sin_t < 0)
+            {
+                t = 2 * M_PI - abs(t);
+            }
+            else if (sin_t > 0 && cos_t < 0)
+            {
+                t = M_PI - abs(t);
+            }
+        }
+        if (x - 1 != 0)
+        {
+            r = (cos(t) - x) / (x - 1);
+        }
+        switch (Model)
+        {
+        case InductionShunt:
+        {
+            tmin = t;
+            tmax = 2 * M_PI;
+            break;
+        }
+        case CapacitorShunt:
+        {
+            tmin = 0;
+            tmax = t;
+            break;
+        }
+        }
+        trackingEnabled = !trackingEnabled;
+        while (!leftClicked && !rightClicked)
+        {
+            QCoreApplication::processEvents();
+        }
+        if (leftClicked)
+        {
+            pointsX.append(lastPointX);
+            pointsY.append(lastPointY);
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            points[index] = make_tuple(temp, r, t, Model);
+            index++;
+            ui->renderArea->setCursorPosOnCircle(temp);
+        }
+        if (rightClicked)
+        {
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            ui->renderArea->setCursorPosOnCircle(temp);
+        }
+        Model = Default;
+        this->unsetCursor(); // возвращаем курсор
+    }
+}
+
+void Smithtry1000::ImaginaryAdmitance()
+{
+    leftClicked = false;
+    rightClicked = false;
+    QPoint centerLocal = ui->renderArea->rect().center();
+    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    if (pointsX.size() > 0)
+    {
+        QCursor::setPos(centerGlobal);
+        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
+        float x = pointsX.back();
+        float y = pointsY.back();
+        double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
+        double xCenter = -1 - circleRadius;
+        double dx = x - xCenter;
+        double dy = y;
+        dy *= -1;
+        double sin_t = dy;
+        double cos_t = dx;
+        if (y < 1e-6 && y >= 0)
+        {
+            if (y == 0 && x == -1)
+            {
+                t = 0;
+            }
+            else if (x == -1)
+            {
+                t = 2 * M_PI;
+            }
+            else if (x == 0)
+            {
+                t = M_PI;
+            }
+        }
+        else
+        {
+            t = atan(sin_t / cos_t);
+            if (cos_t < 0 && sin_t < 0)
+            {
+                t = abs(t) - M_PI;
+            }
+            else if (sin_t > 0 && cos_t < 0)
+            {
+                t = M_PI - abs(t);
+            }
+        }
+        if (x - 1 != 0)
+        {
+            r = (cos(t) - x) / (x + 1);
+        }
+        switch (Model)
+        {
+        case InductionParallel:
+        {
+            tmin = t;
+            tmax = M_PI;
+            break;
+        }
+        case CapacitorParallel:
+        {
+            tmin = -M_PI;
+            tmax = t;
+            break;
+        }
+        }
+        trackingEnabled = !trackingEnabled;
+        while (!leftClicked && !rightClicked)
+        {
+            QCoreApplication::processEvents();
+        }
+        if (leftClicked)
+        {
+            pointsX.append(lastPointX);
+            pointsY.append(lastPointY);
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            points[index] = make_tuple(temp, r, t, Model);
+            index++;
+            ui->renderArea->setCursorPosOnCircle(temp);
+        }
+        if (rightClicked)
+        {
+            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            ui->renderArea->setCursorPosOnCircle(temp);
+        }
+        Model = Default;
+        this->unsetCursor(); // возвращаем курсор
+    }
+}
+
+void Smithtry1000::rImpedanceRealCalculation(float x, float y)
+{
+    double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+    double xCenter = 1 - circleRadius;
+    double dx = x - xCenter;
+    double dy = y;
+    double sin_t = dy;
+    double cos_t = dx;
+    float t1;
+    if (y < 1e-6 && y >= 0)
+    {
+        if (y == 0 && x == 1)
+        {
+            t1 = 0;
+        }
+        else if (x == 1)
+        {
+            t1 = 2 * M_PI;
+        }
+        else
+        {
+            t1 = M_PI;
+        }
+    }
+    else
+    {
+        t1 = atan(sin_t / cos_t);
+        if (cos_t < 0 && sin_t < 0)
+        {
+            t1 += M_PI;
+        }
+        else if (cos_t > 0 && sin_t < 0)
+        {
+            t1 = 2 * M_PI - abs(t1);
+        }
+        else if (sin_t > 0 && cos_t < 0)
+        {
+            t1 = M_PI - abs(t1);
+        }
+    }
+    if (x - 1 != 0)
+    {
+        impedanceRealR = (cos(t1) - x) / (x - 1);
+    }
+    impedanceRealR *= 50;
+}
+
+void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
+{
+    double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
+    double xCenter = -1 - circleRadius;
+    double dx = x - xCenter;
+    double dy = y;
+    dy *= -1;
+    double sin_t = dy;
+    double cos_t = dx;
+    float t1;
+    if (y < 1e-6 && y >= 0)
+    {
+        if (x == -1)
+        {
+            t1 = 2 * M_PI;
+        }
+        else if (y == 0)
+        {
+            t1 = M_PI;
+        }
+    }
+    else
+    {
+        t1 = atan(sin_t / cos_t);
+        if (cos_t < 0 && sin_t < 0)
+        {
+            t1 = abs(t1) - M_PI;
+        }
+        else if (sin_t > 0 && cos_t < 0)
+        {
+            t1 = M_PI - abs(t1);
+        }
+    }
+    if (x - 1 != 0)
+    {
+        admitanceRealR = (cos(t1) - x) / (x + 1);
+    }
+    admitanceRealR *= 50;
+}
+
+void Smithtry1000::rImpedanceImagCalculation(float x, float y)
+{
+    double cos_t;
+    double sin_t;
+    double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+    double xCenter = 1 - circleRadius;
+    double dx = x - xCenter;
+    double dy = y;
+    sin_t = dy;
+    cos_t = dx;
+    float t1;
+    if (y < 1e-6 && y>0)
+    {
+        if (y == 0)
+        {
+            t1 = 0;
+        }
+        else if (x == 1)
+        {
+            t1 = 2 * M_PI;
+        }
+        else
+        {
+            t1= M_PI;
+        }
+    }
+    else
+    {
+        t1 = atan(cos_t / sin_t);
+        if (y < 0)
+        {
+            t1 += M_PI;
+        }
+        else
+        {
+            t1 += 2 * M_PI;
+        }
+    }
+    if (x - 1 != 0)
+    {
+        impedanceImagR = cos(t1) / (x - 1);
+    }
+    else
+    {
+        impedanceImagR = (1 + sin(t1)) / y;
+    }
+    if (y < 0)
+    {
+        impedanceImagR = abs(impedanceImagR);
+    }
+    else
+    {
+        impedanceImagR = abs(impedanceImagR) * (-1);
+    }
+    impedanceImagR *= 50;
+}
+
+void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
+{
+    double cos_t;
+    double sin_t;
+    double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+    double yCenter = -circleRadius;
+    double dx = x + 1;
+    double dy = y - yCenter;
+    sin_t = -dy;
+    cos_t = dx;
+    float t1;
+    if (y < 1e-6 && y>0)
+    {
+        if (y == 0)
+        {
+            t1 = 0;
+        }
+        else if (x == -1)
+        {
+            t1 = 2 * M_PI;
+        }
+        else
+        {
+            t1 = M_PI;
+        }
+    }
+    else
+    {
+        t1 = atan(sin_t / cos_t);
+    }
+    if (x + 1 != 0)
+    {
+        admitanceImagR = cos(t1) / (x + 1);
+    }
+    else
+    {
+        admitanceImagR = (1 + sin(t1)) / y;
+    }
+    if (y > 0)
+    {
+        admitanceImagR *= -1;
+    }
+    admitanceImagR *= 50;
+}
+
+void Smithtry1000::onTimeout()
+{
+
+    QPoint centerLocal = ui->renderArea->rect().center();
+    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    if (Model == AddPoint)
+    {
+        QPoint temp = QCursor::pos();
+        float x = temp.x();
+        float y = temp.y();
+        x = (x - centerGlobal.x()) / 300;
+        y = (y - centerGlobal.y()) / 300;
+        rImpedanceRealCalculation(x, y);
+        rAdmitanceRealCalculation(x, y);
+        rImpedanceImagCalculation(x, y);
+        rAdmitanceImagCalculation(x, y);
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+        ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+        ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
+    }
+    if (Model == Default)
+    {
+        QPoint temp = QCursor::pos();
+        float x = temp.x();
+        float y = temp.y();
+        x = (x - centerGlobal.x()) / 300;
+        y = (y - centerGlobal.y()) / 300;
+        if (pow(x, 2) + pow(y, 2) <= 1)
+        {
+            rImpedanceRealCalculation(x, y);
+            rAdmitanceRealCalculation(x, y);
+            rImpedanceImagCalculation(x, y);
+            rAdmitanceImagCalculation(x, y);
+            ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+            ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+            ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 1, new QTableWidgetItem(""));
+            ui->rTable->setItem(1, 2, new QTableWidgetItem(""));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(""));
+            ui->rTable->setItem(2, 2, new QTableWidgetItem(""));
+        }
+    }
+    if (!trackingEnabled) return;
 
     if (leftClicked || rightClicked)
     {
         trackingEnabled = false;
-        this->unsetCursor(); // возвращаем курсор
+        this->unsetCursor();
         ui->button->setText("Start");
         return;
     }
@@ -656,7 +797,7 @@ void Smithtry1000::onTimeout()
     {
         // Вычисляем точку на окружности и ставим туда курсор
         QPoint posOnCircle = getPointOnCircle(dx, dy);
-        if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) >= pow(300, 2))
+        if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(300, 2))
         {
             QCursor::setPos(tempX, tempY);
             posOnCircle.setX(tempX);
@@ -767,6 +908,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         y = (1 / (r + 1)) * sin_t;
         lastPointX = x;
         lastPointY = y;
+        rImpedanceRealCalculation(x, y);
+        rAdmitanceRealCalculation(x, y);
+        rImpedanceImagCalculation(x, y);
+        rAdmitanceImagCalculation(x, y);
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+        ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+        ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         x = x * 300 + ui->renderArea->rect().center().x();
         y = y * 300 + ui->renderArea->rect().center().y();
         return QPoint(x, y);
@@ -866,6 +1015,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         y = (1 / (r + 1)) * sin_t*-1;
         lastPointX = x;
         lastPointY = y;
+        rImpedanceRealCalculation(x, y);
+        rAdmitanceRealCalculation(x, y);
+        rImpedanceImagCalculation(x, y);
+        rAdmitanceImagCalculation(x, y);
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+        ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+        ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         x = x * 300 + ui->renderArea->rect().center().x();
         y = y * 300 + ui->renderArea->rect().center().y();
         return QPoint(x, y);
@@ -877,28 +1034,40 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         int dxABS = abs(dx);
         int dyABS = abs(dy);
         dy = dy * -1;
-        step = 0.01 + dxABS / 400;
+        int dif;
+        bool flag;
+        if (dyABS > dxABS)
+        {
+            flag = true;
+            dif = dyABS;
+        }
+        else
+        {
+            flag = false;
+            dif = dxABS;
+        }
+        step = abs(r) / 100;
         x = 0;
         y = 0;
         if (lastPointY > 0)
         {
             dx *= -1;
         }
-        if (dx == 0)
+        if (dx == 0 && dy == 0)
         {
         }
-        else if (dx < 0)
+        else if ((dx < 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY > 0) || (flag == true && dy > 0 && lastPointY < 0)||(dx>0&&abs(lastPointY)>abs(lastPointX+1)&&flag==false))
         {
             if (t - step < tmin)
             {
-                t=tmin;
+                t = tmin;
             }
             else
             {
-                t-=step;
+                t -= step;
             }
         }
-        else if (dx > 0)
+        else if ((dx > 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY < 0) || (flag==true&&dy<0&&lastPointY>0)||(dx<0&&abs(lastPointY)>abs(lastPointX+1)&&flag==false))
         {
             if (t + step > tmax)
             {
@@ -926,6 +1095,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         x = 1 + (1 / r) * cos_t;
         y = (1 / r) + (1 / r) * sin_t;
         y = y * (-1);
+        rImpedanceRealCalculation(x, y);
+        rAdmitanceRealCalculation(x, y);
+        rImpedanceImagCalculation(x, y);
+        rAdmitanceImagCalculation(x, y);
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+        ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+        ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         lastPointX = x;
         lastPointY = y;
         x = x * 300 + ui->renderArea->rect().center().x();
@@ -939,18 +1116,29 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         int dxABS = abs(dx);
         int dyABS = abs(dy);
         dy = dy * -1;
-
-        step = 0.01 + dxABS / 800;
+        int dif;
+        bool flag;
+        if (dyABS > dxABS)
+        {
+            flag = true;
+            dif = dyABS;
+        }
+        else
+        {
+            flag = false;
+            dif = dxABS;
+        }
+        step = abs(r) / 100;
         x = 0;
         y = 0;
         if (lastPointY > 0)
         {
             dx *= -1;
         }
-        if (dx == 0)
+        if (dx == 0 && dy == 0)
         {
         }
-        else if (dx < 0)
+        else if ((dx < 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY > 0) || (flag == true && dy < 0 && lastPointY < 0) || (dx > 0 && abs(lastPointY) > abs(lastPointX + 1) && flag == false))
         {
             if (t - step < tmin)
             {
@@ -961,7 +1149,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                 t -= step;
             }
         }
-        else if (dx > 0)
+        else if ((dx > 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY < 0) || (flag == true && dy >0 && lastPointY > 0) || (dx<0 && abs(lastPointY)>abs(lastPointX + 1) && flag == false))
         {
             if (t + step > tmax)
             {
@@ -971,18 +1159,6 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 t += step;
             }
-        }
-        else if (t >= tmax)
-        {
-            step = 0.01;
-            t = tmax;
-            t -= step;
-        }
-        else if (t <= tmin)
-        {
-            t = tmin;
-            step = 0.01;
-            t += step;
         }
         float cos_t = cos(t);
         float sin_t = sin(t);
@@ -999,9 +1175,16 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         lastPointX = x;
         lastPointY = y;
+        rImpedanceRealCalculation(x, y);
+        rAdmitanceRealCalculation(x, y);
+        rImpedanceImagCalculation(x, y);
+        rAdmitanceImagCalculation(x, y);
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number(impedanceRealR)));
+        ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
+        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
+        ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         x = x * 300 + ui->renderArea->rect().center().x();
         y = y * 300 + ui->renderArea->rect().center().y();
         return QPoint(x, y);
         }
 }
-

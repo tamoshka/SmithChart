@@ -278,8 +278,12 @@ private:
     QPointF compute(float t);
     Topology mTopology;
     QPoint cursorPos;
-
-
+    QPixmap m_cache;
+    bool m_cacheValid;
+    void drawStaticObjects(QPainter&);
+    void drawDynamicObject(QPainter&);
+    qreal m_scaleFactor;
+    void generateCache();
 
 
 

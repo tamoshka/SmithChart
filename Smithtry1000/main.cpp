@@ -5,6 +5,12 @@
 QList<QPoint> morePoints;
 int index = 0;
 map<int, tuple<QPoint, float, float, mode>> points;
+QList<float> qCircles;
+
+float admitanceImagR = 0;
+float admitanceRealR = 0;
+float impedanceImagR = 0;
+float impedanceRealR = 0;
 
 int main(int argc, char *argv[])
 {

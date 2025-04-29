@@ -11,9 +11,15 @@ extern enum mode
     ResistorShunt,
     InductionParallel,
     InductionShunt,
-    AddPoint
+    AddPoint,
+    Default
 };
 extern mode Model;
 extern map<int, tuple<QPoint, float, float, mode>> points;
 extern QList<QPoint> morePoints;
+extern QList<float> qCircles;
 extern int index;
+extern float impedanceRealR;
+extern float impedanceImagR;
+extern float admitanceRealR;
+extern float admitanceImagR;

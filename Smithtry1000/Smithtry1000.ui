@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1079</width>
-    <height>773</height>
+    <width>1600</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>40</y>
-      <width>1071</width>
-      <height>701</height>
+      <width>1600</width>
+      <height>900</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -33,9 +33,9 @@
      <property name="geometry">
       <rect>
        <x>-5</x>
-       <y>71</y>
-       <width>1081</width>
-       <height>621</height>
+       <y>151</y>
+       <width>1931</width>
+       <height>600</height>
       </rect>
      </property>
     </widget>
@@ -43,9 +43,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>80</y>
-       <width>1071</width>
-       <height>611</height>
+       <y>60</y>
+       <width>1600</width>
+       <height>791</height>
       </rect>
      </property>
     </widget>
@@ -161,13 +161,42 @@
       <string>Capacitor_Parallel</string>
      </property>
     </widget>
+    <widget class="QTableWidget" name="rTable">
+     <property name="geometry">
+      <rect>
+       <x>1260</x>
+       <y>0</y>
+       <width>331</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 0, 0);</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Delete_button">
+     <property name="geometry">
+      <rect>
+       <x>930</x>
+       <y>10</y>
+       <width>101</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>Delete</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>-1</y>
-      <width>1071</width>
+      <width>1931</width>
       <height>41</height>
      </rect>
     </property>
@@ -955,7 +984,7 @@ background-color: rgb(170, 255, 255);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1079</width>
+     <width>1600</width>
      <height>21</height>
     </rect>
    </property>

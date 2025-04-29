@@ -7,6 +7,8 @@
 #include <QtSvg>
 #include <QTimer>
 #include <QMouseEvent>
+#include "general.h"
+#include <qtablewidget.h>
 
 class Smithtry1000 : public QMainWindow
 {
@@ -24,15 +26,17 @@ private slots:
     void onCapacitorParallel_buttonClicked();
     void onInductionParallel_buttonClicked();
     void onResistorParallel_buttonClicked();
+    void onDelete_buttonClicked();
     void onTimeout();
 
 private:
+    void ImaginaryImpedance();
+    void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;
     Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;
-    bool firstPoint = true;
     double lastPointX;
     double lastPointY;
     double tempPointX;
@@ -48,4 +52,8 @@ private:
     float r;  // радиус в единицах
     float intervalLength = 2 * M_PI;
     QPoint getPointOnCircle(int, int);
+    void rImpedanceRealCalculation(float, float);
+    void rImpedanceImagCalculation(float, float);
+    void rAdmitanceRealCalculation(float, float);
+    void rAdmitanceImagCalculation(float, float);
 };
