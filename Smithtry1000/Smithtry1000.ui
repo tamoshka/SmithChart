@@ -48,6 +48,22 @@
        <height>791</height>
       </rect>
      </property>
+     <widget class="QTableWidget" name="pointTable">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>381</width>
+        <height>641</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 0, 0);</string>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>70</number>
+      </attribute>
+     </widget>
     </widget>
     <widget class="QPushButton" name="button">
      <property name="geometry">

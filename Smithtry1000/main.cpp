@@ -6,6 +6,7 @@ QList<QPoint> morePoints;
 int index = 0;
 map<int, tuple<QPoint, float, float, mode>> points;
 QList<float> qCircles;
+int dpIndex = 0;
 
 float admitanceImagR = 0;
 float admitanceRealR = 0;

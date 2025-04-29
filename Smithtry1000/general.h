@@ -19,6 +19,7 @@ extern map<int, tuple<QPoint, float, float, mode>> points;
 extern QList<QPoint> morePoints;
 extern QList<float> qCircles;
 extern int index;
+extern int dpIndex;
 extern float impedanceRealR;
 extern float impedanceImagR;
 extern float admitanceRealR;
