@@ -2,11 +2,17 @@
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
-QList<QPoint> morePoints;
+QList<Point> morePoints;
 int index = 0;
-map<int, tuple<QPoint, float, float, mode>> points;
+map<int, tuple<Point, float, float, mode>> points;
 QList<float> qCircles;
 int dpIndex = 0;
+float scale = 200;
+QList<QSvgWidget*> svgWidgets;
+float frequency = 500;
+QList<float> frequencyList;
+float lastPointX = 0;
+float lastPointY = 0;
 
 float admitanceImagR = 0;
 float admitanceRealR = 0;

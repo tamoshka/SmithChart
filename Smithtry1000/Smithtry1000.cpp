@@ -34,8 +34,14 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     ui->rTable->setItem(2, 0, new QTableWidgetItem("Y"));
     tmin = 0;
     tmax = 2 * M_PI;
-    lastPointX = 0;
-    lastPointY = 0;
+    auxiliaryWidget->setMinimumWidth(2000);
+    auxiliaryWidget->setMinimumHeight(400);
+    ui->scrollArea->setWidget(auxiliaryWidget);
+    ui->scrollArea->setWidgetResizable(true);
+    ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    auxiliaryWidget->addSvg(QString(":/Images/load.svg"), 40, 39);
+    auxiliaryWidget->addSvg(QString(":/Images/source.svg"), 80, 39);
     connect(ui->button, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
     connect(ui->Capacitor_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitor_buttonClicked);
     connect(ui->Induction_button, &QPushButton::clicked, this, &Smithtry1000::onInduction_buttonClicked);
@@ -44,6 +50,9 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     connect(ui->InductionParallel_button, &QPushButton::clicked, this, &Smithtry1000::onInductionParallel_buttonClicked);
     connect(ui->ResistorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onResistorParallel_buttonClicked);
     connect(ui->Delete_button, &QPushButton::clicked, this, &Smithtry1000::onDelete_buttonClicked);
+    connect(ui->PlusScaleButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
+    connect(ui->MinusScaleButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
+    connect(ui->DefaultScaleButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
@@ -67,126 +76,138 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
 
 void Smithtry1000::onButtonClicked()
 {
-    Model = mode::AddPoint;
-    ui->button->setText("Stop");
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
-    QCursor::setPos(lastPointX*300+centerGlobal.x(), lastPointY*300+centerGlobal.y());
-    leftClicked = false;
-    rightClicked = false;
-    QPoint point = QCursor::pos();
-    while (!leftClicked && !rightClicked)
+    FrequencyDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) 
     {
-        QCoreApplication::processEvents();
-        point = QCursor::pos();
-        if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(300, 2))
+        Model = mode::AddPoint;
+        ui->button->setText("Stop");
+        QPoint centerLocal = ui->renderArea->rect().center();
+        QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+        QCursor::setPos(lastPointX * scale + centerGlobal.x(), lastPointY * scale + centerGlobal.y());
+        leftClicked = false;
+        rightClicked = false;
+        QPoint point = QCursor::pos();
+        while (!leftClicked && !rightClicked)
         {
-            QCursor::setPos(tempPointX, tempPointY);
-            point.setX(tempPointX);
-            point.setY(tempPointY);
-        }
-        tempPointX = point.x();
-        tempPointY = point.y();
-    }
-    if (leftClicked)
-    {
-        float x = point.x();
-        float y = point.y();
-        x = (x - centerGlobal.x()) / 300;
-        y = (y - centerGlobal.y()) / 300;
-        double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-        double xCenter = 1 - circleRadius;
-        double dx = x - xCenter;
-        double dy = y;
-        double sin_t = dy;
-        double cos_t = dx;
-        if (y < 1e-6 && y>=0)
-        {
-            if (y == 0 && x == 1)
+            QCoreApplication::processEvents();
+            point = QCursor::pos();
+            if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(scale, 2))
             {
-                t = 0;
+                QCursor::setPos(tempPointX, tempPointY);
+                point.setX(tempPointX);
+                point.setY(tempPointY);
             }
-            else if (x == 1)
+            tempPointX = point.x();
+            tempPointY = point.y();
+        }
+        if (leftClicked)
+        {
+            float x = point.x();
+            float y = point.y();
+            x = (x - centerGlobal.x()) / scale;
+            y = (y - centerGlobal.y()) / scale;
+            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            double xCenter = 1 - circleRadius;
+            double dx = x - xCenter;
+            double dy = y;
+            double sin_t = dy;
+            double cos_t = dx;
+            if (y < 1e-6 && y >= 0)
             {
-                t = 2 * M_PI;
+                if (y == 0 && x == 1)
+                {
+                    t = 0;
+                }
+                else if (x == 1)
+                {
+                    t = 2 * M_PI;
+                }
+                else
+                {
+                    t = M_PI;
+                }
             }
             else
             {
-                t = M_PI;
+                t = atan(sin_t / cos_t);
+                if (cos_t < 0 && sin_t < 0)
+                {
+                    t += M_PI;
+                }
+                else if (cos_t > 0 && sin_t < 0)
+                {
+                    t = 2 * M_PI - abs(t);
+                }
+                else if (sin_t > 0 && cos_t < 0)
+                {
+                    t = M_PI - abs(t);
+                }
             }
-        }
-        else
-        {
-            t = atan(sin_t / cos_t);
-            if (cos_t < 0 && sin_t < 0)
+            if (x - 1 != 0)
             {
-                t += M_PI;
+                r = (cos(t) - x) / (x - 1);
             }
-            else if (cos_t > 0 && sin_t < 0)
-            {
-                t = 2 * M_PI - abs(t);
-            }
-            else if (sin_t > 0 && cos_t < 0)
-            {
-                t = M_PI - abs(t);
-            }
-        }
-        if (x - 1 != 0)
-        {
-            r = (cos(t) - x) / (x - 1);
-        }
-        QPoint temp = QPoint(x * 300 + ui->renderArea->rect().center().x(), y * 300 + ui->renderArea->rect().center().y());
-        ui->renderArea->setCursorPosOnCircle(temp);
-        if (index == 0)
-        {
-            pointsX.append(x);
-            pointsY.append(y);
-            points[index]=make_tuple(temp, r, t, mode::AddPoint);
-            int row = ui->pointTable->rowCount();
-            ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR)+" + j"+ QString::number(impedanceImagR)));
-            if (impedanceRealR == 0)
-            {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
-            }
-            else
-            {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(impedanceImagR / impedanceRealR)));
-            }
-            ui->pointTable->setItem(row, 4, new QTableWidgetItem("500 MHz"));
-            index++;
-            dpIndex++;
+            QPoint temp = QPoint(x * scale + ui->renderArea->rect().center().x(), y * scale + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
-        }
-        else
-        {
-            int row = ui->pointTable->rowCount();
-            ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP "+ QString::number(dpIndex+1)));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
-            if (impedanceRealR == 0)
+            if (index == 0)
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+                pointsX.append(x);
+                pointsY.append(y);
+                Point point = Point();
+                point.x = x;
+                point.y = y;
+                points[index] = make_tuple(point, r, t, mode::AddPoint);
+                int row = ui->pointTable->rowCount();
+                ui->pointTable->insertRow(row);
+                ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+                rImpedanceRealCalculation(x, y);
+                rImpedanceImagCalculation(x, y);
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
+                if (impedanceRealR == 0)
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+                }
+                else
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(impedanceImagR / impedanceRealR)));
+                }
+                ui->pointTable->setItem(row, 4, new QTableWidgetItem("500 MHz"));
+                index++;
+                dpIndex++;
+                ui->renderArea->setCursorPosOnCircle(temp);
+                auxiliaryWidget->update();
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(abs(impedanceImagR / impedanceRealR))));
+                int row = ui->pointTable->rowCount();
+                ui->pointTable->insertRow(row);
+                ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex + 1)));
+                rImpedanceRealCalculation(x, y);
+                rImpedanceImagCalculation(x, y);
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
+                if (impedanceRealR == 0)
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+                }
+                else
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(abs(impedanceImagR / impedanceRealR))));
+                }
+                ui->pointTable->setItem(row, 4, new QTableWidgetItem("500 MHz"));
+                dpIndex++;
+                Point point;
+                point.x = x;
+                point.y = y;
+                morePoints.append(point);
+                ui->renderArea->setCursorPosOnCircle(temp);
             }
-            ui->pointTable->setItem(row, 4, new QTableWidgetItem("500 MHz"));
-            dpIndex++;
-            morePoints.append(temp);
-            ui->renderArea->setCursorPosOnCircle(temp);
         }
+        ui->button->setText("Start");
+        Model = Default;
     }
-    ui->button->setText("Start");
-    Model = Default;
+    
 }
 
 void Smithtry1000::onInduction_buttonClicked()
@@ -204,6 +225,10 @@ void Smithtry1000::onCapacitor_buttonClicked()
 void Smithtry1000::onResistor_buttonClicked()
 {
     Model = mode::ResistorShunt;
+
+    auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
+
+    auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
     QPoint centerLocal = ui->renderArea->rect().center();
@@ -224,11 +249,11 @@ void Smithtry1000::onResistor_buttonClicked()
         cos_t = dx;
         if (y < 1e-6 && y>0)
         {
-            if (y == 0)
+            if (y == 0 && x > 0.99)
             {
-                t = 0;
+                t = 0.0001;
             }
-            else if (x == 1)
+            else if (x > 0.99)
             {
                 t = 2 * M_PI;
             }
@@ -261,13 +286,13 @@ void Smithtry1000::onResistor_buttonClicked()
         {
             r = abs(r);
             tmin = t;
-            tmax = 2 * M_PI;
+            tmax = M_PI*3/2;
         }
         else
         {
             r = abs(r) * (-1);
             tmax = t;
-            tmin = 0;
+            tmin = M_PI * 3 / 2;
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -278,13 +303,16 @@ void Smithtry1000::onResistor_buttonClicked()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::ResistorShunt);
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            Point point = Point();
+            point.x = pointsX.back();
+            point.y = pointsY.back();
+            points[index] = make_tuple(point, r, t, mode::ResistorShunt);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
+            rImpedanceRealCalculation(point.x, point.y);
+            rImpedanceImagCalculation(point.x, point.y);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
             if (impedanceRealR == 0)
             {
@@ -300,8 +328,10 @@ void Smithtry1000::onResistor_buttonClicked()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->removeLastSvg();
+            auxiliaryWidget->update();
         }
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
@@ -323,6 +353,8 @@ void Smithtry1000::onCapacitorParallel_buttonClicked()
 void Smithtry1000::onResistorParallel_buttonClicked()
 {
     Model = mode::ResistorParallel;
+    auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (index + 2) * 40, 39);
+    auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
     QPoint centerLocal = ui->renderArea->rect().center();
@@ -341,13 +373,13 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         double dy = y - yCenter;
         sin_t = -dy;
         cos_t = dx;
-        if (y < 1e-6 && y>0)
+        if (y < 1e-6 && y>=0)
         {
-            if (y == 0)
+            if (y == 0 && x < -0.99)
             {
                 t = 0;
             }
-            else if (x == -1)
+            else if (x < -0.99)
             {
                 t = 2 * M_PI;
             }
@@ -388,13 +420,16 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, mode::ResistorParallel);
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            Point point = Point();
+            point.x = pointsX.back();
+            point.y = pointsY.back();
+            points[index] = make_tuple(point, r, t, mode::ResistorParallel);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
+            rImpedanceRealCalculation(point.x, point.y);
+            rImpedanceImagCalculation(point.x, point.y);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
             if (impedanceRealR == 0)
             {
@@ -410,8 +445,10 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->removeLastSvg();
+            auxiliaryWidget->update();
         }
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
@@ -426,6 +463,7 @@ void Smithtry1000::onDelete_buttonClicked()
         index--;
         pointsX.pop_back();
         pointsY.pop_back();
+        auxiliaryWidget->removeLastSvg();
         for (int row = 0; row < ui->pointTable->rowCount(); ++row) {
             bool found = false;
 
@@ -441,11 +479,26 @@ void Smithtry1000::onDelete_buttonClicked()
             }
         }
         ui->renderArea->update();
+        auxiliaryWidget->update();
     }
 }
 
 void Smithtry1000::ImaginaryImpedance()
 {
+    switch (Model)
+    {
+    case InductionShunt:
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
+        break;
+    }
+    case CapacitorShunt:
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/horizontal_c.svg"), (index + 2) * 40, 20);
+        break;
+    }
+    }
+    auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
     QPoint centerLocal = ui->renderArea->rect().center();
@@ -464,11 +517,11 @@ void Smithtry1000::ImaginaryImpedance()
         double cos_t = dx;
         if (y < 1e-6 && y >= 0)
         {
-            if (y == 0 && x == 1)
+            if (y == 0 && x >0.999)
             {
                 t = 0;
             }
-            else if (x == 1)
+            else if (x > 0.999)
             {
                 t = 2 * M_PI;
             }
@@ -507,7 +560,7 @@ void Smithtry1000::ImaginaryImpedance()
         }
         case CapacitorShunt:
         {
-            tmin = 0;
+            tmin = 0.000001;
             tmax = t;
             break;
         }
@@ -521,8 +574,11 @@ void Smithtry1000::ImaginaryImpedance()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, Model);
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            Point point = Point();
+            point.x = pointsX.back();
+            point.y = pointsY.back();
+            points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
@@ -543,8 +599,11 @@ void Smithtry1000::ImaginaryImpedance()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
+
+            auxiliaryWidget->removeLastSvg();
+            auxiliaryWidget->update();
         }
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
@@ -553,6 +612,20 @@ void Smithtry1000::ImaginaryImpedance()
 
 void Smithtry1000::ImaginaryAdmitance()
 {
+    switch (Model)
+    {
+    case InductionParallel:
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/vertical_i_circuit.svg"), (index + 2) * 40, 39);
+        break;
+    }
+    case CapacitorParallel:
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/vertical_c_circuit.svg"), (index + 2) * 40, 39);
+        break;
+    }
+    }
+    auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
     QPoint centerLocal = ui->renderArea->rect().center();
@@ -572,15 +645,15 @@ void Smithtry1000::ImaginaryAdmitance()
         double cos_t = dx;
         if (y < 1e-6 && y >= 0)
         {
-            if (y == 0 && x == -1)
+            if (y == 0 && x < -0.999)
             {
                 t = 0;
             }
-            else if (x == -1)
+            else if (x < -0.999)
             {
                 t = 2 * M_PI;
             }
-            else if (x == 0)
+            else
             {
                 t = M_PI;
             }
@@ -597,7 +670,7 @@ void Smithtry1000::ImaginaryAdmitance()
                 t = M_PI - abs(t);
             }
         }
-        if (x - 1 != 0)
+        if (x + 1 != 0)
         {
             r = (cos(t) - x) / (x + 1);
         }
@@ -625,8 +698,11 @@ void Smithtry1000::ImaginaryAdmitance()
         {
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
-            points[index] = make_tuple(temp, r, t, Model);
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            Point point = Point();
+            point.x = pointsX.back();
+            point.y = pointsY.back();
+            points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
@@ -647,8 +723,10 @@ void Smithtry1000::ImaginaryAdmitance()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * 300 + ui->renderArea->rect().center().x(), pointsY.back() * 300 + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
             ui->renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->removeLastSvg();
+            auxiliaryWidget->update();
         }
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
@@ -666,11 +744,11 @@ void Smithtry1000::rImpedanceRealCalculation(float x, float y)
     float t1;
     if (y < 1e-6 && y >= 0)
     {
-        if (y == 0 && x == 1)
+        if (y == 0 && x > 0.99)
         {
             t1 = 0;
         }
-        else if (x == 1)
+        else if (x > 0.99)
         {
             t1 = 2 * M_PI;
         }
@@ -714,11 +792,15 @@ void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
     float t1;
     if (y < 1e-6 && y >= 0)
     {
-        if (x == -1)
+        if (y == 0 && x < -0.99)
+        {
+            t1 = 0;
+        }
+        else if (x < -0.99)
         {
             t1 = 2 * M_PI;
         }
-        else if (y == 0)
+        else
         {
             t1 = M_PI;
         }
@@ -739,7 +821,7 @@ void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
     {
         admitanceRealR = (cos(t1) - x) / (x + 1);
     }
-    admitanceRealR *= 50;
+    admitanceRealR *= 20;
 }
 
 void Smithtry1000::rImpedanceImagCalculation(float x, float y)
@@ -753,13 +835,13 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
     sin_t = dy;
     cos_t = dx;
     float t1;
-    if (y < 1e-6 && y>0)
+    if (abs(y) < 1e-6 && abs(y) >= 0)
     {
-        if (y == 0)
+        if (y == 0 && x > 0.99)
         {
-            t1 = 0;
+            t1 = 0.0001;
         }
-        else if (x == 1)
+        else if (x > 0.99)
         {
             t1 = 2 * M_PI;
         }
@@ -810,19 +892,19 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     sin_t = -dy;
     cos_t = dx;
     float t1;
-    if (y < 1e-6 && y>0)
+    if (abs(y) < 1e-6 && abs(y)>=0)
     {
-        if (y == 0)
+        if (y == 0 && x < -0.99)
         {
-            t1 = 0;
+            t1 = M_PI / 2;
         }
-        else if (x == -1)
+        else if (x < -0.99)
         {
-            t1 = 2 * M_PI;
+            t1 = -M_PI/2;
         }
         else
         {
-            t1 = M_PI;
+            t1 = 0;
         }
     }
     else
@@ -841,7 +923,7 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     {
         admitanceImagR *= -1;
     }
-    admitanceImagR *= 50;
+    admitanceImagR *= -20;
 }
 
 void Smithtry1000::onTimeout()
@@ -854,8 +936,8 @@ void Smithtry1000::onTimeout()
         QPoint temp = QCursor::pos();
         float x = temp.x();
         float y = temp.y();
-        x = (x - centerGlobal.x()) / 300;
-        y = (y - centerGlobal.y()) / 300;
+        x = (x - centerGlobal.x()) / scale;
+        y = (y - centerGlobal.y()) / scale;
         rImpedanceRealCalculation(x, y);
         rAdmitanceRealCalculation(x, y);
         rImpedanceImagCalculation(x, y);
@@ -870,8 +952,8 @@ void Smithtry1000::onTimeout()
         QPoint temp = QCursor::pos();
         float x = temp.x();
         float y = temp.y();
-        x = (x - centerGlobal.x()) / 300;
-        y = (y - centerGlobal.y()) / 300;
+        x = (x - centerGlobal.x()) / scale;
+        y = (y - centerGlobal.y()) / scale;
         if (pow(x, 2) + pow(y, 2) <= 1)
         {
             rImpedanceRealCalculation(x, y);
@@ -912,14 +994,14 @@ void Smithtry1000::onTimeout()
     {
         // Вычисляем точку на окружности и ставим туда курсор
         QPoint posOnCircle = getPointOnCircle(dx, dy);
-        if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(300, 2))
+        /*if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(scale, 2))
         {
             QCursor::setPos(tempX, tempY);
             posOnCircle.setX(tempX);
             posOnCircle.setY(tempY);
         }
         tempX = posOnCircle.x();
-        tempY = posOnCircle.y();
+        tempY = posOnCircle.y();*/
         QCursor::setPos(ui->renderArea->mapToGlobal(posOnCircle));
         ui->renderArea->setCursorPosOnCircle(posOnCircle);
         // Возвращаем системный курсор обратно в центр
@@ -1031,8 +1113,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = y * 300 + ui->renderArea->rect().center().y();
+        x = x * scale + ui->renderArea->rect().center().x();
+        y = y * scale + ui->renderArea->rect().center().y();
+
+        auxiliaryWidget->update();
         return QPoint(x, y);
     }
     else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
@@ -1138,8 +1222,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = y * 300 + ui->renderArea->rect().center().y();
+        x = x * scale + ui->renderArea->rect().center().x();
+        y = y * scale + ui->renderArea->rect().center().y();
+
+        auxiliaryWidget->update();
         return QPoint(x, y);
     }
     else if (Model==mode::ResistorShunt)
@@ -1161,7 +1247,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             flag = false;
             dif = dxABS;
         }
-        step = abs(r) / 100;
+        step = abs(r) / 1000;
+        step += step * dif;
         x = 0;
         y = 0;
         if (lastPointY > 0)
@@ -1171,22 +1258,22 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         if (dx == 0 && dy == 0)
         {
         }
-        else if ((dx < 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY > 0) || (flag == true && dy > 0 && lastPointY < 0)||(dx>0&&abs(lastPointY)>abs(lastPointX+1)&&flag==false))
+        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0)||(dx>0&&abs(lastPointY)>=abs(lastPointX-1)&&flag==false))
         {
-            if (t - step < tmin)
+            if (t - step <= tmin)
             {
-                t = tmin;
+                t = tmin+step;
             }
             else
             {
                 t -= step;
             }
         }
-        else if ((dx > 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY < 0) || (flag==true&&dy<0&&lastPointY>0)||(dx<0&&abs(lastPointY)>abs(lastPointX+1)&&flag==false))
+        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag==true&&dy<0&&lastPointY>=0)||(dx<0&&abs(lastPointY)>=abs(lastPointX-1)&&flag==false))
         {
-            if (t + step > tmax)
+            if (t + step >= tmax)
             {
-                t = tmax;
+                t = tmax-step;
             }
             else
             {
@@ -1220,8 +1307,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         lastPointX = x;
         lastPointY = y;
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = y * 300 + ui->renderArea->rect().center().y();
+        x = x * scale + ui->renderArea->rect().center().x();
+        y = y * scale + ui->renderArea->rect().center().y();
+
+        auxiliaryWidget->update();
         return QPoint(x, y);
     }
     else if (Model == mode::ResistorParallel)
@@ -1243,7 +1332,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             flag = false;
             dif = dxABS;
         }
-        step = abs(r) / 100;
+        step = abs(r) / 1000;
+        step += step * dif;
         x = 0;
         y = 0;
         if (lastPointY > 0)
@@ -1253,22 +1343,22 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         if (dx == 0 && dy == 0)
         {
         }
-        else if ((dx < 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY > 0) || (flag == true && dy < 0 && lastPointY < 0) || (dx > 0 && abs(lastPointY) > abs(lastPointX + 1) && flag == false))
+        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY >= 0) || (flag == true && dy < 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
         {
-            if (t - step < tmin)
+            if (t - step <= tmin)
             {
-                t = tmin;
+                t = tmin+step;
             }
             else
             {
                 t -= step;
             }
         }
-        else if ((dx > 0 && abs(lastPointY) < abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY < 0) || (flag == true && dy >0 && lastPointY > 0) || (dx<0 && abs(lastPointY)>abs(lastPointX + 1) && flag == false))
+        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy >0 && lastPointY >= 0) || (dx<0 && abs(lastPointY)>=abs(lastPointX + 1) && flag == false))
         {
-            if (t + step > tmax)
+            if (t + step >= tmax)
             {
-                t = tmax;
+                t = tmax-step;
             }
             else
             {
@@ -1298,8 +1388,34 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * 300 + ui->renderArea->rect().center().x();
-        y = y * 300 + ui->renderArea->rect().center().y();
+        x = x * scale + ui->renderArea->rect().center().x();
+        y = y * scale + ui->renderArea->rect().center().y();
+
+        auxiliaryWidget->update();
         return QPoint(x, y);
         }
+}
+
+void Smithtry1000::onPlusSize_buttonClicked()
+{
+    if (scale < 600)
+    {
+        scale += 100;
+        ui->renderArea->update();
+    }
+}
+
+void Smithtry1000::onMinusSize_buttonClicked()
+{
+    if (scale > 100)
+    {
+        scale -= 100;
+        ui->renderArea->update();
+    }
+}
+
+void Smithtry1000::onDefaultSize_buttonClicked()
+{
+    scale = 200;
+    ui->renderArea->update();
 }

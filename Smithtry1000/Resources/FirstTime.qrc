@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/Images">
+    <file>load.svg</file>
+    <file>vertical_c_circuit.svg</file>
+    <file>vertical_i_circuit.svg</file>
+    <file>vertical_r_circuit.svg</file>
+    <file>horizontal_c.svg</file>
     <file>Copy.png</file>
     <file>load.bmp</file>
     <file>horizontal_i.svg</file>

@@ -145,14 +145,16 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
                 ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
-                flagi == false &&
+                flagi == false && 
                 (
                     (point.y() * scale + center.y() > iPixel.y() + 1) ||
                     (point.y() * scale + center.y() < iPixel.y() - 1)
-                    )
                 )
+                && r>0
+                )
+                
             {
-                painter.setPen(QPen(Qt::red, 2));
+                painter.setPen(QPen(Qt::magenta, 2));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
@@ -209,7 +211,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                painter.setPen(QPen(Qt::red, 2));
+                painter.setPen(QPen(Qt::magenta, 2));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), center.y(), s1);
@@ -263,6 +265,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
                 ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
                 flagi == false &&
+                r<0 &&
                 (
                     (point.y() * scale + center.y() > iPixel.y() + 1) ||
                     (point.y() * scale + center.y() < iPixel.y() - 1)
@@ -270,7 +273,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * 50);
+                QString s1 = QString::number(r * -20);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
                 painter.setPen(Qt::red);
@@ -326,7 +329,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * 50);
+                QString s1 = QString::number(r * 20);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
                 painter.setPen(Qt::red);
@@ -362,18 +365,19 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     }
     for (int ii = 0; ii < index; ii++)
     {
-        painter.drawEllipse(get<0>(points[ii]), 5, 5);
+        float x = get<0>(points[ii]).x * scale + this->rect().center().x();
+        float y = get<0>(points[ii]).y * scale + this->rect().center().y();
+        QPointF point = QPointF(x, y);
+        painter.drawEllipse(point, 5, 5);
     }
     painter.setPen(QPen(Qt::magenta, 2));
     for (int ll = 0; ll < index - 1; ll++)
     {
-        if (get<3>(points[ll + 1]) == mode::InductionShunt)
+        if (get<3>(points[ll + 1]) == mode::InductionShunt || get<3>(points[ll + 1]) == mode::CapacitorShunt)
         {
             r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[ll]).x;
+            float y = get<0>(points[ll]).y;
             float t;
             double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             double xCenter = 1 - circleRadius;
@@ -417,6 +421,12 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 r = (cos(t) - x) / (x - 1);
             }
             float t2 = get<2>(points[ll + 1]);
+            if (t2 < t)
+            {
+                float temp = t;
+                t = t2;
+                t2 = temp;
+            }
             iPoint = compute_real(t);
             iPixel.setX(iPoint.x() * scale + this->rect().center().x());
             iPixel.setY(iPoint.y() * scale + this->rect().center().y());
@@ -440,87 +450,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::CapacitorShunt)
-        {
-            r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
-            float t;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
-            {
-                if (y == 0 && x == 1)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
-            }
-            else
-            {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t += M_PI;
-                }
-                else if (cos_t > 0 && sin_t < 0)
-                {
-                    t = 2 * M_PI - abs(t);
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
-            }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x - 1);
-            }
-            float t2 = get<2>(points[ll + 1]);
-            iPoint = compute_real(t);
-            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(iPoint.y() * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            for (t; t > t2; t -= step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
         else if (get<3>(points[ll + 1]) == mode::ResistorShunt)
         {
             r = get<1>(points[ll + 1]);
             float t2 = get<2>(points[ll + 1]);
             float t;
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[ll]).x;
+            float y = get<0>(points[ll]).y;
             double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             double xCenter = 1 - circleRadius;
             double dx = x - xCenter;
@@ -581,13 +517,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::InductionParallel)
+        else if (get<3>(points[ll + 1]) == mode::InductionParallel|| get<3>(points[ll + 1]) == mode::CapacitorParallel)
         {
             r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[ll]).x;
+            float y = get<0>(points[ll]).y;
             float t;
             double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
             double xCenter = -1 - circleRadius;
@@ -627,11 +561,18 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 r = (cos(t) - x) / (x + 1);
             }
             float t2 = get<2>(points[ll + 1]);
-            iPoint = compute_realParallel(t);
-            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
             bool flagi = false;
             step = abs(t2 - t) / 100;
+            if (t2 < t)
+            {
+                float temp = t;
+                t = t2;
+                t2 = temp;
+            }
+
+            iPoint = compute_realParallel(t);
+            iPixel.setX(iPoint.x()* scale + this->rect().center().x());
+            iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
             for (t; t < t2; t += step) {
 
                 QPointF point = compute_realParallel(t);
@@ -650,83 +591,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::CapacitorParallel)
-        {
-            r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
-            float t;
-            double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-            double xCenter = -1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = -y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
-            {
-                if (y == 0 && x == -1)
-                {
-                    t = 0;
-                }
-                else if (x == -1)
-                {
-                    t = 2 * M_PI;
-                }
-                else if (x == 0)
-                {
-                    t = M_PI;
-                }
-            }
-            else
-            {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t = abs(t) - M_PI;
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
-            }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x + 1);
-            }
-            float t2 = get<2>(points[ll + 1]);
-            iPoint = compute_realParallel(t);
-            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            for (t; t > t2; t -= step) {
-
-                QPointF point = compute_realParallel(t);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
-
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
         else if (get<3>(points[ll + 1]) == mode::ResistorParallel)
         {
             r = get<1>(points[ll + 1]);
             float t2 = get<2>(points[ll + 1]);
             float t;
-            float x = get<0>(points[ll]).x();
-            float y = get<0>(points[ll]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[ll]).x;
+            float y = get<0>(points[ll]).y;
             double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
             double yCenter = -circleRadius;
             double dx = x + 1;
@@ -795,19 +666,20 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 
     for (int jj = 0; jj < morePoints.size(); jj++)
     {
-        painter.drawEllipse(morePoints[jj], 5, 5);
+        float x = morePoints[jj].x * scale + this->rect().center().x();
+        float y = morePoints[jj].y * scale + this->rect().center().y();
+        QPointF point = QPointF(x, y);
+        painter.drawEllipse(point, 5, 5);
     }
-    if (index > 0 && Model != mode::AddPoint)
+    if (index > 0 && Model != mode::AddPoint && Model != mode::Default)
     {
         painter.setPen(QPen(Qt::green, 2));
         float tmax, tmin;
-        if (Model == mode::InductionShunt)
+        if (Model == mode::InductionShunt || Model==mode::CapacitorShunt)
         {
             float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[index - 1]).x;
+            float y = get<0>(points[index - 1]).y;
             double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             double xCenter = 1 - circleRadius;
             double dx = x - xCenter;
@@ -849,79 +721,21 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             {
                 r = (cos(t) - x) / (x - 1);
             }
-            tmax = 2 * M_PI;
-            tmin = t;
-            iPoint = compute_real(tmin);
-            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(iPoint.y() * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step) {
-
-                QPointF point = compute_real(tmin);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + this->rect().center().x());
-                pixel.setY(point.y() * scale + this->rect().center().y());
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
-        else if (Model == mode::CapacitorShunt)
-        {
-            float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            switch (Model)
             {
-                if (y == 0 && x == 1)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
-            }
-            else
+            case InductionShunt:
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t += M_PI;
-                }
-                else if (cos_t > 0 && sin_t < 0)
-                {
-                    t = 2 * M_PI - abs(t);
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tmin = t;
+                tmax = 2 * M_PI;
+                break;
             }
-            if (x - 1 != 0)
+            case CapacitorShunt:
             {
-                r = (cos(t) - x) / (x - 1);
+                tmin = 0;
+                tmax = t;
+                break;
             }
-            tmax = t;
-            tmin = 0;
+            }
             iPoint = compute_real(tmin);
             iPixel.setX(iPoint.x() * scale + this->rect().center().x());
             iPixel.setY(iPoint.y() * scale + this->rect().center().y());
@@ -946,10 +760,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         else if (Model == mode::ResistorShunt)
         {
             float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[index - 1]).x;
+            float y = get<0>(points[index - 1]).y;
             double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             double xCenter = 1 - circleRadius;
             double dx = x - xCenter;
@@ -1026,13 +838,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 //painter.drawPoint(pixel);
             }
         }
-        else if (Model == mode::InductionParallel)
+        else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
         {
             float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[index - 1]).x;
+            float y = get<0>(points[index - 1]).y;
             double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
             double xCenter = -1 - circleRadius;
             double dx = x - xCenter;
@@ -1070,75 +880,21 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             {
                 r = (cos(t) - x) / (x + 1);
             }
-            tmax = M_PI;
-            tmin = t;
-            iPoint = compute_realParallel(tmin);
-            iPixel.setX(iPoint.x() * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step) {
-
-                QPointF point = compute_realParallel(tmin);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + this->rect().center().x());
-                pixel.setY(-point.y() * scale + this->rect().center().y());
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
-        else if (Model == mode::CapacitorParallel)
-        {
-            float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
-            double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-            double xCenter = -1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = -y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            switch (Model)
             {
-                if (y == 0 && x == -1)
-                {
-                    t = 0;
-                }
-                else if (x == -1)
-                {
-                    t = 2 * M_PI;
-                }
-                else if (x == 0)
-                {
-                    t = M_PI;
-                }
-            }
-            else
+            case InductionParallel:
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t = abs(t) - M_PI;
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tmax = M_PI;
+                tmin = t;
+                break;
             }
-            if (x - 1 != 0)
+            case CapacitorParallel:
             {
-                r = (cos(t) - x) / (x + 1);
+                tmin = -M_PI;
+                tmax = t;
+                break;
             }
-            tmax = t;
-            tmin = -M_PI;
+            }
             iPoint = compute_realParallel(tmin);
             iPixel.setX(iPoint.x() * scale + this->rect().center().x());
             iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
@@ -1163,10 +919,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         else if (Model == mode::ResistorParallel)
         {
             float t;
-            float x = get<0>(points[index - 1]).x();
-            float y = get<0>(points[index - 1]).y();
-            x = (x - this->rect().center().x()) / 300;
-            y = (y - this->rect().center().y()) / 300;
+            float x = get<0>(points[index - 1]).x;
+            float y = get<0>(points[index - 1]).y;
             double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
             double yCenter = -circleRadius;
             double dx = x + 1;
@@ -1262,467 +1016,15 @@ void RenderArea::generateCache()
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    if (!m_cacheValid) {
+    if (!m_cacheValid || defaultScale != scale) {
         generateCache();
+        defaultScale = scale;
     }
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     painter.drawPixmap(rect(), m_cache);
     painter.drawPixmap(0, 0, m_cache);
     drawDynamicObject(painter);
-   /* painter.setRenderHint(QPainter::Antialiasing, true);
-    
-    painter.setBrush(mBackGroundColor);
-    painter.setPen(QPen((mShapeColor, 20)));
-    painter.drawRect(this->rect());
-    painter.drawLine(QPointF(center.x(), -1000 + center.y()), QPointF(center.x(), 1000 + center.y()));
-    painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
-    painter.setPen(mShapeColor);
-    painter.setPen(Qt::blue);
-
-
-
-
-    float intervalLength = 2 * M_PI;
-    int stepCount = 2000;
-    float step;
-    QPointF iPoint;
-    QPointF iPixel;
-    step = intervalLength / stepCount;
-    painter.setPen(Qt::blue);
-    switch (mMode) {
-
-    case Superimpose:
-    {
-        for (RenderArea::r = -2; RenderArea::r <= 2; RenderArea::r += 0.2) {
-
-            iPoint = compute_imaginary(0);
-            iPixel.setX// mBackGroundColor = Qt::green;
-            (-iPoint.x() * scale + center.x());
-            iPixel.setY(iPoint.y() * scale + center.y());
-
-            for (float t = step; t < intervalLength; t += step) {
-
-                QPointF point = compute_imaginary(t);
-                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-                painter.setPen(Qt::red);
-                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
-                {
-                    painter.drawLine(iPixel, pixel);
-                }
-                iPixel = pixel;
-                //painter.drawPoint(pixel);
-            }
-        }
-        for (RenderArea::r = 0; RenderArea::r < 10; RenderArea::r += 0.25) {
-
-            iPoint = compute_real(0);
-            iPixel.setX(-iPoint.x() * scale + center.x());
-            iPixel.setY(iPoint.y() * scale + center.y());
-
-            for (float t = 0; t < intervalLength; t += step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
-
-        double k = 0.333333333333;
-        for (RenderArea::r = -2; RenderArea::r <= 2.1; RenderArea::r += 0.2) {
-
-            iPoint = compute_imaginary(0);
-            iPixel.setX// mBackGroundColor = Qt::green;
-            (iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = step; t < intervalLength; t += step) {
-
-                QPointF point = compute_imaginary(t);
-                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
-
-                if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
-                    ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
-                    flagi == false &&
-                    (
-                        (point.y() * scale + center.y() > iPixel.y() + 1) ||
-                        (point.y() * scale + center.y() < iPixel.y() - 1)
-                        )
-                    )
-                {
-                    painter.setPen(QPen(Qt::blue, 2));
-                    QString s1 = QString::number(r);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi = true;
-                }
-
-
-
-                painter.setPen(Qt::blue);
-                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
-                {
-                    painter.drawLine(iPixel, pixel);
-                }
-                iPixel = pixel;
-                //painter.drawPoint(pixel);
-            }
-        }
-        for (RenderArea::r = 0; RenderArea::r < 7; RenderArea::r += k) {
-
-            iPoint = compute_real(0);
-            iPixel.setX(iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = 0; t < intervalLength; t += step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::blue, 2));
-                    QString s1 = QString::number(r);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + center.x(), center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi == true;
-                }
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-            if (r > 0.99 && r < 1.1)
-            {
-                k = 0.75;
-            }
-            else if (r > 0.99)
-            {
-                k *= 2;
-            }
-        }
-
-        break;
-    }
-    case Admittance:
-        for (RenderArea::r = -2; RenderArea::r <= 2; RenderArea::r += 0.2) {
-
-            iPoint = compute_imaginary(0);
-            iPixel.setX// mBackGroundColor = Qt::green;
-            (-iPoint.x() * scale + center.x());
-            iPixel.setY(iPoint.y() * scale + center.y());
-
-            for (float t = step; t < intervalLength; t += step) {
-
-                QPointF point = compute_imaginary(t);
-                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-                painter.setPen(Qt::blue);
-                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
-                {
-                    painter.drawLine(iPixel, pixel);
-                }
-                iPixel = pixel;
-                //painter.drawPoint(pixel);
-            }
-        }
-        for (RenderArea::r = 0; RenderArea::r < 10; RenderArea::r += 0.5) {
-            bool flagi = false;
-            iPoint = compute_real(0);
-            iPixel.setX(-iPoint.x() * scale + center.x());
-            iPixel.setY(iPoint.y() * scale + center.y());
-
-            for (float t = 0; t < intervalLength; t += step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::red, 2));
-                    QString s1 = QString::number(r);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(-point.x() * scale + center.x(), center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi == true;
-                }
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-        }
-
-        break;
-
-    case Impedence:
-    {
-        /*double m = 0;
-        for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
-            if (r == -10)
-            {
-                m = -8;
-            }
-            if (r == -0.25)
-            {
-                r = -0.2;
-            }
-            if (r == 0.25)
-            {
-                r = 0.2;
-            }
-            if (r == 8)
-            {
-                r = 10;
-            }
-            iPoint = compute_imaginary(0);
-            iPixel.setX// mBackGroundColor = Qt::green;
-            (iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = step; t<intervalLength; t += step) {
-                
-                QPointF point = compute_imaginary(t);
-                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
-
-                if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
-                    ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
-                    flagi == false &&
-                    (
-                        (point.y() * scale + center.y() > iPixel.y()+1) ||
-                        (point.y() * scale + center.y() < iPixel.y() -1)
-                    )
-                   )
-                {
-                    painter.setPen(QPen(Qt::red, 2));
-                    QString s1 = QString::number(r * 50);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi = true;
-                }
-
-
-
-                painter.setPen(Qt::blue);
-
-                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
-                {
-                    painter.drawLine(iPixel, pixel);
-                }
-                iPixel = pixel;
-                //painter.drawPoint(pixel);
-            }
-            if (m < 0 && m<-0.25)
-            {
-                m/= 2;
-            }
-            else if (m > 0)
-            {
-                m *= 2;
-            }
-            else if (m<0)
-            {
-                m *= -1;
-            }
-            r = m;
-        }
-
-        double k = 0.125;
-        for (RenderArea::r = 0; RenderArea::r < 10; RenderArea::r += 0) {
-            if (r == 0.25)
-            {
-                r = 0.2;
-            }
-            if (r == 8)
-            {
-                r = 10;
-            }
-            iPoint = compute_real(0);
-            iPixel.setX(iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = 0; t < intervalLength; t += step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::red, 2));
-                    QString s1 = QString::number(r * 50);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(point.x() * scale + center.x(), center.y(), s1);
-                    painter.setPen(Qt::blue);
-                    flagi == true;
-                }
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-            k *= 2;
-            r = k;
-        }
-        painter.setPen(Qt::red);
-        m = 0;
-        for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
-            if (r == -10)
-            {
-                m = -8;
-            }
-            if (r == -0.25)
-            {
-                r = -0.2;
-            }
-            if (r == 0.25)
-            {
-                r = 0.2;
-            }
-            if (r == 8)
-            {
-                r = 10;
-            }
-            iPoint = compute_imaginary(0);
-            iPixel.setX// mBackGroundColor = Qt::green;
-            (-iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = step; t < intervalLength; t += step) {
-
-                QPointF point = compute_imaginary(t);
-                //if(pow((pow(point.x(),2) + pow(point.y(),2)),0.5) > 1) continue;
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(-point.y() * scale + center.y());
-
-                if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
-                    ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
-                    flagi == false &&
-                    (
-                        (point.y() * scale + center.y() > iPixel.y() + 1) ||
-                        (point.y() * scale + center.y() < iPixel.y() - 1)
-                        )
-                    )
-                {
-                    painter.setPen(QPen(Qt::green, 2));
-                    QString s1 = QString::number(r * 50);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(-point.x() * scale + center.x()+10, -point.y() * scale + center.y()-10, s1);
-                    painter.setPen(Qt::red);
-                    flagi = true;
-                }
-
-
-
-                painter.setPen(Qt::red);
-
-                if (pow(point.x(), 2) + pow(point.y(), 2) < 1)      //Restricting the domain of Smith Chart
-                {
-                    painter.drawLine(iPixel, pixel);
-                }
-                iPixel = pixel;
-                //painter.drawPoint(pixel);
-            }
-            if (m < 0 && m < -0.25)
-            {
-                m /= 2;
-            }
-            else if (m > 0)
-            {
-                m *= 2;
-            }
-            else if (m < 0)
-            {
-                m *= -1;
-            }
-            r = m;
-        }
-        k = 0.25;
-        for (RenderArea::r = 0.25; RenderArea::r < 10; RenderArea::r += 0) {
-            if (r == 0.25)
-            {
-                r = 0.2;
-            }
-            if (r == 8)
-            {
-                r = 10;
-            }
-            iPoint = compute_real(0);
-            iPixel.setX(-iPoint.x() * scale + center.x());
-            iPixel.setY(-iPoint.y() * scale + center.y());
-            bool flagi = false;
-            for (float t = 0; t < intervalLength; t += step) {
-
-                QPointF point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(-point.x() * scale + center.x());
-                pixel.setY(point.y() * scale + center.y());
-
-                if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
-                {
-                    painter.setPen(QPen(Qt::green, 2));
-                    QString s1 = QString::number(r*50);
-                    painter.setFont(QFont("Arial", 8));
-                    painter.drawText(-point.x() * scale + center.x(), center.y()+10, s1);
-                    painter.setPen(Qt::red);
-                    flagi == true;
-                }
-
-
-
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-
-                //painter.drawPoint(pixel);
-
-            }
-            k *= 2;
-            r = k;
-        }
-        break;
-    }
-    case Hide:
-        break;
-
-    }*/
-    // курсор (точка)
-    
-
+  
     /*for (int i = 0; i < 5; i++) {
 
         if (flag[i]) {

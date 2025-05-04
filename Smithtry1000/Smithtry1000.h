@@ -9,6 +9,8 @@
 #include <QMouseEvent>
 #include "general.h"
 #include <qtablewidget.h>
+#include <QScrollArea>
+#include "frequencyDialog.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -27,9 +29,13 @@ private slots:
     void onInductionParallel_buttonClicked();
     void onResistorParallel_buttonClicked();
     void onDelete_buttonClicked();
+    void onPlusSize_buttonClicked();
+    void onMinusSize_buttonClicked();
+    void onDefaultSize_buttonClicked();
     void onTimeout();
 
 private:
+    CircuitWidget* auxiliaryWidget = new CircuitWidget(this);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;
@@ -37,8 +43,6 @@ private:
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;
-    double lastPointX;
-    double lastPointY;
     double tempPointX;
     double tempPointY;
     double tempX=0;

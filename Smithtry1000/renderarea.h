@@ -15,7 +15,7 @@ class RenderArea : public QWidget
     Q_OBJECT
 public:
     void setCursorPosOnCircle(const QPoint& pos);
-    class complex {
+    /*class complex {
     private:
         float real, imag;
 
@@ -111,9 +111,9 @@ public:
             return num;
         }
 
-    };
+    };*/
 
-    class matrix {
+    /*class matrix {
 
     private:
         int rows, cols;
@@ -166,11 +166,12 @@ public:
 
 
     };
+    */
 
     RenderArea(QWidget* parent = nullptr);
     bool flag[20] = { false };
     int step_count = 0;
-    double f, Rs, Rp;
+    /*double f, Rs, Rp;
     double X1L, X2L, Zin, L_l, C_l;
     double Zn = 50;
     double w, wMax, wMin;
@@ -224,7 +225,7 @@ public:
         double Val;
     };
 
-    Step step_array[20];
+    Step step_array[20];*/
 
 
 
@@ -237,7 +238,7 @@ public:
 
 
 
-    void setBackgroundColor(QColor color) { mBackGroundColor = color; } //setter
+    /*void setBackgroundColor(QColor color) { mBackGroundColor = color; } //setter
     QColor backgroundColor() { return mBackGroundColor; } //getter
 
     void setShape(Mode mode) { mMode = mode; } //setter
@@ -248,7 +249,7 @@ public:
 
     QPointF Z_to_Gamma(double x, double y) { return  QPointF((((x - 1) * (x + 1) + pow(y, 2)) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.x(), -((2 * y) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.y()); }
     QPointF impedence_admittance(double x, double y) { return QPointF(x / ((x * x) + (y * y)), -y / ((x * x) + (y * y))); }
-    QPointF Y_to_Gamma(double x, double y) { return QPointF(-(((x - 1) * (x + 1) + pow(y, 2)) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.x(), ((2 * y) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.y()); }
+    QPointF Y_to_Gamma(double x, double y) { return QPointF(-(((x - 1) * (x + 1) + pow(y, 2)) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.x(), ((2 * y) / ((pow(x + 1, 2) + pow(y, 2)))) * scale + center.y()); }*/
 
 
 
@@ -265,7 +266,6 @@ public slots:
 private:
 
     float r;
-    float scale = 300;
     QPointF center;
     QColor mBackGroundColor;
     QColor mShapeColor;
@@ -276,7 +276,7 @@ private:
     QPointF compute_imaginary(float t);
     QPointF compute_imaginaryParallel(float t);
     QPointF compute(float t);
-    Topology mTopology;
+    //Topology mTopology;
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;
@@ -284,7 +284,7 @@ private:
     void drawDynamicObject(QPainter&);
     qreal m_scaleFactor;
     void generateCache();
-
+    float defaultScale = 200;
 
 
 

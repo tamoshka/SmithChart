@@ -17,14 +17,18 @@ find_package(Qt${QT_VERSION_MAJOR}
 qt_standard_project_setup()
 
 set(PROJECT_SOURCES
+    general.h
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
     Smithtry1000.cpp
+    circuitWidget.h
+    circuitWidget.cpp
     Resources/FirstTime.qrc
-    general.h
     renderarea.h
     renderarea.cpp
+    frequencyDialog.h
+    frequencyDialog.cpp
 )
 
 SET(UI_RESOURCES

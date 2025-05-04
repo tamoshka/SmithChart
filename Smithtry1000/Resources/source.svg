@@ -9,4 +9,6 @@
   <!-- Горизонтальные линии -->
   <line x1="5.65" y1="15.43" x2="34.35" y2="15.43" stroke="#000" stroke-width="1.5"/>
   <line x1="12.71" y1="22.53" x2="27.29" y2="22.53" stroke="#000" stroke-width="3"/>
+  <line x1="0" y1="1" x2="20" y2="1" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="15" y1="39.5" x2="25" y2="39.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
 </svg>
