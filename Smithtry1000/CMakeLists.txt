@@ -18,8 +18,8 @@ qt_standard_project_setup()
 
 set(PROJECT_SOURCES
     general.h
-    Element.cpp
     Element.h
+    Element.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
