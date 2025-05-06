@@ -33,6 +33,10 @@ set(PROJECT_SOURCES
     frequencyDialog.cpp
     circuitElements.h
     circuitElements.cpp
+    AmplitudeFrequence.h
+    AmplitudeFrequence.cpp
+    ComplexNumber.h
+    ComplexNumber.cpp
 )
 
 SET(UI_RESOURCES
