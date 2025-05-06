@@ -106,7 +106,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
     painter.setPen(QPen(Qt::red, 2));
-    QList<Element> temp = this->circuitElements->GetCircuitElements();
+    QList<Element*> temp = this->circuitElements->GetCircuitElements();
     if (this->circuitElements->imagFirstPoint != -9999)
     {
         QString s2 = QString::number(this->circuitElements->realFirstPoint) + "  + j" + QString::number(this->circuitElements->imagFirstPoint);
@@ -185,8 +185,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.restore();
         for (int i = 0; i < temp.size(); i++)
         {
-            s1 = QString::number(temp[i].GetValue());
-            switch (temp[i].GetMode())
+            s1 = QString::number(temp[i]->GetValue());
+            switch (temp[i]->GetMode())
             {
             case ResistorShunt:
             {

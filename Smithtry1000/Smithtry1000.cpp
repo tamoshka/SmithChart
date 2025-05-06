@@ -312,13 +312,18 @@ void Smithtry1000::onResistor_buttonClicked()
             float r1 = impedanceRealR;
             rImpedanceRealCalculation(lastPointX, lastPointY);
             float r2 = impedanceRealR;
-            this->circuitElements->AddCircuitElements(Element(ResistorShunt, r2 - r1));
+            Point point;
+            point.x = lastPointX;
+            point.y = lastPointY;
+            map<chartMode, tuple<float, float>> chart;
+            chart[RealImpedance] = make_tuple(r, t);
+            chart[RealAdmitance] = make_tuple(r, t);
+            chart[ImagAdmitance] = make_tuple(r, t);
+            chart[ImagImpedance] = make_tuple(r, t);
+            this->circuitElements->AddCircuitElements(new Element(ResistorShunt, r2 - r1, this->circuitElements->frequencyFirstPoint, point, chart));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
             QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            Point point = Point();
-            point.x = pointsX.back();
-            point.y = pointsY.back();
             points[index] = make_tuple(point, r, t, mode::ResistorShunt);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -434,13 +439,18 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             float r1 = admitanceRealR;
             rAdmitanceRealCalculation(lastPointX, lastPointY);
             float r2 = admitanceRealR;
-            this->circuitElements->AddCircuitElements(Element(ResistorParallel, 1000 / (r2 - r1)));
+            Point point;
+            point.x = lastPointX;
+            point.y = lastPointY;
+            map<chartMode, tuple<float, float>> chart;
+            chart[RealImpedance] = make_tuple(r, t);
+            chart[RealAdmitance] = make_tuple(r, t);
+            chart[ImagAdmitance] = make_tuple(r, t);
+            chart[ImagImpedance] = make_tuple(r, t);
+            this->circuitElements->AddCircuitElements(new Element(ResistorParallel, 1000 / (r2 - r1), this->circuitElements->frequencyFirstPoint, point, chart));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
             QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            Point point = Point();
-            point.x = pointsX.back();
-            point.y = pointsY.back();
             points[index] = make_tuple(point, r, t, mode::ResistorParallel);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -609,7 +619,15 @@ void Smithtry1000::ImaginaryImpedance()
                     float r1 = impedanceImagR;
                     rImpedanceImagCalculation(lastPointX, lastPointY);
                     float r2 = impedanceImagR;
-                    this->circuitElements->AddCircuitElements(Element(Model, (r2 - r1) / (2 * M_PI * 1000000 * frequency)));
+                    Point point;
+                    point.x = lastPointX;
+                    point.y = lastPointY;
+                    map<chartMode, tuple<float, float>> temp;
+                    temp[RealImpedance] = make_tuple(r, t);
+                    temp[RealAdmitance] = make_tuple(r, t);
+                    temp[ImagAdmitance] = make_tuple(r, t);
+                    temp[ImagImpedance] = make_tuple(r, t);
+                    this->circuitElements->AddCircuitElements(new Element(InductionShunt, (r2 - r1) / (2 * M_PI * 1000000 * frequency)*10e9, this->circuitElements->frequencyFirstPoint, point, temp));
                     break;
                 }
                 case CapacitorShunt:
@@ -618,7 +636,15 @@ void Smithtry1000::ImaginaryImpedance()
                     float r1 = impedanceImagR;
                     rImpedanceImagCalculation(lastPointX, lastPointY);
                     float r2 = impedanceImagR;
-                    this->circuitElements->AddCircuitElements(Element(Model, 1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency))));
+                    Point point;
+                    point.x = lastPointX;
+                    point.y = lastPointY;
+                    map<chartMode, tuple<float, float>> temp;
+                    temp[RealImpedance] = make_tuple(r, t);
+                    temp[RealAdmitance] = make_tuple(r, t);
+                    temp[ImagAdmitance] = make_tuple(r, t);
+                    temp[ImagImpedance] = make_tuple(r, t);
+                    this->circuitElements->AddCircuitElements(new Element(CapacitorShunt, 1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 10e12, this->circuitElements->frequencyFirstPoint, point, temp));
                     break;
                 }
             }
@@ -754,7 +780,15 @@ void Smithtry1000::ImaginaryAdmitance()
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
-                this->circuitElements->AddCircuitElements(Element(Model, 320 * (frequency / 500) / (r2-r1)));
+                Point point;
+                point.x = lastPointX;
+                point.y = lastPointY;
+                map<chartMode, tuple<float, float>> temp;
+                temp[RealImpedance] = make_tuple(r, t);
+                temp[RealAdmitance] = make_tuple(r, t);
+                temp[ImagAdmitance] = make_tuple(r, t);
+                temp[ImagImpedance] = make_tuple(r, t);
+                this->circuitElements->AddCircuitElements(new Element(InductionParallel, 320 * (frequency / 500) / (r1 - r2), this->circuitElements->frequencyFirstPoint, point, temp));
                 break;
             }
             case CapacitorParallel:
@@ -763,7 +797,15 @@ void Smithtry1000::ImaginaryAdmitance()
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
-                this->circuitElements->AddCircuitElements(Element(Model, (r2 - r1) / (6 * (frequency / 500))));
+                Point point;
+                point.x = lastPointX;
+                point.y = lastPointY;
+                map<chartMode, tuple<float, float>> temp;
+                temp[RealImpedance] = make_tuple(r, t);
+                temp[RealAdmitance] = make_tuple(r, t);
+                temp[ImagAdmitance] = make_tuple(r, t);
+                temp[ImagImpedance] = make_tuple(r, t);
+                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / (6 * (frequency / 500)), this->circuitElements->frequencyFirstPoint, point, temp));
                 break;
             }
             }

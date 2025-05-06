@@ -3,10 +3,10 @@
 class CircuitElements
 {
 private:
-	QList<Element> circuitElements;
+	QList<Element*> circuitElements;
 public:
-	void AddCircuitElements(Element);
-	QList<Element> GetCircuitElements();
+	void AddCircuitElements(Element*);
+	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();
 	CircuitElements();
 	float realFirstPoint = -9999;
