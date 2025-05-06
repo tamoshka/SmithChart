@@ -18,6 +18,8 @@ qt_standard_project_setup()
 
 set(PROJECT_SOURCES
     general.h
+    Element.cpp
+    Element.h
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
@@ -29,6 +31,8 @@ set(PROJECT_SOURCES
     renderarea.cpp
     frequencyDialog.h
     frequencyDialog.cpp
+    circuitElements.h
+    circuitElements.cpp
 )
 
 SET(UI_RESOURCES

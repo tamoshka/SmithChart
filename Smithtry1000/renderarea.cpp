@@ -273,7 +273,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * -20);
+                QString s1 = QString::number(r * 1000/-50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
                 painter.setPen(Qt::red);
@@ -329,7 +329,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * 20);
+                QString s1 = QString::number(r * 1000 / 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
                 painter.setPen(Qt::red);

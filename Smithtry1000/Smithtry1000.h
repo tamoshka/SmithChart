@@ -16,7 +16,7 @@ class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
 
-public:
+public: 
     Smithtry1000(QWidget* parent = nullptr);
     ~Smithtry1000();
 
@@ -35,7 +35,8 @@ private slots:
     void onTimeout();
 
 private:
-    CircuitWidget* auxiliaryWidget = new CircuitWidget(this);
+    CircuitElements* circuitElements = new CircuitElements();
+    CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);  
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;

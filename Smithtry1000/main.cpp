@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
+#include "circuitElements.h"
 QList<Point> morePoints;
 int index = 0;
 map<int, tuple<Point, float, float, mode>> points;

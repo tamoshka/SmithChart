@@ -1,8 +1,9 @@
 #include "circuitWidget.h"
-CircuitWidget::CircuitWidget(QWidget* parent) :
+CircuitWidget::CircuitWidget(QWidget* parent, CircuitElements* circuitElements) :
     QWidget(parent)
 {
     setMinimumSize(100, 100);
+    this->circuitElements = circuitElements;
 }
 
 CircuitWidget::~CircuitWidget()
@@ -51,7 +52,6 @@ void CircuitWidget::removeLastSvg() {
         QSvgWidget* temp = svgWidgets[index];
         temp->setGeometry((index + 1) * 40, 39, 40, 40);
         temp->show();
-
     }
 }
 
@@ -106,14 +106,10 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
     painter.setPen(QPen(Qt::red, 2));
-    if (index >= 1)
+    QList<Element> temp = this->circuitElements->GetCircuitElements();
+    if (this->circuitElements->imagFirstPoint != -9999)
     {
-        QString s2;
-        rImpedanceRealCalculation(get<0>(points[0]).x, get<0>(points[0]).y);
-        float r1 = impedanceRealR;
-        rImpedanceImagCalculation(get<0>(points[0]).x, get<0>(points[0]).y);
-        float r2 = impedanceImagR;
-        s2 = QString::number(r1)+" + j"+ QString::number(r2);
+        QString s2 = QString::number(this->circuitElements->realFirstPoint) + "  + j" + QString::number(this->circuitElements->imagFirstPoint);
         painter.save();
         painter.translate(40 + 20, 120);
         painter.rotate(90);
@@ -127,7 +123,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             {
             case ResistorShunt:
             {
-                rImpedanceRealCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
+                rImpedanceRealCalculation(get<0>(points[index - 1]).x, get<0>(points[index - 1]).y);
                 float r1 = impedanceRealR;
                 rImpedanceRealCalculation(lastPointX, lastPointY);
                 float r2 = impedanceRealR;
@@ -136,7 +132,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case InductionShunt:
             {
-                rImpedanceImagCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
+                rImpedanceImagCalculation(get<0>(points[index - 1]).x, get<0>(points[index - 1]).y);
                 float r1 = impedanceImagR;
                 rImpedanceImagCalculation(lastPointX, lastPointY);
                 float r2 = impedanceImagR;
@@ -145,7 +141,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case CapacitorShunt:
             {
-                rImpedanceImagCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
+                rImpedanceImagCalculation(get<0>(points[index - 1]).x, get<0>(points[index - 1]).y);
                 float r1 = impedanceImagR;
                 rImpedanceImagCalculation(lastPointX, lastPointY);
                 float r2 = impedanceImagR;
@@ -154,7 +150,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case ResistorParallel:
             {
-                rAdmitanceRealCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
+                rAdmitanceRealCalculation(get<0>(points[index - 1]).x, get<0>(points[index - 1]).y);
                 float r1 = admitanceRealR;
                 rAdmitanceRealCalculation(lastPointX, lastPointY);
                 float r2 = admitanceRealR;
@@ -163,7 +159,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case InductionParallel:
             {
-                rAdmitanceImagCalculation(get<0>(points[index]).x, get<0>(points[index]).y);
+                rAdmitanceImagCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
@@ -172,7 +168,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case CapacitorParallel:
             {
-                rAdmitanceImagCalculation(get<0>(points[index-1]).x, get<0>(points[index-1]).y);
+                rAdmitanceImagCalculation(get<0>(points[index - 1]).x, get<0>(points[index - 1]).y);
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
@@ -182,69 +178,44 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
         }
         painter.save();
-        painter.translate((index+1) * 40 + 20, 120);
+        painter.translate((index + 1) * 40 + 20, 120);
         painter.rotate(90);
         painter.setFont(QFont("Arial", 8));
         painter.drawText(0, 0, s1);
         painter.restore();
-        for (int i = 0; i < index-1; i++)
+        for (int i = 0; i < temp.size(); i++)
         {
-            switch (get<3>(points[i+1]))
+            s1 = QString::number(temp[i].GetValue());
+            switch (temp[i].GetMode())
             {
-                case ResistorShunt:
-                {
-                    rImpedanceRealCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = impedanceRealR;
-                    rImpedanceRealCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = impedanceRealR;
-                    s1 = QString::number(r2 - r1);
-                    break;
-                }
-                case InductionShunt:
-                {
-                    rImpedanceImagCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = impedanceImagR;
-                    rImpedanceImagCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = impedanceImagR;
-                    s1 = QString::number((r2 - r1)/(2*M_PI*1000000 * frequency)*1000000000)+" nH";
-                    break;
-                }
-                case CapacitorShunt:
-                {
-                    rImpedanceImagCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = impedanceImagR;
-                    rImpedanceImagCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = impedanceImagR;
-                    s1 = QString::number(1/((r1 - r2) * (2 * M_PI * 1000000*frequency)) * 1000000000000) + " pF";
-                    break;
-                }
-                case ResistorParallel:
-                {
-                    rAdmitanceRealCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = admitanceRealR;
-                    rAdmitanceRealCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = admitanceRealR;
-                    s1 = QString::number(1000 / (r2 - r1));
-                    break;
-                }
-                case InductionParallel:
-                {
-                    rAdmitanceImagCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = admitanceImagR;
-                    rAdmitanceImagCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = admitanceImagR;
-                    s1 = QString::number(320*(frequency/500) / (r1 - r2)) + " nH";  
-                    break;
-                }
-                case CapacitorParallel:
-                {
-                    rAdmitanceImagCalculation(get<0>(points[i]).x, get<0>(points[i]).y);
-                    float r1 = admitanceImagR;
-                    rAdmitanceImagCalculation(get<0>(points[i + 1]).x, get<0>(points[i + 1]).y);
-                    float r2 = admitanceImagR;
-                    s1 = QString::number((r2 - r1) /(6*(frequency / 500)))+" pF";
-                    break;
-                }
+            case ResistorShunt:
+            {
+                break;
+            }
+            case InductionShunt:
+            {
+                s1 = s1 + " nH";
+                break;
+            }
+            case CapacitorShunt:
+            {
+                s1 = s1 + " pF";
+                break;
+            }
+            case ResistorParallel:
+            {
+                break;
+            }
+            case InductionParallel:
+            {
+                s1 = s1 + " nH";
+                break;
+            }
+            case CapacitorParallel:
+            {
+                s1 = s1 + " pF";
+                break;
+            }
             }
             painter.save();
             painter.translate((i + 2) * 40 + 20, 120);

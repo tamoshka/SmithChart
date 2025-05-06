@@ -16,7 +16,14 @@ extern enum mode
     InductionShunt,
     AddPoint,
     Default
-};
+}; 
+/*extern enum chartMode
+{
+    RealImpedance,
+    RealAdmitance,
+    ImagImpedance,
+    ImagAdmitance
+};*/
 extern struct Point
 {
     float x;
