@@ -15,6 +15,7 @@ public:
     complex operator * (complex a);
     complex operator /(complex a);
     complex inverse();
+    double abs(complex a);
     void operator =(int a);
     void operator =(float a);
     void operator =(complex a);
@@ -24,6 +25,4 @@ public:
     void setValue(float a, float b);
     double Re();
     double Im();
-
-    QString display();
 };

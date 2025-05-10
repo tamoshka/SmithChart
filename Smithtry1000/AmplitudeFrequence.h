@@ -20,5 +20,7 @@ public:
 	complex GetGamma1();
 	complex GetGamma2();
 	AmplitudeFrequence(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
+	void MatrixCalculation();
+	void SetPoint(double[], double[]);
 	~AmplitudeFrequence();
 };

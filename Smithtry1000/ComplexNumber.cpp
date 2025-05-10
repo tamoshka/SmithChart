@@ -67,6 +67,11 @@ complex complex::inverse()
 	return b;
 }
 
+double complex::abs(complex a)  //модуль числа
+{
+	return (sqrt(a.Re() * a.Re() + a.Im() * a.Im()));
+}
+
 void complex::operator=(int a)
 {
 	real = a;
@@ -123,20 +128,4 @@ double complex::Re()
 double complex::Im()
 {
 	return this->imag;
-}
-
-QString complex::display()
-{
-	QString r = QString::number(real);
-	QString x = QString::number(abs(imag));
-	QString num;
-	//r= r.left(5);
-	//x=x.left(5)
-
-	if (imag >= 0)
-		num = r + " + j" + x;
-	else
-		num = r + " - j" + x;
-
-	return num;
 }
