@@ -22,6 +22,8 @@ public:
     bool operator ==(int a);
     bool operator ==(float a);
     void setValue(float a, float b);
+    double Re();
+    double Im();
 
     QString display();
 };

@@ -14,8 +14,8 @@ void AmplitudeFrequence::ReflectionCalculation()
 {
     complex R1, R2;
 
-    R1 = circuitElements->GetCircuitElements()[0]->GetChartParameters()[RealImpedance];
-    R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetChartParameters()[RealImpedance];
+    R1 = circuitElements->GetCircuitElements()[0]->GetParameter()[Z];
+    R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
     SetGamma1((R1 - z0) / (R1 + z0));
     SetGamma2((R2 - z0) / (R2 + z0));
 }

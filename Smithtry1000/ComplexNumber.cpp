@@ -26,6 +26,7 @@ complex complex::operator+(double a)
 	return b;
 }
 
+
 complex complex::operator-(complex a)
 {
 	complex b;
@@ -112,6 +113,16 @@ void complex::setValue(float a, float b)
 {
 	real = a;
 	imag = b;
+}
+
+double complex::Re()
+{
+	return this->real;
+}
+
+double complex::Im()
+{
+	return this->imag;
 }
 
 QString complex::display()

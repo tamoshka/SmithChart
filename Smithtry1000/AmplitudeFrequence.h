@@ -2,6 +2,7 @@
 #include <QWidget>
 #include "circuitElements.h"
 #include "ComplexNumber.h"
+#include "general.h"
 
 class AmplitudeFrequence : public QWidget
 {

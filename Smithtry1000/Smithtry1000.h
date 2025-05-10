@@ -11,6 +11,7 @@
 #include <qtablewidget.h>
 #include <QScrollArea>
 #include "frequencyDialog.h"
+#include "ComplexNumber.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -61,4 +62,12 @@ private:
     void rImpedanceImagCalculation(float, float);
     void rAdmitanceRealCalculation(float, float);
     void rAdmitanceImagCalculation(float, float);
+
+    complex zCalculation(float, float);
+    complex yCalculation(float, float);
+
+    complex impedanceRealChartParameters(float, float);
+    complex impedanceImagChartParameters(float, float);
+    complex admitanceRealChartParameters(float, float);
+    complex admitanceImagChartParameters(float, float);
 };
