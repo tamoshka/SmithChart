@@ -44,6 +44,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     auxiliaryWidget->addSvg(QString(":/Images/source.svg"), 80, 39);
     connect(ui->button, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
     connect(ui->Capacitor_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitor_buttonClicked);
+    connect(ui->GraphButton, &QPushButton::clicked, this, &Smithtry1000::onGraph_buttonClicked);
     connect(ui->Induction_button, &QPushButton::clicked, this, &Smithtry1000::onInduction_buttonClicked);
     connect(ui->Resistor_button, &QPushButton::clicked, this, &Smithtry1000::onResistor_buttonClicked);
     connect(ui->CapacitorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitorParallel_buttonClicked);
@@ -1522,6 +1523,13 @@ void Smithtry1000::onDefaultSize_buttonClicked()
 {
     scale = 200;
     ui->renderArea->update();
+}
+
+void Smithtry1000::onGraph_buttonClicked()
+{
+    AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
+    amplitudeFrequence->show();
+    amplitudeFrequence->MatrixCalculation();
 }
 
 complex Smithtry1000::zCalculation(float x, float y)

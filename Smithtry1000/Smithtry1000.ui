@@ -1074,6 +1074,22 @@ background-color: rgb(170, 255, 255);</string>
          </size>
         </property>
        </widget>
+       <widget class="QPushButton" name="GraphButton">
+        <property name="geometry">
+         <rect>
+          <x>650</x>
+          <y>10</y>
+          <width>101</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Graph</string>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>

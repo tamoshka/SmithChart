@@ -12,6 +12,7 @@
 #include <QScrollArea>
 #include "frequencyDialog.h"
 #include "ComplexNumber.h"
+#include "AmplitudeFrequency.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -33,6 +34,7 @@ private slots:
     void onPlusSize_buttonClicked();
     void onMinusSize_buttonClicked();
     void onDefaultSize_buttonClicked();
+    void onGraph_buttonClicked();
     void onTimeout();
 
 private:

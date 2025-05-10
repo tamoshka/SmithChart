@@ -13,6 +13,8 @@ find_package(Qt${QT_VERSION_MAJOR}
         Gui
         Widgets
         SvgWidgets
+        PrintSupport
+        Graphs
 )
 qt_standard_project_setup()
 
@@ -33,10 +35,13 @@ set(PROJECT_SOURCES
     frequencyDialog.cpp
     circuitElements.h
     circuitElements.cpp
-    AmplitudeFrequence.h
-    AmplitudeFrequence.cpp
     ComplexNumber.h
     ComplexNumber.cpp
+    qcustomplot.h
+    qcustomplot.cpp
+    AmplitudeFrequency.ui
+    AmplitudeFrequency.h
+    AmplitudeFrequency.cpp
 )
 
 SET(UI_RESOURCES
@@ -58,5 +63,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt::Gui
         Qt::Widgets
         Qt::SvgWidgets
+        Qt::PrintSupport
+        Qt::Graphs
 )
 

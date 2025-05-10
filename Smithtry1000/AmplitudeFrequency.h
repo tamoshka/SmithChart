@@ -1,10 +1,15 @@
 #pragma once
+
 #include <QWidget>
 #include "circuitElements.h"
 #include "ComplexNumber.h"
 #include "general.h"
+#include "qcustomplot.h"
+QT_BEGIN_NAMESPACE
+namespace Ui { class AmplitudeFrequency; };
+QT_END_NAMESPACE
 
-class AmplitudeFrequence : public QWidget
+class AmplitudeFrequency : public QWidget
 {
 	Q_OBJECT
 
@@ -19,8 +24,9 @@ public:
 	void ReflectionCalculation();
 	complex GetGamma1();
 	complex GetGamma2();
-	AmplitudeFrequence(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
+	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
 	void SetPoint(double[], double[]);
-	~AmplitudeFrequence();
+	~AmplitudeFrequency();
+	Ui::AmplitudeFrequency *ui;
 };

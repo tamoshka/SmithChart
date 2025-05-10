@@ -1,16 +1,25 @@
-#include "AmplitudeFrequence.h"
+#include "AmplitudeFrequency.h"
+#include "ui_AmplitudeFrequency.h"
 
-void AmplitudeFrequence::SetGamma1(complex gamma1)
+AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
+	: QWidget(parent)
+	, ui(new Ui::AmplitudeFrequency())
+{
+	ui->setupUi(this);
+    setMinimumSize(100, 100);
+    this->circuitElements = circuitElements;
+}
+void AmplitudeFrequency::SetGamma1(complex gamma1)
 {
     this->gamma1 = gamma1;
 }
 
-void AmplitudeFrequence::SetGamma2(complex gamma2)
+void AmplitudeFrequency::SetGamma2(complex gamma2)
 {
     this->gamma2 = gamma2;
 }
 
-void AmplitudeFrequence::ReflectionCalculation()
+void AmplitudeFrequency::ReflectionCalculation()
 {
     complex R1, R2;
 
@@ -20,24 +29,17 @@ void AmplitudeFrequence::ReflectionCalculation()
     SetGamma2((R2 - z0) / (R2 + z0));
 }
 
-complex AmplitudeFrequence::GetGamma1()
+complex AmplitudeFrequency::GetGamma1()
 {
     return this->gamma1;
 }
 
-complex AmplitudeFrequence::GetGamma2()
+complex AmplitudeFrequency::GetGamma2()
 {
     return this->gamma2;
 }
 
-AmplitudeFrequence::AmplitudeFrequence(QWidget* parent, CircuitElements* circuitElements) :
-    QWidget(parent)
-{
-    setMinimumSize(100, 100);
-    this->circuitElements = circuitElements;
-}
-
-void AmplitudeFrequence::MatrixCalculation()
+void AmplitudeFrequency::MatrixCalculation()
 {
     int k = 0;
     double startFrequency = 0.001;
@@ -50,7 +52,7 @@ void AmplitudeFrequence::MatrixCalculation()
 
     for (double freq = 0.001; freq <= 2 * f; freq += (2 * f - 0.001) / 49)
     {
-        w = 2 * M_PI * f;
+        w = 2 * M_PI * freq;
 
         for (int i = 0; i < circuitElements->GetCircuitElements().size(); i++)
         {
@@ -127,7 +129,7 @@ void AmplitudeFrequence::MatrixCalculation()
                 complex mem2 = A[0][0] * A1[0][1] + A[0][1] * A1[1][1];
                 complex mem3 = A[1][0] * A1[0][0] + A[1][1] * A1[1][0];
                 complex mem4 = A[1][0] * A1[0][1] + A[1][1] * A1[1][1];
-                
+
                 A[0][0] = mem1;
                 A[0][1] = mem2;
                 A[1][0] = mem3;
@@ -178,12 +180,37 @@ void AmplitudeFrequence::MatrixCalculation()
     SetPoint(Chas, Znach);
 }
 
-void AmplitudeFrequence::SetPoint(double x[], double y[])
+void AmplitudeFrequency::SetPoint(double x[], double y[])
 {
-    
+    QVector<double> x1, y1;
+    for (int i = 0; i < 50; i++)
+    {
+        x1.append(x[i]);
+        y1.append(y[i]);
+    }
+    double xBegin = x[0];
+    double xEnd = x[49];
+    double yBegin, yEnd;
+    yBegin = y[0];
+    yEnd = y[0];
+    for (int i = 0; i < 49; i++)
+    {
+        if (y[i + 1] < yBegin)
+        {
+            yBegin = y[i + 1];
+        }
+        if (y[i + 1] > yEnd)
+        {
+            yEnd = y[i + 1];
+        }
+    }
+    ui->widget->xAxis->setRange(xBegin, xEnd);
+    ui->widget->yAxis->setRange(yBegin, yEnd);
+    ui->widget->addGraph();
+    ui->widget->graph(0)->addData(x1, y1);
 }
 
-AmplitudeFrequence::~AmplitudeFrequence()
+AmplitudeFrequency::~AmplitudeFrequency()
 {
 
 }
