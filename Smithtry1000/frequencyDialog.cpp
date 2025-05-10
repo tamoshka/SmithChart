@@ -31,6 +31,7 @@ void FrequencyDialog::onAccept()
         if (dpIndex == 0)
         {
             frequency = value;
+            frequencyList.append(frequency);
         }
         frequencyList.append(value);
         accept();

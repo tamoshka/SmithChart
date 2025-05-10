@@ -201,7 +201,7 @@ void Smithtry1000::onButtonClicked()
                 {
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(abs(impedanceImagR / impedanceRealR))));
                 }
-                ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
+                ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequencyList[frequencyList.size() - 1])));
                 dpIndex++;
                 Point point;
                 point.x = x;
