@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include "circuitElements.h"
+#include "ComplexNumber.h"
 
 class AmplitudeFrequence : public QWidget
 {
@@ -8,15 +9,15 @@ class AmplitudeFrequence : public QWidget
 
 private:
 	CircuitElements* circuitElements;
-	float z0 = 50;
-	float gamma1; // reflection coefficient
-	float gamma2; // reflection coefficient
-	void SetGamma1(float);
-	void SetGamma2(float);
+	double z0 = 50;
+	complex gamma1; // reflection coefficient
+	complex gamma2; // reflection coefficient
+	void SetGamma1(complex);
+	void SetGamma2(complex);
 public:
 	void ReflectionCalculation();
-	float GetGamma1();
-	float GetGamma2();
+	complex GetGamma1();
+	complex GetGamma2();
 	AmplitudeFrequence(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	~AmplitudeFrequence();
 };

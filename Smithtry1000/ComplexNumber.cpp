@@ -18,11 +18,27 @@ complex complex::operator+(complex a)
 	return b;
 }
 
+complex complex::operator+(double a)
+{
+	complex b;
+	b.real = real + a;
+	b.imag = imag;
+	return b;
+}
+
 complex complex::operator-(complex a)
 {
 	complex b;
 	b.real = real - a.real;
 	b.imag = imag - a.imag;
+	return b;
+}
+
+complex complex::operator-(double a)
+{
+	complex b;
+	b.real = real - a;
+	b.imag = imag;
 	return b;
 }
 

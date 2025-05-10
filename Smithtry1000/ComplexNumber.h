@@ -9,7 +9,9 @@ public:
     complex();
     complex(float a, float b);
     complex operator + (complex a);
+    complex operator + (double a);
     complex operator - (complex a);
+    complex operator - (double a);
     complex operator * (complex a);
     complex operator /(complex a);
     complex inverse();
