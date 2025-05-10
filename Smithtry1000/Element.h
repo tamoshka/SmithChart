@@ -20,7 +20,7 @@ public:
 	mode GetMode();
 	float GetValue();
 	float GetFrequency();
-	map<chartMode, complex> GetChartParameters();
+	map<chartMode, tuple<float, float>> GetChartParameters();
 	Point GetPoint();
 	map<parameterMode, complex> GetParameter();
 	Element(mode, float, float, Point, map<chartMode, tuple<float, float>>, map<parameterMode, complex>);

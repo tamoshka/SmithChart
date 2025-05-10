@@ -30,7 +30,7 @@ void Element::SetPoint(Point point)
 	this->point = point;
 }
 
-void Element::SetChartParameters(map<chartMode, complex> chartParameters)
+void Element::SetChartParameters(map<chartMode, tuple<float, float>> chartParameters)
 {
 	this->chartParameters = chartParameters;
 }
@@ -55,7 +55,7 @@ float Element::GetFrequency()
 	return this->frequency;
 }
 
-map<chartMode, complex> Element::GetChartParameters()
+map<chartMode, tuple<float, float>> Element::GetChartParameters()
 {
 	return this->chartParameters;
 }
