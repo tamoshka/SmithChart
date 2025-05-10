@@ -24,6 +24,12 @@ extern enum chartMode
     ImagImpedance,
     ImagAdmitance
 };
+extern enum parameterMode
+{
+    Z,
+    Y,
+    G
+};
 extern struct Point
 {
     float x;
