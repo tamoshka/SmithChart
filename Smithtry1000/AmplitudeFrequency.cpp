@@ -46,11 +46,9 @@ void AmplitudeFrequency::MatrixCalculation()
     double w;
     complex A[2][2], A1[2][2];
     double Chas[50], Znach[50];
-    double f = frequency * 1000000;
-    double umn = 1000000;
-    double domn = 1;
+    double f = frequency * 1e6;
 
-    for (double freq = 0.001; freq <= 2 * f; freq += (2 * f - 0.001) / 49)
+    for (double freq = 0.001; freq <= 2 * f+1; freq += (2 * f - 0.001) / 49)
     {
         w = 2 * M_PI * freq;
 
@@ -69,7 +67,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case InductionShunt:
             {
-                complex z(0, w * domn * circuitElements->GetCircuitElements()[i]->GetValue() / umn);
+                complex z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
                 A1[0][0] = 1;
                 A1[0][1] = z;
                 A1[1][0] = 0;
@@ -78,7 +76,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case CapacitorShunt:
             {
-                complex z(0, 1 / (w * domn * circuitElements->GetCircuitElements()[i]->GetValue() / umn));
+                complex z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
                 A1[0][0] = 1;
                 A1[0][1] = z;
                 A1[1][0] = 0;
@@ -97,7 +95,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case InductionParallel:
             {
-                complex z(0, w * domn * circuitElements->GetCircuitElements()[i]->GetValue() / umn);
+                complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
                 complex y = complex(1, 0) / z;
                 A1[0][0] = 1;
                 A1[0][1] = 0;
@@ -107,7 +105,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case CapacitorParallel:
             {
-                complex z(0, 1 / (w * domn * circuitElements->GetCircuitElements()[i]->GetValue() / umn));
+                complex z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
                 complex y = complex(1, 0) / z;
                 A1[0][0] = 1;
                 A1[0][1] = 0;
@@ -142,9 +140,8 @@ void AmplitudeFrequency::MatrixCalculation()
         complex s21 = complex(2, 0) / dT;
         complex s22 = (complex(-1, 0) * A[0][0] + A[0][1] / complex(z0, 0) - A[1][0] * complex(z0, 0) + A[1][1]) / dT;
 
-        complex R1, R2;
-
-        R1 = circuitElements->GetCircuitElements()[0]->GetParameter()[Z];
+        complex R2;
+        complex R1(circuitElements->realFirstPoint, circuitElements->imagFirstPoint);
         R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
 
         if ((R1.Re() == z0) && (R2.Re() == z0) && (R1.Im() == 0) && (R2.Im() == 0))
@@ -174,7 +171,7 @@ void AmplitudeFrequency::MatrixCalculation()
         }
         Chas[k] = startFrequency;
         Znach[k] = s21.abs(s21);
-        startFrequency += 2 * frequency / 49;
+        startFrequency += (2 * f - 0.001) / 49;
         k++;
     }
     SetPoint(Chas, Znach);

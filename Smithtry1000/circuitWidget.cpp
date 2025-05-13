@@ -185,20 +185,23 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.restore();
         for (int i = 0; i < temp.size(); i++)
         {
-            s1 = QString::number(temp[i]->GetValue());
+            float temps1 = temp[i]->GetValue();
             switch (temp[i]->GetMode())
             {
             case ResistorShunt:
             {
+                s1 = QString::number(temps1);
                 break;
             }
             case InductionShunt:
             {
+                s1 = QString::number(temps1*1e9);
                 s1 = s1 + " nH";
                 break;
             }
             case CapacitorShunt:
             {
+                s1 = QString::number(temps1 * 1e12);
                 s1 = s1 + " pF";
                 break;
             }
@@ -208,11 +211,13 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case InductionParallel:
             {
+                s1 = QString::number(temps1 * 1e9);
                 s1 = s1 + " nH";
                 break;
             }
             case CapacitorParallel:
             {
+                s1 = QString::number(temps1 * 1e12);
                 s1 = s1 + " pF";
                 break;
             }

@@ -21,6 +21,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     this->setMaximumSize(1600, 900);
     ui->pointTable->setColumnCount(5);
     ui->pointTable->setRowCount(1);
+    ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->pointTable->setItem(0, 0, new QTableWidgetItem("Start"));
     ui->pointTable->setItem(0, 1, new QTableWidgetItem("ID"));
     ui->pointTable->setItem(0, 2, new QTableWidgetItem("Z"));
@@ -28,6 +29,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     ui->pointTable->setItem(0, 4, new QTableWidgetItem("Frequency"));
     ui->rTable->setRowCount(3);
     ui->rTable->setColumnCount(3);
+    ui->rTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->rTable->setItem(0, 1, new QTableWidgetItem("Real"));
     ui->rTable->setItem(0, 2, new QTableWidgetItem("Imag"));
     ui->rTable->setItem(1, 0, new QTableWidgetItem("Z"));
@@ -316,16 +318,16 @@ void Smithtry1000::onResistor_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complex z = zCalculation(x, y);
-            complex y2 = yCalculation(x, y);
+            complex z = zCalculation(lastPointX, lastPointY);
+            complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complex rRealImpedance = impedanceRealChartParameters(x, y);
-            complex rImagImpedance = impedanceImagChartParameters(x, y);
-            complex rRealAdmitance = admitanceRealChartParameters(x, y);
-            complex rImagAdmitance = admitanceImagChartParameters(x, y);
+            complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
             chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
@@ -452,16 +454,16 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complex z = zCalculation(x, y);
-            complex y2 = yCalculation(x, y);
+            complex z = zCalculation(lastPointX, lastPointY);
+            complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complex rRealImpedance = impedanceRealChartParameters(x, y);
-            complex rImagImpedance = impedanceImagChartParameters(x, y);
-            complex rRealAdmitance = admitanceRealChartParameters(x, y);
-            complex rImagAdmitance = admitanceImagChartParameters(x, y);
+            complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
             chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
@@ -638,16 +640,16 @@ void Smithtry1000::ImaginaryImpedance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complex z = zCalculation(x, y);
-            complex y2 = yCalculation(x, y);
+            complex z = zCalculation(lastPointX, lastPointY);
+            complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complex rRealImpedance = impedanceRealChartParameters(x, y);
-            complex rImagImpedance = impedanceImagChartParameters(x, y);
-            complex rRealAdmitance = admitanceRealChartParameters(x, y);
-            complex rImagAdmitance = admitanceImagChartParameters(x, y);
+            complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
             chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
@@ -656,12 +658,12 @@ void Smithtry1000::ImaginaryImpedance()
             {
                 case InductionShunt:
                 {
-                    this->circuitElements->AddCircuitElements(new Element(InductionShunt, (r2 - r1) / (2 * M_PI * 1000000 * frequency)*10e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                    this->circuitElements->AddCircuitElements(new Element(InductionShunt, (r2 - r1) / (2 * M_PI * 1e6 * frequency), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                     break;
                 }
                 case CapacitorShunt:
                 {
-                    this->circuitElements->AddCircuitElements(new Element(CapacitorShunt, 1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 10e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                    this->circuitElements->AddCircuitElements(new Element(CapacitorShunt, 1 / ((r1 - r2) * (2 * M_PI * 1e6 * frequency)), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                     break;
                 }
             }
@@ -793,16 +795,16 @@ void Smithtry1000::ImaginaryAdmitance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complex z = zCalculation(x, y);
-            complex y2 = yCalculation(x, y);
+            complex z = zCalculation(lastPointX, lastPointY);
+            complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complex rRealImpedance = impedanceRealChartParameters(x, y);
-            complex rImagImpedance = impedanceImagChartParameters(x, y);
-            complex rRealAdmitance = admitanceRealChartParameters(x, y);
-            complex rImagAdmitance = admitanceImagChartParameters(x, y);
+            complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
             chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
@@ -811,12 +813,12 @@ void Smithtry1000::ImaginaryAdmitance()
             {
             case InductionParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(InductionParallel, 320 * (frequency / 500) / (r1 - r2), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(InductionParallel, 320 * (frequency / 500) / (r1 - r2)/1e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             case CapacitorParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / (6 * (frequency / 500)), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / (6 * (frequency / 500))/1e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             }
