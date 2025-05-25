@@ -13,6 +13,7 @@
 #include "frequencyDialog.h"
 #include "ComplexNumber.h"
 #include "AmplitudeFrequency.h"
+#include "SParameters.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -35,6 +36,8 @@ private slots:
     void onMinusSize_buttonClicked();
     void onDefaultSize_buttonClicked();
     void onGraph_buttonClicked();
+    void onS11_buttonClicked();
+    void onS22_buttonClicked();
     void onTimeout();
 
 private:
@@ -65,11 +68,11 @@ private:
     void rAdmitanceRealCalculation(float, float);
     void rAdmitanceImagCalculation(float, float);
 
-    complex zCalculation(float, float);
-    complex yCalculation(float, float);
+    complexNumber zCalculation(float, float);
+    complexNumber yCalculation(float, float);
 
-    complex impedanceRealChartParameters(float, float);
-    complex impedanceImagChartParameters(float, float);
-    complex admitanceRealChartParameters(float, float);
-    complex admitanceImagChartParameters(float, float);
+    complexNumber impedanceRealChartParameters(float, float);
+    complexNumber impedanceImagChartParameters(float, float);
+    complexNumber admitanceRealChartParameters(float, float);
+    complexNumber admitanceImagChartParameters(float, float);
 };

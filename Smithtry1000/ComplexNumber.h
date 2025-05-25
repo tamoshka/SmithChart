@@ -1,25 +1,25 @@
 #pragma once
 #include <QString>
 
-class complex {
+class complexNumber {
 private:
     float real, imag;
 
 public:
-    complex();
-    complex(float a, float b);
-    complex operator + (complex a);
-    complex operator + (double a);
-    complex operator - (complex a);
-    complex operator - (double a);
-    complex operator * (complex a);
-    complex operator /(complex a);
-    complex inverse();
-    double abs(complex a);
+    complexNumber();
+    complexNumber(float a, float b);
+    complexNumber operator + (complexNumber a);
+    complexNumber operator + (double a);
+    complexNumber operator - (complexNumber a);
+    complexNumber operator - (double a);
+    complexNumber operator * (complexNumber a);
+    complexNumber operator /(complexNumber a);
+    complexNumber inverse();
+    double abs(complexNumber a);
     void operator =(int a);
     void operator =(float a);
-    void operator =(complex a);
-    bool operator ==(complex a);
+    void operator =(complexNumber a);
+    bool operator ==(complexNumber a);
     bool operator ==(int a);
     bool operator ==(float a);
     void setValue(float a, float b);

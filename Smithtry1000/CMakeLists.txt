@@ -20,6 +20,7 @@ qt_standard_project_setup()
 
 set(PROJECT_SOURCES
     general.h
+    newgeneral.h
     Element.h
     Element.cpp
     main.cpp
@@ -42,6 +43,23 @@ set(PROJECT_SOURCES
     AmplitudeFrequency.ui
     AmplitudeFrequency.h
     AmplitudeFrequency.cpp
+    Timedes.h
+    Tests.ui
+    Tests.h
+    Tests.cpp
+    Table.ui
+    Table.h
+    Table.cpp
+    S2p.h
+    S2p.cpp
+    GrafOne.ui
+    GrafOne.h
+    GrafOne.cpp
+    GrafTwo.ui
+    GrafTwo.h
+    GrafTwo.cpp
+    SParameters.h
+    SParameters.cpp
 )
 
 SET(UI_RESOURCES

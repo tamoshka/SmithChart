@@ -1,96 +1,96 @@
 #include "ComplexNumber.h"
 
-complex::complex()
+complexNumber::complexNumber()
 {
 }
 
-complex::complex(float a, float b)
+complexNumber::complexNumber(float a, float b)
 {
 	real = a;
 	imag = b;
 }
 
-complex complex::operator+(complex a)
+complexNumber complexNumber::operator+(complexNumber a)
 {
-	complex b;
+	complexNumber b;
 	b.real = real + a.real;
 	b.imag = imag + a.imag;
 	return b;
 }
 
-complex complex::operator+(double a)
+complexNumber complexNumber::operator+(double a)
 {
-	complex b;
+	complexNumber b;
 	b.real = real + a;
 	b.imag = imag;
 	return b;
 }
 
 
-complex complex::operator-(complex a)
+complexNumber complexNumber::operator-(complexNumber a)
 {
-	complex b;
+	complexNumber b;
 	b.real = real - a.real;
 	b.imag = imag - a.imag;
 	return b;
 }
 
-complex complex::operator-(double a)
+complexNumber complexNumber::operator-(double a)
 {
-	complex b;
+	complexNumber b;
 	b.real = real - a;
 	b.imag = imag;
 	return b;
 }
 
-complex complex::operator*(complex a)
+complexNumber complexNumber::operator*(complexNumber a)
 {
-	complex b;
+	complexNumber b;
 	b.real = real * a.real - imag * a.imag;
 	b.imag = imag * a.real + real * a.imag;
 	return b;
 }
 
-complex complex::operator/(complex a)
+complexNumber complexNumber::operator/(complexNumber a)
 {
-	complex b;
+	complexNumber b;
 	b.real = (real * a.real + imag * a.imag) / (pow(a.real, 2) + pow(a.imag, 2));
 	b.imag = (imag * a.real - real * a.imag) / (pow(a.real, 2) + pow(a.imag, 2));
 	return b;
 }
 
-complex complex::inverse()
+complexNumber complexNumber::inverse()
 {
-	complex b;
+	complexNumber b;
 	b.real = (real) / (pow(real, 2) + pow(imag, 2));
 	b.imag = (-imag) / (pow(real, 2) + pow(imag, 2));
 	return b;
 }
 
-double complex::abs(complex a)  //модуль числа
+double complexNumber::abs(complexNumber a)  //модуль числа
 {
 	return (sqrt(a.Re() * a.Re() + a.Im() * a.Im()));
 }
 
-void complex::operator=(int a)
+void complexNumber::operator=(int a)
 {
 	real = a;
 	imag = 0;
 }
 
-void complex::operator=(float a)
+void complexNumber::operator=(float a)
 {
 	real = a;
 	imag = 0;
 }
 
-void complex::operator=(complex a)
+void complexNumber::operator=(complexNumber a)
 {
 	real = a.real;
 	imag = a.imag;
 }
 
-bool complex::operator==(complex a)
+bool complexNumber::operator==(complexNumber a)
 {
 	if (a.real == real && a.imag == imag)
 		return true;
@@ -98,7 +98,7 @@ bool complex::operator==(complex a)
 		return false;
 }
 
-bool complex::operator==(int a)
+bool complexNumber::operator==(int a)
 {
 	if (real == a && imag == 0)
 		return true;
@@ -106,7 +106,7 @@ bool complex::operator==(int a)
 		return false;
 }
 
-bool complex::operator==(float a)
+bool complexNumber::operator==(float a)
 {
 	if (real == a && imag == 0)
 		return true;
@@ -114,18 +114,18 @@ bool complex::operator==(float a)
 		return false;
 }
 
-void complex::setValue(float a, float b)
+void complexNumber::setValue(float a, float b)
 {
 	real = a;
 	imag = b;
 }
 
-double complex::Re()
+double complexNumber::Re()
 {
 	return this->real;
 }
 
-double complex::Im()
+double complexNumber::Im()
 {
 	return this->imag;
 }

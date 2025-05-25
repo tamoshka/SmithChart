@@ -207,6 +207,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             case ResistorParallel:
             {
+                s1 = QString::number(temps1);
                 break;
             }
             case InductionParallel:

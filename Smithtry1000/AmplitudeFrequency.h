@@ -16,14 +16,14 @@ class AmplitudeFrequency : public QWidget
 private:
 	CircuitElements* circuitElements;
 	double z0 = 50;
-	complex gamma1; // reflection coefficient
-	complex gamma2; // reflection coefficient
-	void SetGamma1(complex);
-	void SetGamma2(complex);
+	complexNumber gamma1; // reflection coefficient
+	complexNumber gamma2; // reflection coefficient
+	void SetGamma1(complexNumber);
+	void SetGamma2(complexNumber);
 public:
 	void ReflectionCalculation();
-	complex GetGamma1();
-	complex GetGamma2();
+	complexNumber GetGamma1();
+	complexNumber GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
 	void SetPoint(double[], double[]);

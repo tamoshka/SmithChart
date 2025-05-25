@@ -1,6 +1,7 @@
 #include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
+#include "newgeneral.h"
 #include <QThread>
 #include "circuitElements.h"
 QList<Point> morePoints;
@@ -19,6 +20,7 @@ float admitanceImagR = 0;
 float admitanceRealR = 0;
 float impedanceImagR = 0;
 float impedanceRealR = 0;
+QString fileName = "";
 
 int main(int argc, char *argv[])
 {

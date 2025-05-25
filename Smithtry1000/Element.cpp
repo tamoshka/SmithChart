@@ -1,6 +1,6 @@
 #include "Element.h"
 
-Element::Element(mode mode, float value, float frequency, Point point, map<chartMode, tuple<float, float>> chartParameters, map<parameterMode, complex> parameter)
+Element::Element(mode mode, float value, float frequency, Point point, map<chartMode, tuple<float, float>> chartParameters, map<parameterMode, complexNumber> parameter)
 {
 	this->SetMode(mode);
 	this->SetValue(value);
@@ -35,7 +35,7 @@ void Element::SetChartParameters(map<chartMode, tuple<float, float>> chartParame
 	this->chartParameters = chartParameters;
 }
 
-void Element::SetParameter(map<parameterMode, complex> parameter)
+void Element::SetParameter(map<parameterMode, complexNumber> parameter)
 {
 	this->parameters = parameter;
 }
@@ -65,7 +65,7 @@ Point Element::GetPoint()
 	return this->point;
 }
 
-map<parameterMode, complex> Element::GetParameter()
+map<parameterMode, complexNumber> Element::GetParameter()
 {
 	return this->parameters;
 }

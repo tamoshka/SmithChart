@@ -1060,12 +1060,18 @@ background-color: rgb(170, 255, 255);</string>
         <property name="cursor">
          <cursorShape>ArrowCursor</cursorShape>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::WheelFocus</enum>
+        </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::ContextMenuPolicy::PreventContextMenu</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
         <property name="icon">
          <iconset resource="Resources/FirstTime.qrc">
-          <normaloff>:/Images/horizontal_c.svg</normaloff>:/Images/horizontal_c.svg</iconset>
+          <normaloff>:/Images/source.svg</normaloff>:/Images/source.svg</iconset>
         </property>
         <property name="iconSize">
          <size>

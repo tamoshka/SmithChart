@@ -4,6 +4,9 @@
 #include <QPointF>
 #include <tuple>
 #include <QMap>>
+#include <list>
+#include <vector>
+#include <complex>
 #include <map>
 using namespace std;
 extern enum mode

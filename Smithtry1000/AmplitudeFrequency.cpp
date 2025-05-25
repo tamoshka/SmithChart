@@ -9,19 +9,19 @@ AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuit
     setMinimumSize(100, 100);
     this->circuitElements = circuitElements;
 }
-void AmplitudeFrequency::SetGamma1(complex gamma1)
+void AmplitudeFrequency::SetGamma1(complexNumber gamma1)
 {
     this->gamma1 = gamma1;
 }
 
-void AmplitudeFrequency::SetGamma2(complex gamma2)
+void AmplitudeFrequency::SetGamma2(complexNumber gamma2)
 {
     this->gamma2 = gamma2;
 }
 
 void AmplitudeFrequency::ReflectionCalculation()
 {
-    complex R1, R2;
+    complexNumber R1, R2;
 
     R1 = circuitElements->GetCircuitElements()[0]->GetParameter()[Z];
     R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
@@ -29,12 +29,12 @@ void AmplitudeFrequency::ReflectionCalculation()
     SetGamma2((R2 - z0) / (R2 + z0));
 }
 
-complex AmplitudeFrequency::GetGamma1()
+complexNumber AmplitudeFrequency::GetGamma1()
 {
     return this->gamma1;
 }
 
-complex AmplitudeFrequency::GetGamma2()
+complexNumber AmplitudeFrequency::GetGamma2()
 {
     return this->gamma2;
 }
@@ -44,7 +44,7 @@ void AmplitudeFrequency::MatrixCalculation()
     int k = 0;
     double startFrequency = 0.001;
     double w;
-    complex A[2][2], A1[2][2];
+    complexNumber A[2][2], A1[2][2];
     double Chas[50], Znach[50];
     double f = frequency * 1e6;
 
@@ -58,7 +58,7 @@ void AmplitudeFrequency::MatrixCalculation()
             {
             case ResistorShunt:
             {
-                complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+                complexNumber z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
                 A1[0][0] = 1;
                 A1[0][1] = z;
                 A1[1][0] = 0;
@@ -67,7 +67,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case InductionShunt:
             {
-                complex z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
+                complexNumber z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
                 A1[0][0] = 1;
                 A1[0][1] = z;
                 A1[1][0] = 0;
@@ -76,7 +76,7 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case CapacitorShunt:
             {
-                complex z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
+                complexNumber z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
                 A1[0][0] = 1;
                 A1[0][1] = z;
                 A1[1][0] = 0;
@@ -85,8 +85,8 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case ResistorParallel:
             {
-                complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
-                complex y = complex(1, 0) / z;
+                complexNumber z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+                complexNumber y = complexNumber(1, 0) / z;
                 A1[0][0] = 1;
                 A1[0][1] = 0;
                 A1[1][0] = y;
@@ -95,8 +95,8 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case InductionParallel:
             {
-                complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                complex y = complex(1, 0) / z;
+                complexNumber z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+                complexNumber y = complexNumber(1, 0) / z;
                 A1[0][0] = 1;
                 A1[0][1] = 0;
                 A1[1][0] = y;
@@ -105,8 +105,8 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             case CapacitorParallel:
             {
-                complex z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
-                complex y = complex(1, 0) / z;
+                complexNumber z(0, 1 / (w * circuitElements->GetCircuitElements()[i]->GetValue()));
+                complexNumber y = complexNumber(1, 0) / z;
                 A1[0][0] = 1;
                 A1[0][1] = 0;
                 A1[1][0] = y;
@@ -123,10 +123,10 @@ void AmplitudeFrequency::MatrixCalculation()
             }
             else
             {
-                complex mem1 = A[0][0] * A1[0][0] + A[0][1] * A1[1][0];
-                complex mem2 = A[0][0] * A1[0][1] + A[0][1] * A1[1][1];
-                complex mem3 = A[1][0] * A1[0][0] + A[1][1] * A1[1][0];
-                complex mem4 = A[1][0] * A1[0][1] + A[1][1] * A1[1][1];
+                complexNumber mem1 = A[0][0] * A1[0][0] + A[0][1] * A1[1][0];
+                complexNumber mem2 = A[0][0] * A1[0][1] + A[0][1] * A1[1][1];
+                complexNumber mem3 = A[1][0] * A1[0][0] + A[1][1] * A1[1][0];
+                complexNumber mem4 = A[1][0] * A1[0][1] + A[1][1] * A1[1][1];
 
                 A[0][0] = mem1;
                 A[0][1] = mem2;
@@ -134,14 +134,14 @@ void AmplitudeFrequency::MatrixCalculation()
                 A[1][1] = mem4;
             }
         }
-        complex dT = A[0][0] + A[0][1] / complex(z0, 0) + A[1][0] * complex(z0, 0) + A[1][1];
-        complex s11 = (A[0][0] + A[0][1] / complex(z0, 0) - A[1][0] * complex(z0, 0) - A[1][1]) / dT;
-        complex s12 = complex(2, 0) * (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / dT;
-        complex s21 = complex(2, 0) / dT;
-        complex s22 = (complex(-1, 0) * A[0][0] + A[0][1] / complex(z0, 0) - A[1][0] * complex(z0, 0) + A[1][1]) / dT;
+        complexNumber dT = A[0][0] + A[0][1] / complexNumber(z0, 0) + A[1][0] * complexNumber(z0, 0) + A[1][1];
+        complexNumber s11 = (A[0][0] + A[0][1] / complexNumber(z0, 0) - A[1][0] * complexNumber(z0, 0) - A[1][1]) / dT;
+        complexNumber s12 = complexNumber(2, 0) * (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / dT;
+        complexNumber s21 = complexNumber(2, 0) / dT;
+        complexNumber s22 = (complexNumber(-1, 0) * A[0][0] + A[0][1] / complexNumber(z0, 0) - A[1][0] * complexNumber(z0, 0) + A[1][1]) / dT;
 
-        complex R2;
-        complex R1(circuitElements->realFirstPoint, circuitElements->imagFirstPoint);
+        complexNumber R2;
+        complexNumber R1(circuitElements->realFirstPoint, circuitElements->imagFirstPoint);
         R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
 
         if ((R1.Re() == z0) && (R2.Re() == z0) && (R1.Im() == 0) && (R2.Im() == 0))
@@ -155,19 +155,19 @@ void AmplitudeFrequency::MatrixCalculation()
         {
             SetGamma1((R1 - z0) / (R1 + z0));
             SetGamma2((R2 - z0) / (R2 + z0));
-            complex sopr1(gamma1.Re(), -gamma1.Im());
-            complex sopr2(gamma2.Re(), -gamma2.Im());
+            complexNumber sopr1(gamma1.Re(), -gamma1.Im());
+            complexNumber sopr2(gamma2.Re(), -gamma2.Im());
             double g1 = gamma1.abs(gamma1);
             double g2 = gamma2.abs(gamma2);
-            complex a1 = (complex(1, 0) - sopr1) * complex(sqrt(1 - g1 * g1), 0) / complex(1 - g1, 0);
-            complex a2 = (complex(1, 0) - sopr2) * complex(sqrt(1 - g2 * g2), 0) / complex(1 - g2, 0);
-            complex D = (complex(1, 0) - gamma1 * s11) * (complex(1, 0) - gamma2 * s22) - gamma1 * gamma2 * s12 * s21;
-            complex sopra1(a1.Re(), -a1.Im());
-            complex sopra2(a2.Re(), -a2.Im());
-            s11 = (sopra1 * ((complex(1, 0) - gamma2 * s22) * (s11 - sopr1)) + gamma2 * s12 * s21) / (a1 * D);
-            s22 = (sopra2 * ((complex(1, 0) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
-            s12 = (sopra2 * s12 * complex(1 - g1 * g1, 0)) / (a1 * D);
-            s21 = (sopra1 * s21 * complex(1 - g2 * g2, 0)) / (a2 * D);
+            complexNumber a1 = (complexNumber(1, 0) - sopr1) * complexNumber(sqrt(1 - g1 * g1), 0) / complexNumber(1 - g1, 0);
+            complexNumber a2 = (complexNumber(1, 0) - sopr2) * complexNumber(sqrt(1 - g2 * g2), 0) / complexNumber(1 - g2, 0);
+            complexNumber D = (complexNumber(1, 0) - gamma1 * s11) * (complexNumber(1, 0) - gamma2 * s22) - gamma1 * gamma2 * s12 * s21;
+            complexNumber sopra1(a1.Re(), -a1.Im());
+            complexNumber sopra2(a2.Re(), -a2.Im());
+            s11 = (sopra1 * ((complexNumber(1, 0) - gamma2 * s22) * (s11 - sopr1)) + gamma2 * s12 * s21) / (a1 * D);
+            s22 = (sopra2 * ((complexNumber(1, 0) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
+            s12 = (sopra2 * s12 * complexNumber(1 - g1 * g1, 0)) / (a1 * D);
+            s21 = (sopra1 * s21 * complexNumber(1 - g2 * g2, 0)) / (a2 * D);
         }
         Chas[k] = startFrequency;
         Znach[k] = s21.abs(s21);
