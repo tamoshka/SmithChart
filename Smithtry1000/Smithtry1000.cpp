@@ -16,9 +16,10 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     , trackingEnabled(false)
 {
     ui->setupUi(this);
+
     Model = Default;
-    this->resize(1600, 900);
-    this->setMaximumSize(1600, 900);
+    this->resize(1600, 920);
+    this->setMaximumSize(1920, 1080);
     ui->pointTable->setColumnCount(5);
     ui->pointTable->setRowCount(1);
     ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -44,7 +45,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     auxiliaryWidget->addSvg(QString(":/Images/load.svg"), 40, 39);
     auxiliaryWidget->addSvg(QString(":/Images/source.svg"), 80, 39);
-    connect(ui->button, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
+    connect(ui->MouseButton, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
     connect(ui->Capacitor_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitor_buttonClicked);
     connect(ui->GraphButton, &QPushButton::clicked, this, &Smithtry1000::onGraph_buttonClicked);
     connect(ui->Induction_button, &QPushButton::clicked, this, &Smithtry1000::onInduction_buttonClicked);
@@ -52,10 +53,10 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     connect(ui->CapacitorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitorParallel_buttonClicked);
     connect(ui->InductionParallel_button, &QPushButton::clicked, this, &Smithtry1000::onInductionParallel_buttonClicked);
     connect(ui->ResistorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onResistorParallel_buttonClicked);
-    connect(ui->Delete_button, &QPushButton::clicked, this, &Smithtry1000::onDelete_buttonClicked);
-    connect(ui->PlusScaleButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
-    connect(ui->MinusScaleButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
-    connect(ui->DefaultScaleButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
+    connect(ui->StepBackButton, &QPushButton::clicked, this, &Smithtry1000::onDelete_buttonClicked);
+    connect(ui->PlusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
+    connect(ui->MinusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
+    connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
     connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     QTimer* timer = new QTimer(this);
@@ -69,10 +70,14 @@ Smithtry1000::~Smithtry1000()
     delete this->circuitElements;
 }
 
+/// <summary>
+/// Обработка нажатий кнопок мыши.
+/// </summary>
+/// <param name="event"></param>
 void Smithtry1000::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
-        leftClicked = true; // Изменяем флаг при нажатии левой кнопки мыши
+        leftClicked = true;
     }
     else if (event->button() == Qt::RightButton)
     {
@@ -86,7 +91,6 @@ void Smithtry1000::onButtonClicked()
     if (dialog.exec() == QDialog::Accepted) 
     {
         Model = mode::AddPoint;
-        ui->button->setText("Stop");
         QPoint centerLocal = ui->renderArea->rect().center();
         QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
         QCursor::setPos(lastPointX * scale + centerGlobal.x(), lastPointY * scale + centerGlobal.y());
@@ -215,10 +219,8 @@ void Smithtry1000::onButtonClicked()
                 ui->renderArea->setCursorPosOnCircle(temp);
             }
         }
-        ui->button->setText("Start");
         Model = Default;
     }
-    
 }
 
 void Smithtry1000::onInduction_buttonClicked()
@@ -245,7 +247,6 @@ void Smithtry1000::onResistor_buttonClicked()
     QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
     if (pointsX.size() > 0)
     {
-
         auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
@@ -468,7 +469,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
             chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
             this->circuitElements->AddCircuitElements(new Element(ResistorParallel, 1000 / (r2 - r1), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
             pointsX.append(lastPointX);
@@ -558,7 +559,7 @@ void Smithtry1000::ImaginaryImpedance()
         {
         case InductionShunt:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_i_circuit.svg"), (index + 2) * 40, 20);
             break;
         }
         case CapacitorShunt:
@@ -634,7 +635,6 @@ void Smithtry1000::ImaginaryImpedance()
         }
         if (leftClicked)
         {
-
             rImpedanceImagCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
             float r1 = impedanceImagR;
             rImpedanceImagCalculation(lastPointX, lastPointY);
@@ -654,7 +654,7 @@ void Smithtry1000::ImaginaryImpedance()
             complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
             chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
             switch (Model)
             {
@@ -741,15 +741,15 @@ void Smithtry1000::ImaginaryAdmitance()
         {
             if (y == 0 && x < -0.999)
             {
-                t = 0;
+                t = -M_PI;
             }
             else if (x < -0.999)
             {
-                t = 2 * M_PI;
+                t = M_PI;
             }
             else
             {
-                t = M_PI;
+                t = 0;
             }
         }
         else
@@ -1088,7 +1088,6 @@ void Smithtry1000::onTimeout()
     {
         trackingEnabled = false;
         this->unsetCursor();
-        ui->button->setText("Start");
         return;
     }
 

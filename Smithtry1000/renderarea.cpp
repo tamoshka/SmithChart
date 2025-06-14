@@ -208,10 +208,13 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             }
 
 
-
+            if (r == 1)
+            {
+                painter.setPen(QPen(Qt::blue, 3));
+            }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-
+            painter.setPen(Qt::blue);
 
         }
         k *= 2;
@@ -320,13 +323,13 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 painter.setPen(Qt::red);
                 flagi == true;
             }
-
-
-
+            if (r == 1)
+            {
+                painter.setPen(QPen(Qt::red, 3));
+            }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-
-
+            painter.setPen(Qt::red);
         }
         k *= 2;
         r = k;
@@ -515,15 +518,15 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             {
                 if (y == 0 && x == -1)
                 {
-                    t = 0;
+                    t = -M_PI;
                 }
                 else if (x == -1)
                 {
-                    t = 2 * M_PI;
+                    t = M_PI;
                 }
                 else if (x == 0)
                 {
-                    t = M_PI;
+                    t = 0;
                 }
             }
             else
@@ -830,15 +833,15 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             {
                 if (y == 0 && x == -1)
                 {
-                    t = 0;
+                    t = -M_PI;
                 }
                 else if (x == -1)
                 {
-                    t = 2 * M_PI;
+                    t = M_PI;
                 }
                 else if (x == 0)
                 {
-                    t = M_PI;
+                    t = 0;
                 }
             }
             else

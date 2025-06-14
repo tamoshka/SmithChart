@@ -1,6 +1,5 @@
 <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
-  <!-- Белый фон -->
-  <rect x="0" y="0" width="40" height="40" fill="white" />
+
 
   <!-- Чёрные линии -->
   <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="0" y1="20" x2="17" y2="20"/>

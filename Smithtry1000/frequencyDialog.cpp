@@ -3,10 +3,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 FrequencyDialog::FrequencyDialog(QWidget* parent)
     : QDialog(parent)
 {
+    this->setWindowTitle("Frequency, MHz");
     inputField = new QLineEdit(this);
     okButton = new QPushButton("OK", this);
 
@@ -31,7 +33,6 @@ void FrequencyDialog::onAccept()
         if (dpIndex == 0)
         {
             frequency = value;
-            frequencyList.append(frequency);
         }
         frequencyList.append(value);
         accept();

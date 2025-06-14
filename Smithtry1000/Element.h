@@ -13,7 +13,7 @@ private:
 	void SetMode(mode);
 	void SetValue(float);
 	void SetFrequency(float);
-	void SetPoint(Point);
+	void SetPoint(Point);	
 	void SetChartParameters(map<chartMode, tuple<float, float>>);
 	void SetParameter(map<parameterMode, complexNumber> parameters);
 public:

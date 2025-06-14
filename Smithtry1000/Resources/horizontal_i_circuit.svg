@@ -11,5 +11,5 @@
   <ellipse cx="29.97" cy="20.96" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
 
   <!-- Нижний прямоугольник с белым контуром (можно скрыть или заменить) -->
-  <rect x="5.07" y="23.84" width="28.74" height="12.41" stroke="#4b4b4b" stroke-width="6" fill="none"/>
+  <rect x="5.07" y="23.84" width="28.74" height="12.41" stroke="#fff" stroke-width="6" fill="none"/>
 </svg>

@@ -5,7 +5,6 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QPoint>
-#include <QCursor>
 #include <QTimer>
 
 using namespace std;
