@@ -60,6 +60,9 @@ set(PROJECT_SOURCES
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
+    ExportNetlist.ui
+    ExportNetlist.h
+    ExportNetlist.cpp
 )
 
 SET(UI_RESOURCES

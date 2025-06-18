@@ -48,6 +48,7 @@ Smithtry1000::Smithtry1000(QWidget* parent)
     connect(ui->MouseButton, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
     connect(ui->Capacitor_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitor_buttonClicked);
     connect(ui->GraphButton, &QPushButton::clicked, this, &Smithtry1000::onGraph_buttonClicked);
+    connect(ui->ExportNetlistButton, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Induction_button, &QPushButton::clicked, this, &Smithtry1000::onInduction_buttonClicked);
     connect(ui->Resistor_button, &QPushButton::clicked, this, &Smithtry1000::onResistor_buttonClicked);
     connect(ui->CapacitorParallel_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitorParallel_buttonClicked);
@@ -1533,6 +1534,11 @@ void Smithtry1000::onGraph_buttonClicked()
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     amplitudeFrequence->show();
     amplitudeFrequence->MatrixCalculation();
+}
+
+void Smithtry1000::onExportNetlist_buttonClicked()
+{
+    
 }
 
 complexNumber Smithtry1000::zCalculation(float x, float y)
