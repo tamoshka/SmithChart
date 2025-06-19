@@ -14,7 +14,6 @@
 #include "ComplexNumber.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
-#include "ExportNetlist.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -37,7 +36,6 @@ private slots:
     void onMinusSize_buttonClicked();
     void onDefaultSize_buttonClicked();
     void onGraph_buttonClicked();
-    void onExportNetlist_buttonClicked();
     void onS11_buttonClicked();
     void onS22_buttonClicked();
     void onTimeout();
