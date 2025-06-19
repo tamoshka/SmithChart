@@ -1,6 +1,7 @@
 #include "Tests.h"
 #include <QFileDialog>
 #include "newgeneral.h"
+#include <QTableWidgetItem>
 string get_extension(string path) {
 
     size_t last_slash = path.find_last_of("/\\");
@@ -21,16 +22,20 @@ string get_extension(string path) {
     return "";
 }
 
-Tests::Tests(QWidget *parent)
+Tests::Tests(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::TestsClass())
 {
     ui->setupUi(this);
 
+}
+
+void Tests::Load()
+{
+
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
-
 
     ui->tableWidget->setRowCount(s.f.size());
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -41,13 +46,13 @@ Tests::Tests(QWidget *parent)
         ui->tableWidget->setColumnCount(3);
         ui->tableWidget->setHorizontalHeaderLabels(QStringList()
             << "Frequency Hz" << "S11 Mag" << "S11 Angle");
-        for (int i = 0; i < ui->tableWidget->rowCount();i++)
+        for (int i = 0; i < ui->tableWidget->rowCount(); i++)
         {
             QVector<QString> S;
             S.push_back(QString::number(s.f[i]));
             S.push_back(QString::number(s.S[0][0][i].real()));
             S.push_back(QString::number(s.S[0][0][i].imag()));
-            for (int j = 0;j < S.size();j++)
+            for (int j = 0; j < S.size(); j++)
             {
                 QVariant o(S[j]);
                 QTableWidgetItem* tbl = new QTableWidgetItem();
@@ -63,7 +68,7 @@ Tests::Tests(QWidget *parent)
         ui->tableWidget->setColumnCount(9);
         ui->tableWidget->setHorizontalHeaderLabels(QStringList()
             << "Frequency Hz" << "S11 Mag" << "S11 Angle" << "S21 Mag" << "S21 Angle" << "S12 Mag" << "S12 Angle" << "S22 Mag" << "S22 Angle");
-        for (int i = 0; i < ui->tableWidget->rowCount();i++)
+        for (int i = 0; i < ui->tableWidget->rowCount(); i++)
         {
             QVector<QString> S;
             S.push_back(QString::number(s.f[i]));
@@ -75,7 +80,7 @@ Tests::Tests(QWidget *parent)
             S.push_back(QString::number(s.S[0][1][i].imag()));
             S.push_back(QString::number(s.S[1][1][i].real()));
             S.push_back(QString::number(s.S[1][1][i].imag()));
-            for (int j = 0;j < S.size();j++)
+            for (int j = 0; j < S.size(); j++)
             {
                 QVariant o(S[j]);
                 QTableWidgetItem* tbl = new QTableWidgetItem();
@@ -84,8 +89,18 @@ Tests::Tests(QWidget *parent)
             }
         }
     }
-}
 
+    connect(ui->tableWidget, &QTableWidget::itemClicked, [this](QTableWidgetItem* item)
+        {
+            emit rowClicked(item->row());
+        });
+
+    connect(ui->tableWidget, &QTableWidget::itemClicked, [this](QTableWidgetItem* item)
+        {
+            emit rowSelected(item->row());
+        });
+
+}
 
 Tests::~Tests()
 {

@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _TOUCHSTONE_FILE_H_
 #define _TOUCHSTONE_FILE_H_
+
 #include <vector>
 #include "Timedes.h"
 using namespace std;

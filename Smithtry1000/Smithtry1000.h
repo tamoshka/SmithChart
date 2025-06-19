@@ -20,7 +20,7 @@ class Smithtry1000 : public QMainWindow
     Q_OBJECT
 
 public: 
-    Smithtry1000(QWidget* parent = nullptr);
+    Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr);
     ~Smithtry1000();
 
 private slots:
@@ -41,6 +41,7 @@ private slots:
     void onTimeout();
 
 private:
+    SParameters* sParameters;
     CircuitElements* circuitElements = new CircuitElements();
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);  
     void ImaginaryImpedance();

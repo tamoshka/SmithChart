@@ -12,9 +12,15 @@ class Tests : public QMainWindow
     Q_OBJECT
 
 public:
-    Tests(QWidget *parent = nullptr);
+    Tests(QWidget* parent = nullptr);
     ~Tests();
+    void Load();
+
+signals:
+    void rowClicked(int row);
+    void rowSelected(int row);
 
 private:
-    Ui::TestsClass *ui;
+    Ui::TestsClass* ui;
+
 };

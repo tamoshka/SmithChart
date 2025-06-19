@@ -27,62 +27,6 @@ TouchstoneFile::~TouchstoneFile()
 {
 }
 
-/*bool TouchstoneFile::Save(spar_t& spar, const char* filename)
-{
-    cout << "Save 1" << endl;
-    time_t timer = time(NULL);
-    ofstream File;
-    File.open(filename);
-    bool fileOpened = false;
-
-    if (File.good())fileOpened = true;
-    char line[4096];
-    if (fileOpened)
-    {
-        File << "!Created with vna, " << ctime(&timer) << endl;
-        File << "# Hz S RI R 50" << endl;
-    }
-    else
-    {
-        cout << "!Created with vna, " << ctime(&timer) << endl;
-        cout << "# Hz S RI R 50" << endl;
-    }
-    for (int i = 0;i < (int)spar.f.size();i++)
-    {
-        if (spar.S[0].size() == 1)
-            sprintf(line, "%lf\t%le\t%le", spar.f[i], spar.S[0][0][i].real(), spar.S[0][0][i].imag());
-        else if (spar.S[0].size() == 2)
-            sprintf(line, "%lf\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le", spar.f[i],
-                spar.S[0][0][i].real(), spar.S[0][0][i].imag(),
-                spar.S[1][0][i].real(), spar.S[1][0][i].imag(),
-                spar.S[0][1][i].real(), spar.S[0][1][i].imag(),
-                spar.S[1][1][i].real(), spar.S[1][1][i].imag());
-        else if (spar.S[0].size() == 4)
-            sprintf(line, "%lf\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\n\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\n\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le\n\t%le\t%le\t%le\t%le\t%le\t%le\t%le\t%le", spar.f[i],
-                spar.S[0][0][i].real(), spar.S[0][0][i].imag(),
-                spar.S[0][1][i].real(), spar.S[0][1][i].imag(),
-                spar.S[0][2][i].real(), spar.S[0][2][i].imag(),
-                spar.S[0][3][i].real(), spar.S[0][3][i].imag(),
-                spar.S[1][0][i].real(), spar.S[1][0][i].imag(),
-                spar.S[1][1][i].real(), spar.S[1][1][i].imag(),
-                spar.S[1][2][i].real(), spar.S[1][2][i].imag(),
-                spar.S[1][3][i].real(), spar.S[1][3][i].imag(),
-                spar.S[2][0][i].real(), spar.S[2][0][i].imag(),
-                spar.S[2][1][i].real(), spar.S[2][1][i].imag(),
-                spar.S[2][2][i].real(), spar.S[2][2][i].imag(),
-                spar.S[2][3][i].real(), spar.S[2][3][i].imag(),
-                spar.S[3][0][i].real(), spar.S[3][0][i].imag(),
-                spar.S[3][1][i].real(), spar.S[3][1][i].imag(),
-                spar.S[3][2][i].real(), spar.S[3][2][i].imag(),
-                spar.S[3][3][i].real(), spar.S[3][3][i].imag());
-        if (fileOpened)File << line << endl;
-        else cout << line << endl;
-    }
-    if (fileOpened)File.close();
-    return fileOpened;
-
-}
-*/
 spar_t TouchstoneFile::Load2P(const char* filename)
 {
     ifstream File;

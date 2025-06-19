@@ -1,6 +1,7 @@
 #include "Table.h"
 #include <QFileDialog>
 #include "newgeneral.h"
+
 string get_extension2(string path) {
 
     size_t last_slash = path.find_last_of("/\\");
@@ -21,13 +22,15 @@ string get_extension2(string path) {
     return "";
 }
 
-Table::Table(QWidget *parent)
-	: QWidget(parent)
-	, ui(new Ui::Table())
+Table::Table(QWidget* parent)
+    : QWidget(parent)
+    , ui(new Ui::Table())
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
+}
 
-    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+void Table::Load()
+{
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
@@ -41,11 +44,11 @@ Table::Table(QWidget *parent)
         ui->tableWidget->setColumnCount(1);
         ui->tableWidget->setHorizontalHeaderLabels(QStringList()
             << "Frequency Hz");
-        for (int i = 0; i < ui->tableWidget->rowCount();i++)
+        for (int i = 0; i < ui->tableWidget->rowCount(); i++)
         {
             QVector<QString> K;
             K.push_back(QString::number(s.f[i]));
-            for (int j = 0;j < K.size();j++)
+            for (int j = 0; j < K.size(); j++)
             {
                 QVariant o(K[j]);
                 QTableWidgetItem* tbl = new QTableWidgetItem();
@@ -56,14 +59,14 @@ Table::Table(QWidget *parent)
 
     }
 
-    else if(get_extension2(fileName.toStdString()) == "S2P" || get_extension2(fileName.toStdString()) == "s2p")
+    else if (get_extension2(fileName.toStdString()) == "S2P" || get_extension2(fileName.toStdString()) == "s2p")
     {
         ui->tableWidget->setMinimumSize(650, 500);
         ui->tableWidget->setColumnCount(6);
         ui->tableWidget->setHorizontalHeaderLabels(QStringList()
             << "Frequency Hz" << "MAG" << "MSG" << "K[-]" << "Mue[-]" << "S12[dB]");
-        
-        for (int i = 0; i < ui->tableWidget->rowCount();i++)
+
+        for (int i = 0; i < ui->tableWidget->rowCount(); i++)
         {
             QVector<QString> K;
             K.push_back(QString::number(s.f[i]));
@@ -73,7 +76,7 @@ Table::Table(QWidget *parent)
             K.push_back(QString::number(s.Mu[i]));
             K.push_back(QString::number(s.S12[i]));
 
-            for (int j = 0;j < K.size();j++)
+            for (int j = 0; j < K.size(); j++)
             {
                 QVariant o(K[j]);
                 QTableWidgetItem* tbl = new QTableWidgetItem();
@@ -83,9 +86,14 @@ Table::Table(QWidget *parent)
         }
     }
 
+
+    connect(ui->tableWidget, &QTableWidget::itemClicked, [this](QTableWidgetItem* item)
+        {
+            emit rowSelected(item->row());
+        });
 }
 
 Table::~Table()
 {
-	delete ui;
+    delete ui;
 }
