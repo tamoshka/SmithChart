@@ -60,6 +60,14 @@ set(PROJECT_SOURCES
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
+    S11Param.cpp
+    S11Param.h
+    S22Param.cpp
+    S22Param.h
+    S12Param.cpp
+    S12Param.h
+    S21Param.cpp
+    S21Param.h
 )
 
 SET(UI_RESOURCES

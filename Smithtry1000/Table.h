@@ -13,8 +13,10 @@ class Table : public QWidget
 
 public:
 	Table(QWidget* parent = nullptr);
+	void Load();
 	~Table();
-
+signals:
+	void rowSelected(int row);
 private:
 	Ui::Table* ui;
 };

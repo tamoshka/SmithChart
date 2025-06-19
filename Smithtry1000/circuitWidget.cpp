@@ -163,7 +163,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
-                s1 = QString::number(320 * (frequency / 500) / (r1 - r2)) + " nH";
+                s1 = QString::number(M_PI/(r1-r2) * 100/frequency*500) + " nH";
                 break;
             }
             case CapacitorParallel:
@@ -172,7 +172,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 float r1 = admitanceImagR;
                 rAdmitanceImagCalculation(lastPointX, lastPointY);
                 float r2 = admitanceImagR;
-                s1 = QString::number((r2 - r1) / (6 * (frequency / 500))) + " pF";
+                s1 = QString::number((r2 - r1) / M_PI * 500/frequency) + " pF";
                 break;
             }
             }

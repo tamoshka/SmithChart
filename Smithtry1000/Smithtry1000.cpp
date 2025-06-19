@@ -10,13 +10,13 @@
 
 mode Model;
 
-Smithtry1000::Smithtry1000(QWidget* parent)
+Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     : QMainWindow(parent)
     , ui(new Ui::Smithtry1000Class())
     , trackingEnabled(false)
 {
     ui->setupUi(this);
-
+    this->sParameters = sParameters1;
     Model = Default;
     this->resize(1600, 920);
     this->setMaximumSize(1920, 1080);
@@ -815,12 +815,12 @@ void Smithtry1000::ImaginaryAdmitance()
             {
             case InductionParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(InductionParallel, 320 * (frequency / 500) / (r1 - r2)/1e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(InductionParallel, M_PI / (r1 - r2) * 100 / frequency * 500/1e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             case CapacitorParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / (6 * (frequency / 500))/1e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / M_PI * 500 / frequency/1e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             }
@@ -1744,10 +1744,12 @@ complexNumber Smithtry1000::admitanceImagChartParameters(float x, float y)
 
 void Smithtry1000::onS11_buttonClicked()
 {
-    SParameters* sParameters = new SParameters();
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    sParameters->Show();
 }
 
 void Smithtry1000::onS22_buttonClicked()
 {
-    SParameters* sParameters = new SParameters();
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    sParameters->Show();
 }
