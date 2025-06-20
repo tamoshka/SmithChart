@@ -30,7 +30,7 @@ QString ExportNetlist::generateNetlist()
             netlistLines << line;
         }
     }
-    netlistLines << "DEF2P 1 " + QString::number(nodeCounter + 1) + " A";
+    netlistLines << "DEF2P 1 " + QString::number(nodeCounter) + " A";
     netlistLines << "!";
     // Analysis directives
     netlistLines << "FREQ";
@@ -66,15 +66,18 @@ QString ExportNetlist::generateElementLine(Element* element, int& nodeCounter, i
 
         // Parallel elements
     case ResistorParallel:
-        line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter).arg(value);
+        line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter+1).arg(value);
+        nodeCounter++;
         break;
 
     case InductionParallel:
-        line = QString("L%1 %2 0 %3").arg(lCount++).arg(nodeCounter).arg(value*1e9);
+        line = QString("L%1 %2 0 %3").arg(lCount++).arg(nodeCounter+1).arg(value*1e9);
+        nodeCounter++;
         break;
 
     case CapacitorParallel:
-        line = QString("C%1 %2 0 %3").arg(cCount++).arg(nodeCounter).arg(value*1e12);
+        line = QString("C%1 %2 0 %3").arg(cCount++).arg(nodeCounter+1).arg(value*1e12);
+        nodeCounter++;
         break;
 
     default:
