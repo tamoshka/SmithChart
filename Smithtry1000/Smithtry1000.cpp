@@ -79,7 +79,7 @@ void Smithtry1000::onExportNetlist_buttonClicked()
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save SPICE Netlist",
         "",
-        "SPICE Files (*.sp);;All Files (*)"
+        "SPICE Files (*.CKT);;All Files (*)"
     );
 
     if (!fileName.isEmpty()) {

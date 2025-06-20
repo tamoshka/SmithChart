@@ -20,7 +20,7 @@ QString ExportNetlist::generateNetlist()
     netlistLines << "!GLOBAL";
     netlistLines << "DIM FREQ=1e6 R=1e0 L=1e-9 C=1e-12";
     netlistLines << "!";
-
+    netlistLines << "CKT";
     int nodeCounter = 0;  // Current node (start from input)
     int rCount = 1, lCount = 1, cCount = 1;  // Element counters
 
