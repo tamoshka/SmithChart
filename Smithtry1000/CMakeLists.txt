@@ -68,6 +68,9 @@ set(PROJECT_SOURCES
     S12Param.h
     S21Param.cpp
     S21Param.h
+    ExportNetlist.ui
+    ExportNetlist.h
+    ExportNetlist.cpp
 )
 
 SET(UI_RESOURCES
