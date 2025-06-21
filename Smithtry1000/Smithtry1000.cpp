@@ -59,6 +59,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
     connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
+    connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
@@ -68,6 +69,31 @@ Smithtry1000::~Smithtry1000()
 {
     delete ui;
     delete this->circuitElements;
+}
+
+void Smithtry1000::onExportNetlist_buttonClicked()
+{
+    ExportNetlist exporter = ExportNetlist(nullptr, circuitElements);
+    QString netlist = exporter.generateNetlist();
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+        "Save SPICE Netlist",
+        "",
+        "SPICE Files (*.CKT);;All Files (*)"
+    );
+
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream stream(&file);
+            stream << netlist;
+            file.close();
+            QMessageBox::information(this, "Success", "SPICE netlist exported!");
+        }
+        else {
+            QMessageBox::warning(this, "Error", "Cannot write file");
+        }
+    }
 }
 
 /// <summary>
