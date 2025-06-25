@@ -357,7 +357,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         QPointF point = QPointF(x, y);
         painter.drawEllipse(point, 5, 5);
     }
-    painter.setPen(QPen(Qt::magenta, 2));
+    QColor color = QColor(0, 0, 0);
+    painter.setPen(QPen(color, 2));
     for (int ll = 0; ll < index - 1; ll++)
     {
         if (get<3>(points[ll + 1]) == mode::InductionShunt || get<3>(points[ll + 1]) == mode::CapacitorShunt)

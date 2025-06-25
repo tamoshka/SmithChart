@@ -22,6 +22,11 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     this->setMaximumSize(1920, 1080);
     ui->pointTable->setColumnCount(5);
     ui->pointTable->setRowCount(1);
+    ui->pointTable->setColumnWidth(0, 40);
+    ui->pointTable->setColumnWidth(1, 35);
+    ui->pointTable->setColumnWidth(2, 120);
+    ui->pointTable->setColumnWidth(3, 70);
+    ui->pointTable->setColumnWidth(4, 65);
     ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->pointTable->setItem(0, 0, new QTableWidgetItem("Start"));
     ui->pointTable->setItem(0, 1, new QTableWidgetItem("ID"));
