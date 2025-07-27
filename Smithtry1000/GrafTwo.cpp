@@ -14,6 +14,7 @@ void GrafTwo::Load()
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
+	ui->widget->clearGraphs();
 	x = QVector<double>(s.f.begin(), s.f.end());
 	y1 = QVector<double>(s.Mg.begin(), s.Mg.end());
 	y2 = QVector<double>(s.Ms.begin(), s.Ms.end());

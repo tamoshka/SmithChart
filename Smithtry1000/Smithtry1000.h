@@ -15,6 +15,7 @@
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
 #include "ExportNetlist.h"
+#include "renderarea.h"
 
 class Smithtry1000 : public QMainWindow
 {
@@ -46,6 +47,7 @@ private:
     SParameters* sParameters;
     CircuitElements* circuitElements = new CircuitElements();
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);  
+    RenderArea* renderArea = new RenderArea(this, circuitElements);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;

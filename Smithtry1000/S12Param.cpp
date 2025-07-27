@@ -18,6 +18,10 @@ void S12Param::Load()
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
+	z.clear();
+	x.clear();
+	y.clear();
+	angle.clear();
 	max = 0;
 	for (int i = 0; i < s.S[0][1].size(); i++)
 	{

@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QTimer>
+#include "circuitElements.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ class RenderArea : public QWidget
 public:
     void setCursorPosOnCircle(const QPoint& pos);
 
-    RenderArea(QWidget* parent = nullptr);
+    RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
     bool flag[20] = { false };
     int step_count = 0;
     
@@ -35,7 +36,7 @@ signals:
 public slots:
 
 private:
-
+    CircuitElements* circuitElements = new CircuitElements();
     float r;
     QPointF center;
     QColor mBackGroundColor;

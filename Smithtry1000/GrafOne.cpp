@@ -33,7 +33,7 @@ void GrafOne::Load()
 {
 	TouchstoneFile t;
 	spar_t s;
-
+	ui->widget->clearGraphs();
 	s = t.Load2P(fileName.toStdString().c_str());
 
 	x = QVector<double>(s.f.begin(), s.f.end());

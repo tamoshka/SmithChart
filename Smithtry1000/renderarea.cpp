@@ -10,7 +10,7 @@
 #include "Smithtry1000.h"
 
 
-RenderArea::RenderArea(QWidget* parent) :
+RenderArea::RenderArea(QWidget* parent, CircuitElements* newElements) :
     QWidget(parent),
     mBackGroundColor(255, 255, 255),
     mShapeColor(0, 0, 0),
@@ -18,6 +18,7 @@ RenderArea::RenderArea(QWidget* parent) :
 {
      m_cacheValid = false;
      m_scaleFactor = 2.0;
+     circuitElements = newElements;
 }
 
 QSize RenderArea::minimumSizeHint() const
@@ -352,63 +353,42 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     }
     for (int ii = 0; ii < index; ii++)
     {
-        float x = get<0>(points[ii]).x * scale + this->rect().center().x();
-        float y = get<0>(points[ii]).y * scale + this->rect().center().y();
-        QPointF point = QPointF(x, y);
-        painter.drawEllipse(point, 5, 5);
+        if (ii == 0)
+        {
+            float x = circuitElements->firstPoint.x * scale + this->rect().center().x();
+            float y = circuitElements->firstPoint.y * scale + this->rect().center().y();
+            QPointF point = QPointF(x, y);
+            painter.drawEllipse(point, 5, 5);
+        }
+        else
+        {
+            float x = circuitElements->GetCircuitElements()[ii-1]->GetPoint().x * scale + this->rect().center().x();
+            float y = circuitElements->GetCircuitElements()[ii-1]->GetPoint().y * scale + this->rect().center().y();
+            QPointF point = QPointF(x, y);
+            painter.drawEllipse(point, 5, 5);
+        }
     }
     QColor color = QColor(0, 0, 0);
     painter.setPen(QPen(color, 2));
     for (int ll = 0; ll < index - 1; ll++)
     {
-        if (get<3>(points[ll + 1]) == mode::InductionShunt || get<3>(points[ll + 1]) == mode::CapacitorShunt)
+        if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionShunt || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorShunt)
         {
-            r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x;
-            float y = get<0>(points[ll]).y;
+            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealImpedance);
+            r = get<0>(tuple1);
+            float t2 = get<1>(tuple1);
+            tuple<float, float> tuple2;
             float t;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            if (ll == 0)
             {
-                if (y == 0 && x == 1)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple2 = circuitElements->chart.at(RealImpedance);
+                t = get<1>(tuple2);
             }
             else
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t += M_PI;
-                }
-                else if (cos_t > 0 && sin_t < 0)
-                {
-                    t = 2 * M_PI - abs(t);
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tuple2 = circuitElements->GetCircuitElements()[ll-1]->GetChartParameters().at(RealImpedance);
+                t = get<1>(tuple2);
             }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x - 1);
-            }
-            float t2 = get<2>(points[ll + 1]);
             if (t2 < t)
             {
                 float temp = t;
@@ -420,62 +400,32 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             iPixel.setY(iPoint.y() * scale + this->rect().center().y());
             bool flagi = false;
             step = abs(t2 - t) / 100;
-            for (t; t < t2; t += step) {
-
+            for (t; t < t2; t += step) 
+            {
                 QPointF point = compute_real(t);
                 QPointF pixel;
-
                 pixel.setX(point.x() * scale + center.x());
                 pixel.setY(point.y() * scale + center.y());
-
-
-
-
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
-
-
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::ResistorShunt)
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorShunt)
         {
-            r = get<1>(points[ll + 1]);
-            float t2 = get<2>(points[ll + 1]);
+            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
+            r = get<0>(tuple1);
+            float t2 = get<1>(tuple1);
+            tuple<float, float> tuple2;
             float t;
-            float x = get<0>(points[ll]).x;
-            float y = get<0>(points[ll]).y;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            float sin_t = dy;
-            float cos_t = dx;
-            if (y < 1e-6 && y>0)
+            if (ll == 0)
             {
-                if (y == 0)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple2 = circuitElements->chart.at(ImagImpedance);
+                t = get<1>(tuple2);
             }
             else
             {
-                t = atan(cos_t / sin_t);
-                if (y < 0)
-                {
-                    t += M_PI;
-                }
-                else
-                {
-                    t += 2 * M_PI;
-                }
+                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagImpedance);
+                t = get<1>(tuple2);
             }
             step = abs(t2 - t) / 100;
             float tmin, tmax;
@@ -503,50 +453,23 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::InductionParallel|| get<3>(points[ll + 1]) == mode::CapacitorParallel)
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionParallel|| circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorParallel)
         {
-            r = get<1>(points[ll + 1]);
-            float x = get<0>(points[ll]).x;
-            float y = get<0>(points[ll]).y;
+            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
+            r = get<0>(tuple1);
+            float t2 = get<1>(tuple1);
+            tuple<float, float> tuple2;
             float t;
-            double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-            double xCenter = -1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = -y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            if (ll == 0)
             {
-                if (y == 0 && x == -1)
-                {
-                    t = -M_PI;
-                }
-                else if (x == -1)
-                {
-                    t = M_PI;
-                }
-                else if (x == 0)
-                {
-                    t = 0;
-                }
+                tuple2 = circuitElements->chart.at(RealAdmitance);
+                t = get<1>(tuple2);
             }
             else
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t = abs(t) - M_PI;
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
+                t = get<1>(tuple2);
             }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x + 1);
-            }
-            float t2 = get<2>(points[ll + 1]);
             bool flagi = false;
             step = abs(t2 - t) / 100;
             if (t2 < t)
@@ -555,70 +478,35 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 t = t2;
                 t2 = temp;
             }
-
             iPoint = compute_realParallel(t);
             iPixel.setX(iPoint.x()* scale + this->rect().center().x());
             iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
-            for (t; t < t2; t += step) {
-
+            for (t; t < t2; t += step) 
+            {
                 QPointF point = compute_realParallel(t);
                 QPointF pixel;
-
                 pixel.setX(point.x() * scale + center.x());
                 pixel.setY(-point.y() * scale + center.y());
-
-
-
-
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
-
-
             }
         }
-        else if (get<3>(points[ll + 1]) == mode::ResistorParallel)
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorParallel)
         {
-            r = get<1>(points[ll + 1]);
-            float t2 = get<2>(points[ll + 1]);
+            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
+            r = get<0>(tuple1);
+            float t2 = get<1>(tuple1);
+            tuple<float, float> tuple2;
             float t;
-            float x = get<0>(points[ll]).x;
-            float y = get<0>(points[ll]).y;
-            double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-            double yCenter = -circleRadius;
-            double dx = x + 1;
-            double dy = y - yCenter;
-            float sin_t = -dy;
-            float cos_t = dx;
-            if (y < 1e-6 && y>0)
+            if (ll == 0)
             {
-                if (y == 0)
-                {
-                    t = 0;
-                }
-                else if (x == -1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple2 = circuitElements->chart.at(ImagAdmitance);
+                t = get<1>(tuple2);
             }
             else
             {
-                t = atan(sin_t / cos_t);
-            }
-            if (x + 1 != 0)
-            {
-                r = cos(t) / (x + 1);
-            }
-            else
-            {
-                r = (1 + sin(t)) / y;
-            }
-            if (y > 0)
-            {
-                r *= -1;
+                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagAdmitance);
+                t = get<1>(tuple2);
             }
             step = abs(t2 - t) / 100;
             float tmin, tmax;
@@ -643,7 +531,6 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 pixel.setY(point.y() * scale + center.y());
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
-
             }
         }
     }
@@ -661,50 +548,17 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         float tmax, tmin;
         if (Model == mode::InductionShunt || Model==mode::CapacitorShunt)
         {
-            float t;
-            float x = get<0>(points[index - 1]).x;
-            float y = get<0>(points[index - 1]).y;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            tuple<float, float> tuple1;
+            if (index == 1)
             {
-                if (y == 0 && x == 1)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple1 = circuitElements->chart.at(RealImpedance);
             }
             else
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t += M_PI;
-                }
-                else if (cos_t > 0 && sin_t < 0)
-                {
-                    t = 2 * M_PI - abs(t);
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealImpedance);
             }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x - 1);
-            }
+            r = get<0>(tuple1);
+            float t = get<1>(tuple1);
             switch (Model)
             {
             case InductionShunt:
@@ -731,61 +585,26 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 QPointF pixel;
                 pixel.setX(point.x() * scale + this->rect().center().x());
                 pixel.setY(point.y() * scale + this->rect().center().y());
-
-
-
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
-
-
             }
         }
         else if (Model == mode::ResistorShunt)
         {
-            float t;
-            float x = get<0>(points[index - 1]).x;
-            float y = get<0>(points[index - 1]).y;
-            double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-            double xCenter = 1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = y;
-            float sin_t = dy;
-            float cos_t = dx;
-            if (y < 1e-6 && y>0)
+            float y;
+            tuple<float, float> tuple1;
+            if (index == 1)
             {
-                if (y == 0)
-                {
-                    t = 0;
-                }
-                else if (x == 1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple1 = circuitElements->chart.at(ImagImpedance);
+                y = circuitElements->firstPoint.y;
             }
             else
             {
-                t = atan(cos_t / sin_t);
-                if (y < 0)
-                {
-                    t += M_PI;
-                }
-                else
-                {
-                    t += 2 * M_PI;
-                }
+                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagImpedance);
+                y = circuitElements->GetCircuitElements()[index-2]->GetPoint().y;
             }
-            if (x - 1 != 0)
-            {
-                r = cos(t) / (x - 1);
-            }
-            else
-            {
-                r = (1 + sin(t)) / y;
-            }
+            r = get<0>(tuple1);
+            float t = get<1>(tuple1);
             if (y < 0)
             {
                 r = abs(r);
@@ -804,14 +623,12 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             (iPoint.x() * scale + center.x());
             iPixel.setY(-iPoint.y() * scale + center.y());
             bool flagi = false;
-            for (tmin; tmin < tmax; tmin += step) {
-
+            for (tmin; tmin < tmax; tmin += step) 
+            {
                 QPointF point = compute_imaginary(tmin);
                 QPointF pixel;
                 pixel.setX(point.x() * scale + center.x());
                 pixel.setY(-point.y() * scale + center.y());
-
-
                 if (pow(point.x(), 2) + pow(point.y(), 2) < 1)
                 {
                     painter.drawLine(iPixel, pixel);
@@ -821,46 +638,17 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
         {
-            float t;
-            float x = get<0>(points[index - 1]).x;
-            float y = get<0>(points[index - 1]).y;
-            double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-            double xCenter = -1 - circleRadius;
-            double dx = x - xCenter;
-            double dy = -y;
-            double sin_t = dy;
-            double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            tuple<float, float> tuple1;
+            if (index == 1)
             {
-                if (y == 0 && x == -1)
-                {
-                    t = -M_PI;
-                }
-                else if (x == -1)
-                {
-                    t = M_PI;
-                }
-                else if (x == 0)
-                {
-                    t = 0;
-                }
+                tuple1 = circuitElements->chart.at(RealAdmitance);
             }
             else
             {
-                t = atan(sin_t / cos_t);
-                if (cos_t < 0 && sin_t < 0)
-                {
-                    t = abs(t) - M_PI;
-                }
-                else if (sin_t > 0 && cos_t < 0)
-                {
-                    t = M_PI - abs(t);
-                }
+                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealAdmitance);
             }
-            if (x - 1 != 0)
-            {
-                r = (cos(t) - x) / (x + 1);
-            }
+            r = get<0>(tuple1);
+            float t = get<1>(tuple1);
             switch (Model)
             {
             case InductionParallel:
@@ -881,62 +669,34 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             iPixel.setY(-iPoint.y() * scale + this->rect().center().y());
             bool flagi = false;
             step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step) {
-
+            for (tmin; tmin < tmax; tmin += step) 
+            {
                 QPointF point = compute_realParallel(tmin);
                 QPointF pixel;
                 pixel.setX(point.x() * scale + this->rect().center().x());
                 pixel.setY(-point.y() * scale + this->rect().center().y());
-
-
-
                 painter.drawLine(iPixel, pixel);
                 iPixel = pixel;
-
-
             }
         }
         else if (Model == mode::ResistorParallel)
         {
-            float t;
-            float x = get<0>(points[index - 1]).x;
-            float y = get<0>(points[index - 1]).y;
-            double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-            double yCenter = -circleRadius;
-            double dx = x + 1;
-            double dy = y - yCenter;
-            float sin_t = -dy;
-            float cos_t = dx;
-            if (y < 1e-6 && y>0)
+            float y;
+            tuple<float, float> tuple1;
+            if (index == 1)
             {
-                if (y == 0)
-                {
-                    t = 0;
-                }
-                else if (x == -1)
-                {
-                    t = 2 * M_PI;
-                }
-                else
-                {
-                    t = M_PI;
-                }
+                tuple1 = circuitElements->chart.at(ImagAdmitance);
+                y = circuitElements->firstPoint.y;
             }
             else
             {
-                t = atan(sin_t / cos_t);
+                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagAdmitance);
+                y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (x + 1 != 0)
-            {
-                r = cos(t) / (x + 1);
-            }
-            else
-            {
-                r = (1 + sin(t)) / y;
-            }
+            r = get<0>(tuple1);
+            float t = get<1>(tuple1);
             if (y > 0)
             {
-                r *= -1;
                 tmin = t;
                 tmax = M_PI / 2;
             }
@@ -951,14 +711,12 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             (iPoint.x() * scale + center.x());
             iPixel.setY(iPoint.y() * scale + center.y());
             bool flagi = false;
-            for (tmin; tmin < tmax; tmin += step) {
-
+            for (tmin; tmin < tmax; tmin += step) 
+            {
                 QPointF point = compute_imaginaryParallel(tmin);
                 QPointF pixel;
                 pixel.setX(point.x() * scale + center.x());
                 pixel.setY(point.y() * scale + center.y());
-
-
                 if (pow(point.x(), 2) + pow(point.y(), 2) < 1) 
                 {
                     painter.drawLine(iPixel, pixel);

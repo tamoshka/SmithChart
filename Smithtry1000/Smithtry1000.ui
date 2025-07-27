@@ -30,19 +30,6 @@ border-color: rgb(0, 0, 0);</string>
     <property name="title">
      <string/>
     </property>
-    <widget class="RenderArea" name="renderArea" native="true">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>1201</width>
-       <height>811</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-    </widget>
     <widget class="QTableWidget" name="rTable">
      <property name="geometry">
       <rect>
@@ -495,6 +482,29 @@ border-color: rgb(0, 0, 0);</string>
         </palette>
        </property>
       </widget>
+     </widget>
+    </widget>
+    <widget class="QScrollArea" name="scrollAreaDiagram">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1201</width>
+       <height>811</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1199</width>
+        <height>809</height>
+       </rect>
+      </property>
      </widget>
     </widget>
    </widget>
@@ -1926,12 +1936,6 @@ background-color: rgb(75, 75, 75);</string>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
-  <customwidget>
-   <class>RenderArea</class>
-   <extends>QWidget</extends>
-   <header>renderarea.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>CircuitWidget</class>
    <extends>QWidget</extends>

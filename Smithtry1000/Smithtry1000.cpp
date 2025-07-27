@@ -65,6 +65,12 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
+    renderArea->setMinimumHeight(800);
+    renderArea->setMinimumWidth(1200);
+    ui->scrollAreaDiagram->setWidget(renderArea);
+    ui->scrollAreaDiagram->setWidgetResizable(true);
+    ui->scrollAreaDiagram->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    ui->scrollAreaDiagram->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
@@ -113,6 +119,10 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
     else if (event->button() == Qt::RightButton)
     {
         rightClicked = true;
+        if (Model == Default)
+        {
+            onDelete_buttonClicked();
+        }
     }
 }
 
@@ -122,8 +132,8 @@ void Smithtry1000::onButtonClicked()
     if (dialog.exec() == QDialog::Accepted) 
     {
         Model = mode::AddPoint;
-        QPoint centerLocal = ui->renderArea->rect().center();
-        QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+        QPoint centerLocal = renderArea->rect().center();
+        QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
         QCursor::setPos(lastPointX * scale + centerGlobal.x(), lastPointY * scale + centerGlobal.y());
         leftClicked = false;
         rightClicked = false;
@@ -188,8 +198,8 @@ void Smithtry1000::onButtonClicked()
             {
                 r = (cos(t) - x) / (x - 1);
             }
-            QPoint temp = QPoint(x * scale + ui->renderArea->rect().center().x(), y * scale + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
+            QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
             if (index == 0)
             {
                 pointsX.append(x);
@@ -197,6 +207,7 @@ void Smithtry1000::onButtonClicked()
                 Point point = Point();
                 point.x = x;
                 point.y = y;
+                circuitElements->firstPoint = point;
                 points[index] = make_tuple(point, r, t, mode::AddPoint);
                 rImpedanceRealCalculation(x, y);
                 float r1 = impedanceRealR;
@@ -205,6 +216,16 @@ void Smithtry1000::onButtonClicked()
                 float r2 = impedanceImagR;
                 circuitElements->imagFirstPoint = r2;
                 circuitElements->frequencyFirstPoint = frequency;
+                map<chartMode, tuple<float, float>> chart;
+                complexNumber rRealImpedance = impedanceRealChartParameters(point.x, point.y);
+                complexNumber rImagImpedance = impedanceImagChartParameters(point.x, point.y);
+                complexNumber rRealAdmitance = admitanceRealChartParameters(point.x, point.y);
+                complexNumber rImagAdmitance = admitanceImagChartParameters(point.x, point.y);
+                chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
+                chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
+                chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
+                chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+                circuitElements->chart = chart;
                 int row = ui->pointTable->rowCount();
                 ui->pointTable->insertRow(row);
                 ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
@@ -221,7 +242,7 @@ void Smithtry1000::onButtonClicked()
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
                 index++;
                 dpIndex++;
-                ui->renderArea->setCursorPosOnCircle(temp);
+                renderArea->setCursorPosOnCircle(temp);
                 auxiliaryWidget->update();
             }
             else
@@ -247,7 +268,7 @@ void Smithtry1000::onButtonClicked()
                 point.x = x;
                 point.y = y;
                 morePoints.append(point);
-                ui->renderArea->setCursorPosOnCircle(temp);
+                renderArea->setCursorPosOnCircle(temp);
             }
         }
         Model = Default;
@@ -274,8 +295,8 @@ void Smithtry1000::onResistor_buttonClicked()
     auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    QPoint centerLocal = renderArea->rect().center();
+    QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (pointsX.size() > 0)
     {
         auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
@@ -364,12 +385,12 @@ void Smithtry1000::onResistor_buttonClicked()
             complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
             chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
             this->circuitElements->AddCircuitElements(new Element(ResistorShunt, r2 - r1, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
             points[index] = make_tuple(point, r, t, mode::ResistorShunt);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -387,12 +408,12 @@ void Smithtry1000::onResistor_buttonClicked()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
+            renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
@@ -419,8 +440,8 @@ void Smithtry1000::onResistorParallel_buttonClicked()
     auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    QPoint centerLocal = renderArea->rect().center();
+    QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (pointsX.size() > 0)
     {
         auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (index + 2) * 40, 39);
@@ -505,7 +526,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             this->circuitElements->AddCircuitElements(new Element(ResistorParallel, 1000 / (r2 - r1), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
             points[index] = make_tuple(point, r, t, mode::ResistorParallel);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -523,12 +544,12 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
+            renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
@@ -561,7 +582,7 @@ void Smithtry1000::onDelete_buttonClicked()
                 break;  // Можно удалить только первую найденную строку, если нужно
             }
         }
-        ui->renderArea->update();
+        renderArea->update();
         auxiliaryWidget->update();
         if (index > 0)
         {
@@ -573,6 +594,7 @@ void Smithtry1000::onDelete_buttonClicked()
             this->circuitElements->imagFirstPoint = -9999;
             this->circuitElements->realFirstPoint = -9999;
             this->circuitElements->frequencyFirstPoint = -9999;
+            this->circuitElements->firstPoint = Point();
         }
     }
 }
@@ -582,8 +604,8 @@ void Smithtry1000::ImaginaryImpedance()
     auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    QPoint centerLocal = renderArea->rect().center();
+    QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (pointsX.size() > 0)
     {
         switch (Model)
@@ -702,7 +724,7 @@ void Smithtry1000::ImaginaryImpedance()
             }
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
             points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -720,12 +742,12 @@ void Smithtry1000::ImaginaryImpedance()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
+            renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
 
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
@@ -740,8 +762,8 @@ void Smithtry1000::ImaginaryAdmitance()
     auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    QPoint centerLocal = renderArea->rect().center();
+    QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (pointsX.size() > 0)
     {
         switch (Model)
@@ -840,7 +862,7 @@ void Smithtry1000::ImaginaryAdmitance()
             complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
             chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
             switch (Model)
             {
@@ -857,7 +879,7 @@ void Smithtry1000::ImaginaryAdmitance()
             }
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
             points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
@@ -875,12 +897,12 @@ void Smithtry1000::ImaginaryAdmitance()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
-            ui->renderArea->setCursorPosOnCircle(temp);
+            renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + ui->renderArea->rect().center().x(), pointsY.back() * scale + ui->renderArea->rect().center().y());
-            ui->renderArea->setCursorPosOnCircle(temp);
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
@@ -1084,9 +1106,8 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
 
 void Smithtry1000::onTimeout()
 {
-
-    QPoint centerLocal = ui->renderArea->rect().center();
-    QPoint centerGlobal = ui->renderArea->mapToGlobal(centerLocal);
+    QPoint centerLocal = renderArea->rect().center();
+    QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (Model == AddPoint || Model==Default)
     {
         QPoint temp = QCursor::pos();
@@ -1141,8 +1162,8 @@ void Smithtry1000::onTimeout()
         }
         tempX = posOnCircle.x();
         tempY = posOnCircle.y();*/
-        QCursor::setPos(ui->renderArea->mapToGlobal(posOnCircle));
-        ui->renderArea->setCursorPosOnCircle(posOnCircle);
+        QCursor::setPos(renderArea->mapToGlobal(posOnCircle));
+        renderArea->setCursorPosOnCircle(posOnCircle);
         // Возвращаем системный курсор обратно в центр
         QCursor::setPos(centerGlobal);
     }
@@ -1252,8 +1273,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * scale + ui->renderArea->rect().center().x();
-        y = y * scale + ui->renderArea->rect().center().y();
+        x = x * scale + renderArea->rect().center().x();
+        y = y * scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
@@ -1361,8 +1382,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * scale + ui->renderArea->rect().center().x();
-        y = y * scale + ui->renderArea->rect().center().y();
+        x = x * scale + renderArea->rect().center().x();
+        y = y * scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
@@ -1446,8 +1467,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
         lastPointX = x;
         lastPointY = y;
-        x = x * scale + ui->renderArea->rect().center().x();
-        y = y * scale + ui->renderArea->rect().center().y();
+        x = x * scale + renderArea->rect().center().x();
+        y = y * scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
@@ -1527,8 +1548,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         ui->rTable->setItem(1, 2, new QTableWidgetItem(QString::number(impedanceImagR)));
         ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(admitanceRealR)));
         ui->rTable->setItem(2, 2, new QTableWidgetItem(QString::number(admitanceImagR)));
-        x = x * scale + ui->renderArea->rect().center().x();
-        y = y * scale + ui->renderArea->rect().center().y();
+        x = x * scale + renderArea->rect().center().x();
+        y = y * scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
@@ -1540,7 +1561,7 @@ void Smithtry1000::onPlusSize_buttonClicked()
     if (scale < 600)
     {
         scale += 100;
-        ui->renderArea->update();
+        renderArea->update();
     }
 }
 
@@ -1549,21 +1570,51 @@ void Smithtry1000::onMinusSize_buttonClicked()
     if (scale > 100)
     {
         scale -= 100;
-        ui->renderArea->update();
+        renderArea->update();
     }
 }
 
 void Smithtry1000::onDefaultSize_buttonClicked()
 {
     scale = 200;
-    ui->renderArea->update();
+    renderArea->update();
 }
 
 void Smithtry1000::onGraph_buttonClicked()
 {
-    AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
-    amplitudeFrequence->show();
-    amplitudeFrequence->MatrixCalculation();
+    if (pointsX.size() > 1)
+    {
+        AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
+        amplitudeFrequence->show();
+        /*Circuit circuit;
+        // Пример конфигурации цепи
+        circuit.elements = {
+            {"LCS", "s", {23.94, 0.001102}},
+            {"LCS", "p", {2.917, 0.003275}},
+            {"LCS", "p", {8.056, 0.009045}},
+            {"LCS", "s", {29.4, 0.0008974}},
+            {"C",   "p", {0.01037}},
+            {"L",   "p", {2.543}}
+        };
+        circuit.ZS =
+        {
+            Complex(75.08, 0.84),
+            Complex(81.22, 2.98),
+            Complex(81.94, -1.52),
+            Complex(85.15, -1.4),
+            Complex(51.44, -1.19)
+        };
+        circuit.ZL =
+        {
+            Complex(83.16, -135.9),
+            Complex(53.02, -102.9),
+            Complex(35.56, -77.55),
+            Complex(39.93, -68.64),
+            Complex(22.69, -46.11)
+        };
+        amplitudeFrequence->calc_S2P(circuit);*/
+        amplitudeFrequence->MatrixCalculation();
+    }
 }
 
 complexNumber Smithtry1000::zCalculation(float x, float y)
