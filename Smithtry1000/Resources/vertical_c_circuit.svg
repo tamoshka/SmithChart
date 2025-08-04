@@ -1,0 +1,12 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Белый фон -->
+  <rect x="0" y="0" width="40" height="40" fill="white" />
+
+  <!-- Чёрные линии -->
+  <line x1="15" y1="39.5" x2="25" y2="39.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="0" y1="1" x2="40" y2="1" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="20" y1="15" x2="20" y2="0"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="20" y1="23" x2="20" y2="40"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="10" y1="23" x2="30" y2="23"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="10" y1="15" x2="30" y2="15"/>
+</svg>

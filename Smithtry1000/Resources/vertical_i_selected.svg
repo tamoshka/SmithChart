@@ -1,0 +1,17 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Белый фон -->
+  <rect x="0" y="0" width="40" height="40" fill="#fff"/>
+
+  <!-- Вертикальные линии -->
+  <line x1="20" y1="0" x2="20" y2="7" stroke="#000" stroke-width="1.5"/>
+  <line x1="20" y1="33" x2="20" y2="40" stroke="#000" stroke-width="1.5"/>
+
+  <!-- Горизонтальные эллипсы -->
+  <ellipse cx="20" cy="10.15" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
+  <ellipse cx="20" cy="17.20" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
+  <ellipse cx="20" cy="23.68" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
+  <ellipse cx="20" cy="30.41" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
+
+  <!-- Прямоугольник для скрытия нижней части эллипсов -->
+  <rect x="0" y="0" width="19" height="40" fill="#fff"/>
+</svg>
