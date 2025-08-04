@@ -12,15 +12,67 @@ find_package(Qt${QT_VERSION_MAJOR}
         Core
         Gui
         Widgets
+        SvgWidgets
+        PrintSupport
+        Graphs
 )
 qt_standard_project_setup()
 
 set(PROJECT_SOURCES
+    systemParameters.h
+    systemParameters.cpp
+    general.h
+    newgeneral.h
+    Element.h
+    Element.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
     Smithtry1000.cpp
+    circuitWidget.h
+    circuitWidget.cpp
     Resources/FirstTime.qrc
+    renderarea.h
+    renderarea.cpp
+    frequencyDialog.h
+    frequencyDialog.cpp
+    circuitElements.h
+    circuitElements.cpp
+    ComplexNumber.h
+    ComplexNumber.cpp
+    qcustomplot.h
+    qcustomplot.cpp
+    AmplitudeFrequency.ui
+    AmplitudeFrequency.h
+    AmplitudeFrequency.cpp
+    Timedes.h
+    Tests.ui
+    Tests.h
+    Tests.cpp
+    Table.ui
+    Table.h
+    Table.cpp
+    S2p.h
+    S2p.cpp
+    GrafOne.ui
+    GrafOne.h
+    GrafOne.cpp
+    GrafTwo.ui
+    GrafTwo.h
+    GrafTwo.cpp
+    SParameters.h
+    SParameters.cpp
+    S11Param.cpp
+    S11Param.h
+    S22Param.cpp
+    S22Param.h
+    S12Param.cpp
+    S12Param.h
+    S21Param.cpp
+    S21Param.h
+    ExportNetlist.ui
+    ExportNetlist.h
+    ExportNetlist.cpp
 )
 
 SET(UI_RESOURCES
@@ -41,5 +93,8 @@ target_link_libraries(${PROJECT_NAME}
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::SvgWidgets
+        Qt::PrintSupport
+        Qt::Graphs
 )
 
