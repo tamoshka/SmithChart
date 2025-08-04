@@ -2,20 +2,13 @@
 
 #include <QWidget>
 #include "circuitElements.h"
-#include "ComplexNumber.h"
 #include "general.h"
 #include "qcustomplot.h"
-#include <complex>
-#include <array>
-#include <cmath>
-#include <string>
-#include <vector>
 QT_BEGIN_NAMESPACE
 namespace Ui { class AmplitudeFrequency; };
 QT_END_NAMESPACE
 
 
-using Complex = complex<double>;
 
 
 const Complex I(0.0, 1.0);
@@ -40,19 +33,19 @@ class AmplitudeFrequency : public QWidget
 private:
 	CircuitElements* circuitElements;
 	double z0 = 50;
-	complexNumber gamma1; // reflection coefficient
-	complexNumber gamma2; // reflection coefficient
-	void SetGamma1(complexNumber);
-	void SetGamma2(complexNumber);
+	Complex gamma1; // reflection coefficient
+	Complex gamma2; // reflection coefficient
+	void SetGamma1(Complex);
+	void SetGamma2(Complex);
 	vector<array<array<Complex, 2>, 2>> SP;
 	QVector<double> freqs;
 public:
 	void ReflectionCalculation();
-	complexNumber GetGamma1();
-	complexNumber GetGamma2();
+	Complex GetGamma1();
+	Complex GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
-	void SetPoint(double[], double[]);
+	void SetPoint(double[], double[], double[]);
 	void SetPoint2();
 	~AmplitudeFrequency();
 	void calc_S2P(const Circuit&);

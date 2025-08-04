@@ -19,6 +19,8 @@ find_package(Qt${QT_VERSION_MAJOR}
 qt_standard_project_setup()
 
 set(PROJECT_SOURCES
+    systemParameters.h
+    systemParameters.cpp
     general.h
     newgeneral.h
     Element.h

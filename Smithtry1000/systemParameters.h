@@ -1,22 +1,25 @@
 #include "general.h"
 #include <QColor>
 
-static class SystemParameters
+class SystemParameters
 {
 public:
-	static QColor AdmitanceColor=QColor::red;
-	static QColor ImpedanceColor = QColor::blue;
+	static QColor MainCircleColor;
+	static QColor ImpedanceColor;
+	static QColor AdmitanceColor;
+	static QColor DataPointsColor;
+	static QColor RootColor;
+	static QColor ElementsColor;
+	static QColor BackgroundColor;
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
-	static QColor ElementsColor;
-	static QColor DataPointsColor;
-	static QColor BackgroundColor;
-	static QColor MainCircleColor;
+	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor
+	static QList<double> linesWidth;
 	static mode Model;
 	static float frequency;
 	static QList<Point> morePoints;
 	static int index;
-	static dpIndex;
+	static int dpIndex;
 	static float lastPointX;
 	static float lastPointY;
 	static float scale;

@@ -10,6 +10,7 @@
 
 mode Model;
 
+
 Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     : QMainWindow(parent)
     , ui(new Ui::Smithtry1000Class())
@@ -90,7 +91,7 @@ void Smithtry1000::onExportNetlist_buttonClicked()
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save SPICE Netlist",
         "",
-        "SPICE Files (*.CKT);;All Files (*)"
+        "SPICE Files (*.SPICE);;All Files (*)"
     );
 
     if (!fileName.isEmpty()) {
@@ -164,7 +165,7 @@ void Smithtry1000::onButtonClicked()
             double sin_t = dy;
             double cos_t = dx;
             if (y < 1e-6 && y >= 0)
-            {
+            {   
                 if (y == 0 && x == 1)
                 {
                     t = 0;
@@ -217,14 +218,14 @@ void Smithtry1000::onButtonClicked()
                 circuitElements->imagFirstPoint = r2;
                 circuitElements->frequencyFirstPoint = frequency;
                 map<chartMode, tuple<float, float>> chart;
-                complexNumber rRealImpedance = impedanceRealChartParameters(point.x, point.y);
-                complexNumber rImagImpedance = impedanceImagChartParameters(point.x, point.y);
-                complexNumber rRealAdmitance = admitanceRealChartParameters(point.x, point.y);
-                complexNumber rImagAdmitance = admitanceImagChartParameters(point.x, point.y);
-                chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
-                chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-                chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
-                chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+                Complex rRealImpedance = impedanceRealChartParameters(point.x, point.y);
+                Complex rImagImpedance = impedanceImagChartParameters(point.x, point.y);
+                Complex rRealAdmitance = admitanceRealChartParameters(point.x, point.y);
+                Complex rImagAdmitance = admitanceImagChartParameters(point.x, point.y);
+                chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+                chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+                chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+                chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
                 circuitElements->chart = chart;
                 int row = ui->pointTable->rowCount();
                 ui->pointTable->insertRow(row);
@@ -373,20 +374,20 @@ void Smithtry1000::onResistor_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complexNumber z = zCalculation(lastPointX, lastPointY);
-            complexNumber y2 = yCalculation(lastPointX, lastPointY);
-            map<parameterMode, complexNumber> parameter;
+            Complex z = zCalculation(lastPointX, lastPointY);
+            Complex y2 = yCalculation(lastPointX, lastPointY);
+            map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complexNumber rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
-            complexNumber rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
-            chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
-            chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
-            chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+            Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             this->circuitElements->AddCircuitElements(new Element(ResistorShunt, r2 - r1, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
@@ -509,20 +510,20 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complexNumber z = zCalculation(lastPointX, lastPointY);
-            complexNumber y2 = yCalculation(lastPointX, lastPointY);
-            map<parameterMode, complexNumber> parameter;
+            Complex z = zCalculation(lastPointX, lastPointY);
+            Complex y2 = yCalculation(lastPointX, lastPointY);
+            map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complexNumber rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
-            complexNumber rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
-            chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
-            chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
-            chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+            Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             this->circuitElements->AddCircuitElements(new Element(ResistorParallel, 1000 / (r2 - r1), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
@@ -695,20 +696,20 @@ void Smithtry1000::ImaginaryImpedance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complexNumber z = zCalculation(lastPointX, lastPointY);
-            complexNumber y2 = yCalculation(lastPointX, lastPointY);
-            map<parameterMode, complexNumber> parameter;
+            Complex z = zCalculation(lastPointX, lastPointY);
+            Complex y2 = yCalculation(lastPointX, lastPointY);
+            map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complexNumber rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
-            complexNumber rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
-            chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
-            chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
-            chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+            Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             switch (Model)
             {
                 case InductionShunt:
@@ -850,20 +851,20 @@ void Smithtry1000::ImaginaryAdmitance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
-            complexNumber z = zCalculation(lastPointX, lastPointY);
-            complexNumber y2 = yCalculation(lastPointX, lastPointY);
-            map<parameterMode, complexNumber> parameter;
+            Complex z = zCalculation(lastPointX, lastPointY);
+            Complex y2 = yCalculation(lastPointX, lastPointY);
+            map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
             map<chartMode, tuple<float, float>> chart;
-            complexNumber rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
-            complexNumber rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
-            complexNumber rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
-            chart[RealImpedance] = make_tuple(rRealImpedance.Re(), rRealImpedance.Im());
-            chart[RealAdmitance] = make_tuple(rRealAdmitance.Re(), rRealAdmitance.Im());
-            chart[ImagAdmitance] = make_tuple(rImagAdmitance.Re(), rImagAdmitance.Im());
-            chart[ImagImpedance] = make_tuple(rImagImpedance.Re(), rImagImpedance.Im());
+            Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagAdmitance = admitanceImagChartParameters(lastPointX, lastPointY);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             switch (Model)
             {
             case InductionParallel:
@@ -884,8 +885,8 @@ void Smithtry1000::ImaginaryAdmitance()
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
+            rImpedanceRealCalculation(lastPointX, lastPointY);
+            rImpedanceImagCalculation(lastPointX, lastPointY);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
             if (impedanceRealR == 0)
             {
@@ -953,7 +954,7 @@ void Smithtry1000::rImpedanceRealCalculation(float x, float y)
     }
     if (x - 1 != 0)
     {
-        impedanceRealR = (cos(t1) - x) / (x - 1);
+        impedanceRealR = abs((cos(t1) - x) / (x - 1));
     }
     impedanceRealR *= 50;
 }
@@ -997,7 +998,7 @@ void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
     }
     if (x - 1 != 0)
     {
-        admitanceRealR = (cos(t1) - x) / (x + 1);
+        admitanceRealR = abs((cos(t1) - x) / (x + 1));
     }
     admitanceRealR *= 20;
 }
@@ -1056,6 +1057,10 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
     {
         impedanceImagR = abs(impedanceImagR) * (-1);
     }
+    if (y == 0)
+    {
+        impedanceImagR = 0;
+    }
     impedanceImagR *= 50;
 }
 
@@ -1100,6 +1105,10 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     if (y > 0)
     {
         admitanceImagR *= -1;
+    }
+    if (y == 0)
+    {
+        admitanceImagR = 0;
     }
     admitanceImagR *= -20;
 }
@@ -1584,8 +1593,10 @@ void Smithtry1000::onGraph_buttonClicked()
 {
     if (pointsX.size() > 1)
     {
-        AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
+        amplitudeFrequence->MatrixCalculation();
+
         amplitudeFrequence->show();
+        amplitudeFrequence->activateWindow();
         /*Circuit circuit;
         // Пример конфигурации цепи
         circuit.elements = {
@@ -1613,25 +1624,24 @@ void Smithtry1000::onGraph_buttonClicked()
             Complex(22.69, -46.11)
         };
         amplitudeFrequence->calc_S2P(circuit);*/
-        amplitudeFrequence->MatrixCalculation();
     }
 }
 
-complexNumber Smithtry1000::zCalculation(float x, float y)
+Complex Smithtry1000::zCalculation(float x, float y)
 {
     rImpedanceRealCalculation(x, y);
     rImpedanceImagCalculation(x, y);
-    return complexNumber(impedanceRealR, impedanceImagR);
+    return Complex(impedanceRealR, impedanceImagR);
 }
 
-complexNumber Smithtry1000::yCalculation(float x, float y)
+Complex Smithtry1000::yCalculation(float x, float y)
 {
     rAdmitanceRealCalculation(x, y);
     rAdmitanceImagCalculation(x, y);
-    return complexNumber(admitanceRealR, admitanceImagR);
+    return Complex(admitanceRealR, admitanceImagR);
 }
 
-complexNumber Smithtry1000::impedanceRealChartParameters(float x, float y)
+Complex Smithtry1000::impedanceRealChartParameters(float x, float y)
 {
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
     double xCenter = 1 - circleRadius;
@@ -1675,10 +1685,10 @@ complexNumber Smithtry1000::impedanceRealChartParameters(float x, float y)
     {
         r1 = (cos(t1) - x) / (x - 1);
     }
-    return complexNumber(r1, t1);
+    return Complex(r1, t1);
 }
 
-complexNumber Smithtry1000::admitanceRealChartParameters(float x, float y)
+Complex Smithtry1000::admitanceRealChartParameters(float x, float y)
 {
     double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     double xCenter = -1 - circleRadius;
@@ -1688,7 +1698,7 @@ complexNumber Smithtry1000::admitanceRealChartParameters(float x, float y)
     double sin_t = dy;
     double cos_t = dx;
     float t1, r1;
-    if (y < 1e-6 && y >= 0)
+    if (y <= 1e-6 && y >= 1e-6)
     {
         if (y == 0 && x < -0.99)
         {
@@ -1717,12 +1727,12 @@ complexNumber Smithtry1000::admitanceRealChartParameters(float x, float y)
     }
     if (x - 1 != 0)
     {
-        r1 = (cos(t1) - x) / (x + 1);
+        r1 = abs((cos(t1) - x) / (x + 1));
     }
-    return complexNumber(r1, t1);
+    return Complex(r1, t1);
 }
 
-complexNumber Smithtry1000::impedanceImagChartParameters(float x, float y)
+Complex Smithtry1000::impedanceImagChartParameters(float x, float y)
 {
     double cos_t;
     double sin_t;
@@ -1776,10 +1786,14 @@ complexNumber Smithtry1000::impedanceImagChartParameters(float x, float y)
     {
         r1 = abs(r1) * (-1);
     }
-    return complexNumber(r1, t1);
+    if (y == 0)
+    {
+        r1 = 0;
+    }
+    return Complex(r1, t1);
 }
 
-complexNumber Smithtry1000::admitanceImagChartParameters(float x, float y)
+Complex Smithtry1000::admitanceImagChartParameters(float x, float y)
 {
     double cos_t;
     double sin_t;
@@ -1790,7 +1804,7 @@ complexNumber Smithtry1000::admitanceImagChartParameters(float x, float y)
     sin_t = -dy;
     cos_t = dx;
     float t1, r1;
-    if (abs(y) < 1e-6 && abs(y) >= 0)
+    if (abs(y) <= 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x < -0.99)
         {
@@ -1821,7 +1835,12 @@ complexNumber Smithtry1000::admitanceImagChartParameters(float x, float y)
     {
         r1 *= -1;
     }
-    return complexNumber(r1, t1);
+    if (y == 0)
+    {
+        r1 = 0;
+        t1 = -M_PI/2;
+    }
+    return Complex(r1, t1);
 }
 
 void Smithtry1000::onS11_buttonClicked()

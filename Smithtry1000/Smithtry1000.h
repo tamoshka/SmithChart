@@ -47,6 +47,7 @@ private:
     SParameters* sParameters;
     CircuitElements* circuitElements = new CircuitElements();
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);  
+    AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
@@ -73,11 +74,11 @@ private:
     void rAdmitanceRealCalculation(float, float);
     void rAdmitanceImagCalculation(float, float);
 
-    complexNumber zCalculation(float, float);
-    complexNumber yCalculation(float, float);
+    Complex zCalculation(float, float);
+    Complex yCalculation(float, float);
 
-    complexNumber impedanceRealChartParameters(float, float);
-    complexNumber impedanceImagChartParameters(float, float);
-    complexNumber admitanceRealChartParameters(float, float);
-    complexNumber admitanceImagChartParameters(float, float);
+    Complex impedanceRealChartParameters(float, float);
+    Complex impedanceImagChartParameters(float, float);
+    Complex admitanceRealChartParameters(float, float);
+    Complex admitanceImagChartParameters(float, float);
 };

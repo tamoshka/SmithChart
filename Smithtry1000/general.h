@@ -7,8 +7,12 @@
 #include <list>
 #include <vector>
 #include <complex>
+#include <cmath>
 #include <map>
+
 using namespace std;
+
+using Complex = complex<double>;
 extern enum mode
 {
     CapacitorParallel,

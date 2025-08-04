@@ -7,7 +7,6 @@
 #include "general.h"
 #include <cmath>
 #include <QCursor>
-#include "Smithtry1000.h"
 
 
 RenderArea::RenderArea(QWidget* parent, CircuitElements* newElements) :
@@ -89,20 +88,20 @@ QPointF RenderArea::compute_imaginaryParallel(float t)
 void RenderArea::drawStaticObjects(QPainter& painter)
 {
     center = this->rect().center();
-    painter.setBrush(mBackGroundColor);
+    painter.setBrush(SystemParameters::BackgroundColor);
     painter.setPen(QPen((mShapeColor, 20)));
     painter.drawRect(this->rect());
     painter.drawLine(QPointF(center.x(), -1000 + center.y()), QPointF(center.x(), 1000 + center.y()));
     painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
     painter.setPen(mShapeColor);
-    painter.setPen(Qt::blue);
+    painter.setPen(SystemParameters::ImpedanceColor);
     float intervalLength = 2 * M_PI;
     int stepCount = 2000;
     float step;
     QPointF iPoint;
     QPointF iPixel;
     step = intervalLength / stepCount;
-    painter.setPen(Qt::blue);
+    painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
     double m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
@@ -144,17 +143,17 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 )
                 
             {
-                painter.setPen(QPen(Qt::magenta, 2));
+                painter.setPen(QPen(SystemParameters::DataPointsColor, SystemParameters::linesWidth[3]));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
-                painter.setPen(Qt::blue);
+                painter.setPen(SystemParameters::ImpedanceColor);
                 flagi = true;
             }
 
 
 
-            painter.setPen(Qt::blue);
+            painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
 
             if (pow(point.x(), 2) + pow(point.y(), 2) < 1) 
             {
@@ -200,28 +199,29 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                painter.setPen(QPen(Qt::magenta, 2));
+                painter.setPen(QPen(SystemParameters::DataPointsColor, SystemParameters::linesWidth[3]));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), center.y(), s1);
-                painter.setPen(Qt::blue);
+                painter.setPen(SystemParameters::ImpedanceColor);
                 flagi == true;
             }
-
-
             if (r == 1)
             {
-                painter.setPen(QPen(Qt::blue, 3));
+                painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]*6));
+            }
+            if (r == 0)
+            {
+                painter.setPen(QPen(SystemParameters::MainCircleColor, SystemParameters::linesWidth[0]));
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-            painter.setPen(Qt::blue);
-
+            painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
         }
         k *= 2;
         r = k;
     }
-    painter.setPen(Qt::red);
+    painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
     m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
@@ -262,17 +262,16 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                     )
                 )
             {
-                painter.setPen(QPen(Qt::green, 2));
+                painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
                 QString s1 = QString::number(r * 1000/-50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
-                painter.setPen(Qt::red);
                 flagi = true;
             }
 
 
 
-            painter.setPen(Qt::red);
+            painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
 
             if (pow(point.x(), 2) + pow(point.y(), 2) < 1) 
             {
@@ -317,20 +316,20 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                painter.setPen(QPen(Qt::green, 2));
+                painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
                 QString s1 = QString::number(r * 1000 / 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
-                painter.setPen(Qt::red);
+                painter.setPen(SystemParameters::AdmitanceColor);
                 flagi == true;
             }
             if (r == 1)
             {
-                painter.setPen(QPen(Qt::red, 3));
+                painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]*6));
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-            painter.setPen(Qt::red);
+            painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
         }
         k *= 2;
         r = k;
@@ -346,7 +345,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     QPointF iPixel;
     step = intervalLength / stepCount;
     painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::red);
+    painter.setBrush(SystemParameters::DataPointsColor);
     if (Model != Default && Model != AddPoint)
     {
         painter.drawEllipse(cursorPos, 5, 5);
@@ -368,8 +367,14 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             painter.drawEllipse(point, 5, 5);
         }
     }
-    QColor color = QColor(0, 0, 0);
-    painter.setPen(QPen(color, 2));
+    for (int jj = 0; jj < morePoints.size(); jj++)
+    {
+        float x = morePoints[jj].x * scale + this->rect().center().x();
+        float y = morePoints[jj].y * scale + this->rect().center().y();
+        QPointF point = QPointF(x, y);
+        painter.drawEllipse(point, 5, 5);
+    }
+    painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
     for (int ll = 0; ll < index - 1; ll++)
     {
         if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionShunt || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorShunt)
@@ -535,16 +540,9 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
     }
 
-    for (int jj = 0; jj < morePoints.size(); jj++)
-    {
-        float x = morePoints[jj].x * scale + this->rect().center().x();
-        float y = morePoints[jj].y * scale + this->rect().center().y();
-        QPointF point = QPointF(x, y);
-        painter.drawEllipse(point, 5, 5);
-    }
+    painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
     if (index > 0 && Model != mode::AddPoint && Model != mode::Default)
     {
-        painter.setPen(QPen(Qt::green, 2));
         float tmax, tmin;
         if (Model == mode::InductionShunt || Model==mode::CapacitorShunt)
         {

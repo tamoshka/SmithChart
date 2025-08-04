@@ -16,26 +16,24 @@ QString ExportNetlist::generateNetlist()
     }
 
     QStringList netlistLines;
-    netlistLines << "* SPICE netlist generated from Smith Chart Tool";
-    netlistLines << "!GLOBAL";
-    netlistLines << "DIM FREQ=1e6 R=1e0 L=1e-9 C=1e-12";
-    netlistLines << "!";
-    netlistLines << "CKT";
-    int nodeCounter = 0;  // Current node (start from input)
+    netlistLines << "* spice netlist generated from Smith Chart Tool";
+    netlistLines << "*";
+    int nodeCounter = 1;  // Current node (start from input)
     int rCount = 1, lCount = 1, cCount = 1;  // Element counters
-
+    QList <QString> lines;
     for (Element* element : circuit->GetCircuitElements()) {
         QString line = generateElementLine(element, nodeCounter, rCount, lCount, cCount);
         if (!line.isEmpty()) {
-            netlistLines << line;
+            lines.append(line);
         }
     }
-    netlistLines << "DEF2P 1 " + QString::number(nodeCounter) + " A";
-    netlistLines << "!";
-    // Analysis directives
-    netlistLines << "FREQ";
-    netlistLines << " FIXED "+QString::number(frequency);
-    netlistLines << ".END";
+    netlistLines << ".SUBCKT MN 1 "+QString::number(nodeCounter);
+    for (auto var : lines)
+    {
+        netlistLines << var;
+    }
+    netlistLines << ".ENDS";
+    netlistLines << ".AC LIN " + QString::number(frequency / 10000) + "G " + QString::number(frequency * 5/1000) + "G 100";
     QString temp = netlistLines.join("\n");
     return temp;
 }
@@ -55,29 +53,26 @@ QString ExportNetlist::generateElementLine(Element* element, int& nodeCounter, i
         break;
 
     case InductionShunt:
-        line = QString("L%1 %2 %3 %4").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value*1e9);
+        line = QString("L%1 %2 %3 %4n").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value*1e9);
         nodeCounter++;
         break;
 
     case CapacitorShunt:
-        line = QString("C%1 %2 %3 %4").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value*1e12);
+        line = QString("C%1 %2 %3 %4p").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value*1e12);
         nodeCounter++;
         break;
 
         // Parallel elements
     case ResistorParallel:
-        line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter+1).arg(value);
-        nodeCounter++;
+        line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter).arg(value);
         break;
 
     case InductionParallel:
-        line = QString("L%1 %2 0 %3").arg(lCount++).arg(nodeCounter+1).arg(value*1e9);
-        nodeCounter++;
+        line = QString("L%1 %2 0 %3n").arg(lCount++).arg(nodeCounter).arg(value*1e9);
         break;
 
     case CapacitorParallel:
-        line = QString("C%1 %2 0 %3").arg(cCount++).arg(nodeCounter+1).arg(value*1e12);
-        nodeCounter++;
+        line = QString("C%1 %2 0 %3p").arg(cCount++).arg(nodeCounter).arg(value*1e12);
         break;
 
     default:

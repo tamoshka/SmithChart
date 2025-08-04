@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QTimer>
 #include "circuitElements.h"
+#include "systemParameters.h"
 
 using namespace std;
 
