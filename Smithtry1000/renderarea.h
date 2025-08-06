@@ -20,7 +20,7 @@ public:
     RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
     bool flag[20] = { false };
     int step_count = 0;
-    
+
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;

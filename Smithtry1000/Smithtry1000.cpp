@@ -86,21 +86,49 @@ Smithtry1000::~Smithtry1000()
 void Smithtry1000::onExportNetlist_buttonClicked()
 {
     ExportNetlist exporter = ExportNetlist(nullptr, circuitElements);
-    QString netlist = exporter.generateNetlist();
 
     QString fileName = QFileDialog::getSaveFileName(this,
-        "Save SPICE Netlist",
+        "Save CIR Netlist",
         "",
-        "SPICE Files (*.SPICE);;All Files (*)"
+        "CIR Files (*.cir);;CKT Files (*.ckt);;SCS Files(*.scs)"
     );
 
     if (!fileName.isEmpty()) {
-        QFile file(fileName);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextStream stream(&file);
-            stream << netlist;
-            file.close();
-            QMessageBox::information(this, "Success", "SPICE netlist exported!");
+        string str = fileName.toUtf8().constData();
+        size_t pos = str.find_last_of('.');
+        string extension = str.substr(pos + 1);
+        if (extension == "cir")
+        {
+            QString netlist = exporter.generateNetlistCir();
+            QFile file(fileName);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream stream(&file);
+                stream << netlist;
+                file.close();
+                QMessageBox::information(this, "Success", "CIR netlist exported!");
+            }
+        }
+        else if (extension == "ckt")
+        {
+            QString netlist = exporter.generateNetlistCkt();
+            QFile file(fileName);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream stream(&file);
+                stream << netlist;
+                file.close();
+                QMessageBox::information(this, "Success", "CKT netlist exported!");
+            }
+        }
+        else if (extension == "scs")
+        {
+            QString netlist = exporter.generateNetlistScs();
+            QFile file(fileName);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream stream(&file);
+                stream << netlist;
+                file.close();
+                QMessageBox::information(this, "Success", "SCS netlist exported!");
+            }
         }
         else {
             QMessageBox::warning(this, "Error", "Cannot write file");
@@ -130,7 +158,7 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
 void Smithtry1000::onButtonClicked()
 {
     FrequencyDialog dialog(this);
-    if (dialog.exec() == QDialog::Accepted) 
+    if (dialog.exec() == QDialog::Accepted)
     {
         Model = mode::AddPoint;
         QPoint centerLocal = renderArea->rect().center();
@@ -165,7 +193,7 @@ void Smithtry1000::onButtonClicked()
             double sin_t = dy;
             double cos_t = dx;
             if (y < 1e-6 && y >= 0)
-            {   
+            {
                 if (y == 0 && x == 1)
                 {
                     t = 0;
@@ -342,7 +370,7 @@ void Smithtry1000::onResistor_buttonClicked()
         }
         if (x - 1 != 0)
         {
-            r = cos(t)/ (x - 1);
+            r = cos(t) / (x - 1);
         }
         else
         {
@@ -352,7 +380,7 @@ void Smithtry1000::onResistor_buttonClicked()
         {
             r = abs(r);
             tmin = t;
-            tmax = M_PI*3/2;
+            tmax = M_PI * 3 / 2;
         }
         else
         {
@@ -367,7 +395,7 @@ void Smithtry1000::onResistor_buttonClicked()
         }
         if (leftClicked)
         {
-            rImpedanceRealCalculation(pointsX[pointsX.size()-1], pointsY[pointsY.size() - 1]);
+            rImpedanceRealCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
             float r1 = impedanceRealR;
             rImpedanceRealCalculation(lastPointX, lastPointY);
             float r2 = impedanceRealR;
@@ -427,7 +455,7 @@ void Smithtry1000::onInductionParallel_buttonClicked()
 {
     Model = mode::InductionParallel;
     ImaginaryAdmitance();
-} 
+}
 
 void Smithtry1000::onCapacitorParallel_buttonClicked()
 {
@@ -452,13 +480,13 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         double sin_t;
         float x = pointsX.back();
         float y = pointsY.back();
-        double circleRadius = (pow(x,2)+2*x+1+pow(y,2))/(-2*y);
+        double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
         double yCenter = -circleRadius;
-        double dx = x+1;
+        double dx = x + 1;
         double dy = y - yCenter;
         sin_t = -dy;
         cos_t = dx;
-        if (y < 1e-6 && y>=0)
+        if (y < 1e-6 && y >= 0)
         {
             if (y == 0 && x < -0.99)
             {
@@ -475,7 +503,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         }
         else
         {
-            t = atan(sin_t/ cos_t);
+            t = atan(sin_t / cos_t);
         }
         if (x + 1 != 0)
         {
@@ -489,12 +517,12 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         {
             r *= -1;
             tmin = t;
-            tmax = M_PI/2;
+            tmax = M_PI / 2;
         }
         else
         {
             tmax = t;
-            tmin = -M_PI/2;
+            tmin = -M_PI / 2;
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -561,16 +589,16 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if ((index > 0 && dpIndex==1)||index>1)
+    if ((index > 0 && dpIndex == 1) || index > 1)
     {
-        points.erase(index-1);
+        points.erase(index - 1);
         index--;
         pointsX.pop_back();
         pointsY.pop_back();
         auxiliaryWidget->removeLastSvg();
-        ui->pointTable->removeRow(ui->pointTable->rowCount()-1);
+        ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
         for (int row = 0; row < ui->pointTable->rowCount(); ++row) {
-            bool found = false; 
+            bool found = false;
 
             int col = 1;
             QTableWidgetItem* item = ui->pointTable->item(row, col);
@@ -634,7 +662,7 @@ void Smithtry1000::ImaginaryImpedance()
         double cos_t = dx;
         if (y < 1e-6 && y >= 0)
         {
-            if (y == 0 && x >0.999)
+            if (y == 0 && x > 0.999)
             {
                 t = 0;
             }
@@ -712,16 +740,16 @@ void Smithtry1000::ImaginaryImpedance()
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             switch (Model)
             {
-                case InductionShunt:
-                {
-                    this->circuitElements->AddCircuitElements(new Element(InductionShunt, (r2 - r1) / (2 * M_PI * 1e6 * frequency), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
-                    break;
-                }
-                case CapacitorShunt:
-                {
-                    this->circuitElements->AddCircuitElements(new Element(CapacitorShunt, 1 / ((r1 - r2) * (2 * M_PI * 1e6 * frequency)), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
-                    break;
-                }
+            case InductionShunt:
+            {
+                this->circuitElements->AddCircuitElements(new Element(InductionShunt, (r2 - r1) / (2 * M_PI * 1e6 * frequency), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                break;
+            }
+            case CapacitorShunt:
+            {
+                this->circuitElements->AddCircuitElements(new Element(CapacitorShunt, 1 / ((r1 - r2) * (2 * M_PI * 1e6 * frequency)), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                break;
+            }
             }
             pointsX.append(lastPointX);
             pointsY.append(lastPointY);
@@ -869,12 +897,12 @@ void Smithtry1000::ImaginaryAdmitance()
             {
             case InductionParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(InductionParallel, M_PI / (r1 - r2) * 100 / frequency * 500/1e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(InductionParallel, M_PI / (r1 - r2) * 100 / frequency * 500 / 1e9, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             case CapacitorParallel:
             {
-                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / M_PI * 500 / frequency/1e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+                this->circuitElements->AddCircuitElements(new Element(CapacitorParallel, (r2 - r1) / M_PI * 500 / frequency / 1e12, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
                 break;
             }
             }
@@ -1026,7 +1054,7 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
         }
         else
         {
-            t1= M_PI;
+            t1 = M_PI;
         }
     }
     else
@@ -1075,7 +1103,7 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     sin_t = -dy;
     cos_t = dx;
     float t1;
-    if (abs(y) < 1e-6 && abs(y)>=0)
+    if (abs(y) < 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x < -0.99)
         {
@@ -1083,7 +1111,7 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
         }
         else if (x < -0.99)
         {
-            t1 = -M_PI/2;
+            t1 = -M_PI / 2;
         }
         else
         {
@@ -1117,7 +1145,7 @@ void Smithtry1000::onTimeout()
 {
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (Model == AddPoint || Model==Default)
+    if (Model == AddPoint || Model == Default)
     {
         QPoint temp = QCursor::pos();
         float x = temp.x();
@@ -1154,7 +1182,7 @@ void Smithtry1000::onTimeout()
 
     // Физическая позиция курсора
     QPoint currentGlobal = QCursor::pos();
-    
+
     // Смещение мыши от центра
     int dx = currentGlobal.x() - centerGlobal.x();
     int dy = currentGlobal.y() - centerGlobal.y();
@@ -1340,7 +1368,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         else if (t >= 0 && t < tmax)
         {
-            if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t < M_PI/2) || (dy < 0 && flag == true && t > M_PI/2))
+            if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t < M_PI / 2) || (dy < 0 && flag == true && t > M_PI / 2))
             {
                 if (t + step > tmax)
                 {
@@ -1351,7 +1379,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                     t += step;
                 }
             }
-            else if ((dx > 0 && flag == false) || (dy < 0 && flag == true && t < M_PI/2) || (dy > 0 && flag == true && t > M_PI/2))
+            else if ((dx > 0 && flag == false) || (dy < 0 && flag == true && t < M_PI / 2) || (dy > 0 && flag == true && t > M_PI / 2))
             {
                 if (t - step < tmin)
                 {
@@ -1380,7 +1408,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         float sin_t = sin(t);
 
         x = (cos(t) - r) / (r + 1);
-        y = (1 / (r + 1)) * sin_t*-1;
+        y = (1 / (r + 1)) * sin_t * -1;
         lastPointX = x;
         lastPointY = y;
         rImpedanceRealCalculation(x, y);
@@ -1397,7 +1425,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model==mode::ResistorShunt)
+    else if (Model == mode::ResistorShunt)
     {
         t = t;
         float x, y;
@@ -1427,22 +1455,22 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         if (dx == 0 && dy == 0)
         {
         }
-        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0)||(dx>0&&abs(lastPointY)>=abs(lastPointX-1)&&flag==false))
+        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
         {
             if (t - step <= tmin)
             {
-                t = tmin+step;
+                t = tmin + step;
             }
             else
             {
                 t -= step;
             }
         }
-        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag==true&&dy<0&&lastPointY>=0)||(dx<0&&abs(lastPointY)>=abs(lastPointX-1)&&flag==false))
+        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag == true && dy < 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
         {
             if (t + step >= tmax)
             {
-                t = tmax-step;
+                t = tmax - step;
             }
             else
             {
@@ -1516,18 +1544,18 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             if (t - step <= tmin)
             {
-                t = tmin+step;
+                t = tmin + step;
             }
             else
             {
                 t -= step;
             }
         }
-        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy >0 && lastPointY >= 0) || (dx<0 && abs(lastPointY)>=abs(lastPointX + 1) && flag == false))
+        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy > 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
         {
             if (t + step >= tmax)
             {
-                t = tmax-step;
+                t = tmax - step;
             }
             else
             {
@@ -1562,7 +1590,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         auxiliaryWidget->update();
         return QPoint(x, y);
-        }
+    }
 }
 
 void Smithtry1000::onPlusSize_buttonClicked()
@@ -1838,7 +1866,7 @@ Complex Smithtry1000::admitanceImagChartParameters(float x, float y)
     if (y == 0)
     {
         r1 = 0;
-        t1 = -M_PI/2;
+        t1 = -M_PI / 2;
     }
     return Complex(r1, t1);
 }
