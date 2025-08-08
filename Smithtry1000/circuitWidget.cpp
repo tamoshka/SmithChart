@@ -4,6 +4,7 @@ CircuitWidget::CircuitWidget(QWidget* parent, CircuitElements* circuitElements) 
 {
     setMinimumSize(100, 100);
     this->circuitElements = circuitElements;
+    this->tuneElements = new CircuitElements();
 }
 
 CircuitWidget::~CircuitWidget()
@@ -18,6 +19,7 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
     {
+        paths.append(path);
         svgWidgets[svgWidgets.size() - 1]->hide();
         QSvgWidget* widget = svgWidgets.takeLast();
         widget->deleteLater(); // Безопасное удаление
@@ -43,6 +45,7 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
 }
 
 void CircuitWidget::removeLastSvg() {
+    paths.pop_back();
     if (!svgWidgets.isEmpty() && svgWidgets.size()>2) {
         int deletedIndex = svgWidgets.size() - 2;
         QSvgWidget* deleted = svgWidgets[deletedIndex];
@@ -106,7 +109,15 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
     painter.setPen(QPen(Qt::red, 2));
-    QList<Element*> temp = this->circuitElements->GetCircuitElements();
+    QList<Element*> temp;
+    try
+    {
+         temp = this->circuitElements->GetCircuitElements();
+    }
+    catch(exception ex)
+    {
+
+    }
     if (this->circuitElements->imagFirstPoint != -9999)
     {
         QString s2 = QString::number(this->circuitElements->realFirstPoint) + "  + j" + QString::number(this->circuitElements->imagFirstPoint);
@@ -230,6 +241,67 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             painter.drawText(0, 0, s1);
             painter.restore();
         }
+        if (SystemParameters::tune && SystemParameters::circuitHover)
+        {
+            int count = circuitElements->GetCircuitElements().length();
+            QPoint centerLocal = this->rect().center();
+            QPoint centerGlobal = this->mapToGlobal(centerLocal);
+            int start = (int)centerGlobal.x()-920;
+            int end = (int)(centerGlobal.x()-920 + 40 * (count));
+            QPoint pos = QCursor::pos();
+            if (pos.x() >= start && pos.x() < end)
+            {
+                int n = (int)((pos.x() - (centerGlobal.x()-1000)) / 40);
+                QPoint first = QPoint(n * 40, 20);
+                QPoint second = QPoint((n + 1) * 40, 20);
+                QPoint third = QPoint((n + 1) * 40, 80);
+                QPoint fourth = QPoint(n * 40, 80);
+                painter.drawLine(first, second);
+                painter.drawLine(second, third);
+                painter.drawLine(third, fourth);
+                painter.drawLine(fourth, first);
+                if (left)
+                {
+                    if (tuneElements->GetCircuitElements().length() == 0)
+                    {
+                        tuneElements->AddCircuitElements(circuitElements->GetCircuitElements()[n-2]);
+                        emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n - 2]);
+                        tuned.append(n);
+                    }
+                    else
+                    {
+                        bool flag = false;
+                        for (auto& var : tuneElements->GetCircuitElements())
+                        {
+                            if (var == circuitElements->GetCircuitElements()[n - 2])
+                            {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (flag == false)
+                        {
+                            tuneElements->AddCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
+                            emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n-2]);
+                            tuned.append(n);
+                        }
+                    }
+                }
+            }
+        }
+        for (auto& var : tuned)
+        {
+            painter.setPen(QPen(Qt::blue, 2));
+            QPoint first = QPoint(var * 40, 20);
+            QPoint second = QPoint((var + 1) * 40, 20);
+            QPoint third = QPoint((var + 1) * 40, 80);
+            QPoint fourth = QPoint(var * 40, 80);
+            painter.drawLine(first, second);
+            painter.drawLine(second, third);
+            painter.drawLine(third, fourth);
+            painter.drawLine(fourth, first);
+        }
+        left = false;
     }
 }
 
@@ -373,4 +445,20 @@ void CircuitWidget::rAdmitanceImagCalculation(float x, float y)
         admitanceImagR *= -1;
     }
     admitanceImagR *= -20;
+}
+
+void CircuitWidget::enterEvent(QEnterEvent* event)
+{
+    SystemParameters::circuitHover = true;
+}
+
+void CircuitWidget::leaveEvent(QEvent* event)
+{
+    SystemParameters::circuitHover = false;
+}
+
+void CircuitWidget::getLeft()
+{
+    left = true;
+    update();
 }

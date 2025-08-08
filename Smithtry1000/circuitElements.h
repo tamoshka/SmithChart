@@ -1,5 +1,6 @@
 #pragma once
 #include "element.h"
+#include "systemParameters.h"
 class CircuitElements
 {
 private:

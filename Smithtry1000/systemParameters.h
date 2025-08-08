@@ -28,4 +28,6 @@ public:
 	static float impedanceImagR;
 	static float admitanceRealR;
 	static float admitanceImagR;
+	static bool circuitHover;
+	static bool tune;
 };

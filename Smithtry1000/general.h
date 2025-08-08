@@ -9,7 +9,6 @@
 #include <complex>
 #include <cmath>
 #include <map>
-
 using namespace std;
 
 using Complex = complex<double>;

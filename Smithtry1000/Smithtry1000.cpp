@@ -11,7 +11,7 @@
 mode Model;
 
 
-Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
+Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1, TuneWidget* tuner)
     : QMainWindow(parent)
     , ui(new Ui::Smithtry1000Class())
     , trackingEnabled(false)
@@ -66,8 +66,10 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
+    connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
+    tuneWidget = tuner;
     ui->scrollAreaDiagram->setWidget(renderArea);
     ui->scrollAreaDiagram->setWidgetResizable(true);
     ui->scrollAreaDiagram->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -133,6 +135,36 @@ void Smithtry1000::onExportNetlist_buttonClicked()
         else {
             QMessageBox::warning(this, "Error", "Cannot write file");
         }
+    }
+}
+
+void Smithtry1000::onTune_buttonClicked()
+{
+    if (circuitElements->GetCircuitElements().length() > 0)
+    {
+        SystemParameters::tune = true;
+        tuneWidget->show();
+        QPoint centerLocal = ui->scrollArea->rect().center();
+        QPoint centerGlobal = ui->scrollArea->mapToGlobal(centerLocal);
+        QCursor::setPos(centerGlobal);
+        leftClicked = false;
+        rightClicked = false;
+        QPoint point = QCursor::pos();
+        while (SystemParameters::tune)
+        {
+            QCoreApplication::processEvents();
+            while (SystemParameters::circuitHover)
+            {
+                QCoreApplication::processEvents();
+                auxiliaryWidget->update();
+                if (leftClicked)
+                {
+                    emit left();
+                    leftClicked = false;
+                }
+            }
+        }
+        tuneWidget->hide();
     }
 }
 
@@ -1595,10 +1627,16 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
 void Smithtry1000::onPlusSize_buttonClicked()
 {
-    if (scale < 600)
+    if (scale < 2000)
     {
         scale += 100;
         renderArea->update();
+        int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
+        int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
+        renderArea->setFixedWidth(1200+(scale-200)*2);
+        renderArea->setFixedHeight(800 + (scale - 200) * 2);
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n*(scale/(scale-100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale - 100)));
     }
 }
 
@@ -1607,7 +1645,13 @@ void Smithtry1000::onMinusSize_buttonClicked()
     if (scale > 100)
     {
         scale -= 100;
+        int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
+        int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
+        renderArea->setFixedWidth(1200 + (scale - 200) * 2);
+        renderArea->setFixedHeight(800 + (scale - 200) * 2);
         renderArea->update();
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (scale / (scale + 100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale + 100)));
     }
 }
 
@@ -1615,6 +1659,8 @@ void Smithtry1000::onDefaultSize_buttonClicked()
 {
     scale = 200;
     renderArea->update();
+    renderArea->setFixedWidth(1200);
+    renderArea->setFixedHeight(800);
 }
 
 void Smithtry1000::onGraph_buttonClicked()
@@ -1625,33 +1671,6 @@ void Smithtry1000::onGraph_buttonClicked()
 
         amplitudeFrequence->show();
         amplitudeFrequence->activateWindow();
-        /*Circuit circuit;
-        // Пример конфигурации цепи
-        circuit.elements = {
-            {"LCS", "s", {23.94, 0.001102}},
-            {"LCS", "p", {2.917, 0.003275}},
-            {"LCS", "p", {8.056, 0.009045}},
-            {"LCS", "s", {29.4, 0.0008974}},
-            {"C",   "p", {0.01037}},
-            {"L",   "p", {2.543}}
-        };
-        circuit.ZS =
-        {
-            Complex(75.08, 0.84),
-            Complex(81.22, 2.98),
-            Complex(81.94, -1.52),
-            Complex(85.15, -1.4),
-            Complex(51.44, -1.19)
-        };
-        circuit.ZL =
-        {
-            Complex(83.16, -135.9),
-            Complex(53.02, -102.9),
-            Complex(35.56, -77.55),
-            Complex(39.93, -68.64),
-            Complex(22.69, -46.11)
-        };
-        amplitudeFrequence->calc_S2P(circuit);*/
     }
 }
 

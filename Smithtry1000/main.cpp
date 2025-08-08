@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 	S22Param g4;
 	S12Param g5;
 	S21Param g6;
+	TuneWidget* tuner = new TuneWidget();
 
 	QObject::connect(&t2, &Tests::rowClicked, &g5, &S12Param::highlightPoint);
 	QObject::connect(&t2, &Tests::rowClicked, &g3, &S11Param::highlightPoint);
@@ -42,7 +43,9 @@ int main(int argc, char *argv[])
 	QObject::connect(&t2, &Tests::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&t1, &Table::rowSelected, &g2, &GrafTwo::highlightPoint);
 	SParameters* sParameters = new SParameters(t1, t2, g1, g2, g3, g4, g5, g6);
-    Smithtry1000 w = Smithtry1000(nullptr, sParameters);
+    Smithtry1000 w = Smithtry1000(nullptr, sParameters, tuner);
+	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);
+	QObject::connect(w.auxiliaryWidget, &CircuitWidget::clicked, tuner, &TuneWidget::GetSignal);
     w.show();
     return a.exec();
 }

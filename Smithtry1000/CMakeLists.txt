@@ -73,6 +73,9 @@ set(PROJECT_SOURCES
     ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
+    TuneWidget.ui
+    TuneWidget.h
+    TuneWidget.cpp
 )
 
 SET(UI_RESOURCES

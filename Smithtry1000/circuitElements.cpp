@@ -16,6 +16,7 @@ void CircuitElements::AddCircuitElements(Element* element)
 
 void CircuitElements::DeleteCircuitElements()
 {
+	delete this->circuitElements.last();
 	this->circuitElements.pop_back();
 }
 

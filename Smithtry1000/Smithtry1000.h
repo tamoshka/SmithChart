@@ -16,14 +16,20 @@
 #include "SParameters.h"
 #include "ExportNetlist.h"
 #include "renderarea.h"
+#include "TuneWidget.h"
 
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
 
 public: 
-    Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr);
+    Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr, TuneWidget* = nullptr);
     ~Smithtry1000();
+    CircuitElements* circuitElements = new CircuitElements();
+    CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);
+
+signals:
+    void left();
 
 private slots:
     void onButtonClicked();
@@ -39,16 +45,16 @@ private slots:
     void onDefaultSize_buttonClicked();
     void onGraph_buttonClicked();
     void onExportNetlist_buttonClicked();
+    void onTune_buttonClicked();
     void onS11_buttonClicked();
     void onS22_buttonClicked();
     void onTimeout();
 
 private:
     SParameters* sParameters;
-    CircuitElements* circuitElements = new CircuitElements();
-    CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);  
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
+    TuneWidget* tuneWidget;
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;
@@ -81,4 +87,5 @@ private:
     Complex impedanceImagChartParameters(float, float);
     Complex admitanceRealChartParameters(float, float);
     Complex admitanceImagChartParameters(float, float);
+
 };
