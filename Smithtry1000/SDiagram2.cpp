@@ -1,14 +1,16 @@
-﻿#include "S22Param.h"
-#include "newgeneral.h"
+﻿#include "SDiagram2.h"
+#include "ui_S11Param.h"
 #include "S2p.h"
+#include "newgeneral.h"
 #include "math.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <iostream>
-S22Param::S22Param(QWidget* parent)
+SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     : QWidget(parent),
     mBackGroundColor(255, 255, 255),
-    mShapeColor(0, 0, 0)
+    mShapeColor(0, 0, 0),
+    currentType(type)
 {
     setFixedSize(600, 600);
     setMinimumSize(450, 450);
@@ -18,7 +20,7 @@ S22Param::S22Param(QWidget* parent)
     scaleFactor = qMin(this->width(), this->height()) / 450.0f;
 }
 
-void S22Param::Load()
+void SDiagram2::Load()
 {
     TouchstoneFile t;
     spar_t s;
@@ -28,20 +30,32 @@ void S22Param::Load()
     y.clear();
     angle.clear();
     max = 0;
-    for (int i = 0; i < s.S[1][1].size(); i++)
+
+    //Выбор для S11,S22
+    const auto& sParam = [&]() -> const std::vector<complex_t>&
+        {
+            switch (currentType)
+            {
+            case S11: return s.S[0][0];
+            case S22: return s.S[1][1];
+            default: return s.S[0][0];
+            }
+        }();
+
+    for (int i = 0; i < sParam.size(); i++)
     {
-        z.append(s.S[1][1][i].real());
+        z.append(sParam[i].real());
         if (z[i] > max)
         {
             max = z[i];
         }
     }
 
-    for (int i = 0; i < s.S[1][1].size(); i++)
+    for (int i = 0; i < sParam.size(); i++)
     {
         k = z[i] / max;
         z[i] = k;
-        angle.append(s.S[1][1][i].imag());
+        angle.append(sParam[i].imag());
         double cosin;
         if (angle[i] > 90)
         {
@@ -73,7 +87,7 @@ void S22Param::Load()
     }
 }
 
-QPointF S22Param::compute_real(float t)
+QPointF SDiagram2::compute_real(float t)
 {
     float cos_t = cos(t);
     float sin_t = sin(t);
@@ -83,7 +97,7 @@ QPointF S22Param::compute_real(float t)
 
 }
 
-QPointF S22Param::compute_imaginary(float t)
+QPointF SDiagram2::compute_imaginary(float t)
 {
     float cos_t = cos(t);
     float sin_t = sin(t);
@@ -93,7 +107,7 @@ QPointF S22Param::compute_imaginary(float t)
 
 }
 
-void S22Param::drawStaticObjects(QPainter& painter)
+void SDiagram2::drawStaticObjects(QPainter& painter)
 {
     scale = defaultScale * scaleFactor;
     center = this->rect().center();
@@ -112,7 +126,7 @@ void S22Param::drawStaticObjects(QPainter& painter)
     step = intervalLength / stepCount;
     painter.setPen(Qt::blue);
     double m = 0;
-    for (S22Param::r = -10; S22Param::r <= 10; S22Param::r += 0) {
+    for (SDiagram2::r = -10; SDiagram2::r <= 10; SDiagram2::r += 0) {
         if (r == -10)
         {
             m = -8;
@@ -179,7 +193,7 @@ void S22Param::drawStaticObjects(QPainter& painter)
         r = m;
     }
     double k = 0.125;
-    for (S22Param::r = 0; S22Param::r < 10; S22Param::r += 0) {
+    for (SDiagram2::r = 0; SDiagram2::r < 10; SDiagram2::r += 0) {
         if (r == 0.25)
         {
             r = 0.2;
@@ -216,7 +230,7 @@ void S22Param::drawStaticObjects(QPainter& painter)
 
     painter.setPen(Qt::red);
     m = 0;
-    for (S22Param::r = -10; S22Param::r <= 10; S22Param::r += 0) {
+    for (SDiagram2::r = -10; SDiagram2::r <= 10; SDiagram2::r += 0) {
         if (r == -10)
         {
             m = -8;
@@ -283,7 +297,7 @@ void S22Param::drawStaticObjects(QPainter& painter)
         r = m;
     }
     k = 0.25;
-    for (S22Param::r = 0.25; S22Param::r < 10; S22Param::r += 0) {
+    for (SDiagram2::r = 0.25; SDiagram2::r < 10; SDiagram2::r += 0) {
         if (r == 0.25)
         {
             r = 0.2;
@@ -320,7 +334,7 @@ void S22Param::drawStaticObjects(QPainter& painter)
     }
 }
 
-void S22Param::generateCache()
+void SDiagram2::generateCache()
 {
     QSize scaledSize = size() * m_scaleFactor;
     QImage image(scaledSize, QImage::Format_ARGB32_Premultiplied);
@@ -337,12 +351,23 @@ void S22Param::generateCache()
     m_cacheValid = true;
 }
 
-void S22Param::paintEvent(QPaintEvent* event)
+void SDiagram2::paintEvent(QPaintEvent* event)
 {
     scaleFactor = qMin(this->width(), this->height()) / 450.0f;
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
+
+    //Выбор для S11,S22
+    const auto& sParam = [&]() -> const std::vector<complex_t>&
+        {
+            switch (currentType)
+            {
+            case S11: return s.S[0][0];
+            case S22: return s.S[1][1];
+            default: return s.S[0][0];
+            }
+        }();
 
     QPainter painter(this);
     if (!m_cacheValid || defaultScale != scale) {
@@ -384,29 +409,28 @@ void S22Param::paintEvent(QPaintEvent* event)
         painter.setBrush(Qt::black);
         painter.drawEllipse(highlightPoint, 3 * scaleFactor, 3 * scaleFactor);
 
-        complex_t s01 = s.S[1][1][highlightedPoint];
-        double magnitude = abs(s01);
-        double phase = arg(s01) * 180 / M_PI;
+        complex_t sPoint = s.S[0][0][highlightedPoint];
+        double magnitude = abs(sPoint);
+        double phase = arg(sPoint) * 180 / M_PI;
 
         QString highlightLabel = QString("[%1] S11: %2∠%3°")
             .arg(highlightedPoint + 1)
-            .arg(s01.real(), 0, 'f', 3)
-            .arg(s01.imag(), 0, 'f', 2);
+            .arg(sPoint.real(), 0, 'f', 3)
+            .arg(sPoint.imag(), 0, 'f', 2);
 
         QPointF textPos = highlightPoint + QPointF(10 * scaleFactor, -10 * scaleFactor);
         painter.drawText(textPos, highlightLabel);
     }
 }
 
-void S22Param::highlightPoint(int index)
+
+void SDiagram2::highlightPoint(int index)
 {
     highlightedPoint = index;
     update();
 }
 
 
-
-S22Param::~S22Param()
+SDiagram2::~SDiagram2()
 {
 }
-

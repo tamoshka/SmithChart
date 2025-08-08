@@ -20,16 +20,16 @@ string get_extension4(string path) {
 	return "";
 }
 
-SParameters::SParameters(Table& table1, Tests& tests1, GrafOne& grafOne1, GrafTwo& grafTwo1, S11Param& g31, S22Param& g41, S12Param& g51, S21Param& g61)
+SParameters::SParameters(Table& table1, Tests& tests1, GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21,SDiagram2& d11, SDiagram2& d22)
 {
 	table = &table1;
 	tests = &tests1;
 	grafOne = &grafOne1;
 	grafTwo = &grafTwo1;
-	g3 = &g31;
-	g4 = &g41;
-	g5 = &g51;
-	g6 = &g61;
+	d1 = &d12;
+	d2 = &d21;
+	d3 = &d11;
+	d4 = &d22;
 }
 
 SParameters::~SParameters()
@@ -45,8 +45,8 @@ void SParameters::Show()
 		grafOne->show();
 		tests->Load();
 		tests->show();
-		g3->Load();
-		g3->show();
+		d3->Load();
+		d3->show();
 	}
 
 	else if (get_extension4(fileName.toStdString()) == "S2P" || get_extension4(fileName.toStdString()) == "s2p")
@@ -59,13 +59,13 @@ void SParameters::Show()
 		grafOne->show();
 		grafTwo->Load();
 		grafTwo->show();
-		g3->Load();
-		g3->show();
-		g4->Load();
-		g4->show();
-		g5->Load();
-		g5->show();
-		g6->Load();
-		g6->show();
+		d1->Load();
+		d1->show();
+		d2->Load();
+		d2->show();
+		d3->Load();
+		d3->show();
+		d4->Load();
+		d4->show();
 	}
 }

@@ -62,17 +62,15 @@ set(PROJECT_SOURCES
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
-    S11Param.cpp
-    S11Param.h
-    S22Param.cpp
-    S22Param.h
-    S12Param.cpp
-    S12Param.h
-    S21Param.cpp
-    S21Param.h
     ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
+    SDiagram1.cpp
+    SDiagram1.h
+    SDiagram1.ui
+    SDiagram2.cpp
+    SDiagram2.h
+    SDiagram2.ui
 )
 
 SET(UI_RESOURCES
