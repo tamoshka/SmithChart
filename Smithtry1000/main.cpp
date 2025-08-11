@@ -1,7 +1,6 @@
 #include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
-#include "newgeneral.h"
 #include <QThread>
 #include "circuitElements.h"
 QList<Point> morePoints;

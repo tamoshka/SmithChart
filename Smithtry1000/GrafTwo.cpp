@@ -1,5 +1,5 @@
 ﻿#include "GrafTwo.h"
-#include "newgeneral.h"
+#include <QString>
 #include "S2p.h"
 #include "qvalueaxis.h"
 GrafTwo::GrafTwo(QWidget* parent)
@@ -11,6 +11,11 @@ GrafTwo::GrafTwo(QWidget* parent)
 
 void GrafTwo::Load()
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());

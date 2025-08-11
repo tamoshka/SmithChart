@@ -1,7 +1,7 @@
 ﻿#include "SDiagram1.h"
-#include "newgeneral.h"
 #include "S2p.h"
 #include "math.h"
+#include <QString>
 
 SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 	: QWidget(parent),
@@ -16,6 +16,11 @@ SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 
 void SDiagram1::Load()
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
@@ -89,6 +94,11 @@ void SDiagram1::highlightPoint(int index)
 
 void SDiagram1::paintEvent(QPaintEvent* event)
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());

@@ -1,11 +1,12 @@
 ﻿#include "SDiagram2.h"
 #include "ui_SDiagram2.h"
 #include "S2p.h"
-#include "newgeneral.h"
 #include "math.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <iostream>
+#include <QString>
+
 SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     : QWidget(parent),
     mBackGroundColor(255, 255, 255),
@@ -22,6 +23,11 @@ SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
 
 void SDiagram2::Load()
 {
+    extern QString fileName;
+    auto extension = fileName.toStdString();
+    size_t last_dot = extension.find_last_of('.');
+    extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
@@ -349,6 +355,11 @@ void SDiagram2::generateCache()
 
 void SDiagram2::paintEvent(QPaintEvent* event)
 {
+    extern QString fileName;
+    auto extension = fileName.toStdString();
+    size_t last_dot = extension.find_last_of('.');
+    extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
     scaleFactor = qMin(this->width(), this->height()) / 450.0f;
     TouchstoneFile t;
     spar_t s;

@@ -1,6 +1,5 @@
 #include "GrafOne.h"
 #include "GrafTwo.h"
-#include "newgeneral.h"
 #include <QtWidgets/QApplication>
 #include "SDiagram1.h"
 #include "SDiagram2.h"

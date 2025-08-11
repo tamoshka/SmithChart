@@ -1,24 +1,6 @@
 #include "SParameters.h"
+#include <QString>
 
-string get_extension4(string path) {
-
-	size_t last_slash = path.find_last_of("/\\");
-	string filename;
-	if (last_slash != string::npos) {
-		filename = path.substr(last_slash + 1);
-	}
-	else {
-		filename = path;
-	}
-
-	size_t last_dot = filename.find_last_of('.');
-
-	if (last_dot != string::npos && last_dot != 0) {
-		return filename.substr(last_dot + 1);
-	}
-
-	return "";
-}
 
 SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21,SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2)
 {
@@ -39,7 +21,12 @@ SParameters::~SParameters()
 
 void SParameters::Show()
 {
-	if (get_extension4(fileName.toStdString()) == "S1P" || get_extension4(fileName.toStdString()) == "s1p")
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
+	if (extension == "S1P" || extension == "s1p")
 	{
 		grafOne->Load();
 		grafOne->show();
@@ -49,7 +36,7 @@ void SParameters::Show()
 		stable1->show();;
 	}
 
-	else if (get_extension4(fileName.toStdString()) == "S2P" || get_extension4(fileName.toStdString()) == "s2p")
+	else if (extension == "S2P" || extension == "s2p")
 	{
 		grafOne->Load();
 		grafOne->show();

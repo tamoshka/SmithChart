@@ -1845,12 +1845,14 @@ Complex Smithtry1000::admitanceImagChartParameters(float x, float y)
 
 void Smithtry1000::onS11_buttonClicked()
 {
+    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
 }
 
 void Smithtry1000::onS22_buttonClicked()
 {
+    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
 }

@@ -1,6 +1,6 @@
 #include "SParamTable.h"
 #include <QFileDialog>
-#include "newgeneral.h"
+#include <QString>
 #include <qtablewidget.h>
 
 SParamTable::SParamTable(TableType type, QWidget* parent)
@@ -13,6 +13,11 @@ SParamTable::SParamTable(TableType type, QWidget* parent)
 
 void SParamTable::Load()
 {
+    extern QString fileName;
+    auto extension = fileName.toStdString();
+    size_t last_dot = extension.find_last_of('.');
+    extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
@@ -20,10 +25,6 @@ void SParamTable::Load()
     ui->tableWidget->setRowCount(s.f.size());
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    auto extension = fileName.toStdString();
-    size_t last_dot = extension.find_last_of('.');
-    extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
 
     if (currentType == TableType::STable2) 
     {

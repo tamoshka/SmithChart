@@ -1,29 +1,6 @@
 #include "GrafOne.h"
-#include "newgeneral.h"
 #include "S2p.h"
-
-string get_extension3(string path) {
-
-	size_t last_slash = path.find_last_of("/\\");
-	string filename;
-	if (last_slash != string::npos) 
-	{
-		filename = path.substr(last_slash + 1);
-	}
-	else 
-	{
-		filename = path;
-	}
-
-	size_t last_dot = filename.find_last_of('.');
-
-	if (last_dot != string::npos && last_dot != 0) 
-	{
-		return filename.substr(last_dot + 1);
-	}
-
-	return "";
-}
+#include <QString>
 
 GrafOne::GrafOne(QWidget* parent)
 	: QWidget(parent)
@@ -34,6 +11,11 @@ GrafOne::GrafOne(QWidget* parent)
 
 void GrafOne::Load()
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	ui->widget->clearGraphs();
@@ -63,7 +45,7 @@ void GrafOne::Load()
 			m2 = y2[j + 1];
 		}
 	}
-	if (get_extension3(fileName.toStdString()) == "S1P" || get_extension3(fileName.toStdString()) == "s1p")
+	if (extension == "S1P" || extension == "s1p")
 	{
 		hY = m1 / 5;
 		yBegin = m1 * 1.25;
@@ -107,13 +89,13 @@ void GrafOne::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
-	if (get_extension3(fileName.toStdString()) == "S1P" || get_extension3(fileName.toStdString()) == "s1p")
+	if (extension == "S1P" || extension == "s1p")
 	{
 		ui->widget->addGraph();
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 	}
-	else if (get_extension3(fileName.toStdString()) == "S2P" || get_extension3(fileName.toStdString()) == "s2p")
+	else if (extension == "S2P" || extension == "s2p")
 	{
 		ui->widget->addGraph();
 		ui->widget->graph(0)->addData(x, y1);

@@ -22,7 +22,6 @@ set(PROJECT_SOURCES
     systemParameters.h
     systemParameters.cpp
     general.h
-    newgeneral.h
     Element.h
     Element.cpp
     main.cpp
