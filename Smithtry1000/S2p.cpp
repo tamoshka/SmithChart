@@ -35,12 +35,8 @@ spar_t TouchstoneFile::Load2P(const char* filename)
     if (!File.good())return spar;
 
     spar.S.resize(2);
-    spar.K.resize(2);
     for (int i = 0; i < 2; i++)
         spar.S[i].resize(2);
-    spar.K.resize(2);
-    for (int i = 0; i < 2; i++)
-        spar.K[i].resize(2);
 
     FUnit fUnit = GHz;
     SFormat sFormat = MA;

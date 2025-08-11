@@ -94,13 +94,15 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	s = t.Load2P(fileName.toStdString().c_str());
 
 	//Выбор для S12,S21
-	const auto& sParam = [&]() -> const std::vector<complex_t>&{
-		switch (currentType) {
-		case S12: return s.S[0][1];
-		case S21: return s.S[1][0];
-		default: return s.S[0][1];
+	const auto& sParam = [&]() -> const std::vector<complex_t>&
+	{
+		switch (currentType) 
+		{
+			case S12: return s.S[0][1];
+			case S21: return s.S[1][0];
+			default: return s.S[0][1];
 		}
-		}();
+	}();
 	
 	QPainter painter(this);
 
@@ -129,10 +131,8 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	}
 
 	painter.setPen(QPen(Qt::black, 1));
-	painter.drawLine(QPointF(center.x(), center.y() - maxCircleRadius),
-		QPointF(center.x(), center.y() + maxCircleRadius));
-	painter.drawLine(QPointF(center.x() - maxCircleRadius, center.y()),
-		QPointF(center.x() + maxCircleRadius, center.y()));
+	painter.drawLine(QPointF(center.x(), center.y() - maxCircleRadius),QPointF(center.x(), center.y() + maxCircleRadius));
+	painter.drawLine(QPointF(center.x() - maxCircleRadius, center.y()),QPointF(center.x() + maxCircleRadius, center.y()));
 
 	float pointScale = 2.0f * scaleFactor;
 	float lineWidth = 1.0f * scaleFactor;
@@ -142,7 +142,8 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 		QPointF point = center + QPointF(x[i] * 200 * scaleFactor, y[i] * 200 * scaleFactor);
 		painter.drawEllipse(point, pointScale, pointScale);
 
-		if (i > 0) {
+		if (i > 0) 
+		{
 			QPointF prevPoint = center + QPointF(x[i - 1] * 200 * scaleFactor, y[i - 1] * 200 * scaleFactor);
 			painter.setPen(QPen(Qt::black, lineWidth));
 			painter.drawLine(prevPoint, point);
@@ -150,9 +151,9 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 		}
 	}
 
-	if (highlightedPoint >= 0 && highlightedPoint < x.size()) {
-		QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,
-			y[highlightedPoint] * 200 * scaleFactor);
+	if (highlightedPoint >= 0 && highlightedPoint < x.size()) 
+	{
+		QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,y[highlightedPoint] * 200 * scaleFactor);
 		painter.setPen(QPen(Qt::black, lineWidth));
 		painter.setBrush(Qt::black);
 		painter.drawEllipse(highlightPoint, 3 * scaleFactor, 3 * scaleFactor);
@@ -161,7 +162,7 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 		double magnitude = abs(sPoint);
 		double phase = arg(sPoint) * 180 / M_PI;
 
-		QString highlightLabel = QString("[%1] S12: %2∠%3°")
+		QString highlightLabel = QString("[%1] S: %2∠%3°")
 			.arg(highlightedPoint + 1)
 			.arg(sPoint.real(), 0, 'f', 3)
 			.arg(sPoint.imag(), 0, 'f', 2);

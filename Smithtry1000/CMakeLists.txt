@@ -46,12 +46,6 @@ set(PROJECT_SOURCES
     AmplitudeFrequency.h
     AmplitudeFrequency.cpp
     Timedes.h
-    Tests.ui
-    Tests.h
-    Tests.cpp
-    Table.ui
-    Table.h
-    Table.cpp
     S2p.h
     S2p.cpp
     GrafOne.ui
@@ -65,12 +59,15 @@ set(PROJECT_SOURCES
     ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
-    SDiagram1.cpp
-    SDiagram1.h
     SDiagram1.ui
-    SDiagram2.cpp
-    SDiagram2.h
+    SDiagram1.h
+    SDiagram1.cpp
     SDiagram2.ui
+    SDiagram2.h
+    SDiagram2.cpp
+    SParamTable.ui
+    SParamTable.h
+    SParamTable.cpp
 )
 
 SET(UI_RESOURCES

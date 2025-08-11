@@ -6,16 +6,19 @@ string get_extension3(string path) {
 
 	size_t last_slash = path.find_last_of("/\\");
 	string filename;
-	if (last_slash != string::npos) {
+	if (last_slash != string::npos) 
+	{
 		filename = path.substr(last_slash + 1);
 	}
-	else {
+	else 
+	{
 		filename = path;
 	}
 
 	size_t last_dot = filename.find_last_of('.');
 
-	if (last_dot != string::npos && last_dot != 0) {
+	if (last_dot != string::npos && last_dot != 0) 
+	{
 		return filename.substr(last_dot + 1);
 	}
 

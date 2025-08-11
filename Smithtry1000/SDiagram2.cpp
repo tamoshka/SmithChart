@@ -1,5 +1,5 @@
 ﻿#include "SDiagram2.h"
-#include "ui_S11Param.h"
+#include "ui_SDiagram2.h"
 #include "S2p.h"
 #include "newgeneral.h"
 #include "math.h"
@@ -33,14 +33,14 @@ void SDiagram2::Load()
 
     //Выбор для S11,S22
     const auto& sParam = [&]() -> const std::vector<complex_t>&
+    {
+        switch (currentType)
         {
-            switch (currentType)
-            {
             case S11: return s.S[0][0];
             case S22: return s.S[1][1];
             default: return s.S[0][0];
-            }
-        }();
+        }
+    }();
 
     for (int i = 0; i < sParam.size(); i++)
     {
@@ -345,9 +345,7 @@ void SDiagram2::generateCache()
     cachePainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     cachePainter.scale(m_scaleFactor, m_scaleFactor);
     drawStaticObjects(cachePainter);
-    m_cache = QPixmap::fromImage(
-        image.scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)
-    );
+    m_cache = QPixmap::fromImage(image.scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     m_cacheValid = true;
 }
 
@@ -360,17 +358,18 @@ void SDiagram2::paintEvent(QPaintEvent* event)
 
     //Выбор для S11,S22
     const auto& sParam = [&]() -> const std::vector<complex_t>&
+    {
+        switch (currentType)
         {
-            switch (currentType)
-            {
             case S11: return s.S[0][0];
             case S22: return s.S[1][1];
             default: return s.S[0][0];
-            }
-        }();
+        }
+    }();
 
     QPainter painter(this);
-    if (!m_cacheValid || defaultScale != scale) {
+    if (!m_cacheValid || defaultScale != scale) 
+    {
         generateCache();
         defaultScale = scale;
     }
@@ -390,11 +389,13 @@ void SDiagram2::paintEvent(QPaintEvent* event)
     float lineWidth = 2.0f * scaleFactor;
 
     painter.setPen(QPen(Qt::red, lineWidth));
-    for (int i = 0; i < x.size(); i++) {
+    for (int i = 0; i < x.size(); i++) 
+    {
         QPointF point = center + QPointF(x[i] * 200 * scaleFactor, y[i] * 200 * scaleFactor);
         painter.drawEllipse(point, pointScale, pointScale);
 
-        if (i > 0) {
+        if (i > 0) 
+        {
             QPointF prevPoint = center + QPointF(x[i - 1] * 200 * scaleFactor, y[i - 1] * 200 * scaleFactor);
             painter.setPen(QPen(Qt::black, lineWidth));
             painter.drawLine(prevPoint, point);
@@ -402,18 +403,19 @@ void SDiagram2::paintEvent(QPaintEvent* event)
         }
     }
 
-    if (highlightedPoint >= 0 && highlightedPoint < x.size()) {
+    if (highlightedPoint >= 0 && highlightedPoint < x.size()) 
+    {
         QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,
             y[highlightedPoint] * 200 * scaleFactor);
         painter.setPen(QPen(Qt::black, lineWidth));
         painter.setBrush(Qt::black);
         painter.drawEllipse(highlightPoint, 3 * scaleFactor, 3 * scaleFactor);
 
-        complex_t sPoint = s.S[0][0][highlightedPoint];
+        complex_t sPoint = sParam[highlightedPoint];
         double magnitude = abs(sPoint);
         double phase = arg(sPoint) * 180 / M_PI;
 
-        QString highlightLabel = QString("[%1] S11: %2∠%3°")
+        QString highlightLabel = QString("[%1] S: %2∠%3°")
             .arg(highlightedPoint + 1)
             .arg(sPoint.real(), 0, 'f', 3)
             .arg(sPoint.imag(), 0, 'f', 2);
