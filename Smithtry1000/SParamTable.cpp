@@ -27,20 +27,7 @@ void SParamTable::Load()
 
     if (currentType == TableType::STable2) 
     {
-        if (extension == "S1P" || extension == "s1p") 
-        {
-            ui->tableWidget->setMinimumSize(110, 500);
-            ui->tableWidget->setColumnCount(1);
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Frequency Hz");
-
-            for (int i = 0; i < ui->tableWidget->rowCount(); i++) 
-            {
-                ui->tableWidget->setItem(i, 0,
-                    new QTableWidgetItem(QString::number(s.f[i])));
-            }
-        }
-
-        else if (extension == "S2P" || extension == "s2p") 
+        if (extension == "S2P" || extension == "s2p") 
         {
             ui->tableWidget->setMinimumSize(650, 500);
             ui->tableWidget->setColumnCount(6);

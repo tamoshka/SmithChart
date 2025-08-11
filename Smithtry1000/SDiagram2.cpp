@@ -94,7 +94,6 @@ QPointF SDiagram2::compute_real(float t)
     float x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
     float y = (1 / (r + 1)) * sin_t;
     return QPointF(x, y);
-
 }
 
 QPointF SDiagram2::compute_imaginary(float t)
@@ -104,7 +103,6 @@ QPointF SDiagram2::compute_imaginary(float t)
     float x = 1 + (1 / r) * cos_t;
     float y = (1 / r) + (1 / r) * sin_t;
     return QPointF(x, y);
-
 }
 
 void SDiagram2::drawStaticObjects(QPainter& painter)
