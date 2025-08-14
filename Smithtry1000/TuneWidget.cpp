@@ -22,11 +22,6 @@ void TuneWidget::OKButton_clicked()
 	SystemParameters::tune = false;
 }
 
-/// <summary>
-/// Получение сигнала о выбранном элементе
-/// </summary>
-/// <param name="elem"></param>
-/// <param name="path"></param>
 void TuneWidget::GetSignal(Element* elem, QString path)
 {
 	tuned->AddCircuitElements(elem);
