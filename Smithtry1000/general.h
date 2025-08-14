@@ -12,6 +12,7 @@
 using namespace std;
 
 using Complex = complex<double>;
+
 extern enum mode
 {
     CapacitorParallel,

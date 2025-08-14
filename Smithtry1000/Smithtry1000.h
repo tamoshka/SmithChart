@@ -23,7 +23,7 @@ class Smithtry1000 : public QMainWindow
     Q_OBJECT
 
 public: 
-    Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr, TuneWidget* = nullptr);
+    Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr);
     ~Smithtry1000();
     CircuitElements* circuitElements = new CircuitElements();
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);
@@ -54,7 +54,7 @@ private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
-    TuneWidget* tuneWidget;
+    TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void mousePressEvent(QMouseEvent* event) override;

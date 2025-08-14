@@ -11,7 +11,7 @@
 mode Model;
 
 
-Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1, TuneWidget* tuner)
+Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     : QMainWindow(parent)
     , ui(new Ui::Smithtry1000Class())
     , trackingEnabled(false)
@@ -67,9 +67,9 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1, TuneWidge
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
+    QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
-    tuneWidget = tuner;
     ui->scrollAreaDiagram->setWidget(renderArea);
     ui->scrollAreaDiagram->setWidgetResizable(true);
     ui->scrollAreaDiagram->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -265,6 +265,8 @@ void Smithtry1000::onButtonClicked()
             {
                 pointsX.append(x);
                 pointsY.append(y);
+                lastPointX = x;
+                lastPointY = y;
                 Point point = Point();
                 point.x = x;
                 point.y = y;
@@ -276,6 +278,10 @@ void Smithtry1000::onButtonClicked()
                 rImpedanceImagCalculation(x, y);
                 float r2 = impedanceImagR;
                 circuitElements->imagFirstPoint = r2;
+                Complex z = zCalculation(lastPointX, lastPointY);
+                Complex y2 = yCalculation(lastPointX, lastPointY);
+                circuitElements->z = z;
+                circuitElements->y = y2;
                 circuitElements->frequencyFirstPoint = frequency;
                 map<chartMode, tuple<float, float>> chart;
                 Complex rRealImpedance = impedanceRealChartParameters(point.x, point.y);
@@ -291,6 +297,8 @@ void Smithtry1000::onButtonClicked()
                 ui->pointTable->insertRow(row);
                 ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
                 ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+                rImpedanceRealCalculation(x, y);
+                rImpedanceImagCalculation(x, y);
                 ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
                 if (impedanceRealR == 0)
                 {
@@ -624,10 +632,13 @@ void Smithtry1000::onDelete_buttonClicked()
     if ((index > 0 && dpIndex == 1) || index > 1)
     {
         points.erase(index - 1);
+        if (index > 1)
+        {
+            auxiliaryWidget->removeLastSvg();
+        }
         index--;
         pointsX.pop_back();
         pointsY.pop_back();
-        auxiliaryWidget->removeLastSvg();
         ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
         for (int row = 0; row < ui->pointTable->rowCount(); ++row) {
             bool found = false;
@@ -737,7 +748,7 @@ void Smithtry1000::ImaginaryImpedance()
         }
         case CapacitorShunt:
         {
-            tmin = 0.000001;
+            tmin = 0.001;
             tmax = t;
             break;
         }
@@ -790,8 +801,8 @@ void Smithtry1000::ImaginaryImpedance()
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
-            rImpedanceRealCalculation(x, y);
-            rImpedanceImagCalculation(x, y);
+            rImpedanceRealCalculation(lastPointX, lastPointY);
+            rImpedanceImagCalculation(lastPointX, lastPointY);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
             if (impedanceRealR == 0)
             {
@@ -1117,7 +1128,7 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
     {
         impedanceImagR = abs(impedanceImagR) * (-1);
     }
-    if (y == 0)
+    if (y == 0||(abs(y)<1e-7&&x<0.999))
     {
         impedanceImagR = 0;
     }
@@ -1166,7 +1177,7 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     {
         admitanceImagR *= -1;
     }
-    if (y == 0)
+    if (y == 0 || (abs(y) < 1e-7&&x>-0.999))
     {
         admitanceImagR = 0;
     }
@@ -1177,6 +1188,11 @@ void Smithtry1000::onTimeout()
 {
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
+    if (SystemParameters::tuned)
+    {
+        renderArea->update();
+        SystemParameters::tuned = false;
+    }
     if (Model == AddPoint || Model == Default)
     {
         QPoint temp = QCursor::pos();

@@ -10,14 +10,14 @@ private:
 	mode elementMode;
 	float value;
 	void SetMode(mode);
-	void SetValue(float);
 	void SetFrequency(float);
-	void SetPoint(Point);	
-	void SetChartParameters(map<chartMode, tuple<float, float>>);
-	void SetParameter(map<parameterMode, Complex> parameters);
 public:
 	mode GetMode();
 	float GetValue();
+	void SetValue(float);
+	void SetPoint(Point);
+	void SetChartParameters(map<chartMode, tuple<float, float>>);
+	void SetParameter(map<parameterMode, Complex> parameters);
 	float GetFrequency();
 	map<chartMode, tuple<float, float>> GetChartParameters();
 	Point GetPoint();

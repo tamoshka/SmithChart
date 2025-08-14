@@ -4,9 +4,6 @@
         <file>vertical_i_selected.svg</file>
         <file>source.svg</file>
         <file>load.svg</file>
-        <file>vertical_c_circuit.svg</file>
-        <file>vertical_i_circuit.svg</file>
-        <file>vertical_r_circuit.svg</file>
         <file>horizontal_c.svg</file>
         <file>Copy.png</file>
         <file>horizontal_i.svg</file>
@@ -23,5 +20,8 @@
         <file>StepBack.png</file>
         <file>StepForward.png</file>
         <file>horizontal_i_circuit.svg</file>
+        <file>vertical_c_circuit.svg</file>
+        <file>vertical_i_circuit.svg</file>
+        <file>vertical_r_circuit.svg</file>
     </qresource>
 </RCC>

@@ -10,6 +10,8 @@ public:
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();
 	CircuitElements();
+	Complex z = Complex(-9999, -9999);
+	Complex y = Complex(-9999, -9999);
 	float realFirstPoint = -9999;
 	float imagFirstPoint = -9999;
 	float frequencyFirstPoint = -9999;

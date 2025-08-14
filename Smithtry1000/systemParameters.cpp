@@ -10,3 +10,4 @@ QColor SystemParameters::BackgroundColor = QColor(Qt::white);
 QList<double> SystemParameters::linesWidth = { 2, 0.5, 0.5, 2, 2, 2, 1 };
 bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
+bool SystemParameters::tuned = false;

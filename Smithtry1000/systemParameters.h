@@ -30,4 +30,5 @@ public:
 	static float admitanceImagR;
 	static bool circuitHover;
 	static bool tune;
+	static bool tuned;
 };
