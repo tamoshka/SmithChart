@@ -47,9 +47,15 @@ private slots:
 	void OKButton_clicked();
 	void MinMaxButton_clicked();
 	void ValueChanged(int value);
+	void Remove();
+	void RemoveAll();
 
 public slots:
 	void GetSignal(Element* elem, QString path);
+signals:
+	void remove(Element*);
+	void removeAll();
 protected:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
+	void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
 };

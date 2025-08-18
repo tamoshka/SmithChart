@@ -48,9 +48,9 @@ void AmplitudeFrequency::MatrixCalculation()
     double startFrequency = 1;
     double w;
     Complex A[2][2], A1[2][2];
-    double Chas[50], Znach[50], Znach2[50];
+    double Chas[50], Znach11[50], Znach21[50], Znach22[50], Znach12[50];
     double f = frequency * 1e6;
-
+    bool flag = false;
     for (double freq = 1; freq <= 2 * f+1; freq += (2 * f - 1) / 49)
     {
         w = 2 * M_PI * freq;
@@ -66,6 +66,7 @@ void AmplitudeFrequency::MatrixCalculation()
                 A1[0][1] = z;
                 A1[1][0] = 0;
                 A1[1][1] = 1;
+                flag = true;
                 break;
             }
             case InductionShunt:
@@ -96,6 +97,7 @@ void AmplitudeFrequency::MatrixCalculation()
                 A1[0][1] = 0;
                 A1[1][0] = y;
                 A1[1][1] = 1;
+                flag = true;
                 break;
             }
             case InductionParallel:
@@ -176,11 +178,20 @@ void AmplitudeFrequency::MatrixCalculation()
             s21 = (sopra1 * s21 * (1 - pow(g2, 2))) / (a2 * D);
         }
         Chas[k] = freq;
-        Znach[k] = abs(s21);
-        Znach2[k] = abs(s11);
+        Znach21[k] = abs(s21);
+        Znach11[k] = abs(s11);
+        Znach22[k] = abs(s22);
+        Znach12[k] = abs(s12);
         k++;
     }
-    SetPoint(Chas, Znach, Znach2);
+    if (flag == true)
+    {
+        SetPoint(Chas, Znach22, Znach12);
+    }
+    else
+    {
+        SetPoint(Chas, Znach11, Znach21);
+    }
 }
 
 void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])

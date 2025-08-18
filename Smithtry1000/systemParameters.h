@@ -1,4 +1,4 @@
-#include "general.h"
+#include "Element.h"
 #include <QColor>
 
 class SystemParameters
@@ -31,4 +31,6 @@ public:
 	static bool circuitHover;
 	static bool tune;
 	static bool tuned;
+	static bool tuneBlock;
+	static QList<Element*> tunedElements;
 };

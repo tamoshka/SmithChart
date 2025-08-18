@@ -67,6 +67,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
+    QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
+    QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
@@ -77,6 +79,40 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
+}
+
+void Smithtry1000::TableUpdate()
+{
+    tableChanged = true;
+    for (int j = 0; j < SystemParameters::tunedElements.size(); j++)
+    {
+        for (int i = 1; i < ui->pointTable->rowCount(); i++)
+        {
+            if (ui->pointTable->item(i, 0) == nullptr)
+            {
+                string str = ui->pointTable->item(i, 1)->text().toUtf8().constData();
+                size_t pos = str.find(' ');
+                string temp = str.substr(pos + 1);
+                int id = stoi(temp);
+                if (circuitElements->GetCircuitElements()[id - 1] == SystemParameters::tunedElements[j])
+                {
+                    ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].real())
+                        + " + j" + QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].imag())));
+                    if (impedanceRealR == 0)
+                    {
+                        ui->pointTable->setItem(i, 3, new QTableWidgetItem("0"));
+                    }
+                    else
+                    {
+                        ui->pointTable->setItem(i, 3, new QTableWidgetItem(QString::number(abs(SystemParameters::tunedElements[j]->GetParameter()[Z].imag() /
+                            SystemParameters::tunedElements[j]->GetParameter()[Z].real()))));
+                    }
+                }
+            }
+        }
+    }
+    SystemParameters::tunedElements = {};
+    tableChanged = false;
 }
 
 Smithtry1000::~Smithtry1000()
@@ -373,8 +409,18 @@ void Smithtry1000::onResistor_buttonClicked()
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         double cos_t;
         double sin_t;
-        float x = pointsX.back();
-        float y = pointsY.back();
+        float x;
+        float y;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+        }
+        else
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
         double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
         double xCenter = 1 - circleRadius;
         double dx = x - xCenter;
@@ -518,8 +564,18 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         double cos_t;
         double sin_t;
-        float x = pointsX.back();
-        float y = pointsY.back();
+        float x;
+        float y;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+        }
+        else
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
         double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
         double yCenter = -circleRadius;
         double dx = x + 1;
@@ -629,7 +685,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if ((index > 0 && dpIndex == 1) || index > 1)
+    if (((index > 0 && dpIndex == 1) || index > 1) && !SystemParameters::tuneBlock)
     {
         points.erase(index - 1);
         if (index > 1)
@@ -695,8 +751,18 @@ void Smithtry1000::ImaginaryImpedance()
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
+        float x;
+        float y;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+        }
+        else
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
         double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
         double xCenter = 1 - circleRadius;
         double dx = x - xCenter;
@@ -853,8 +919,18 @@ void Smithtry1000::ImaginaryAdmitance()
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x = pointsX.back();
-        float y = pointsY.back();
+        float x;
+        float y;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+        }
+        else
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
         double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
         double xCenter = -1 - circleRadius;
         double dx = x - xCenter;
@@ -1191,6 +1267,11 @@ void Smithtry1000::onTimeout()
     if (SystemParameters::tuned)
     {
         renderArea->update();
+        auxiliaryWidget->update();
+        if (tableChanged == false && SystemParameters::tunedElements.size()>0)
+        {
+            TableUpdate();
+        }
         SystemParameters::tuned = false;
     }
     if (Model == AddPoint || Model == Default)

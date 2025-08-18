@@ -24,3 +24,8 @@ QList<Element*> CircuitElements::GetCircuitElements()
 {
 	return this->circuitElements;
 }
+
+void CircuitElements::Remove(int i)
+{
+	this->circuitElements.takeAt(i);
+}

@@ -9,6 +9,7 @@ public:
 	void AddCircuitElements(Element*);
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();
+	void Remove(int);
 	CircuitElements();
 	Complex z = Complex(-9999, -9999);
 	Complex y = Complex(-9999, -9999);

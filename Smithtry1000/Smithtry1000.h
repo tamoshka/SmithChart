@@ -28,6 +28,8 @@ public:
     CircuitElements* circuitElements = new CircuitElements();
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);
 
+public slots:
+
 signals:
     void left();
 
@@ -49,6 +51,7 @@ private slots:
     void onS11_buttonClicked();
     void onS22_buttonClicked();
     void onTimeout();
+    void TableUpdate();
 
 private:
     SParameters* sParameters;
@@ -62,6 +65,7 @@ private:
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;
+    bool tableChanged=false;
     double tempPointX;
     double tempPointY;
     double tempX=0;
