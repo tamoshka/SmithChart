@@ -30,18 +30,18 @@ private:
 	QList<QLabel*> minLabels;
 	QList<double> maxValue;
 	QList<double> minValue;
-	void rImpedanceRealCalculation(float, float);
-	void rImpedanceImagCalculation(float, float);
-	void rAdmitanceRealCalculation(float, float);
-	void rAdmitanceImagCalculation(float, float);
+	void rImpedanceRealCalculation(double, double);
+	void rImpedanceImagCalculation(double, double);
+	void rAdmitanceRealCalculation(double, double);
+	void rAdmitanceImagCalculation(double, double);
 
-	Complex zCalculation(float, float);
-	Complex yCalculation(float, float);
+	Complex zCalculation(double, double);
+	Complex yCalculation(double, double);
 
-	Complex impedanceRealChartParameters(float, float);
-	Complex impedanceImagChartParameters(float, float);
-	Complex admitanceRealChartParameters(float, float);
-	Complex admitanceImagChartParameters(float, float);
+	Complex impedanceRealChartParameters(double, double);
+	Complex impedanceImagChartParameters(double, double);
+	Complex admitanceRealChartParameters(double, double);
+	Complex admitanceImagChartParameters(double, double);
 
 private slots:
 	void OKButton_clicked();

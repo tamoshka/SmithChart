@@ -86,7 +86,7 @@ void CircuitWidget::removeLastSvg() {
     }
 }
 
-void CircuitWidget::rImpedanceRealCalculation(float x, float y)
+void CircuitWidget::rImpedanceRealCalculation(double x, double y)
 {
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
     double xCenter = 1 - circleRadius;
@@ -94,7 +94,7 @@ void CircuitWidget::rImpedanceRealCalculation(float x, float y)
     double dy = y;
     double sin_t = dy;
     double cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y >= 0)
     {
         if (y == 0 && x == 1)
@@ -172,54 +172,66 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
             switch (Model)
             {
-            case ResistorShunt:
-            {
-                float r1 = z.real();
-                rImpedanceRealCalculation(lastPointX, lastPointY);
-                float r2 = impedanceRealR;
-                s1 = QString::number(round((r2 - r1)*10)/10);
-                break;
-            }
-            case InductionShunt:
-            {
-                float r1 = z.imag();
-                rImpedanceImagCalculation(lastPointX, lastPointY);
-                float r2 = impedanceImagR;
-                s1 = QString::number(round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
-                break;
-            }
-            case CapacitorShunt:
-            {
-                float r1 = z.imag();
-                rImpedanceImagCalculation(lastPointX, lastPointY);
-                float r2 = impedanceImagR;
-                s1 = QString::number(round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
-                break;
-            }
-            case ResistorParallel:
-            {
-                float r1 = y.real();
-                rAdmitanceRealCalculation(lastPointX, lastPointY);
-                float r2 = admitanceRealR;
-                s1 = QString::number(round(1000 / (r2 - r1)*10)/10);
-                break;
-            }
-            case InductionParallel:
-            {
-                float r1 = y.imag();
-                rAdmitanceImagCalculation(lastPointX, lastPointY);
-                float r2 = admitanceImagR;
-                s1 = QString::number(round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
-                break;
-            }
-            case CapacitorParallel:
-            {
-                float r1 = y.imag();
-                rAdmitanceImagCalculation(lastPointX, lastPointY);
-                float r2 = admitanceImagR;
-                s1 = QString::number(round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
-                break;
-            }
+                case ResistorShunt:
+                {
+                    double r1 = z.real();
+                    rImpedanceRealCalculation(lastPointX, lastPointY);
+                    double r2 = impedanceRealR;
+                    s1 = QString::number(round((r2 - r1)*10)/10);
+                    break;
+                }
+                case InductionShunt:
+                {
+                    double r1 = z.imag();
+                    rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = impedanceImagR;
+                    s1 = QString::number(round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
+                    break;
+                }
+                case CapacitorShunt:
+                {
+                    double r1 = z.imag();
+                    rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = impedanceImagR;
+                    s1 = QString::number(round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
+                    break;
+                }
+                case ResistorParallel:
+                {
+                    double r1 = y.real();
+                    rAdmitanceRealCalculation(lastPointX, lastPointY);
+                    double r2 = admitanceRealR;
+                    s1 = QString::number(round(1000 / (r2 - r1)*10)/10);
+                    break;
+                }
+                case InductionParallel:
+                {
+                    double r1 = y.imag();
+                    rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = admitanceImagR;
+                    s1 = QString::number(round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
+                    break;
+                }
+                case CapacitorParallel:
+                {
+                    double r1 = y.imag();
+                    rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = admitanceImagR;
+                    s1 = QString::number(round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
+                    break;
+                }
+                case Line:
+                {
+                    break;
+                }
+                case OSLine:
+                {
+                    break;
+                }
+                case SSLine:
+                {
+                    break;
+                }
             }
         }
         painter.save();
@@ -230,43 +242,55 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.restore();
         for (int i = 0; i < temp.size(); i++)
         {
-            float temps1 = temp[i]->GetValue();
+            double temps1 = temp[i]->GetValue();
             switch (temp[i]->GetMode())
             {
-            case ResistorShunt:
-            {
-                s1 = QString::number(round(temps1*10)/10);
-                break;
-            }
-            case InductionShunt:
-            {
-                s1 = QString::number(round(temps1 * 10*1e9) / 10);
-                s1 = s1 + " nH";
-                break;
-            }
-            case CapacitorShunt:
-            {
-                s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
-                s1 = s1 + " pF";
-                break;
-            }
-            case ResistorParallel:
-            {
-                s1 = QString::number(round(temps1 * 10) / 10);
-                break;
-            }
-            case InductionParallel:
-            {
-                s1 = QString::number(round(temps1 * 10 * 1e9) / 10);
-                s1 = s1 + " nH";
-                break;
-            }
-            case CapacitorParallel:
-            {
-                s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
-                s1 = s1 + " pF";
-                break;
-            }
+                case ResistorShunt:
+                {
+                    s1 = QString::number(round(temps1*10)/10);
+                    break;
+                }
+                case InductionShunt:
+                {
+                    s1 = QString::number(round(temps1 * 10*1e9) / 10);
+                    s1 = s1 + " nH";
+                    break;
+                }
+                case CapacitorShunt:
+                {
+                    s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
+                    s1 = s1 + " pF";
+                    break;
+                }
+                case ResistorParallel:
+                {
+                    s1 = QString::number(round(temps1 * 10) / 10);
+                    break;
+                }
+                case InductionParallel:
+                {
+                    s1 = QString::number(round(temps1 * 10 * 1e9) / 10);
+                    s1 = s1 + " nH";
+                    break;
+                }
+                case CapacitorParallel:
+                {
+                    s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
+                    s1 = s1 + " pF";
+                    break;
+                }
+                case Line:
+                {
+                    break;
+                }
+                case OSLine:
+                {
+                    break;
+                }
+                case SSLine:
+                {
+                    break;
+                }
             }
             painter.save();
             painter.translate((i + 2) * 40 + 20, 120);
@@ -340,7 +364,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
     }
 }
 
-void CircuitWidget::rAdmitanceRealCalculation(float x, float y)
+void CircuitWidget::rAdmitanceRealCalculation(double x, double y)
 {
     double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     double xCenter = -1 - circleRadius;
@@ -349,7 +373,7 @@ void CircuitWidget::rAdmitanceRealCalculation(float x, float y)
     dy *= -1;
     double sin_t = dy;
     double cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y >= 0)
     {
         if (x == -1)
@@ -380,7 +404,7 @@ void CircuitWidget::rAdmitanceRealCalculation(float x, float y)
     admitanceRealR *= 20;
 }
 
-void CircuitWidget::rImpedanceImagCalculation(float x, float y)
+void CircuitWidget::rImpedanceImagCalculation(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -390,7 +414,7 @@ void CircuitWidget::rImpedanceImagCalculation(float x, float y)
     double dy = y;
     sin_t = dy;
     cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y>0)
     {
         if (y == 0)
@@ -441,7 +465,7 @@ void CircuitWidget::rImpedanceImagCalculation(float x, float y)
     impedanceImagR *= 50;
 }
 
-void CircuitWidget::rAdmitanceImagCalculation(float x, float y)
+void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -451,7 +475,7 @@ void CircuitWidget::rAdmitanceImagCalculation(float x, float y)
     double dy = y - yCenter;
     sin_t = -dy;
     cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y>0)
     {
         if (y == 0)

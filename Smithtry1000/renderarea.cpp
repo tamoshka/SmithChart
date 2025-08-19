@@ -30,46 +30,46 @@ QSize RenderArea::sizeHint() const
     return QSize(400, 100);
 }
 
-QPointF RenderArea::compute_real(float t)
+QPointF RenderArea::compute_real(double t)
 {
-    float cos_t = cos(t);
-    float sin_t = sin(t);
-    float x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-    float y = (1 / (r + 1)) * sin_t;
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+    double y = (1 / (r + 1)) * sin_t;
 
 
     return QPointF(x, y);
 
 }
-QPointF RenderArea::compute_realParallel(float t)
+QPointF RenderArea::compute_realParallel(double t)
 {
-    float cos_t = cos(t);
-    float sin_t = sin(t);
-    float x = (cos(t) - r) / (r + 1);
-    float y = (1 / (r + 1)) * sin_t;
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x = (cos(t) - r) / (r + 1);
+    double y = (1 / (r + 1)) * sin_t;
 
 
     return QPointF(x, y);
 
 }
 
-QPointF RenderArea::compute_imaginary(float t)
+QPointF RenderArea::compute_imaginary(double t)
 {
-    float cos_t = cos(t);
-    float sin_t = sin(t);
-    float x = 1 + (1 / r) * cos_t;
-    float y = (1 / r) + (1 / r) * sin_t;
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x = 1 + (1 / r) * cos_t;
+    double y = (1 / r) + (1 / r) * sin_t;
 
     return QPointF(x, y);
 
 }
 
-QPointF RenderArea::compute_imaginaryParallel(float t)
+QPointF RenderArea::compute_imaginaryParallel(double t)
 {
-    float cos_t = cos(t);
-    float sin_t = sin(t);
-    float x;
-    float y;
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x;
+    double y;
     if (r > 0)
     {
         x = (cos_t - abs(r)) / r;
@@ -95,9 +95,9 @@ void RenderArea::drawStaticObjects(QPainter& painter)
     painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
     painter.setPen(mShapeColor);
     painter.setPen(SystemParameters::ImpedanceColor);
-    float intervalLength = 2 * M_PI;
+    double intervalLength = 2 * M_PI;
     int stepCount = 2000;
-    float step;
+    double step;
     QPointF iPoint;
     QPointF iPixel;
     step = intervalLength / stepCount;
@@ -125,7 +125,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         (iPoint.x() * scale + center.x());
         iPixel.setY(-iPoint.y() * scale + center.y());
         bool flagi = false;
-        for (float t = step; t < intervalLength; t += step) {
+        for (double t = step; t < intervalLength; t += step) {
 
             QPointF point = compute_imaginary(t);
             QPointF pixel;
@@ -190,7 +190,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         iPixel.setX(iPoint.x() * scale + center.x());
         iPixel.setY(-iPoint.y() * scale + center.y());
         bool flagi = false;
-        for (float t = 0; t < intervalLength; t += step) {
+        for (double t = 0; t < intervalLength; t += step) {
 
             QPointF point = compute_real(t);
             QPointF pixel;
@@ -245,7 +245,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         (-iPoint.x() * scale + center.x());
         iPixel.setY(-iPoint.y() * scale + center.y());
         bool flagi = false;
-        for (float t = step; t < intervalLength; t += step) {
+        for (double t = step; t < intervalLength; t += step) {
 
             QPointF point = compute_imaginary(t);
             QPointF pixel;
@@ -307,7 +307,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         iPixel.setX(-iPoint.x() * scale + center.x());
         iPixel.setY(-iPoint.y() * scale + center.y());
         bool flagi = false;
-        for (float t = 0; t < intervalLength; t += step) {
+        for (double t = 0; t < intervalLength; t += step) {
 
             QPointF point = compute_real(t);
             QPointF pixel;
@@ -338,9 +338,9 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
 void RenderArea::drawDynamicObject(QPainter& painter)
 {
-    float intervalLength = 2 * M_PI;
+    double intervalLength = 2 * M_PI;
     int stepCount = 2000;
-    float step;
+    double step;
     QPointF iPoint;
     QPointF iPixel;
     step = intervalLength / stepCount;
@@ -354,23 +354,23 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     {
         if (ii == 0)
         {
-            float x = circuitElements->firstPoint.x * scale + this->rect().center().x();
-            float y = circuitElements->firstPoint.y * scale + this->rect().center().y();
+            double x = circuitElements->firstPoint.x * scale + this->rect().center().x();
+            double y = circuitElements->firstPoint.y * scale + this->rect().center().y();
             QPointF point = QPointF(x, y);
             painter.drawEllipse(point, 5, 5);
         }
         else
         {
-            float x = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().x * scale + this->rect().center().x();
-            float y = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().y * scale + this->rect().center().y();
+            double x = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().x * scale + this->rect().center().x();
+            double y = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().y * scale + this->rect().center().y();
             QPointF point = QPointF(x, y);
             painter.drawEllipse(point, 5, 5);
         }
     }
     for (int jj = 0; jj < morePoints.size(); jj++)
     {
-        float x = morePoints[jj].x * scale + this->rect().center().x();
-        float y = morePoints[jj].y * scale + this->rect().center().y();
+        double x = morePoints[jj].x * scale + this->rect().center().x();
+        double y = morePoints[jj].y * scale + this->rect().center().y();
         QPointF point = QPointF(x, y);
         painter.drawEllipse(point, 5, 5);
     }
@@ -379,11 +379,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     {
         if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionShunt || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorShunt)
         {
-            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealImpedance);
+            tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealImpedance);
             r = get<0>(tuple1);
-            float t2 = get<1>(tuple1);
-            tuple<float, float> tuple2;
-            float t;
+            double t2 = get<1>(tuple1);
+            tuple<double, double> tuple2;
+            double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(RealImpedance);
@@ -396,7 +396,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             }
             if (t2 < t)
             {
-                float temp = t;
+                double temp = t;
                 t = t2;
                 t2 = temp;
             }
@@ -417,11 +417,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorShunt)
         {
-            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
+            tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
             r = get<0>(tuple1);
-            float t2 = get<1>(tuple1);
-            tuple<float, float> tuple2;
-            float t;
+            double t2 = get<1>(tuple1);
+            tuple<double, double> tuple2;
+            double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(ImagImpedance);
@@ -433,7 +433,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 t = get<1>(tuple2);
             }
             step = abs(t2 - t) / 100;
-            float tmin, tmax;
+            double tmin, tmax;
             if (t2 > t)
             {
                 tmax = t2;
@@ -460,11 +460,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionParallel || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorParallel)
         {
-            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
+            tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
             r = get<0>(tuple1);
-            float t2 = get<1>(tuple1);
-            tuple<float, float> tuple2;
-            float t;
+            double t2 = get<1>(tuple1);
+            tuple<double, double> tuple2;
+            double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(RealAdmitance);
@@ -479,7 +479,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             step = abs(t2 - t) / 100;
             if (t2 < t)
             {
-                float temp = t;
+                double temp = t;
                 t = t2;
                 t2 = temp;
             }
@@ -498,11 +498,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorParallel)
         {
-            tuple<float, float> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
+            tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
             r = get<0>(tuple1);
-            float t2 = get<1>(tuple1);
-            tuple<float, float> tuple2;
-            float t;
+            double t2 = get<1>(tuple1);
+            tuple<double, double> tuple2;
+            double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(ImagAdmitance);
@@ -514,7 +514,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 t = get<1>(tuple2);
             }
             step = abs(t2 - t) / 100;
-            float tmin, tmax;
+            double tmin, tmax;
             if (t2 > t)
             {
                 tmax = t2;
@@ -538,15 +538,27 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 iPixel = pixel;
             }
         }
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::Line)
+        {
+
+        }
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::OSLine)
+        {
+
+        }
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::SSLine)
+        {
+
+        }
     }
 
     painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
     if (index > 0 && Model != mode::AddPoint && Model != mode::Default)
     {
-        float tmax, tmin;
+        double tmax, tmin;
         if (Model == mode::InductionShunt || Model == mode::CapacitorShunt)
         {
-            tuple<float, float> tuple1;
+            tuple<double, double> tuple1;
             if (index == 1)
             {
                 tuple1 = circuitElements->chart.at(RealImpedance);
@@ -556,7 +568,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealImpedance);
             }
             r = get<0>(tuple1);
-            float t = get<1>(tuple1);
+            double t = get<1>(tuple1);
             switch (Model)
             {
             case InductionShunt:
@@ -589,8 +601,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (Model == mode::ResistorShunt)
         {
-            float y;
-            tuple<float, float> tuple1;
+            double y;
+            tuple<double, double> tuple1;
             if (index == 1)
             {
                 tuple1 = circuitElements->chart.at(ImagImpedance);
@@ -602,7 +614,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
             r = get<0>(tuple1);
-            float t = get<1>(tuple1);
+            double t = get<1>(tuple1);
             if (y < 0)
             {
                 r = abs(r);
@@ -636,7 +648,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
         {
-            tuple<float, float> tuple1;
+            tuple<double, double> tuple1;
             if (index == 1)
             {
                 tuple1 = circuitElements->chart.at(RealAdmitance);
@@ -646,7 +658,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealAdmitance);
             }
             r = get<0>(tuple1);
-            float t = get<1>(tuple1);
+            double t = get<1>(tuple1);
             switch (Model)
             {
             case InductionParallel:
@@ -679,8 +691,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (Model == mode::ResistorParallel)
         {
-            float y;
-            tuple<float, float> tuple1;
+            double y;
+            tuple<double, double> tuple1;
             if (index == 1)
             {
                 tuple1 = circuitElements->chart.at(ImagAdmitance);
@@ -692,7 +704,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
             r = get<0>(tuple1);
-            float t = get<1>(tuple1);
+            double t = get<1>(tuple1);
             if (y > 0)
             {
                 tmin = t;
@@ -722,7 +734,18 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 iPixel = pixel;
             }
         }
+        else if (Model == mode::Line) 
+        {
 
+        }
+        else if (Model == mode::OSLine)
+        {
+
+        }
+        else if (Model == mode::SSLine)
+        {
+
+        }
     }
 }
 

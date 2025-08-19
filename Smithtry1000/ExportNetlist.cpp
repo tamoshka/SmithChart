@@ -82,7 +82,8 @@ QString ExportNetlist::generateNetlistScs()
     int nodeCounter = 1;  // Current node (start from input)
     int rCount = 1, lCount = 1, cCount = 1;  // Element counters
     QList <QString> lines;
-    for (Element* element : circuit->GetCircuitElements()) {
+    for (Element* element : circuit->GetCircuitElements()) 
+    {
         QString line = generateElementLineScs(element, nodeCounter, rCount, lCount, cCount);
         if (!line.isEmpty()) {
             lines.append(line);
@@ -102,43 +103,62 @@ QString ExportNetlist::generateNetlistScs()
 QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount)
 {
     const mode elMode = element->GetMode();
-    const float value = element->GetValue();
+    const double value = element->GetValue();
     QString elementName = getSpiceElementType(elMode);
     QString line;
 
-    switch (elMode) {
-        // Series elements (shunt)
-    case ResistorShunt:
-        line = QString("R%1 %2 %3 %4").arg(rCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value);
-        nodeCounter++;
-        break;
-
-    case InductionShunt:
-        line = QString("L%1 %2 %3 %4n").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
-        nodeCounter++;
-        break;
-
-    case CapacitorShunt:
-        line = QString("C%1 %2 %3 %4p").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
-        nodeCounter++;
-        break;
-
-        // Parallel elements
-    case ResistorParallel:
-        line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter).arg(value);
-        break;
-
-    case InductionParallel:
-        line = QString("L%1 %2 0 %3n").arg(lCount++).arg(nodeCounter).arg(value * 1e9);
-        break;
-
-    case CapacitorParallel:
-        line = QString("C%1 %2 0 %3p").arg(cCount++).arg(nodeCounter).arg(value * 1e12);
-        break;
-
-    default:
-        line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
-        break;
+    switch (elMode) 
+    {
+        case ResistorShunt:
+        {
+            line = QString("R%1 %2 %3 %4").arg(rCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value);
+            nodeCounter++;
+            break;
+        }
+        case InductionShunt:
+        {
+            line = QString("L%1 %2 %3 %4n").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
+            nodeCounter++;
+            break;
+        }
+        case CapacitorShunt:
+        {
+            line = QString("C%1 %2 %3 %4p").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
+            nodeCounter++;
+            break;
+        }
+        case ResistorParallel:
+        {
+            line = QString("R%1 %2 0 %3").arg(rCount++).arg(nodeCounter).arg(value);
+            break;
+        }
+        case InductionParallel:
+        {
+            line = QString("L%1 %2 0 %3n").arg(lCount++).arg(nodeCounter).arg(value * 1e9);
+            break;
+        }
+        case CapacitorParallel:
+        {
+            line = QString("C%1 %2 0 %3p").arg(cCount++).arg(nodeCounter).arg(value * 1e12);
+            break;
+        }
+        case Line:
+        {
+            break;
+        }
+        case OSLine:
+        {
+            break;
+        }
+        case SSLine:
+        {
+            break;
+        }
+        default:
+        {
+            line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
+            break;
+        }
     }
 
     return line;
@@ -147,88 +167,130 @@ QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter
 QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter)
 {
     const mode elMode = element->GetMode();
-    const float value = element->GetValue();
+    const double value = element->GetValue();
     QString elementName = getSpiceElementType(elMode);
     QString line;
 
-    switch (elMode) {
-        // Series elements (shunt)
-    case ResistorShunt:
-        line = QString("RES %1 %2 R=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value);
-        nodeCounter++;
-        break;
+    switch (elMode)
+    {
+        case ResistorShunt:
+        {
+            line = QString("RES %1 %2 R=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value);
+            nodeCounter++;
+            break;
+        }
 
-    case InductionShunt:
-        line = QString("IND %1 %2 L=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
-        nodeCounter++;
-        break;
+        case InductionShunt:
+        {
+            line = QString("IND %1 %2 L=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
+            nodeCounter++;
+            break;
+        }
 
-    case CapacitorShunt:
-        line = QString("CAP %1 %2 C=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
-        nodeCounter++;
-        break;
+        case CapacitorShunt:
+        {
+            line = QString("CAP %1 %2 C=%3").arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
+            nodeCounter++;
+            break;
+        }
 
-        // Parallel elements
-    case ResistorParallel:
-        line = QString("RES %1 0 R=%2").arg(nodeCounter).arg(value);
-        break;
+        case ResistorParallel:
+        {
+            line = QString("RES %1 0 R=%2").arg(nodeCounter).arg(value);
+            break;
+        }
 
-    case InductionParallel:
-        line = QString("IND %1 0 L=%2").arg(nodeCounter).arg(value * 1e9);
-        break;
+        case InductionParallel:
+        {
+            line = QString("IND %1 0 L=%2").arg(nodeCounter).arg(value * 1e9);
+            break;
+        }
 
-    case CapacitorParallel:
-        line = QString("CAP %1 0 C=%2").arg(nodeCounter).arg(value * 1e12);
-        break;
-
-    default:
-        line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
-        break;
+        case CapacitorParallel:
+        {
+            line = QString("CAP %1 0 C=%2").arg(nodeCounter).arg(value * 1e12);
+            break;
+        }
+        case Line:
+        {
+            break;
+        }
+        case OSLine:
+        {
+            break;
+        }
+        case SSLine:
+        {
+            break;
+        }
+        default:
+        {
+            line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
+            break;
+        }
     }
-
     return line;
 }
 
 QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount)
 {
     const mode elMode = element->GetMode();
-    const float value = element->GetValue();
+    const double value = element->GetValue();
     QString elementName = getSpiceElementType(elMode);
     QString line;
 
-    switch (elMode) {
-        // Series elements (shunt)
-    case ResistorShunt:
-        line = QString("R%1  %2 %3 resistor  R=%4").arg(rCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value);
-        nodeCounter++;
-        break;
-
-    case InductionShunt:
-        line = QString("L%1  %2 %3 inductor  L=%4n").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
-        nodeCounter++;
-        break;
-
-    case CapacitorShunt:
-        line = QString("C%1  %2 %3 capacitor C=%4p").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
-        nodeCounter++;
-        break;
-
-        // Parallel elements
-    case ResistorParallel:
-        line = QString("R%1  %2 0 resistor  R=%3").arg(rCount++).arg(nodeCounter).arg(value);
-        break;
-
-    case InductionParallel:
-        line = QString("L%1  %2 0 inductor  L=%3n").arg(lCount++).arg(nodeCounter).arg(value * 1e9);
-        break;
-
-    case CapacitorParallel:
-        line = QString("C%1  %2 0 capacitor C=%3p").arg(cCount++).arg(nodeCounter).arg(value * 1e12);
-        break;
-
-    default:
-        line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
-        break;
+    switch (elMode)
+    {
+        case ResistorShunt:
+        {
+            line = QString("R%1  %2 %3 resistor  R=%4").arg(rCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value);
+            nodeCounter++;
+            break;
+        }
+        case InductionShunt:
+        {
+            line = QString("L%1  %2 %3 inductor  L=%4n").arg(lCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e9);
+            nodeCounter++;
+            break;
+        }
+        case CapacitorShunt:
+        {
+            line = QString("C%1  %2 %3 capacitor C=%4p").arg(cCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value * 1e12);
+            nodeCounter++;
+            break;
+        }
+        case ResistorParallel:
+        {
+            line = QString("R%1  %2 0 resistor  R=%3").arg(rCount++).arg(nodeCounter).arg(value);
+            break;
+        }
+        case InductionParallel:
+        {
+            line = QString("L%1  %2 0 inductor  L=%3n").arg(lCount++).arg(nodeCounter).arg(value * 1e9);
+            break;
+        }
+        case CapacitorParallel:
+        {
+            line = QString("C%1  %2 0 capacitor C=%3p").arg(cCount++).arg(nodeCounter).arg(value * 1e12);
+            break;
+        }
+        case Line:
+        {
+            break;
+        }
+        case OSLine:
+        {
+            break;
+        }
+        case SSLine:
+        {
+            break;
+        }
+        default:
+        {
+            line = QString("* Unsupported element: %1").arg(static_cast<int>(elMode));
+            break;
+        }
     }
 
     return line;
@@ -236,26 +298,55 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
 
 QString ExportNetlist::getSpiceElementType(mode elementMode)
 {
-    switch (elementMode) {
-    case ResistorShunt:
-        return "R";
-        break;
-    case ResistorParallel:
-        return "R";
-        break;
-    case CapacitorShunt:
-        return "C";
-        break;
-    case CapacitorParallel:
-        return "C";
-        break;
-    case InductionShunt:
-        return "L";
-        break;
-    case InductionParallel:
-        return "L";
-        break;
-    default: return "X";
+    switch (elementMode)
+    {
+        case ResistorShunt:
+        {
+            return "R";
+            break;
+        }
+        case ResistorParallel:
+        {
+            return "R";
+            break;
+        }
+        case CapacitorShunt:
+        {
+            return "C";
+            break;
+        }
+        case CapacitorParallel:
+        {
+            return "C";
+            break;
+        }
+        case InductionShunt:
+        {
+            return "L";
+            break;
+        }
+        case InductionParallel:
+        {
+            return "L";
+            break;
+        }
+        case Line:
+        {
+            break;
+        }
+        case OSLine:
+        {
+            break;
+        }
+        case SSLine:
+        {
+            break;
+        }
+        default:
+        {
+            return "X";
+            break;
+        }
     }
 }
 

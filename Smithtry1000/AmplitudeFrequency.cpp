@@ -59,67 +59,79 @@ void AmplitudeFrequency::MatrixCalculation()
         {
             switch (circuitElements->GetCircuitElements()[i]->GetMode())
             {
-            case ResistorShunt:
-            {
-                Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
-                A1[0][0] = 1;
-                A1[0][1] = z;
-                A1[1][0] = 0;
-                A1[1][1] = 1;
-                flag = true;
-                break;
-            }
-            case InductionShunt:
-            {
-                Complex z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
-                Complex y = Complex(1, 0) / z;
-                A1[0][0] = 1;
-                A1[0][1] = z;
-                A1[1][0] = 0;
-                A1[1][1] = 1;
-                break;
-            }
-            case CapacitorShunt:
-            {
-                Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                Complex z = Complex(1, 0) / y;
-                A1[0][0] = 1;
-                A1[0][1] = z;
-                A1[1][0] = 0;
-                A1[1][1] = 1;
-                break;
-            }
-            case ResistorParallel:
-            {
-                Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
-                Complex y = Complex(1, 0) /z;
-                A1[0][0] = 1;
-                A1[0][1] = 0;
-                A1[1][0] = y;
-                A1[1][1] = 1;
-                flag = true;
-                break;
-            }
-            case InductionParallel:
-            {
-                Complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                Complex y = Complex(1,0) / z;
-                A1[0][0] = 1;
-                A1[0][1] = 0;
-                A1[1][0] = y;
-                A1[1][1] = 1;
-                break;
-            }
-            case CapacitorParallel:
-            {
-                Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                Complex z = Complex(1, 0) / y;
-                A1[0][0] = 1;
-                A1[0][1] = 0;
-                A1[1][0] = y;
-                A1[1][1] = 1;
-                break;
-            }
+                case ResistorShunt:
+                {
+                    Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+                    A1[0][0] = 1;
+                    A1[0][1] = z;
+                    A1[1][0] = 0;
+                    A1[1][1] = 1;
+                    flag = true;
+                    break;
+                }
+                case InductionShunt:
+                {
+                    Complex z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
+                    Complex y = Complex(1, 0) / z;
+                    A1[0][0] = 1;
+                    A1[0][1] = z;
+                    A1[1][0] = 0;
+                    A1[1][1] = 1;
+                    break;
+                }
+                case CapacitorShunt:
+                {
+                    Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+                    Complex z = Complex(1, 0) / y;
+                    A1[0][0] = 1;
+                    A1[0][1] = z;
+                    A1[1][0] = 0;
+                    A1[1][1] = 1;
+                    break;
+                }
+                case ResistorParallel:
+                {
+                    Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+                    Complex y = Complex(1, 0) /z;
+                    A1[0][0] = 1;
+                    A1[0][1] = 0;
+                    A1[1][0] = y;
+                    A1[1][1] = 1;
+                    flag = true;
+                    break;
+                }
+                case InductionParallel:
+                {
+                    Complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+                    Complex y = Complex(1,0) / z;
+                    A1[0][0] = 1;
+                    A1[0][1] = 0;
+                    A1[1][0] = y;
+                    A1[1][1] = 1;
+                    break;
+                }
+                case CapacitorParallel:
+                {
+                    Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+                    Complex z = Complex(1, 0) / y;
+                    A1[0][0] = 1;
+                    A1[0][1] = 0;
+                    A1[1][0] = y;
+                    A1[1][1] = 1;
+                    break;
+                }
+                /*case Line:
+                {
+                    break;
+                }
+                case OSLine:
+                {
+                    break;
+                }
+                case SSLine:
+                {
+                    break;
+                }*/
             }
             if (i == 0)
             {

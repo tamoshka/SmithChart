@@ -41,6 +41,9 @@ private slots:
     void onCapacitorParallel_buttonClicked();
     void onInductionParallel_buttonClicked();
     void onResistorParallel_buttonClicked();
+    void onLine_buttonClicked();
+    void onOSLine_buttonClicked();
+    void onSSLine_buttonClicked();
     void onDelete_buttonClicked();
     void onPlusSize_buttonClicked();
     void onMinusSize_buttonClicked();
@@ -70,26 +73,26 @@ private:
     double tempPointY;
     double tempX=0;
     double tempY=0;
-    QList<float> pointsX;
-    QList<float> pointsY;
-    float t;
-    float tmin;
-    float tmax;
-    float step;
-    float r;  // радиус в единицах
-    float intervalLength = 2 * M_PI;
+    QList<double> pointsX;
+    QList<double> pointsY;
+    double t;
+    double tmin;
+    double tmax;
+    double step;
+    double r;  // радиус в единицах
+    double intervalLength = 2 * M_PI;
     QPoint getPointOnCircle(int, int);
-    void rImpedanceRealCalculation(float, float);
-    void rImpedanceImagCalculation(float, float);
-    void rAdmitanceRealCalculation(float, float);
-    void rAdmitanceImagCalculation(float, float);
+    void rImpedanceRealCalculation(double, double);
+    void rImpedanceImagCalculation(double, double);
+    void rAdmitanceRealCalculation(double, double);
+    void rAdmitanceImagCalculation(double, double);
 
-    Complex zCalculation(float, float);
-    Complex yCalculation(float, float);
+    Complex zCalculation(double, double);
+    Complex yCalculation(double, double);
 
-    Complex impedanceRealChartParameters(float, float);
-    Complex impedanceImagChartParameters(float, float);
-    Complex admitanceRealChartParameters(float, float);
-    Complex admitanceImagChartParameters(float, float);
+    Complex impedanceRealChartParameters(double, double);
+    Complex impedanceImagChartParameters(double, double);
+    Complex admitanceRealChartParameters(double, double);
+    Complex admitanceImagChartParameters(double, double);
 
 };

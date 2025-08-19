@@ -67,6 +67,9 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
+    connect(ui->Line_button, &QPushButton::clicked, this, &Smithtry1000::onLine_buttonClicked);
+    connect(ui->OSLine_button, &QPushButton::clicked, this, &Smithtry1000::onOSLine_buttonClicked);
+    connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
@@ -79,6 +82,21 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
+}
+
+void Smithtry1000::onLine_buttonClicked()
+{
+
+}
+
+void Smithtry1000::onOSLine_buttonClicked()
+{
+
+}
+
+void Smithtry1000::onSSLine_buttonClicked()
+{
+
 }
 
 void Smithtry1000::TableUpdate()
@@ -250,8 +268,8 @@ void Smithtry1000::onButtonClicked()
         }
         if (leftClicked)
         {
-            float x = point.x();
-            float y = point.y();
+            double x = point.x();
+            double y = point.y();
             x = (x - centerGlobal.x()) / scale;
             y = (y - centerGlobal.y()) / scale;
             double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
@@ -309,17 +327,17 @@ void Smithtry1000::onButtonClicked()
                 circuitElements->firstPoint = point;
                 points[index] = make_tuple(point, r, t, mode::AddPoint);
                 rImpedanceRealCalculation(x, y);
-                float r1 = impedanceRealR;
+                double r1 = impedanceRealR;
                 circuitElements->realFirstPoint = r1;
                 rImpedanceImagCalculation(x, y);
-                float r2 = impedanceImagR;
+                double r2 = impedanceImagR;
                 circuitElements->imagFirstPoint = r2;
                 Complex z = zCalculation(lastPointX, lastPointY);
                 Complex y2 = yCalculation(lastPointX, lastPointY);
                 circuitElements->z = z;
                 circuitElements->y = y2;
                 circuitElements->frequencyFirstPoint = frequency;
-                map<chartMode, tuple<float, float>> chart;
+                map<chartMode, tuple<double, double>> chart;
                 Complex rRealImpedance = impedanceRealChartParameters(point.x, point.y);
                 Complex rImagImpedance = impedanceImagChartParameters(point.x, point.y);
                 Complex rRealAdmitance = admitanceRealChartParameters(point.x, point.y);
@@ -409,8 +427,8 @@ void Smithtry1000::onResistor_buttonClicked()
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         double cos_t;
         double sin_t;
-        float x;
-        float y;
+        double x;
+        double y;
         if (circuitElements->GetCircuitElements().size() > 0)
         {
             x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
@@ -482,9 +500,9 @@ void Smithtry1000::onResistor_buttonClicked()
         if (leftClicked)
         {
             rImpedanceRealCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
-            float r1 = impedanceRealR;
+            double r1 = impedanceRealR;
             rImpedanceRealCalculation(lastPointX, lastPointY);
-            float r2 = impedanceRealR;
+            double r2 = impedanceRealR;
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
@@ -493,7 +511,7 @@ void Smithtry1000::onResistor_buttonClicked()
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
-            map<chartMode, tuple<float, float>> chart;
+            map<chartMode, tuple<double, double>> chart;
             Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
             Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
             Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
@@ -564,8 +582,8 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         double cos_t;
         double sin_t;
-        float x;
-        float y;
+        double x;
+        double y;
         if (circuitElements->GetCircuitElements().size() > 0)
         {
             x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
@@ -628,9 +646,9 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         if (leftClicked)
         {
             rAdmitanceRealCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
-            float r1 = admitanceRealR;
+            double r1 = admitanceRealR;
             rAdmitanceRealCalculation(lastPointX, lastPointY);
-            float r2 = admitanceRealR;
+            double r2 = admitanceRealR;
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
@@ -639,7 +657,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
-            map<chartMode, tuple<float, float>> chart;
+            map<chartMode, tuple<double, double>> chart;
             Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
             Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
             Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
@@ -751,8 +769,8 @@ void Smithtry1000::ImaginaryImpedance()
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x;
-        float y;
+        double x;
+        double y;
         if (circuitElements->GetCircuitElements().size() > 0)
         {
             x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
@@ -827,9 +845,9 @@ void Smithtry1000::ImaginaryImpedance()
         if (leftClicked)
         {
             rImpedanceImagCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
-            float r1 = impedanceImagR;
+            double r1 = impedanceImagR;
             rImpedanceImagCalculation(lastPointX, lastPointY);
-            float r2 = impedanceImagR;
+            double r2 = impedanceImagR;
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
@@ -838,7 +856,7 @@ void Smithtry1000::ImaginaryImpedance()
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
-            map<chartMode, tuple<float, float>> chart;
+            map<chartMode, tuple<double, double>> chart;
             Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
             Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
             Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
@@ -919,8 +937,8 @@ void Smithtry1000::ImaginaryAdmitance()
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
-        float x;
-        float y;
+        double x;
+        double y;
         if (circuitElements->GetCircuitElements().size() > 0)
         {
             x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
@@ -992,9 +1010,9 @@ void Smithtry1000::ImaginaryAdmitance()
         if (leftClicked)
         {
             rAdmitanceImagCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
-            float r1 = admitanceImagR;
+            double r1 = admitanceImagR;
             rAdmitanceImagCalculation(lastPointX, lastPointY);
-            float r2 = admitanceImagR;
+            double r2 = admitanceImagR;
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
@@ -1003,7 +1021,7 @@ void Smithtry1000::ImaginaryAdmitance()
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
-            map<chartMode, tuple<float, float>> chart;
+            map<chartMode, tuple<double, double>> chart;
             Complex rRealImpedance = impedanceRealChartParameters(lastPointX, lastPointY);
             Complex rImagImpedance = impedanceImagChartParameters(lastPointX, lastPointY);
             Complex rRealAdmitance = admitanceRealChartParameters(lastPointX, lastPointY);
@@ -1059,7 +1077,7 @@ void Smithtry1000::ImaginaryAdmitance()
     }
 }
 
-void Smithtry1000::rImpedanceRealCalculation(float x, float y)
+void Smithtry1000::rImpedanceRealCalculation(double x, double y)
 {
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
     double xCenter = 1 - circleRadius;
@@ -1067,7 +1085,7 @@ void Smithtry1000::rImpedanceRealCalculation(float x, float y)
     double dy = y;
     double sin_t = dy;
     double cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y >= 0)
     {
         if (y == 0 && x > 0.99)
@@ -1106,7 +1124,7 @@ void Smithtry1000::rImpedanceRealCalculation(float x, float y)
     impedanceRealR *= 50;
 }
 
-void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
+void Smithtry1000::rAdmitanceRealCalculation(double x, double y)
 {
     double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     double xCenter = -1 - circleRadius;
@@ -1115,7 +1133,7 @@ void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
     dy *= -1;
     double sin_t = dy;
     double cos_t = dx;
-    float t1;
+    double t1;
     if (y < 1e-6 && y >= 0)
     {
         if (y == 0 && x < -0.99)
@@ -1150,7 +1168,7 @@ void Smithtry1000::rAdmitanceRealCalculation(float x, float y)
     admitanceRealR *= 20;
 }
 
-void Smithtry1000::rImpedanceImagCalculation(float x, float y)
+void Smithtry1000::rImpedanceImagCalculation(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -1160,7 +1178,7 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
     double dy = y;
     sin_t = dy;
     cos_t = dx;
-    float t1;
+    double t1;
     if (abs(y) < 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x > 0.99)
@@ -1211,7 +1229,7 @@ void Smithtry1000::rImpedanceImagCalculation(float x, float y)
     impedanceImagR *= 50;
 }
 
-void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
+void Smithtry1000::rAdmitanceImagCalculation(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -1221,7 +1239,7 @@ void Smithtry1000::rAdmitanceImagCalculation(float x, float y)
     double dy = y - yCenter;
     sin_t = -dy;
     cos_t = dx;
-    float t1;
+    double t1;
     if (abs(y) < 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x < -0.99)
@@ -1277,8 +1295,8 @@ void Smithtry1000::onTimeout()
     if (Model == AddPoint || Model == Default)
     {
         QPoint temp = QCursor::pos();
-        float x = temp.x();
-        float y = temp.y();
+        double x = temp.x();
+        double y = temp.y();
         x = (x - centerGlobal.x()) / scale;
         y = (y - centerGlobal.y()) / scale;
         if (pow(x, 2) + pow(y, 2) <= 1)
@@ -1340,10 +1358,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     if (Model == mode::InductionShunt || Model == mode::CapacitorShunt)
     {
         t = t;
-        float x, y;
+        double x, y;
         int dxABS = abs(dx);
         int dyABS = abs(dy);
-        float dif;
+        double dif;
         dy = dy * -1;
         bool flag;
         if (dyABS > dxABS)
@@ -1425,8 +1443,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             t += step;
         }
 
-        float cos_t = cos(t);
-        float sin_t = sin(t);
+        double cos_t = cos(t);
+        double sin_t = sin(t);
         x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
         y = (1 / (r + 1)) * sin_t;
         lastPointX = x;
@@ -1448,10 +1466,10 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
     {
         t = t;
-        float x, y;
+        double x, y;
         int dxABS = abs(dx);
         int dyABS = abs(dy);
-        float dif;
+        double dif;
         dy = dy * -1;
         bool flag;
         if (dyABS > dxABS)
@@ -1533,8 +1551,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             t += step;
         }
 
-        float cos_t = cos(t);
-        float sin_t = sin(t);
+        double cos_t = cos(t);
+        double sin_t = sin(t);
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
@@ -1557,7 +1575,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     else if (Model == mode::ResistorShunt)
     {
         t = t;
-        float x, y;
+        double x, y;
         int dxABS = abs(dx);
         int dyABS = abs(dy);
         dy = dy * -1;
@@ -1618,8 +1636,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             step = 0.01;
             t += step;
         }
-        float cos_t = cos(t);
-        float sin_t = sin(t);
+        double cos_t = cos(t);
+        double sin_t = sin(t);
         x = 1 + (1 / r) * cos_t;
         y = (1 / r) + (1 / r) * sin_t;
         y = y * (-1);
@@ -1642,7 +1660,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     else if (Model == mode::ResistorParallel)
     {
         t = t;
-        float x, y;
+        double x, y;
         int dxABS = abs(dx);
         int dyABS = abs(dy);
         dy = dy * -1;
@@ -1691,8 +1709,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                 t += step;
             }
         }
-        float cos_t = cos(t);
-        float sin_t = sin(t);
+        double cos_t = cos(t);
+        double sin_t = sin(t);
         if (lastPointY < 0)
         {
             x = (cos_t - abs(r)) / r;
@@ -1720,6 +1738,18 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
+   /* else if (Model == mode::Line)
+    {
+
+    }
+    else if (Model == mode::OSLine)
+    {
+
+    }
+    else if (Model == mode::SSLine)
+    {
+
+    }*/
 }
 
 void Smithtry1000::onPlusSize_buttonClicked()
@@ -1771,21 +1801,21 @@ void Smithtry1000::onGraph_buttonClicked()
     }
 }
 
-Complex Smithtry1000::zCalculation(float x, float y)
+Complex Smithtry1000::zCalculation(double x, double y)
 {
     rImpedanceRealCalculation(x, y);
     rImpedanceImagCalculation(x, y);
     return Complex(impedanceRealR, impedanceImagR);
 }
 
-Complex Smithtry1000::yCalculation(float x, float y)
+Complex Smithtry1000::yCalculation(double x, double y)
 {
     rAdmitanceRealCalculation(x, y);
     rAdmitanceImagCalculation(x, y);
     return Complex(admitanceRealR, admitanceImagR);
 }
 
-Complex Smithtry1000::impedanceRealChartParameters(float x, float y)
+Complex Smithtry1000::impedanceRealChartParameters(double x, double y)
 {
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
     double xCenter = 1 - circleRadius;
@@ -1793,7 +1823,7 @@ Complex Smithtry1000::impedanceRealChartParameters(float x, float y)
     double dy = y;
     double sin_t = dy;
     double cos_t = dx;
-    float t1, r1;
+    double t1, r1;
     if (y < 1e-6 && y >= 0)
     {
         if (y == 0 && x > 0.99)
@@ -1832,7 +1862,7 @@ Complex Smithtry1000::impedanceRealChartParameters(float x, float y)
     return Complex(r1, t1);
 }
 
-Complex Smithtry1000::admitanceRealChartParameters(float x, float y)
+Complex Smithtry1000::admitanceRealChartParameters(double x, double y)
 {
     double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     double xCenter = -1 - circleRadius;
@@ -1841,7 +1871,7 @@ Complex Smithtry1000::admitanceRealChartParameters(float x, float y)
     dy *= -1;
     double sin_t = dy;
     double cos_t = dx;
-    float t1, r1;
+    double t1, r1;
     if (y <= 1e-6 && y >= 1e-6)
     {
         if (y == 0 && x < -0.99)
@@ -1876,7 +1906,7 @@ Complex Smithtry1000::admitanceRealChartParameters(float x, float y)
     return Complex(r1, t1);
 }
 
-Complex Smithtry1000::impedanceImagChartParameters(float x, float y)
+Complex Smithtry1000::impedanceImagChartParameters(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -1886,7 +1916,7 @@ Complex Smithtry1000::impedanceImagChartParameters(float x, float y)
     double dy = y;
     sin_t = dy;
     cos_t = dx;
-    float t1, r1;
+    double t1, r1;
     if (abs(y) < 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x > 0.99)
@@ -1937,7 +1967,7 @@ Complex Smithtry1000::impedanceImagChartParameters(float x, float y)
     return Complex(r1, t1);
 }
 
-Complex Smithtry1000::admitanceImagChartParameters(float x, float y)
+Complex Smithtry1000::admitanceImagChartParameters(double x, double y)
 {
     double cos_t;
     double sin_t;
@@ -1947,7 +1977,7 @@ Complex Smithtry1000::admitanceImagChartParameters(float x, float y)
     double dy = y - yCenter;
     sin_t = -dy;
     cos_t = dx;
-    float t1, r1;
+    double t1, r1;
     if (abs(y) <= 1e-6 && abs(y) >= 0)
     {
         if (y == 0 && x < -0.99)

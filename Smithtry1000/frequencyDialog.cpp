@@ -23,7 +23,7 @@ void FrequencyDialog::onAccept()
 {
     QString temp = inputField->text();
     bool validate = true;
-    float value = inputField->text().toFloat(&validate);
+    double value = inputField->text().toFloat(&validate);
     if (!validate)
     {
         reject();
