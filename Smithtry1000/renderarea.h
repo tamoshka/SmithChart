@@ -7,8 +7,6 @@
 #include <QPoint>
 #include <QTimer>
 #include "circuitElements.h"
-#include "systemParameters.h"
-
 using namespace std;
 
 class RenderArea : public QWidget
@@ -20,7 +18,7 @@ public:
     RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
     bool flag[20] = { false };
     int step_count = 0;
-    
+
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
@@ -38,16 +36,16 @@ public slots:
 
 private:
     CircuitElements* circuitElements = new CircuitElements();
-    float r;
+    double r;
     QPointF center;
     QColor mBackGroundColor;
     QColor mShapeColor;
     Mode mMode;
-    float mScale;
-    QPointF compute_real(float t);
-    QPointF compute_realParallel(float t);
-    QPointF compute_imaginary(float t);
-    QPointF compute_imaginaryParallel(float t);
+    double mScale;
+    Point compute_real(double t);
+    Point compute_realParallel(double t);
+    Point compute_imaginary(double t);
+    Point compute_imaginaryParallel(double t);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;
@@ -55,7 +53,7 @@ private:
     void drawDynamicObject(QPainter&);
     qreal m_scaleFactor;
     void generateCache();
-    float defaultScale = 200;
+    double defaultScale = 200;
 
 
 

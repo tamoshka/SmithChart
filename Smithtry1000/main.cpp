@@ -5,20 +5,20 @@
 #include "circuitElements.h"
 QList<Point> morePoints;
 int index = 0;
-map<int, tuple<Point, float, float, mode>> points;
-QList<float> qCircles;
+map<int, tuple<Point, double, double, mode>> points;
+QList<double> qCircles;
 int dpIndex = 0;
-float scale = 200;
+double scale = 200;
 QList<QSvgWidget*> svgWidgets;
-float frequency = 500;
-QList<float> frequencyList;
-float lastPointX = 0;
-float lastPointY = 0;
+double frequency = 500;
+QList<double> frequencyList;
+double lastPointX = 0;
+double lastPointY = 0;
 
-float admitanceImagR = 0;
-float admitanceRealR = 0;
-float impedanceImagR = 0;
-float impedanceRealR = 0;
+double admitanceImagR = 0;
+double admitanceRealR = 0;
+double impedanceImagR = 0;
+double impedanceRealR = 0;
 QString fileName = "";
 
 int main(int argc, char *argv[])
@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 	
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);
+	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);
     w.show();
     return a.exec();
 }

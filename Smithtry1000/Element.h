@@ -4,24 +4,24 @@ class Element
 {
 private:
 	Point point;
-	float frequency;
-	map<chartMode, tuple<float, float>> chartParameters;
+	double frequency;
+	map<chartMode, tuple<double, double>> chartParameters;
 	map<parameterMode, Complex> parameters;
 	mode elementMode;
-	float value;
+	double value;
 	void SetMode(mode);
-	void SetValue(float);
-	void SetFrequency(float);
-	void SetPoint(Point);	
-	void SetChartParameters(map<chartMode, tuple<float, float>>);
-	void SetParameter(map<parameterMode, Complex> parameters);
+	void SetFrequency(double);
 public:
 	mode GetMode();
-	float GetValue();
-	float GetFrequency();
-	map<chartMode, tuple<float, float>> GetChartParameters();
+	double GetValue();
+	void SetValue(double);
+	void SetPoint(Point);
+	void SetChartParameters(map<chartMode, tuple<double, double>>);
+	void SetParameter(map<parameterMode, Complex> parameters);
+	double GetFrequency();
+	map<chartMode, tuple<double, double>> GetChartParameters();
 	Point GetPoint();
 	map<parameterMode, Complex> GetParameter();
-	Element(mode, float, float, Point, map<chartMode, tuple<float, float>>, map<parameterMode, Complex>);
-	~Element();
+	Element(mode, double, double, Point, map<chartMode, tuple<double, double>>, map<parameterMode, Complex>);
+	virtual ~Element();
 };
