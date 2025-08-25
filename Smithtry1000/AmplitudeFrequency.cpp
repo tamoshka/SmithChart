@@ -123,15 +123,37 @@ void AmplitudeFrequency::MatrixCalculation()
                 /*case Line:
                 {
                     break;
-                }
+                }*/
                 case OSLine:
                 {
+                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
+                    double r0 = tmp->GetValue();
+                    double t = tmp->GetElectricalLength();
+                    double l = t * 299792458 / (360 * 1e9);
+                    double theta = l * w * 1e9 / 299792458;
+                    Complex z = Complex(0, -1) * r0 / tan(theta);
+                    Complex y = Complex(1, 0) / z;
+                    A1[0][0] = 1;
+                    A1[0][1] = 0;
+                    A1[1][0] = y;
+                    A1[1][1] = 1;
                     break;
                 }
                 case SSLine:
                 {
+                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
+                    double r0 = tmp->GetValue();
+                    double t = tmp->GetElectricalLength();
+                    double l = t * 299792458 / (360 * 1e9);
+                    double theta = l * w * 1e9 / 299792458;
+                    Complex z = Complex(0, 1) * r0 * tan(theta);
+                    Complex y = Complex(1, 0) / z;
+                    A1[0][0] = 1;
+                    A1[0][1] = 0;
+                    A1[1][0] = y;
+                    A1[1][1] = 1;
                     break;
-                }*/
+                }
             }
             if (i == 0)
             {

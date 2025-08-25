@@ -11,6 +11,7 @@
 #include <qtablewidget.h>
 #include <QScrollArea>
 #include "frequencyDialog.h"
+#include "VerticalLinesDialog.h"
 #include "ComplexNumber.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
@@ -63,6 +64,7 @@ private:
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
+    void VerticalLines();
     void mousePressEvent(QMouseEvent* event) override;
     Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
@@ -95,4 +97,6 @@ private:
     Complex admitanceRealChartParameters(double, double);
     Complex admitanceImagChartParameters(double, double);
 
+protected:
+    void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
 };

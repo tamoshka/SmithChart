@@ -30,6 +30,7 @@ private:
 	QList<QLabel*> minLabels;
 	QList<double> maxValue;
 	QList<double> minValue;
+	int count;
 	void rImpedanceRealCalculation(double, double);
 	void rImpedanceImagCalculation(double, double);
 	void rAdmitanceRealCalculation(double, double);

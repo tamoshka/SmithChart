@@ -42,10 +42,10 @@ private:
     QColor mShapeColor;
     Mode mMode;
     double mScale;
-    QPointF compute_real(double t);
-    QPointF compute_realParallel(double t);
-    QPointF compute_imaginary(double t);
-    QPointF compute_imaginaryParallel(double t);
+    Point compute_real(double t);
+    Point compute_realParallel(double t);
+    Point compute_imaginary(double t);
+    Point compute_imaginaryParallel(double t);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;

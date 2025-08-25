@@ -33,4 +33,6 @@ public:
 	static bool tuned;
 	static bool tuneBlock;
 	static QList<Element*> tunedElements;
+	static double er;
+	static double z0line;
 };

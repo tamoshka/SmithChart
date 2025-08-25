@@ -76,8 +76,10 @@ set(PROJECT_SOURCES
     TuneWidget.ui
     TuneWidget.h
     TuneWidget.cpp
-    LinesElement.h
-    LinesElement.cpp
+    VerticalLinesElement.h
+    VerticalLinesElement.cpp
+    VerticalLinesDialog.h
+    VerticalLinesDialog.cpp
 )
 
 SET(UI_RESOURCES

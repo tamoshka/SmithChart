@@ -88,6 +88,14 @@ void CircuitWidget::removeLastSvg() {
 
 void CircuitWidget::rImpedanceRealCalculation(double x, double y)
 {
+    if (y >= 0 && y < 0.000001)
+    {
+        y = 0.01;
+    }
+    else if (y <= 0 && y > -0.000001)
+    {
+        y = -0.01;
+    }
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
     double xCenter = 1 - circleRadius;
     double dx = x - xCenter;
@@ -95,36 +103,18 @@ void CircuitWidget::rImpedanceRealCalculation(double x, double y)
     double sin_t = dy;
     double cos_t = dx;
     double t1;
-    if (y < 1e-6 && y >= 0)
+    t1 = atan(sin_t / cos_t);
+    if (cos_t < 0 && sin_t < 0)
     {
-        if (y == 0 && x == 1)
-        {
-            t1 = 0;
-        }
-        else if (x == 1)
-        {
-            t1 = 2 * M_PI;
-        }
-        else
-        {
-            t1 = M_PI;
-        }
+        t1 += M_PI;
     }
-    else
+    else if (cos_t > 0 && sin_t < 0)
     {
-        t1 = atan(sin_t / cos_t);
-        if (cos_t < 0 && sin_t < 0)
-        {
-            t1 += M_PI;
-        }
-        else if (cos_t > 0 && sin_t < 0)
-        {
-            t1 = 2 * M_PI - abs(t1);
-        }
-        else if (sin_t > 0 && cos_t < 0)
-        {
-            t1 = M_PI - abs(t1);
-        }
+        t1 = 2 * M_PI - abs(t1);
+    }
+    else if (sin_t > 0 && cos_t < 0)
+    {
+        t1 = M_PI - abs(t1);
     }
     if (x - 1 != 0)
     {
@@ -156,6 +146,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.drawText(0, 0, s2);
         painter.restore();
         QString s1;
+        QString s3="";
         if (Model != AddPoint && Model != Default)
         {
             Complex z;
@@ -226,10 +217,40 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case OSLine:
                 {
+                    double theta;
+                    double lambda;
+                    double o;
+                    double l;
+                    rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    o = atan((admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line);
+                    if (o < 0)
+                    {
+                        o += M_PI;
+                    }
+                    theta = o * 180 / M_PI;
+                    l = o * 299792458 / (M_PI * 1e9);
+                    lambda = l / 2 * 1e9 / 299792458;
+                    s1 = QString::number(SystemParameters::z0line)+"Ohm | lambda="+QString::number(lambda);
+                    s3 = QString::number(l * 1000 / sqrt(SystemParameters::er)) + "mm(phys)|" + QString::number(l * 1000) + "mm(electr)";
                     break;
                 }
                 case SSLine:
                 {
+                    double theta;
+                    double lambda;
+                    double o;
+                    double l;
+                    rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    o = -atan(1 / ((admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line));
+                    if (o < 0)
+                    {
+                        o += M_PI;
+                    }
+                    theta = o * 180 / M_PI;
+                    l = o * 299792458 / (M_PI * 1e9);
+                    lambda = l / 2 * 1e9 / 299792458;
+                    s1 = QString::number(SystemParameters::z0line) + "Ohm | lambda=" + QString::number(lambda);
+                    s3 = QString::number(l * 1000 / sqrt(SystemParameters::er)) + "mm(phys)|" + QString::number(l * 1000) + "mm(electr)";
                     break;
                 }
             }
@@ -239,6 +260,9 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.rotate(90);
         painter.setFont(QFont("Arial", 8));
         painter.drawText(0, 0, s1);
+        painter.translate(0, +15);
+        painter.drawText(0, 0, s3);
+        s3 = "";
         painter.restore();
         for (int i = 0; i < temp.size(); i++)
         {
@@ -285,10 +309,16 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case OSLine:
                 {
+                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
+                    s1 = QString::number(tmp->GetValue()) + "Ohm | lambda=" + QString::number(tmp->GetLambda());
+                    s3 = QString::number(tmp->GetMechanicalLength()) + "mm(phys)|" + QString::number(tmp->GetElectricalLength()) + "mm(electr)";
                     break;
                 }
                 case SSLine:
                 {
+                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
+                    s1 = QString::number(tmp->GetValue()) + "Ohm | lambda=" + QString::number(tmp->GetLambda());
+                    s3 = QString::number(tmp->GetMechanicalLength()) + "mm(phys)|" + QString::number(tmp->GetElectricalLength()) + "mm(electr)";
                     break;
                 }
             }
@@ -297,6 +327,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             painter.rotate(90);
             painter.setFont(QFont("Arial", 8));
             painter.drawText(0, 0, s1);
+            painter.translate(0, +15);
+            painter.drawText(0, 0, s3);
             painter.restore();
         }
         if (SystemParameters::tune && SystemParameters::circuitHover)
@@ -366,6 +398,14 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
 
 void CircuitWidget::rAdmitanceRealCalculation(double x, double y)
 {
+    if (y >= 0 && y < 0.000001)
+    {
+        y = 0.01;
+    }
+    else if (y <= 0 && y > -0.000001)
+    {
+        y = -0.01;
+    }
     double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     double xCenter = -1 - circleRadius;
     double dx = x - xCenter;
@@ -374,28 +414,14 @@ void CircuitWidget::rAdmitanceRealCalculation(double x, double y)
     double sin_t = dy;
     double cos_t = dx;
     double t1;
-    if (y < 1e-6 && y >= 0)
+    t1 = atan(sin_t / cos_t);
+    if (cos_t < 0 && sin_t < 0)
     {
-        if (x == -1)
-        {
-            t1 = 2 * M_PI;
-        }
-        else if (y == 0)
-        {
-            t1 = M_PI;
-        }
+        t1 = abs(t1) - M_PI;
     }
-    else
+    else if (sin_t > 0 && cos_t < 0)
     {
-        t1 = atan(sin_t / cos_t);
-        if (cos_t < 0 && sin_t < 0)
-        {
-            t1 = abs(t1) - M_PI;
-        }
-        else if (sin_t > 0 && cos_t < 0)
-        {
-            t1 = M_PI - abs(t1);
-        }
+        t1 = M_PI - abs(t1);
     }
     if (x - 1 != 0)
     {
@@ -406,6 +432,14 @@ void CircuitWidget::rAdmitanceRealCalculation(double x, double y)
 
 void CircuitWidget::rImpedanceImagCalculation(double x, double y)
 {
+    if (y >= 0 && y < 0.000001)
+    {
+        y = 0.01;
+    }
+    else if (y <= 0 && y > -0.000001)
+    {
+        y = -0.01;
+    }
     double cos_t;
     double sin_t;
     double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
@@ -415,32 +449,14 @@ void CircuitWidget::rImpedanceImagCalculation(double x, double y)
     sin_t = dy;
     cos_t = dx;
     double t1;
-    if (y < 1e-6 && y>0)
+    t1 = atan(cos_t / sin_t);
+    if (y < 0)
     {
-        if (y == 0)
-        {
-            t1 = 0;
-        }
-        else if (x == 1)
-        {
-            t1 = 2 * M_PI;
-        }
-        else
-        {
-            t1 = M_PI;
-        }
+        t1 += M_PI;
     }
     else
     {
-        t1 = atan(cos_t / sin_t);
-        if (y < 0)
-        {
-            t1 += M_PI;
-        }
-        else
-        {
-            t1 += 2 * M_PI;
-        }
+        t1 += 2 * M_PI;
     }
     if (x - 1 != 0)
     {
@@ -458,10 +474,6 @@ void CircuitWidget::rImpedanceImagCalculation(double x, double y)
     {
         impedanceImagR = abs(impedanceImagR) * (-1);
     }
-    if (y == 0 || (abs(y) < 1e-7&&x<0.999))
-    {
-        impedanceImagR = 0;
-    }
     impedanceImagR *= 50;
 }
 
@@ -469,6 +481,14 @@ void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
 {
     double cos_t;
     double sin_t;
+    if (y >= 0 && y < 0.000001)
+    {
+        y = 0.01;
+    }
+    else if (y <= 0 && y > -0.000001)
+    {
+        y = -0.01;
+    }
     double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
     double yCenter = -circleRadius;
     double dx = x + 1;
@@ -476,25 +496,7 @@ void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
     sin_t = -dy;
     cos_t = dx;
     double t1;
-    if (y < 1e-6 && y>0)
-    {
-        if (y == 0)
-        {
-            t1 = 0;
-        }
-        else if (x == -1)
-        {
-            t1 = 2 * M_PI;
-        }
-        else
-        {
-            t1 = M_PI;
-        }
-    }
-    else
-    {
-        t1 = atan(sin_t / cos_t);
-    }
+    t1 = atan(sin_t / cos_t);
     if (x + 1 != 0)
     {
         admitanceImagR = cos(t1) / (x + 1);
@@ -506,10 +508,6 @@ void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
     if (y > 0)
     {
         admitanceImagR *= -1;
-    }
-    if (y == 0 || (abs(y) < 1e-7 && x > -0.999))
-    {
-        admitanceImagR = 0;
     }
     admitanceImagR *= -20;
 }

@@ -7,6 +7,7 @@ TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)
 {
 	ui->setupUi(this);
 	circuitElements = circuit;
+	count = 0;
 	tuned = new CircuitElements();
 	connect(ui->OKButton, &QPushButton::clicked, this, &TuneWidget::OKButton_clicked);
 	connect(ui->MinMaxButton, &QPushButton::clicked, this, &TuneWidget::MinMaxButton_clicked);
@@ -32,18 +33,12 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 {
 	SystemParameters::tuneBlock = true;
 	tuned->AddCircuitElements(elem);
-	QGroupBox* box = new QGroupBox(this);
-	box->resize(90,150);
-	box->move(90 * (tuned->GetCircuitElements().size() - 1) + 10 * (tuned->GetCircuitElements().size() - 1), 0);
-	box->setStyleSheet("background-color: rgb(64, 244, 208); ");
-	box->show();
-	boxes.append(box);
-	QGroupBox* elementBox = new QGroupBox(box);
-	elementBox->resize(86, 114);
-	elementBox->move(2, 35);
-	elementBox->setStyleSheet("background-color: rgb(64, 244, 208); color: rgb(0,0,0);");
 	QString name;
-	long long n=1;
+	long long n = 1;
+	QGroupBox* box = new QGroupBox(this);
+	int moved = 0;
+	box->move(90 * (tuned->GetCircuitElements().size() - 1 + count) + 10 * (tuned->GetCircuitElements().size() - 1), 0);
+	box->resize(90, 150);
 	if (elem->GetMode() == CapacitorShunt || elem->GetMode() == CapacitorParallel)
 	{
 		name = "C";
@@ -58,27 +53,96 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 		name = "L";
 		n = 1e9;
 	}
-	else if (elem->GetMode() == Line)
+	else if (elem->GetMode() == Line || elem->GetMode() == OSLine || elem->GetMode() == SSLine)
 	{
-
+		name = "Z0 Line";
+		box->resize(180, 150);
+		QGroupBox* elementBox2 = new QGroupBox(box);
+		elementBox2->resize(86, 114);
+		elementBox2->move(2, 35);
+		elementBox2->setStyleSheet("background-color: rgb(64, 244, 208); color: rgb(0,0,0);");
+		elementBox2->setTitle(name);
+		elementBox2->show();
+		slidersBoxes.append(elementBox2);
+		QSlider* sld2 = new QSlider(elementBox2);
+		sld2->resize(20, 80);
+		sld2->move(2, 25);
+		sld2->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
+		sld2->setValue(50);
+		sld2->setMaximum(100);
+		sld2->show();
+		sliders.append(sld2);
+		connect(sld2, &QSlider::sliderMoved, this, &TuneWidget::ValueChanged);
+		QLabel* lbl2 = new QLabel(elementBox2);
+		lbl2->resize(50, 15);
+		lbl2->move(25, 57);
+		lbl2->setText(QString::number(elem->GetValue() * n));
+		maxValue.append(elem->GetValue() + elem->GetValue() * 0.5);
+		minValue.append(elem->GetValue() - elem->GetValue() * 0.5);
+		lbl2->show();
+		valueLabels.append(lbl2);
+		QLabel* maxlbl2 = new QLabel(elementBox2);
+		maxlbl2->resize(50, 15);
+		maxlbl2->move(25, 15);
+		maxlbl2->setText(QString::number(maxValue[maxValue.size() - 1] * n));
+		maxlbl2->show();
+		maxLabels.append(maxlbl2);
+		QLabel* minlbl2 = new QLabel(elementBox2);
+		minlbl2->resize(50, 15);
+		minlbl2->move(25, 94);
+		minlbl2->setText(QString::number(minValue[minValue.size() - 1] * n));
+		minlbl2->show();
+		minLabels.append(minlbl2);
+		name = "L elect. in lambda";
+		moved = 90;
+		count++;
 	}
-	else if (elem->GetMode() == OSLine)
-	{
-
-	}
-	else if (elem->GetMode() == SSLine)
-	{
-
-	}
+	box->setStyleSheet("background-color: rgb(64, 244, 208); ");
+	box->show();
+	boxes.append(box);
+	QGroupBox* elementBox = new QGroupBox(box);
+	elementBox->resize(86, 114);
+	elementBox->move(2+moved, 35);
+	elementBox->setStyleSheet("background-color: rgb(64, 244, 208); color: rgb(0,0,0);");
 	elementBox->setTitle(name);
 	elementBox->show();
 	slidersBoxes.append(elementBox);
+	QSlider* sld = new QSlider(elementBox);
+	sld->resize(20, 80);
+	sld->move(2, 25);
+	sld->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
+	sld->setValue(50);
+	sld->setMaximum(100);
+	sld->show();
+	sliders.append(sld);
 	QLabel* lbl = new QLabel(elementBox);
 	lbl->resize(50, 15);
 	lbl->move(25, 57);
-	lbl->setText(QString::number(elem->GetValue()*n));
-	maxValue.append(elem->GetValue() + elem->GetValue() * 0.5);
-	minValue.append(elem->GetValue() - elem->GetValue() * 0.5);
+	if (elem->GetMode() == Line || elem->GetMode() == OSLine || elem->GetMode() == SSLine)
+	{
+		VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(elem);
+		lbl->setText(QString::number(tmp->GetLambda() * n));
+		double maxVal;
+		double minVal;
+		maxVal = tmp->GetLambda() + tmp->GetLambda() * 0.5;
+		minVal = tmp->GetLambda() - tmp->GetLambda() * 0.5;
+		if (maxVal > 0.5)
+		{
+			maxVal = 0.5;
+			double step = (maxVal - minVal) / 100;
+			double val = tmp->GetLambda() - minVal;
+			val /= step;
+			sld->setValue(val);
+		}
+		maxValue.append(maxVal);
+		minValue.append(minVal);
+	}
+	else
+	{
+		lbl->setText(QString::number(elem->GetValue() * n));
+		maxValue.append(elem->GetValue() + elem->GetValue() * 0.5);
+		minValue.append(elem->GetValue() - elem->GetValue() * 0.5);
+	}
 	lbl->show();
 	valueLabels.append(lbl);
 	QLabel* maxlbl = new QLabel(elementBox);
@@ -105,14 +169,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	btn->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
 	btn->show();
 	buttons.append(btn);
-	QSlider* sld = new QSlider(elementBox);
-	sld->resize(20, 80);
-	sld->move(2, 25);
-	sld->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
-	sld->setValue(50);
-	sld->setMaximum(100);
-	sld->show();
-	sliders.append(sld);
+	
 	connect(sld, &QSlider::sliderMoved, this, &TuneWidget::ValueChanged);
 	connect(btn, &QPushButton::clicked, this, &TuneWidget::Remove);
 	update();
@@ -129,6 +186,24 @@ void TuneWidget::Remove()
 			break;
 		}
 		i++;
+	}
+	if (tuned->GetCircuitElements()[i]->GetMode() == Line ||
+		tuned->GetCircuitElements()[i]->GetMode() == OSLine ||
+		tuned->GetCircuitElements()[i]->GetMode() == SSLine)
+	{
+		count--;
+		delete sliders[i + 1];
+		delete maxLabels[i+1];
+		delete minLabels[i+1];
+		delete valueLabels[i+1];
+		maxValue.takeAt(i+1);
+		minValue.takeAt(i+1);
+		delete slidersBoxes[i+1];
+		sliders.takeAt(i+1);
+		maxLabels.takeAt(i+1);
+		minLabels.takeAt(i+1);
+		valueLabels.takeAt(i+1);
+		slidersBoxes.takeAt(i+1);
 	}
 	delete buttons[i];
 	delete sliders[i];
@@ -166,6 +241,24 @@ void TuneWidget::RemoveAll()
 	int i = boxes.size() - 1;
 	while (boxes.size() > 0)
 	{
+		if (tuned->GetCircuitElements()[i]->GetMode() == Line ||
+			tuned->GetCircuitElements()[i]->GetMode() == OSLine ||
+			tuned->GetCircuitElements()[i]->GetMode() == SSLine)
+		{
+			count--;
+			delete sliders.last();
+			delete maxLabels.last();
+			delete minLabels.last();
+			delete valueLabels.last();
+			maxValue.pop_back();
+			minValue.pop_back();
+			delete slidersBoxes.last();
+			sliders.pop_back();
+			maxLabels.pop_back();
+			minLabels.pop_back();
+			valueLabels.pop_back();
+			slidersBoxes.pop_back();
+		}
 		delete buttons.last();
 		delete sliders.last();
 		delete maxLabels.last();
@@ -195,7 +288,8 @@ void TuneWidget::RemoveAll()
 void TuneWidget::paintEvent(QPaintEvent* event)
 {
 	int i = 0;
-	for (auto& var : widgets)
+	int count = 0;
+	for (auto& var : boxes)
 	{
 		long long n = 1;
 		if (tuned->GetCircuitElements()[i]->GetMode() == InductionParallel || tuned->GetCircuitElements()[i]->GetMode() == InductionShunt)
@@ -206,29 +300,25 @@ void TuneWidget::paintEvent(QPaintEvent* event)
 		{
 			n = 1e12;
 		}
-		else if (tuned->GetCircuitElements()[i]->GetMode() == Line)
+		valueLabels[i+count]->setText(QString::number(n*tuned->GetCircuitElements()[i]->GetValue()));
+		if (tuned->GetCircuitElements()[i]->GetMode() == Line)
 		{
-
+			VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[i]);
+			valueLabels[i + 1]->setText(QString::number(tmp->GetLambda()));
+			count++;
 		}
 		else if (tuned->GetCircuitElements()[i]->GetMode() == OSLine)
 		{
-
+			VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[i]);
+			valueLabels[i + 1]->setText(QString::number(tmp->GetLambda()));
+			count++;
 		}
 		else if (tuned->GetCircuitElements()[i]->GetMode() == SSLine)
 		{
-
+			VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[i]);
+			valueLabels[i + 1]->setText(QString::number(tmp->GetLambda()));
+			count++;
 		}
-		valueLabels[i]->setText(QString::number(n*tuned->GetCircuitElements()[i]->GetValue()));
-		QPainter painter(boxes[i]);
-		painter.setPen(QPen(Qt::red, 2));
-		QPoint first = QPoint(0, 50);
-		QPoint second = QPoint(80, 50);
-		QPoint third = QPoint(80, 140);
-		QPoint fourth = QPoint(0, 140);
-		painter.drawLine(first, second);
-		painter.drawLine(second, third);
-		painter.drawLine(third, fourth);
-		painter.drawLine(fourth, first);
 		i++;
 	}
 }
@@ -247,11 +337,61 @@ void TuneWidget::ValueChanged(int value)
 	}
 	double step = (maxValue[i] - minValue[i]) / 100;
 	double middle = (maxValue[i] + minValue[i]) / 2;
-	tuned->GetCircuitElements()[i]->SetValue(minValue[i] + value * step);
+	int k = 0;
+	if (boxes.size() != sliders.size())
+	{
+		QGroupBox* tmp = (QGroupBox*)sliders[i]->parent();
+		QGroupBox* tmp2 = (QGroupBox*)tmp->parent();
+		for (auto var : boxes)
+		{
+			if (boxes[k] == tmp2)
+			{
+				break;
+			}
+			k++;
+		}
+	}
+	else
+	{
+		k = i;
+	}
+	if (tuned->GetCircuitElements()[k]->GetMode() == Line ||
+		tuned->GetCircuitElements()[k]->GetMode() == OSLine ||
+		tuned->GetCircuitElements()[k]->GetMode() == SSLine)
+	{
+		if (i == sliders.size() - 1)
+		{
+			if (sliders[i]->parent()->parent() == sliders[i-1]->parent()->parent())
+			{
+				VerticalLinesElement* tmp3 = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[k]);
+				tmp3->SetLambda(minValue[i] + value * step);
+			}
+			else
+			{
+				tuned->GetCircuitElements()[k]->SetValue(minValue[i] + value * step);
+			}
+		}
+		else
+		{
+			if (sliders[i]->parent()->parent() == sliders[i + 1]->parent()->parent())
+			{
+				tuned->GetCircuitElements()[k]->SetValue(minValue[i] + value * step);
+			}
+			else
+			{
+				VerticalLinesElement* tmp3 = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[k]);
+				tmp3->SetLambda(minValue[i] + value * step);
+			}
+		}
+	}
+	else
+	{
+		tuned->GetCircuitElements()[k]->SetValue(minValue[i] + value * step);
+	}
 	int j = 0;
 	for (auto var : circuitElements->GetCircuitElements())
 	{
-		if (var == tuned->GetCircuitElements()[i])
+		if (var == tuned->GetCircuitElements()[k])
 		{
 			break;
 		}
@@ -312,7 +452,7 @@ void TuneWidget::ValueChanged(int value)
 				{
 					flag = false;
 				}
-				if (circuitElements->GetCircuitElements()[j]->GetPoint().y < 0)
+				if (circuitElements->GetCircuitElements()[j-1]->GetPoint().y < 0)
 				{
 					flag2 = true;
 				}
@@ -326,7 +466,15 @@ void TuneWidget::ValueChanged(int value)
 				x = 1 + (1 / r) * cos_t;
 				y2 = (1 / r) + (1 / r) * sin_t;
 				y2 = y2 * (-1);
-				while (max_step < 500)
+				if (y2 >= 0 && y2 < 0.000001)
+				{
+					y2 = 0.01;
+				}
+				else if (y2 <= 0 && y2 > -0.000001)
+				{
+					y2 = -0.01;
+				}
+				while (max_step < 5000)
 				{
 					if (r3 > r2 && flag == true)
 					{
@@ -351,6 +499,14 @@ void TuneWidget::ValueChanged(int value)
 					x = 1 + (1 / r) * cos_t;
 					y2 = (1 / r) + (1 / r) * sin_t;
 					y2 = y2 * (-1);
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
 					double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
 					double xCenter = 1 - circleRadius;
 					double dx = x - xCenter;
@@ -358,36 +514,18 @@ void TuneWidget::ValueChanged(int value)
 					double sin_t2 = dy;
 					double cos_t2 = dx;
 					double t1;
-					if (y2 < 1e-6 && y2 >= 0)
+					t1 = atan(sin_t2 / cos_t2);
+					if (cos_t2 < 0 && sin_t2 < 0)
 					{
-						if (y2 == 0 && x > 0.99)
-						{
-							t1 = 0;
-						}
-						else if (x > 0.99)
-						{
-							t1 = 2 * M_PI;
-						}
-						else
-						{
-							t1 = M_PI;
-						}
+						t1 += M_PI;
 					}
-					else
+					else if (cos_t2 > 0 && sin_t2 < 0)
 					{
-						t1 = atan(sin_t2 / cos_t2);
-						if (cos_t2 < 0 && sin_t2 < 0)
-						{
-							t1 += M_PI;
-						}
-						else if (cos_t2 > 0 && sin_t2 < 0)
-						{
-							t1 = 2 * M_PI - abs(t1);
-						}
-						else if (sin_t2 > 0 && cos_t2 < 0)
-						{
-							t1 = M_PI - abs(t1);
-						}
+						t1 = 2 * M_PI - abs(t1);
+					}
+					else if (sin_t2 > 0 && cos_t2 < 0)
+					{
+						t1 = M_PI - abs(t1);
 					}
 					if (x - 1 != 0)
 					{
@@ -457,6 +595,14 @@ void TuneWidget::ValueChanged(int value)
 				double sin_t = sin(t);
 				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 				y2 = (1 / (r + 1)) * sin_t;
+				if (y2 >= 0 && y2 < 0.000001)
+				{
+					y2 = 0.01;
+				}
+				else if (y2 <= 0 && y2 > -0.000001)
+				{
+					y2 = -0.01;
+				}
 				while (max_step < 500)
 				{
 					if (r3 > r2 && flag == true)
@@ -481,6 +627,14 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 					y2 = (1 / (r + 1)) * sin_t;
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
 					double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
 					double xCenter = 1 - circleRadius;
 					double dx = x - xCenter;
@@ -488,32 +642,14 @@ void TuneWidget::ValueChanged(int value)
 					double sin_t2 = dy;
 					double cos_t2 = dx;
 					double t1;
-					if (abs(y2) < 1e-6 && abs(y2) >= 0)
+					t1 = atan(cos_t2 / sin_t2);
+					if (y2 < 0)
 					{
-						if (y2 == 0 && x > 0.99)
-						{
-							t1 = 0.0001;
-						}
-						else if (x > 0.99)
-						{
-							t1 = 2 * M_PI;
-						}
-						else
-						{
-							t1 = M_PI;
-						}
+						t1 += M_PI;
 					}
 					else
 					{
-						t1 = atan(cos_t2 / sin_t2);
-						if (y2 < 0)
-						{
-							t1 += M_PI;
-						}
-						else
-						{
-							t1 += 2 * M_PI;
-						}
+						t1 += 2 * M_PI;
 					}
 					if (x - 1 != 0)
 					{
@@ -530,10 +666,6 @@ void TuneWidget::ValueChanged(int value)
 					else
 					{
 						r3 = abs(r3) * (-1);
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
 					}
 					max_step++;
 					if (max_step == 500)
@@ -599,6 +731,14 @@ void TuneWidget::ValueChanged(int value)
 				double sin_t = sin(t);
 				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 				y2 = (1 / (r + 1)) * sin_t;
+				if (y2 >= 0 && y2 < 0.000001)
+				{
+					y2 = 0.01;
+				}
+				else if (y2 <= 0 && y2 > -0.000001)
+				{
+					y2 = -0.01;
+				}
 				while (max_step < 500)
 				{
 					if (r3 > r2 && flag == true)
@@ -623,6 +763,14 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 					y2 = (1 / (r + 1)) * sin_t;
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
 					double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
 					double xCenter = 1 - circleRadius;
 					double dx = x - xCenter;
@@ -630,32 +778,14 @@ void TuneWidget::ValueChanged(int value)
 					double sin_t2 = dy;
 					double cos_t2 = dx;
 					double t1;
-					if (abs(y2) < 1e-6 && abs(y2) >= 0)
+					t1 = atan(cos_t2 / sin_t2);
+					if (y2 < 0)
 					{
-						if (y2 == 0 && x > 0.99)
-						{
-							t1 = 0.0001;
-						}
-						else if (x > 0.99)
-						{
-							t1 = 2 * M_PI;
-						}
-						else
-						{
-							t1 = M_PI;
-						}
+						t1 += M_PI;
 					}
 					else
 					{
-						t1 = atan(cos_t2 / sin_t2);
-						if (y2 < 0)
-						{
-							t1 += M_PI;
-						}
-						else
-						{
-							t1 += 2 * M_PI;
-						}
+						t1 += 2 * M_PI;
 					}
 					if (x - 1 != 0)
 					{
@@ -672,10 +802,6 @@ void TuneWidget::ValueChanged(int value)
 					else
 					{
 						r3 = abs(r3) * (-1);
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
 					}
 					max_step++;
 					if (max_step == 500)
@@ -736,7 +862,7 @@ void TuneWidget::ValueChanged(int value)
 				{
 					flag = false;
 				}
-				if (circuitElements->GetCircuitElements()[j]->GetPoint().y < 0)
+				if (circuitElements->GetCircuitElements()[j-1]->GetPoint().y < 0)
 				{
 					flag2 = true;
 				}
@@ -758,7 +884,7 @@ void TuneWidget::ValueChanged(int value)
 					x = -(cos_t - abs(r)) / r;
 					y2 = -(1 / r) + (1 / r) * sin_t;
 				}
-				while (max_step < 500)
+				while (max_step < 5000)
 				{
 					if (r3 > r2 && flag == true)
 					{
@@ -799,32 +925,14 @@ void TuneWidget::ValueChanged(int value)
 					double sin_t2 = dy;
 					double cos_t2 = dx;
 					double t1;
-					if (y2 < 1e-6 && y2 >= 0)
+					t1 = atan(sin_t2 / cos_t2);
+					if (cos_t2 < 0 && sin_t2 < 0)
 					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = 0;
-						}
-						else if (x < -0.99)
-						{
-							t1 = 2 * M_PI;
-						}
-						else
-						{
-							t1 = M_PI;
-						}
+						t1 = abs(t1) - M_PI;
 					}
-					else
+					else if (sin_t2 > 0 && cos_t2 < 0)
 					{
-						t1 = atan(sin_t2 / cos_t2);
-						if (cos_t2 < 0 && sin_t2 < 0)
-						{
-							t1 = abs(t1) - M_PI;
-						}
-						else if (sin_t2 > 0 && cos_t2 < 0)
-						{
-							t1 = M_PI - abs(t1);
-						}
+						t1 = M_PI - abs(t1);
 					}
 					if (x - 1 != 0)
 					{
@@ -895,6 +1003,269 @@ void TuneWidget::ValueChanged(int value)
 				double sin_t = sin(t);
 				x = (cos(t) - r) / (r + 1);
 				y2 = (1 / (r + 1)) * sin_t * -1;
+				if (y2 >= 0 && y2 < 0.000001)
+				{
+					y2 = 0.01;
+				}
+				else if (y2 <= 0 && y2 > -0.000001)
+				{
+					y2 = -0.01;
+				}
+				while (max_step < 500)
+				{
+					if (r3 > r2 && flag == true)
+					{
+						step /= 2;
+						flag = false;
+					}
+					else if (r3 < r2 && flag == false)
+					{
+						step /= 2;
+						flag = true;
+					}
+					if (flag == false)
+					{
+						t -= step;
+					}
+					else
+					{
+						t += step;
+					}
+					cos_t = cos(t);
+					sin_t = sin(t);
+					x = (cos(t) - r) / (r + 1);
+					y2 = (1 / (r + 1)) * sin_t * -1;
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
+					double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
+					double yCenter = -circleRadius;
+					double dx = x + 1;
+					double dy = y2 - yCenter;
+					double sin_t2 = -dy;
+					double cos_t2 = dx;
+					double t1;
+					t1 = atan(sin_t2 / cos_t2);
+					if (x + 1 != 0)
+					{
+						r3 = cos(t1) / (x + 1);
+					}
+					else
+					{
+						r3 = (1 + sin(t1)) / y2;
+					}
+					if (y2 > 0)
+					{
+						r3 *= -1;
+					}
+					max_step++;
+					if (max_step == 500)
+					{
+						max_step = 0;
+						break;
+					}
+				}
+				Point point;
+				point.x = x;
+				point.y = y2;
+				circuitElements->GetCircuitElements()[j]->SetPoint(point);
+				Complex z2 = zCalculation(x, y2);
+				Complex y3 = yCalculation(x, y2);
+				map<parameterMode, Complex> parameter;
+				parameter[Z] = z2;
+				parameter[Y] = y3;
+				map<chartMode, tuple<double, double>> chart;
+				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
+				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
+				break;
+			}
+			case CapacitorParallel:
+			{
+				double x;
+				double y2;
+				double r1 = y.imag();
+				double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI*frequency*1e12)/500;
+				r2 *= -1;
+				double step = 0.1;
+				r2 = r2 / 20;
+				tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
+				tuple<double, double> tuple2;
+				if (j != 0)
+				{
+					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
+				}
+				else
+				{
+					tuple2 = circuitElements->chart.at(RealAdmitance);
+				}
+				double r = get<0>(tuple2);
+				double r3 = get<0>(tuple1);
+				bool flag;
+				bool flag2;
+				if (r3 > r2)
+				{
+					flag = true;
+				}
+				else
+				{
+					flag = false;
+				}
+				double t = get<1>(tuple2);
+				double cos_t = cos(t);
+				double sin_t = sin(t);
+				x = (cos(t) - r) / (r + 1);
+				y2 = (1 / (r + 1)) * sin_t * -1;
+				if (y2 >= 0 && y2 < 0.000001)
+				{
+					y2 = 0.01;
+				}
+				else if (y2 <= 0 && y2 > -0.000001)
+				{
+					y2 = -0.01;
+				}
+				while (max_step<500)
+				{
+					if (r3 > r2 && flag == true)
+					{
+						step /= 2;
+						flag = false;
+					}
+					else if (r3 < r2 && flag == false)
+					{
+						step /= 2;
+						flag = true;
+					}
+					if (flag == false)
+					{
+						t -= step;
+					}
+					else
+					{
+						t += step;
+					}
+					cos_t = cos(t);
+					sin_t = sin(t);
+					x = (cos(t) - r) / (r + 1);
+					y2 = (1 / (r + 1)) * sin_t * -1;
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
+					double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
+					double yCenter = -circleRadius;
+					double dx = x + 1;
+					double dy = y2 - yCenter;
+					double sin_t2 = -dy;
+					double cos_t2 = dx;
+					double t1;
+					t1 = atan(sin_t2 / cos_t2);
+					if (x + 1 != 0)
+					{
+						r3 = cos(t1) / (x + 1);
+					}
+					else
+					{
+						r3 = (1 + sin(t1)) / y2;
+					}
+					if (y2 > 0)
+					{
+						r3 *= -1;
+					}
+					max_step++;
+					if (max_step == 500)
+					{
+						max_step = 0;
+						break;
+					}
+				}
+				Point point;
+				point.x = x;
+				point.y = y2;
+				circuitElements->GetCircuitElements()[j]->SetPoint(point);
+				Complex z2 = zCalculation(x, y2);
+				Complex y3 = yCalculation(x, y2);
+				map<parameterMode, Complex> parameter;
+				parameter[Z] = z2;
+				parameter[Y] = y3;
+				map<chartMode, tuple<double, double>> chart;
+				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
+				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
+				break;
+			}
+			case Line:
+			{
+				break;
+			}
+			case OSLine:
+			{
+				double x;
+				double y2;
+				double r1 = y.imag();
+				VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
+				double tn;
+				double angle = 2 * M_PI * elem->GetLambda();
+				if (elem->GetLambda() > 0.25)
+				{
+					angle -= M_PI;
+				}
+				tn = tan(angle * 1000 / elem->GetValue());
+				double r2 = abs(r1) + tn;
+				r2 *= 1;
+				/*r2 *= -1;
+				double step = 0.1;
+				r2 = r2 / 20;
+				tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
+				tuple<double, double> tuple2;
+				if (j != 0)
+				{
+					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
+				}
+				else
+				{
+					tuple2 = circuitElements->chart.at(RealAdmitance);
+				}
+				double r = get<0>(tuple2);
+				double r3 = get<0>(tuple1);
+				bool flag;
+				bool flag2;
+				if (r3 > r2)
+				{
+					flag = true;
+				}
+				else
+				{
+					flag = false;
+				}
+				double t = get<1>(tuple2);
+				double cos_t = cos(t);
+				double sin_t = sin(t);
+				x = (cos(t) - r) / (r + 1);
+				y2 = (1 / (r + 1)) * sin_t * -1;
 				while (max_step < 500)
 				{
 					if (r3 > r2 && flag == true)
@@ -988,147 +1359,7 @@ void TuneWidget::ValueChanged(int value)
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
 				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
 				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case CapacitorParallel:
-			{
-				double x;
-				double y2;
-				double r1 = y.imag();
-				double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI*frequency*1e12)/500;
-				r2 *= -1;
-				double step = 0.1;
-				r2 = r2 / 20;
-				tuple<double, double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
-				tuple<double, double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealAdmitance);
-				}
-				double r = get<0>(tuple2);
-				double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				double t = get<1>(tuple2);
-				double cos_t = cos(t);
-				double sin_t = sin(t);
-				x = (cos(t) - r) / (r + 1);
-				y2 = (1 / (r + 1)) * sin_t * -1;
-				while (max_step<500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (cos(t) - r) / (r + 1);
-					y2 = (1 / (r + 1)) * sin_t * -1;
-					double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					double yCenter = -circleRadius;
-					double dx = x + 1;
-					double dy = y2 - yCenter;
-					double sin_t2 = -dy;
-					double cos_t2 = dx;
-					double t1;
-					if (abs(y2) <= 1e-6 && abs(y2) >= 0)
-					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = M_PI / 2;
-						}
-						else if (x < -0.99)
-						{
-							t1 = -M_PI / 2;
-						}
-						else
-						{
-							t1 = 0;
-						}
-					}
-					else
-					{
-						t1 = atan(sin_t2 / cos_t2);
-					}
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = (1 + sin(t1)) / y2;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
-						t1 = -M_PI / 2;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case Line:
-			{
-				break;
-			}
-			case OSLine:
-			{
+				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);*/
 				break;
 			}
 			case SSLine:
@@ -1145,34 +1376,101 @@ void TuneWidget::ValueChanged(int value)
 void TuneWidget::MinMaxButton_clicked()
 {
 	int i = 0;
+	int k = 0;
 	for (auto var : sliders)
 	{
+		var->setValue(50);
 		long long n = 1;
-		if (tuned->GetCircuitElements()[i]->GetMode() == InductionParallel || tuned->GetCircuitElements()[i]->GetMode() == InductionShunt)
+		if (boxes.size() != sliders.size())
 		{
-			n = 1e9;
+			QGroupBox* tmp = (QGroupBox*)sliders[i]->parent();
+			QGroupBox* tmp2 = (QGroupBox*)tmp->parent();
+			for (auto var : boxes)
+			{
+				if (boxes[k] == tmp2)
+				{
+					break;
+				}
+				k++;
+			}
 		}
-		else if (tuned->GetCircuitElements()[i]->GetMode() == CapacitorParallel || tuned->GetCircuitElements()[i]->GetMode() == CapacitorShunt)
+		else
 		{
-			n = 1e12;
+			k = i;
 		}
-		else if (tuned->GetCircuitElements()[i]->GetMode() == Line)
+		if (tuned->GetCircuitElements()[k]->GetMode() == Line ||
+			tuned->GetCircuitElements()[k]->GetMode() == OSLine ||
+			tuned->GetCircuitElements()[k]->GetMode() == SSLine)
 		{
-
+			if (i == sliders.size() - 1)
+			{
+				if (sliders[i]->parent()->parent() == sliders[i - 1]->parent()->parent())
+				{
+					VerticalLinesElement* tmp3 = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[k]);
+					double maxVal;
+					double minVal;
+					maxVal = tmp3->GetLambda() + tmp3->GetLambda() * 0.5;
+					minVal = tmp3->GetLambda() - tmp3->GetLambda() * 0.5;
+					if (maxVal > 0.5)
+					{
+						maxVal = 0.5;
+						double step = (maxVal - minVal) / 100;
+						double val = tmp3->GetLambda() - minVal;
+						val /= step;
+						var->setValue(val);
+					}
+					maxValue[i]=maxVal;
+					minValue[i]=minVal;
+				}
+				else
+				{
+					maxValue[i] = (tuned->GetCircuitElements()[k]->GetValue() + tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+					minValue[i] = (tuned->GetCircuitElements()[k]->GetValue() - tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+				}
+			}
+			else
+			{
+				if (sliders[i]->parent()->parent() == sliders[i + 1]->parent()->parent())
+				{
+					maxValue[i] = (tuned->GetCircuitElements()[k]->GetValue() + tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+					minValue[i] = (tuned->GetCircuitElements()[k]->GetValue() - tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+				}
+				else
+				{
+					VerticalLinesElement* tmp3 = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[k]);
+					double maxVal;
+					double minVal;
+					maxVal = tmp3->GetLambda() + tmp3->GetLambda() * 0.5;
+					minVal = tmp3->GetLambda() - tmp3->GetLambda() * 0.5;
+					if (maxVal > 0.5)
+					{
+						maxVal = 0.5;
+						double step = (maxVal - minVal) / 100;
+						double val = tmp3->GetLambda() - minVal;
+						val /= step;
+						var->setValue(val);
+					}
+					maxValue[i] = maxVal;
+					minValue[i] = minVal;
+				}
+			}
 		}
-		else if (tuned->GetCircuitElements()[i]->GetMode() == OSLine)
+		else
 		{
-
+			if (tuned->GetCircuitElements()[k]->GetMode() == InductionParallel || tuned->GetCircuitElements()[k]->GetMode() == InductionShunt)
+			{
+				n = 1e9;
+			}
+			else if (tuned->GetCircuitElements()[k]->GetMode() == CapacitorParallel || tuned->GetCircuitElements()[k]->GetMode() == CapacitorShunt)
+			{
+				n = 1e12;
+			}
+			maxValue[i] = (tuned->GetCircuitElements()[k]->GetValue() + tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+			minValue[i] = (tuned->GetCircuitElements()[k]->GetValue() - tuned->GetCircuitElements()[k]->GetValue() * 0.5);
+			
 		}
-		else if (tuned->GetCircuitElements()[i]->GetMode() == SSLine)
-		{
-
-		}
-		maxValue[i]=(tuned->GetCircuitElements()[i]->GetValue() + tuned->GetCircuitElements()[i]->GetValue() * 0.3);
-		minValue[i]=(tuned->GetCircuitElements()[i]->GetValue() - tuned->GetCircuitElements()[i]->GetValue() * 0.3);
 		minLabels[i]->setText(QString::number(minValue[i] * n));
 		maxLabels[i]->setText(QString::number(maxValue[i] * n));
-		var->setValue(50);
 		i++;
 	}
 	update();
@@ -1194,6 +1492,14 @@ Complex TuneWidget::yCalculation(double x, double y)
 
 Complex TuneWidget::impedanceRealChartParameters(double x, double y)
 {
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
 	double xCenter = 1 - circleRadius;
 	double dx = x - xCenter;
@@ -1201,36 +1507,18 @@ Complex TuneWidget::impedanceRealChartParameters(double x, double y)
 	double sin_t = dy;
 	double cos_t = dx;
 	double t1, r1;
-	if (y < 1e-6 && y >= 0)
+	t1 = atan(sin_t / cos_t);
+	if (cos_t < 0 && sin_t < 0)
 	{
-		if (y == 0 && x > 0.99)
-		{
-			t1 = 0;
-		}
-		else if (x > 0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 += M_PI;
 	}
-	else
+	else if (cos_t > 0 && sin_t < 0)
 	{
-		t1 = atan(sin_t / cos_t);
-		if (cos_t < 0 && sin_t < 0)
-		{
-			t1 += M_PI;
-		}
-		else if (cos_t > 0 && sin_t < 0)
-		{
-			t1 = 2 * M_PI - abs(t1);
-		}
-		else if (sin_t > 0 && cos_t < 0)
-		{
-			t1 = M_PI - abs(t1);
-		}
+		t1 = 2 * M_PI - abs(t1);
+	}
+	else if (sin_t > 0 && cos_t < 0)
+	{
+		t1 = M_PI - abs(t1);
 	}
 	if (x - 1 != 0)
 	{
@@ -1241,6 +1529,14 @@ Complex TuneWidget::impedanceRealChartParameters(double x, double y)
 
 Complex TuneWidget::admitanceRealChartParameters(double x, double y)
 {
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
 	double xCenter = -1 - circleRadius;
 	double dx = x - xCenter;
@@ -1249,32 +1545,14 @@ Complex TuneWidget::admitanceRealChartParameters(double x, double y)
 	double sin_t = dy;
 	double cos_t = dx;
 	double t1, r1;
-	if (y <= 1e-6 && y >= 1e-6)
+	t1 = atan(sin_t / cos_t);
+	if (cos_t < 0 && sin_t < 0)
 	{
-		if (y == 0 && x < -0.99)
-		{
-			t1 = 0;
-		}
-		else if (x < -0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 = abs(t1) - M_PI;
 	}
-	else
+	else if (sin_t > 0 && cos_t < 0)
 	{
-		t1 = atan(sin_t / cos_t);
-		if (cos_t < 0 && sin_t < 0)
-		{
-			t1 = abs(t1) - M_PI;
-		}
-		else if (sin_t > 0 && cos_t < 0)
-		{
-			t1 = M_PI - abs(t1);
-		}
+		t1 = M_PI - abs(t1);
 	}
 	if (x - 1 != 0)
 	{
@@ -1287,6 +1565,14 @@ Complex TuneWidget::impedanceImagChartParameters(double x, double y)
 {
 	double cos_t;
 	double sin_t;
+	if (y >= 0 && y < 0.01)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.01)
+	{
+		y = -0.01;
+	}
 	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
 	double xCenter = 1 - circleRadius;
 	double dx = x - xCenter;
@@ -1294,32 +1580,14 @@ Complex TuneWidget::impedanceImagChartParameters(double x, double y)
 	sin_t = dy;
 	cos_t = dx;
 	double t1, r1;
-	if (abs(y) < 1e-6 && abs(y) >= 0)
+	t1 = atan(cos_t / sin_t);
+	if (y < 0)
 	{
-		if (y == 0 && x > 0.99)
-		{
-			t1 = 0.0001;
-		}
-		else if (x > 0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 += M_PI;
 	}
 	else
 	{
-		t1 = atan(cos_t / sin_t);
-		if (y < 0)
-		{
-			t1 += M_PI;
-		}
-		else
-		{
-			t1 += 2 * M_PI;
-		}
+		t1 += 2 * M_PI;
 	}
 	if (x - 1 != 0)
 	{
@@ -1348,6 +1616,14 @@ Complex TuneWidget::admitanceImagChartParameters(double x, double y)
 {
 	double cos_t;
 	double sin_t;
+	if (y >= 0 && y < 0.01)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.01)
+	{
+		y = -0.01;
+	}
 	double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
 	double yCenter = -circleRadius;
 	double dx = x + 1;
@@ -1355,25 +1631,7 @@ Complex TuneWidget::admitanceImagChartParameters(double x, double y)
 	sin_t = -dy;
 	cos_t = dx;
 	double t1, r1;
-	if (abs(y) <= 1e-6 && abs(y) >= 0)
-	{
-		if (y == 0 && x < -0.99)
-		{
-			t1 = M_PI / 2;
-		}
-		else if (x < -0.99)
-		{
-			t1 = -M_PI / 2;
-		}
-		else
-		{
-			t1 = 0;
-		}
-	}
-	else
-	{
-		t1 = atan(sin_t / cos_t);
-	}
+	t1 = atan(sin_t / cos_t);
 	if (x + 1 != 0)
 	{
 		r1 = cos(t1) / (x + 1);
@@ -1396,6 +1654,14 @@ Complex TuneWidget::admitanceImagChartParameters(double x, double y)
 
 void TuneWidget::rImpedanceRealCalculation(double x, double y)
 {
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
 	double xCenter = 1 - circleRadius;
 	double dx = x - xCenter;
@@ -1403,36 +1669,18 @@ void TuneWidget::rImpedanceRealCalculation(double x, double y)
 	double sin_t = dy;
 	double cos_t = dx;
 	double t1;
-	if (y < 1e-6 && y >= 0)
+	t1 = atan(sin_t / cos_t);
+	if (cos_t < 0 && sin_t < 0)
 	{
-		if (y == 0 && x > 0.99)
-		{
-			t1 = 0;
-		}
-		else if (x > 0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 += M_PI;
 	}
-	else
+	else if (cos_t > 0 && sin_t < 0)
 	{
-		t1 = atan(sin_t / cos_t);
-		if (cos_t < 0 && sin_t < 0)
-		{
-			t1 += M_PI;
-		}
-		else if (cos_t > 0 && sin_t < 0)
-		{
-			t1 = 2 * M_PI - abs(t1);
-		}
-		else if (sin_t > 0 && cos_t < 0)
-		{
-			t1 = M_PI - abs(t1);
-		}
+		t1 = 2 * M_PI - abs(t1);
+	}
+	else if (sin_t > 0 && cos_t < 0)
+	{
+		t1 = M_PI - abs(t1);
 	}
 	if (x - 1 != 0)
 	{
@@ -1443,6 +1691,14 @@ void TuneWidget::rImpedanceRealCalculation(double x, double y)
 
 void TuneWidget::rAdmitanceRealCalculation(double x, double y)
 {
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
 	double xCenter = -1 - circleRadius;
 	double dx = x - xCenter;
@@ -1451,32 +1707,14 @@ void TuneWidget::rAdmitanceRealCalculation(double x, double y)
 	double sin_t = dy;
 	double cos_t = dx;
 	double t1;
-	if (y < 1e-6 && y >= 0)
+	t1 = atan(sin_t / cos_t);
+	if (cos_t < 0 && sin_t < 0)
 	{
-		if (y == 0 && x < -0.99)
-		{
-			t1 = 0;
-		}
-		else if (x < -0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 = abs(t1) - M_PI;
 	}
-	else
+	else if (sin_t > 0 && cos_t < 0)
 	{
-		t1 = atan(sin_t / cos_t);
-		if (cos_t < 0 && sin_t < 0)
-		{
-			t1 = abs(t1) - M_PI;
-		}
-		else if (sin_t > 0 && cos_t < 0)
-		{
-			t1 = M_PI - abs(t1);
-		}
+		t1 = M_PI - abs(t1);
 	}
 	if (x - 1 != 0)
 	{
@@ -1489,6 +1727,14 @@ void TuneWidget::rImpedanceImagCalculation(double x, double y)
 {
 	double cos_t;
 	double sin_t;
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
 	double xCenter = 1 - circleRadius;
 	double dx = x - xCenter;
@@ -1496,32 +1742,14 @@ void TuneWidget::rImpedanceImagCalculation(double x, double y)
 	sin_t = dy;
 	cos_t = dx;
 	double t1;
-	if (abs(y) < 1e-6 && abs(y) >= 0)
+	t1 = atan(cos_t / sin_t);
+	if (y < 0)
 	{
-		if (y == 0 && x > 0.99)
-		{
-			t1 = 0.0001;
-		}
-		else if (x > 0.99)
-		{
-			t1 = 2 * M_PI;
-		}
-		else
-		{
-			t1 = M_PI;
-		}
+		t1 += M_PI;
 	}
 	else
 	{
-		t1 = atan(cos_t / sin_t);
-		if (y < 0)
-		{
-			t1 += M_PI;
-		}
-		else
-		{
-			t1 += 2 * M_PI;
-		}
+		t1 += 2 * M_PI;
 	}
 	if (x - 1 != 0)
 	{
@@ -1550,6 +1778,14 @@ void TuneWidget::rAdmitanceImagCalculation(double x, double y)
 {
 	double cos_t;
 	double sin_t;
+	if (y >= 0 && y < 0.000001)
+	{
+		y = 0.01;
+	}
+	else if (y <= 0 && y > -0.000001)
+	{
+		y = -0.01;
+	}
 	double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
 	double yCenter = -circleRadius;
 	double dx = x + 1;
@@ -1557,25 +1793,7 @@ void TuneWidget::rAdmitanceImagCalculation(double x, double y)
 	sin_t = -dy;
 	cos_t = dx;
 	double t1;
-	if (abs(y) < 1e-6 && abs(y) >= 0)
-	{
-		if (y == 0 && x < -0.99)
-		{
-			t1 = M_PI / 2;
-		}
-		else if (x < -0.99)
-		{
-			t1 = -M_PI / 2;
-		}
-		else
-		{
-			t1 = 0;
-		}
-	}
-	else
-	{
-		t1 = atan(sin_t / cos_t);
-	}
+	t1 = atan(sin_t / cos_t);
 	if (x + 1 != 0)
 	{
 		admitanceImagR = cos(t1) / (x + 1);
@@ -1587,10 +1805,6 @@ void TuneWidget::rAdmitanceImagCalculation(double x, double y)
 	if (y > 0)
 	{
 		admitanceImagR *= -1;
-	}
-	if (y == 0 || (abs(y) < 1e-7 && x > -0.999))
-	{
-		admitanceImagR = 0;
 	}
 	admitanceImagR *= -20;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "LinesElement.h"
+#include "VerticalLinesElement.h"
 #include "systemParameters.h"
 class CircuitElements
 {
