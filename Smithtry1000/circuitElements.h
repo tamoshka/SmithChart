@@ -1,5 +1,6 @@
 #pragma once
-#include "element.h"
+#include "VerticalLinesElement.h"
+#include "systemParameters.h"
 class CircuitElements
 {
 private:
@@ -8,11 +9,14 @@ public:
 	void AddCircuitElements(Element*);
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();
+	void Remove(int);
 	CircuitElements();
-	float realFirstPoint = -9999;
-	float imagFirstPoint = -9999;
-	float frequencyFirstPoint = -9999;
+	Complex z = Complex(-9999, -9999);
+	Complex y = Complex(-9999, -9999);
+	double realFirstPoint = -9999;
+	double imagFirstPoint = -9999;
+	double frequencyFirstPoint = -9999;
 	Point firstPoint;
-	map<chartMode, tuple<float, float>> chart;
+	map<chartMode, tuple<double, double>> chart;
 	~CircuitElements();
 };

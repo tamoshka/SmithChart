@@ -16,10 +16,16 @@ void CircuitElements::AddCircuitElements(Element* element)
 
 void CircuitElements::DeleteCircuitElements()
 {
+	delete this->circuitElements.last();
 	this->circuitElements.pop_back();
 }
 
 QList<Element*> CircuitElements::GetCircuitElements()
 {
 	return this->circuitElements;
+}
+
+void CircuitElements::Remove(int i)
+{
+	this->circuitElements.takeAt(i);
 }
