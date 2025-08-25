@@ -4,13 +4,20 @@
 class SystemParameters
 {
 public:
+	//Главный круг
 	static QColor MainCircleColor;
+	//Круги справа
 	static QColor ImpedanceColor;
+	//Круги слева
 	static QColor AdmitanceColor;
+	//Цвета точек на диаграмме
 	static QColor DataPointsColor;
+	//Предлогаемый маршрут передвижения мышки
 	static QColor RootColor;
+	//Годограф
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
+
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor

@@ -1,37 +1,19 @@
 #include "SParameters.h"
+#include <QString>
 
-string get_extension4(string path) {
 
-	size_t last_slash = path.find_last_of("/\\");
-	string filename;
-	if (last_slash != string::npos) {
-		filename = path.substr(last_slash + 1);
-	}
-	else {
-		filename = path;
-	}
-
-	size_t last_dot = filename.find_last_of('.');
-
-	if (last_dot != string::npos && last_dot != 0) {
-		return filename.substr(last_dot + 1);
-	}
-
-	return "";
-}
-
-SParameters::SParameters(Table& table1, Tests& tests1, GrafOne& grafOne1, GrafTwo& grafTwo1, S11Param& g31, S22Param& g41, S12Param& g51, S21Param& g61)
+SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21, SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2, ColourSetting& set1)
 {
-	table = &table1;
-	tests = &tests1;
 	grafOne = &grafOne1;
 	grafTwo = &grafTwo1;
-	g3 = &g31;
-	g4 = &g41;
-	g5 = &g51;
-	g6 = &g61;
+	d1 = &d12;
+	d2 = &d21;
+	d3 = &d11;
+	d4 = &d22;
+	stable1 = &t1;
+	stable2 = &t2;
+	set = &set1;
 }
-
 SParameters::~SParameters()
 {
 
@@ -39,33 +21,38 @@ SParameters::~SParameters()
 
 void SParameters::Show()
 {
-	if (get_extension4(fileName.toStdString()) == "S1P" || get_extension4(fileName.toStdString()) == "s1p")
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+	set->show();
+	if (extension == "S1P" || extension == "s1p")
 	{
 		grafOne->Load();
 		grafOne->show();
-		tests->Load();
-		tests->show();
-		g3->Load();
-		g3->show();
+		d3->Load();
+		d3->show();
+		stable1->Load();
+		stable1->show();;
 	}
 
-	else if (get_extension4(fileName.toStdString()) == "S2P" || get_extension4(fileName.toStdString()) == "s2p")
+	else if (extension == "S2P" || extension == "s2p")
 	{
-		table->Load();
-		table->show();
-		tests->Load();
-		tests->show();
 		grafOne->Load();
 		grafOne->show();
 		grafTwo->Load();
 		grafTwo->show();
-		g3->Load();
-		g3->show();
-		g4->Load();
-		g4->show();
-		g5->Load();
-		g5->show();
-		g6->Load();
-		g6->show();
+		d1->Load();
+		d1->show();
+		d2->Load();
+		d2->show();
+		d3->Load();
+		d3->show();
+		d4->Load();
+		d4->show();
+		stable1->Load();
+		stable1->show();
+		stable2->Load();
+		stable2->show();
 	}
 }

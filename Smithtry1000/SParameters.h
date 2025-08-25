@@ -1,27 +1,28 @@
-#include "Tests.h"
-#include "Table.h"
 #include "GrafOne.h"
 #include "GrafTwo.h"
-#include "S11Param.h"
-#include "S22Param.h"
-#include "S12Param.h"
-#include "S21Param.h"
-#include "newgeneral.h"
 #include <QtWidgets/QApplication>
+#include "SDiagram1.h"
+#include "SDiagram2.h"
+#include "SParamTable.h"
+#include "ColourSetting.h"
 
 class SParameters
 {
 public:
-	SParameters(Table&, Tests&, GrafOne&, GrafTwo&, S11Param&, S22Param&, S12Param&, S21Param&);
+	SParameters(GrafOne&, GrafTwo&,SDiagram1&, SDiagram1&, SDiagram2&, SDiagram2&, SParamTable&, SParamTable&, ColourSetting&);
 	void Show();
 	~SParameters();
 private:
-	Table* table;
-	Tests* tests;
 	GrafOne* grafOne;
 	GrafTwo* grafTwo;
-	S11Param* g3;
-	S22Param* g4;
-	S12Param* g5;
-	S21Param* g6;
+
+	SDiagram1* d1;
+	SDiagram1* d2;
+	SDiagram2* d3;
+	SDiagram2* d4;
+
+	SParamTable* stable1;
+	SParamTable* stable2;
+
+	ColourSetting* set;
 };

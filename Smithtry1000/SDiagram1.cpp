@@ -1,11 +1,12 @@
-﻿#include "S12Param.h"
-#include "newgeneral.h"
+﻿#include "SDiagram1.h"
 #include "S2p.h"
 #include "math.h"
+#include <QString>
 
-S12Param::S12Param(QWidget* parent)
+SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 	: QWidget(parent),
-	mBackGroundColor(255, 255, 255)
+	mBackGroundColor(255, 255, 255),
+	currentType(type)
 {
 	setFixedSize(600, 600);
 	setMinimumSize(450, 450);
@@ -13,8 +14,13 @@ S12Param::S12Param(QWidget* parent)
 	this->setStyleSheet("background-color: white;");
 }
 
-void S12Param::Load()
+void SDiagram1::Load()
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
@@ -23,20 +29,32 @@ void S12Param::Load()
 	y.clear();
 	angle.clear();
 	max = 0;
-	for (int i = 0; i < s.S[0][1].size(); i++)
+
+	//Выбор для S12,S21
+	const auto& sParam = [&]() -> const std::vector<complex_t>&
 	{
-		z.append(s.S[0][1][i].real());
+		switch (currentType) 
+		{
+			case S12: return s.S[0][1];
+			case S21: return s.S[1][0];
+			default: return s.S[0][1];
+		}
+	}();
+
+	for (int i = 0; i < sParam.size(); i++)
+	{
+		z.append(sParam[i].real());
 		if (z[i] > max)
 		{
 			max = z[i];
 		}
 	}
 
-	for (int i = 0; i < s.S[0][1].size(); i++)
+	for (int i = 0; i < sParam.size(); i++)
 	{
 		k = z[i] / max;
 		z[i] = k;
-		angle.append(s.S[0][1][i].imag());
+		angle.append(sParam[i].imag());
 		double cosin;
 		if (angle[i] > 90)
 		{
@@ -68,18 +86,34 @@ void S12Param::Load()
 	}
 }
 
-void S12Param::highlightPoint(int index)
+void SDiagram1::highlightPoint(int index)
 {
 	highlightedPoint = index;
 	update();
 }
 
-void S12Param::paintEvent(QPaintEvent* event)
+void SDiagram1::paintEvent(QPaintEvent* event)
 {
+	extern QString fileName;
+	auto extension = fileName.toStdString();
+	size_t last_dot = extension.find_last_of('.');
+	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
+
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 
+	//Выбор для S12,S21
+	const auto& sParam = [&]() -> const std::vector<complex_t>&
+	{
+		switch (currentType) 
+		{
+			case S12: return s.S[0][1];
+			case S21: return s.S[1][0];
+			default: return s.S[0][1];
+		}
+	}();
+	
 	QPainter painter(this);
 
 	painter.setRenderHint(QPainter::Antialiasing);
@@ -107,10 +141,8 @@ void S12Param::paintEvent(QPaintEvent* event)
 	}
 
 	painter.setPen(QPen(Qt::black, 1));
-	painter.drawLine(QPointF(center.x(), center.y() - maxCircleRadius),
-		QPointF(center.x(), center.y() + maxCircleRadius));
-	painter.drawLine(QPointF(center.x() - maxCircleRadius, center.y()),
-		QPointF(center.x() + maxCircleRadius, center.y()));
+	painter.drawLine(QPointF(center.x(), center.y() - maxCircleRadius),QPointF(center.x(), center.y() + maxCircleRadius));
+	painter.drawLine(QPointF(center.x() - maxCircleRadius, center.y()),QPointF(center.x() + maxCircleRadius, center.y()));
 
 	float pointScale = 2.0f * scaleFactor;
 	float lineWidth = 1.0f * scaleFactor;
@@ -120,7 +152,8 @@ void S12Param::paintEvent(QPaintEvent* event)
 		QPointF point = center + QPointF(x[i] * 200 * scaleFactor, y[i] * 200 * scaleFactor);
 		painter.drawEllipse(point, pointScale, pointScale);
 
-		if (i > 0) {
+		if (i > 0) 
+		{
 			QPointF prevPoint = center + QPointF(x[i - 1] * 200 * scaleFactor, y[i - 1] * 200 * scaleFactor);
 			painter.setPen(QPen(Qt::black, lineWidth));
 			painter.drawLine(prevPoint, point);
@@ -128,28 +161,28 @@ void S12Param::paintEvent(QPaintEvent* event)
 		}
 	}
 
-	if (highlightedPoint >= 0 && highlightedPoint < x.size()) {
-		QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,
-			y[highlightedPoint] * 200 * scaleFactor);
+	if (highlightedPoint >= 0 && highlightedPoint < x.size()) 
+	{
+		QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,y[highlightedPoint] * 200 * scaleFactor);
 		painter.setPen(QPen(Qt::black, lineWidth));
 		painter.setBrush(Qt::black);
 		painter.drawEllipse(highlightPoint, 3 * scaleFactor, 3 * scaleFactor);
 
-		complex_t s01 = s.S[0][1][highlightedPoint];
-		double magnitude = abs(s01);
-		double phase = arg(s01) * 180 / M_PI;
+		complex_t sPoint = sParam[highlightedPoint];
+		double magnitude = abs(sPoint);
+		double phase = arg(sPoint) * 180 / M_PI;
 
-		QString highlightLabel = QString("[%1] S12: %2∠%3°")
+		QString highlightLabel = QString("[%1] S: %2∠%3°")
 			.arg(highlightedPoint + 1)
-			.arg(s01.real(), 0, 'f', 3)
-			.arg(s01.imag(), 0, 'f', 2);
+			.arg(sPoint.real(), 0, 'f', 3)
+			.arg(sPoint.imag(), 0, 'f', 2);
 
 		QPointF textPos = highlightPoint + QPointF(10 * scaleFactor, -10 * scaleFactor);
 		painter.drawText(textPos, highlightLabel);
 	}
 }
 
-S12Param::~S12Param()
+SDiagram1::~SDiagram1()
 {
 }
 

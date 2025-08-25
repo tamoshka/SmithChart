@@ -1,7 +1,6 @@
 #include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
-#include "newgeneral.h"
 #include <QThread>
 #include "circuitElements.h"
 QList<Point> morePoints;
@@ -25,23 +24,35 @@ QString fileName = "";
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-	Table t1;
-	Tests t2;
+
 	GrafOne g1;
 	GrafTwo g2;
-	S11Param g3;
-	S22Param g4;
-	S12Param g5;
-	S21Param g6;
+	SDiagram1 d1(SDiagram1::S12);
+	SDiagram1 d2(SDiagram1::S21);
+	SDiagram2 d3(SDiagram2::S11);
+	SDiagram2 d4(SDiagram2::S22);
+	ColourSetting set;
+	SParamTable stable1(SParamTable::STable1);
+	SParamTable stable2(SParamTable::STable2);
 
-	QObject::connect(&t2, &Tests::rowClicked, &g5, &S12Param::highlightPoint);
-	QObject::connect(&t2, &Tests::rowClicked, &g3, &S11Param::highlightPoint);
-	QObject::connect(&t2, &Tests::rowClicked, &g6, &S21Param::highlightPoint);
-	QObject::connect(&t2, &Tests::rowClicked, &g4, &S22Param::highlightPoint);
-	QObject::connect(&t2, &Tests::rowSelected, &g1, &GrafOne::highlightPoint);
-	QObject::connect(&t2, &Tests::rowSelected, &g2, &GrafTwo::highlightPoint);
-	QObject::connect(&t1, &Table::rowSelected, &g2, &GrafTwo::highlightPoint);
-	SParameters* sParameters = new SParameters(t1, t2, g1, g2, g3, g4, g5, g6);
+
+	QObject::connect(&stable1, &SParamTable::rowClicked, &d1, &SDiagram1::highlightPoint);
+	QObject::connect(&stable1, &SParamTable::rowSelected, &d2, &SDiagram1::highlightPoint);
+	QObject::connect(&stable1, &SParamTable::rowClicked, &d3, &SDiagram2::highlightPoint);
+	QObject::connect(&stable1, &SParamTable::rowSelected, &d4, &SDiagram2::highlightPoint);
+
+	QObject::connect(&stable1, &SParamTable::rowSelected, &g1, &GrafOne::highlightPoint);
+	QObject::connect(&stable1, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
+	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
+
+	QObject::connect(&set, &ColourSetting::s11ColorChanged, &g1, &GrafOne::updateS11Color);
+	QObject::connect(&set, &ColourSetting::s22ColorChanged, &g1, &GrafOne::updateS22Color);
+	QObject::connect(&set, &ColourSetting::magColorChanged, &g2, &GrafTwo::updateMAGColor);
+	QObject::connect(&set, &ColourSetting::msgColorChanged, &g2, &GrafTwo::updateMSGColor);
+	QObject::connect(&set, &ColourSetting::kColorChanged, &g2, &GrafTwo::updateKColor);
+	QObject::connect(&set, &ColourSetting::muColorChanged, &g2, &GrafTwo::updateMuColor);
+	
+	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);
 	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);
     w.show();
