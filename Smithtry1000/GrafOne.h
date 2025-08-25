@@ -4,6 +4,7 @@
 #include "ui_GrafOne.h"
 #include "S2p.h"
 #include <QVector>
+#include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class GrafOneClass; };
 QT_END_NAMESPACE
@@ -16,8 +17,12 @@ public:
 	GrafOne(QWidget* parent = nullptr);
 	~GrafOne();
 	void Load();
+
 public slots:
 	void highlightPoint(int index);
+	void updateS11Color(const QColor& color);
+	void updateS22Color(const QColor& color);
+
 private:
 	Ui::GrafOneClass* ui;
 	double xBegin, xEnd, yBegin, yEnd, hY, hX;

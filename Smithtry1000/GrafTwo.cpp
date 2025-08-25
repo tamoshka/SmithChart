@@ -2,6 +2,7 @@
 #include <QString>
 #include "S2p.h"
 #include "qvalueaxis.h"
+#include "ColourSetting.h"
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafTwoClass())
@@ -80,24 +81,26 @@ void GrafTwo::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
+	QPen pen1(Qt::blue);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
+	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
+	QPen pen2(Qt::red);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
+	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");
 	ui->widget->graph(1)->addData(x, y2);
-	QPen pen1(Qt::red);
-	ui->widget->graph(1)->setPen(pen1);
+	QPen pen3(Qt::green);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
+	ui->widget->graph(2)->setPen(pen3);
 	ui->widget->graph(2)->setName("K");
 	ui->widget->graph(2)->addData(x, y3);
-	QPen pen2(Qt::green);
-	ui->widget->graph(2)->setPen(pen2);
+	QPen pen4(Qt::black);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
+	ui->widget->graph(3)->setPen(pen4);
 	ui->widget->graph(3)->setName("μ");
 	ui->widget->graph(3)->addData(x, y4);
-	QPen pen3(Qt::black);
-	ui->widget->graph(3)->setPen(pen3);
 	ui->widget->yAxis2->setVisible(true);
 
 	ui->widget->replot();
@@ -136,6 +139,46 @@ void GrafTwo::Load()
 	GraphMSG->setValueAxis(ui->widget->yAxis);
 	GraphK->setValueAxis(ui->widget->yAxis2);
 	Graphμ->setValueAxis(ui->widget->yAxis2);
+}
+
+void GrafTwo::updateMAGColor(const QColor& color)
+{
+	if (ui->widget->graphCount() > 0) 
+	{
+		QPen pen(color);
+		ui->widget->graph(0)->setPen(pen);
+		ui->widget->replot();
+	}
+}
+
+void GrafTwo::updateMSGColor(const QColor& color)
+{
+	if (ui->widget->graphCount() > 1) 
+	{
+		QPen pen(color);
+		ui->widget->graph(1)->setPen(pen);
+		ui->widget->replot();
+	}
+}
+
+void GrafTwo::updateKColor(const QColor& color)
+{
+	if (ui->widget->graphCount() > 2) 
+	{
+		QPen pen(color);
+		ui->widget->graph(2)->setPen(pen);
+		ui->widget->replot();
+	}
+}
+
+void GrafTwo::updateMuColor(const QColor& color)
+{
+	if (ui->widget->graphCount() > 3) 
+	{
+		QPen pen(color);
+		ui->widget->graph(3)->setPen(pen);
+		ui->widget->replot();
+	}
 }
 
 void GrafTwo::highlightPoint(int index)

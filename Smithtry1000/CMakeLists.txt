@@ -67,6 +67,9 @@ set(PROJECT_SOURCES
     SParamTable.ui
     SParamTable.h
     SParamTable.cpp
+    ColourSetting.ui
+    ColourSetting.h
+    ColourSetting.cpp
 )
 
 SET(UI_RESOURCES

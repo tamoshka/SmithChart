@@ -4,11 +4,12 @@
 #include "SDiagram1.h"
 #include "SDiagram2.h"
 #include "SParamTable.h"
+#include "ColourSetting.h"
 
 class SParameters
 {
 public:
-	SParameters(GrafOne&, GrafTwo&,SDiagram1&, SDiagram1&, SDiagram2&, SDiagram2&, SParamTable&, SParamTable&);
+	SParameters(GrafOne&, GrafTwo&,SDiagram1&, SDiagram1&, SDiagram2&, SDiagram2&, SParamTable&, SParamTable&, ColourSetting&);
 	void Show();
 	~SParameters();
 private:
@@ -22,4 +23,6 @@ private:
 
 	SParamTable* stable1;
 	SParamTable* stable2;
+
+	ColourSetting* set;
 };

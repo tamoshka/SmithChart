@@ -2,7 +2,7 @@
 #include <QString>
 
 
-SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21,SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2)
+SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21, SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2, ColourSetting& set1)
 {
 	grafOne = &grafOne1;
 	grafTwo = &grafTwo1;
@@ -12,8 +12,8 @@ SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, S
 	d4 = &d22;
 	stable1 = &t1;
 	stable2 = &t2;
+	set = &set1;
 }
-
 SParameters::~SParameters()
 {
 
@@ -25,7 +25,7 @@ void SParameters::Show()
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-
+	set->show();
 	if (extension == "S1P" || extension == "s1p")
 	{
 		grafOne->Load();

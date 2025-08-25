@@ -91,20 +91,25 @@ void GrafOne::Load()
 	ui->widget->legend->setVisible(true);
 	if (extension == "S1P" || extension == "s1p")
 	{
+
 		ui->widget->addGraph();
+		QPen pen1(Qt::blue);
+		ui->widget->graph(0)->setPen(pen1);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 	}
 	else if (extension == "S2P" || extension == "s2p")
 	{
 		ui->widget->addGraph();
+		QPen pen1(Qt::blue);
+		ui->widget->graph(0)->setPen(pen1);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 		ui->widget->addGraph();
 		ui->widget->graph(1)->setName("Return Loss S22");
 		ui->widget->graph(1)->addData(x, y2);
-		QPen pen(Qt::red);
-		ui->widget->graph(1)->setPen(pen);
+		QPen pen2(Qt::red);
+		ui->widget->graph(1)->setPen(pen2);
 	}
 
 	ui->widget->replot();
@@ -120,6 +125,26 @@ void GrafOne::Load()
 	GraphS22->setLineStyle(QCPGraph::lsNone);
 	GraphS22->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
 	GraphS22->removeFromLegend();
+}
+
+void GrafOne::updateS11Color(const QColor& color)
+{
+	if (ui->widget->graphCount() > 0) 
+	{
+		QPen pen(color);
+		ui->widget->graph(0)->setPen(pen);
+		ui->widget->replot();
+	}
+}
+
+void GrafOne::updateS22Color(const QColor& color)
+{
+	if (ui->widget->graphCount() > 1) 
+	{
+		QPen pen(color);
+		ui->widget->graph(1)->setPen(pen);
+		ui->widget->replot();
+	}
 }
 
 void GrafOne::highlightPoint(int index)
