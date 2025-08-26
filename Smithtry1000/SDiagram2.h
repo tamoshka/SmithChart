@@ -1,27 +1,35 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_S22Param.h"
 #include "S2p.h"
 #include "qpainter.h"
 #include "qpoint.h"
-#include "qcolor.h"
+#include <QColor>
+#include <QVector>
+#include <QPoint>
 #include "QEvent.h"
 QT_BEGIN_NAMESPACE
-namespace Ui { class S22ParamClass; };
+namespace Ui { class SDiagram2; };
 QT_END_NAMESPACE
 
-class S22Param : public QWidget
+class SDiagram2 : public QWidget
 {
 	Q_OBJECT
 protected:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
 
 public:
-	S22Param(QWidget* parent = nullptr);
+	enum ParameterType
+	{
+		S11,
+		S22
+	};
+
+public:
+	SDiagram2(ParameterType Type = S11, QWidget* parent = nullptr);
 	void highlightPoint(int index);
 	void Load();
-	~S22Param();
+	~SDiagram2();
 
 private:
 	QList<double> x, y, z, angle;
@@ -42,5 +50,7 @@ private:
 	qreal m_scaleFactor;
 	float scale = 200;
 	float scaleFactor;
-};
 
+	//Хранит выбор (S11,S22)
+	ParameterType currentType;
+};

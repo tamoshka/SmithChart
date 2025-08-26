@@ -1,23 +1,22 @@
 <UI version="4.0" >
- <class>S12Param</class>
- <widget class="QWidget" name="S12Param" >
+ <class>SDiagram2Class</class>
+ <widget class="QWidget" name="SDiagram2Class" >
   <property name="objectName" >
-   <string notr="true">S12Param</string>
+   <string notr="true">SDiagram2Class</string>
   </property>
   <property name="geometry" >
    <rect>
 	<x>0</x>
 	<y>0</y>
-	<width>400</width>
-	<height>300</height>
+	<width>600</width>
+	<height>400</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>S12Param</string>
-  </property>
+   <string>SDiagram2</string>
+  </property>$centralwidget$
  </widget>
  <layoutDefault spacing="6" margin="11" />
  <pixmapfunction></pixmapfunction>
- <resources/>
  <connections/>
 </UI>

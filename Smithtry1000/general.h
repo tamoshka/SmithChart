@@ -9,10 +9,10 @@
 #include <complex>
 #include <cmath>
 #include <map>
-
 using namespace std;
 
 using Complex = complex<double>;
+
 extern enum mode
 {
     CapacitorParallel,
@@ -21,6 +21,9 @@ extern enum mode
     ResistorShunt,
     InductionParallel,
     InductionShunt,
+    Line,
+    OSLine,
+    SSLine,
     AddPoint,
     Default
 }; 
@@ -39,22 +42,23 @@ extern enum parameterMode
 };
 extern struct Point
 {
-    float x;
-    float y;
+    double x;
+    double y;
 };
 extern mode Model;
-extern float frequency;
-extern QList<float> frequencyList;
+extern double frequency;
+extern QList<double> frequencyList;
 extern QList<Point> morePoints;
-extern QList<float> qCircles;
+extern map<int, tuple<Point, bool>> allPoints;
+extern QList<double> qCircles;
 extern int index;
 extern int dpIndex;
-extern float impedanceRealR;
-extern float impedanceImagR;
-extern float admitanceRealR;
-extern float admitanceImagR;
-extern float lastPointX;
-extern float lastPointY;
-extern float scale;
+extern double impedanceRealR;
+extern double impedanceImagR;
+extern double admitanceRealR;
+extern double admitanceImagR;
+extern double lastPointX;
+extern double lastPointY;
+extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
-extern map<int, tuple<Point, float, float, mode>> points;
+extern map<int, tuple<Point, double, double, mode>> points;

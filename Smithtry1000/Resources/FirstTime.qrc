@@ -1,27 +1,30 @@
 <RCC>
-    <qresource prefix="/Images">
-        <file>horizontal_i_selected.svg</file>
-        <file>vertical_i_selected.svg</file>
-        <file>source.svg</file>
-        <file>load.svg</file>
-        <file>vertical_c_circuit.svg</file>
-        <file>vertical_i_circuit.svg</file>
-        <file>vertical_r_circuit.svg</file>
-        <file>horizontal_c.svg</file>
-        <file>Copy.png</file>
-        <file>horizontal_i.svg</file>
-        <file>horizontal_r.svg</file>
-        <file>vertical_c.svg</file>
-        <file>vertical_i.svg</file>
-        <file>vertical_r.svg</file>
-        <file>MinusSize.png</file>
-        <file>OneToOne.png</file>
-        <file>Open.jpg</file>
-        <file>PlusSize.png</file>
-        <file>print.png</file>
-        <file>Save.png</file>
-        <file>StepBack.png</file>
-        <file>StepForward.png</file>
-        <file>horizontal_i_circuit.svg</file>
-    </qresource>
+  <qresource prefix="/Images">
+    <file>Undo.png</file>
+    <file>Redo.png</file>
+    <file>horizontal_line.svg</file>
+    <file>horizontal_line_circuit.svg</file>
+    <file>os_circuit.svg</file>
+    <file>os.svg</file>
+    <file>ss.svg</file>
+    <file>ss_circuit.svg</file>
+    <file>source.svg</file>
+    <file>load.svg</file>
+    <file>horizontal_c.svg</file>
+    <file>Copy.png</file>
+    <file>horizontal_i.svg</file>
+    <file>horizontal_r.svg</file>
+    <file>vertical_c.svg</file>
+    <file>vertical_i.svg</file>
+    <file>vertical_r.svg</file>
+    <file>MinusSize.png</file>
+    <file>OneToOne.png</file>
+    <file>PlusSize.png</file>
+    <file>Open.png</file>
+    <file>print.png</file>
+    <file>Save.png</file>
+    <file>vertical_c_circuit.svg</file>
+    <file>vertical_i_circuit.svg</file>
+    <file>vertical_r_circuit.svg</file>
+  </qresource>
 </RCC>

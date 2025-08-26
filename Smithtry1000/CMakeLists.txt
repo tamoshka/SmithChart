@@ -22,7 +22,6 @@ set(PROJECT_SOURCES
     systemParameters.h
     systemParameters.cpp
     general.h
-    newgeneral.h
     Element.h
     Element.cpp
     main.cpp
@@ -46,12 +45,6 @@ set(PROJECT_SOURCES
     AmplitudeFrequency.h
     AmplitudeFrequency.cpp
     Timedes.h
-    Tests.ui
-    Tests.h
-    Tests.cpp
-    Table.ui
-    Table.h
-    Table.cpp
     S2p.h
     S2p.cpp
     GrafOne.ui
@@ -62,17 +55,28 @@ set(PROJECT_SOURCES
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
-    S11Param.cpp
-    S11Param.h
-    S22Param.cpp
-    S22Param.h
-    S12Param.cpp
-    S12Param.h
-    S21Param.cpp
-    S21Param.h
     ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
+    SDiagram1.ui
+    SDiagram1.h
+    SDiagram1.cpp
+    SDiagram2.ui
+    SDiagram2.h
+    SDiagram2.cpp
+    SParamTable.ui
+    SParamTable.h
+    SParamTable.cpp
+    ColourSetting.ui
+    ColourSetting.h
+    ColourSetting.cpp
+    TuneWidget.ui
+    TuneWidget.h
+    TuneWidget.cpp
+    VerticalLinesElement.h
+    VerticalLinesElement.cpp
+    VerticalLinesDialog.h
+    VerticalLinesDialog.cpp
 )
 
 SET(UI_RESOURCES

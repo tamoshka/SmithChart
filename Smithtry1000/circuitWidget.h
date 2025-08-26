@@ -16,12 +16,25 @@ public:
     void addSvg(QString, int, int);
     void removeLastSvg();
 private:
-    void rImpedanceRealCalculation(float x, float y);
-    void rAdmitanceRealCalculation(float x, float y);
-    void rImpedanceImagCalculation(float x, float y);
-    void rAdmitanceImagCalculation(float x, float y);
+    void rImpedanceRealCalculation(double x, double y);
+    void rAdmitanceRealCalculation(double x, double y);
+    void rImpedanceImagCalculation(double x, double y);
+    void rAdmitanceImagCalculation(double x, double y);
+    QList<int> tuned;
+    QList<QString> paths;
     CircuitElements* circuitElements;
+    CircuitElements* tuneElements;
+    bool left;
+signals:
+    void clicked(Element* tuned, QString path);
+
+public slots:
+    void getLeft();
+    void RemoveElement(Element*);
+    void RemoveAll();
+
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
-
+    void enterEvent(QEnterEvent* event) override;
+    void leaveEvent(QEvent* event) override;
 };
