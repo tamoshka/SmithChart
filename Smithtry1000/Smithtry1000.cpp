@@ -302,13 +302,13 @@ void Smithtry1000::TableUpdate()
     {
         for (int i = 1; i < ui->pointTable->rowCount(); i++)
         {
+            int id = 0;
             if (ui->pointTable->item(i, 0) == nullptr)
             {
                 string str = ui->pointTable->item(i, 1)->text().toUtf8().constData();
                 size_t pos = str.find(' ');
                 string temp = str.substr(pos + 1);
-                int id = stoi(temp);
-                if (circuitElements->GetCircuitElements()[id - 1] == SystemParameters::tunedElements[j])
+                if (circuitElements->GetCircuitElements()[id] == SystemParameters::tunedElements[j])
                 {
                     ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].real())
                         + " + j" + QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].imag())));
@@ -322,6 +322,7 @@ void Smithtry1000::TableUpdate()
                             SystemParameters::tunedElements[j]->GetParameter()[Z].real()))));
                     }
                 }
+                id++;
             }
         }
     }
@@ -896,7 +897,6 @@ void Smithtry1000::onDelete_buttonClicked()
         {
             points.erase(index - 1);
             auxiliaryWidget->removeLastSvg();
-            ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
             renderArea->update();
             auxiliaryWidget->update();
             this->circuitElements->DeleteCircuitElements();
@@ -924,6 +924,7 @@ void Smithtry1000::onDelete_buttonClicked()
                 dpIndex--;
             }
         }
+        ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
         allPoints.erase(allPoints.size() - 1);
         renderArea->update();
         auxiliaryWidget->update();
