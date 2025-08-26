@@ -12,6 +12,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	, muGrafColor(Qt::black)
 	, ampS11Color(Qt::blue)
 	, ampS21Color(Qt::red)
+	, circleS12(Qt::blue)
+	, circleS21(Qt::blue)
 {
 	ui->setupUi(this);
 
@@ -23,6 +25,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->MuGraf, muGrafColor);
 	setButtonColor(ui->AmpFrS11, ampS11Color);
 	setButtonColor(ui->AmpFrS21, ampS21Color);
+	setButtonColor(ui->CircleS12, circleS12);
+	setButtonColor(ui->CircleS21, circleS21);
 
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
 	connect(ui->S22Graf, &QPushButton::clicked, this, &ColourSetting::S22Graf);
@@ -32,6 +36,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->MuGraf, &QPushButton::clicked, this, &ColourSetting::MuGraf);
 	connect(ui->AmpFrS11, &QPushButton::clicked, this, &ColourSetting::AmpFrS11);
 	connect(ui->AmpFrS21, &QPushButton::clicked, this, &ColourSetting::AmpFrS21);
+	connect(ui->CircleS12, &QPushButton::clicked, this, &ColourSetting::CircleS12);
+	connect(ui->CircleS21, &QPushButton::clicked, this, &ColourSetting::CircleS21);
 }
 
 ColourSetting::~ColourSetting()
@@ -138,5 +144,29 @@ void ColourSetting::AmpFrS21()
 		setButtonColor(ui->AmpFrS21, ampS21Color);
 		SystemParameters::ampS21Color = newColor;
 		emit signal();
+	}
+}
+
+void ColourSetting::CircleS12()
+{
+	QColor newColor = QColorDialog::getColor(circleS12, this);
+	if (newColor.isValid())
+	{
+		circleS12 = newColor;
+		setButtonColor(ui->CircleS12, circleS12);
+		SystemParameters::circleS12 = newColor;
+		emit signalS12S21();
+	}
+}
+
+void ColourSetting::CircleS21()
+{
+	QColor newColor = QColorDialog::getColor(circleS21, this);
+	if (newColor.isValid())
+	{
+		circleS21 = newColor;
+		setButtonColor(ui->CircleS21, circleS21);
+		SystemParameters::circleS21 = newColor;
+		emit signalS12S21();
 	}
 }

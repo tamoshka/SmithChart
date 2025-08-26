@@ -71,6 +71,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->OSLine_button, &QPushButton::clicked, this, &Smithtry1000::onOSLine_buttonClicked);
     connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
     connect(ui->actionColors, &QAction::triggered, this, &Smithtry1000::onMenuToolsCliked);
+    QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signal, this, &Smithtry1000::getsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
@@ -2346,14 +2347,12 @@ Complex Smithtry1000::admitanceImagChartParameters(double x, double y)
 
 void Smithtry1000::onS11_buttonClicked()
 {
-    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
 }
 
 void Smithtry1000::onS22_buttonClicked()
 {
-    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
 }
@@ -2370,4 +2369,15 @@ void Smithtry1000::getsignal()
 void Smithtry1000::onMenuToolsCliked()
 {
     sParameters->set->show();
+}
+
+void Smithtry1000::getS12S21signal()
+{
+    if (fileName != "")
+    {
+        sParameters->d1->Load();
+        sParameters->d1->update();
+        sParameters->d2->Load();
+        sParameters->d2->update();
+    }
 }

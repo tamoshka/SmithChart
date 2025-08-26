@@ -26,6 +26,8 @@ public:
 	static QColor muGrafColor;
 	static QColor ampS11Color;
 	static QColor ampS21Color;
+	static QColor circleS12;
+	static QColor circleS21;
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;

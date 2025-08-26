@@ -15,6 +15,9 @@ QColor SystemParameters::magGrafColor = QColor(Qt::blue);
 QColor SystemParameters::msgGrafColor = QColor(Qt::red);
 QColor SystemParameters::kGrafColor = QColor(Qt::green);
 QColor SystemParameters::muGrafColor = QColor(Qt::black);
+QColor SystemParameters::circleS12 = QColor(Qt::blue);
+QColor SystemParameters::circleS21 = QColor(Qt::blue);
+
 QList<double> SystemParameters::linesWidth = { 2, 0.5, 0.5, 2, 2, 2, 1 };
 bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
