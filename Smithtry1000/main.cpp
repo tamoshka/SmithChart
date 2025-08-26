@@ -4,6 +4,7 @@
 #include <QThread>
 #include "circuitElements.h"
 QList<Point> morePoints;
+map<int, tuple<Point, bool>> allPoints;
 int index = 0;
 map<int, tuple<Point, double, double, mode>> points;
 QList<double> qCircles;
