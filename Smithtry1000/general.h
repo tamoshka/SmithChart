@@ -49,6 +49,7 @@ extern mode Model;
 extern double frequency;
 extern QList<double> frequencyList;
 extern QList<Point> morePoints;
+extern map<int, tuple<Point, bool>> allPoints;
 extern QList<double> qCircles;
 extern int index;
 extern int dpIndex;

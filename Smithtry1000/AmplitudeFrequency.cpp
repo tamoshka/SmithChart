@@ -48,10 +48,10 @@ void AmplitudeFrequency::MatrixCalculation()
     double startFrequency = 1;
     double w;
     Complex A[2][2], A1[2][2];
-    double Chas[50], Znach11[50], Znach21[50], Znach22[50], Znach12[50];
+    double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
     double f = frequency * 1e6;
     bool flag = false;
-    for (double freq = 1; freq <= 2 * f+1; freq += (2 * f - 1) / 49)
+    for (double freq = 1; freq <= 2 * f+1; freq += (2 * f - 1) / 99)
     {
         w = 2 * M_PI * freq;
 
@@ -66,7 +66,6 @@ void AmplitudeFrequency::MatrixCalculation()
                     A1[0][1] = z;
                     A1[1][0] = 0;
                     A1[1][1] = 1;
-                    flag = true;
                     break;
                 }
                 case InductionShunt:
@@ -97,7 +96,6 @@ void AmplitudeFrequency::MatrixCalculation()
                     A1[0][1] = 0;
                     A1[1][0] = y;
                     A1[1][1] = 1;
-                    flag = true;
                     break;
                 }
                 case InductionParallel:
@@ -131,7 +129,7 @@ void AmplitudeFrequency::MatrixCalculation()
                     double t = tmp->GetElectricalLength();
                     double l = t * 299792458 / (360 * 1e9);
                     double theta = l * w * 1e9 / 299792458;
-                    Complex z = Complex(0, -1) * r0 / tan(theta);
+                    Complex z = Complex(0, -1) * r0/ tan(theta);
                     Complex y = Complex(1, 0) / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
@@ -181,10 +179,9 @@ void AmplitudeFrequency::MatrixCalculation()
         Complex s21 = (double)(2) / dT;
         Complex s22 = ((double)(-1) * A[0][0] + A[0][1] / z0 - A[1][0] * z0 + A[1][1]) / dT;
 
-        Complex R2;
-        Complex R1;   
-        R1 = circuitElements->realFirstPoint;
-        R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real();
+        Complex R2(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real(), -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag());
+        Complex R1(circuitElements->z.real(), -circuitElements->z.imag());
+
 
         if ((R1.real() == z0) && (R2.real() == z0))
         {
@@ -232,21 +229,21 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
 {
     ui->widget->clearGraphs();
     QVector<double> x1, y1, z1;
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 100; i++)
     {
         x1.append(x[i]);
         y1.append(y[i]);
         z1.append(z[i]);
     }
     double xBegin = x1[0];
-    double xEnd = x1[49];
+    double xEnd = x1[99];
     double yBegin, yEnd;
     double zBegin, zEnd;
     zBegin = z1[0];
     zEnd = z1[0];
     yBegin = y1[0];
     yEnd = y1[0];
-    for (int i = 0; i < 49; i++)
+    for (int i = 0; i < 99; i++)
     {
         if (y1[i + 1] < yBegin)
         {
@@ -257,7 +254,7 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
             yEnd = y1[i + 1];
         }
     }
-    for (int i = 0; i < 49; i++)
+    for (int i = 0; i < 99; i++)
     {
         if (z1[i + 1] < zBegin)
         {
