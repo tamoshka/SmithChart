@@ -18,6 +18,9 @@ public:
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
 
+	static QColor ampS11Color;
+	static QColor ampS21Color;
+
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor

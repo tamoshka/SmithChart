@@ -2131,6 +2131,7 @@ background-color: rgb(75, 75, 75);</string>
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionColors"/>
    </widget>
    <widget class="QMenu" name="menuZoom">
     <property name="title">
@@ -2155,6 +2156,11 @@ background-color: rgb(75, 75, 75);</string>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionColors">
+   <property name="text">
+    <string>Colors</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

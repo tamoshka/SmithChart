@@ -70,6 +70,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->Line_button, &QPushButton::clicked, this, &Smithtry1000::onLine_buttonClicked);
     connect(ui->OSLine_button, &QPushButton::clicked, this, &Smithtry1000::onOSLine_buttonClicked);
     connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
+    connect(ui->actionColors, &QAction::triggered, this, &Smithtry1000::onMenuToolsCliked);
+    QObject::connect(sParameters->set, &ColourSetting::signal, this, &Smithtry1000::getsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
@@ -2354,4 +2356,18 @@ void Smithtry1000::onS22_buttonClicked()
     extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
+}
+
+void Smithtry1000::getsignal()
+{
+    if (pointsX.size() > 1)
+    {
+        amplitudeFrequence->MatrixCalculation();
+        amplitudeFrequence->update();
+    }
+}
+
+void Smithtry1000::onMenuToolsCliked()
+{
+    sParameters->set->show();
 }
