@@ -10,6 +10,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	, msgGrafColor(Qt::red)
 	, kGrafColor(Qt::green)
 	, muGrafColor(Qt::black)
+	, ampS11Color(Qt::blue)
+	, ampS21Color(Qt::red)
 {
 	ui->setupUi(this);
 
@@ -19,6 +21,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->MSGGraf, msgGrafColor);
 	setButtonColor(ui->KGraf, kGrafColor);
 	setButtonColor(ui->MuGraf, muGrafColor);
+	setButtonColor(ui->AmpFrS11, ampS11Color);
+	setButtonColor(ui->AmpFrS21, ampS21Color);
 
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
 	connect(ui->S22Graf, &QPushButton::clicked, this, &ColourSetting::S22Graf);
@@ -26,6 +30,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->MSGGraf, &QPushButton::clicked, this, &ColourSetting::MSGGraf);
 	connect(ui->KGraf, &QPushButton::clicked, this, &ColourSetting::KGraf);
 	connect(ui->MuGraf, &QPushButton::clicked, this, &ColourSetting::MuGraf);
+	connect(ui->AmpFrS11, &QPushButton::clicked, this, &ColourSetting::AmpFrS11);
+	connect(ui->AmpFrS21, &QPushButton::clicked, this, &ColourSetting::AmpFrS21);
 }
 
 ColourSetting::~ColourSetting()
@@ -42,7 +48,8 @@ void ColourSetting::setButtonColor(QPushButton* button, const QColor& color)
 void ColourSetting::S11Graf()
 {
 	QColor newColor = QColorDialog::getColor(s11GrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		s11GrafColor = newColor;
 		setButtonColor(ui->S11Graf, s11GrafColor);
 		emit s11ColorChanged(s11GrafColor);
@@ -52,7 +59,8 @@ void ColourSetting::S11Graf()
 void ColourSetting::S22Graf()
 {
 	QColor newColor = QColorDialog::getColor(s22GrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		s22GrafColor = newColor;
 		setButtonColor(ui->S22Graf, s22GrafColor);
 		emit s22ColorChanged(s22GrafColor);
@@ -62,7 +70,8 @@ void ColourSetting::S22Graf()
 void ColourSetting::MAGGraf()
 {
 	QColor newColor = QColorDialog::getColor(magGrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		magGrafColor = newColor;
 		setButtonColor(ui->MAGGraf, magGrafColor);
 		emit magColorChanged(magGrafColor);
@@ -72,7 +81,8 @@ void ColourSetting::MAGGraf()
 void ColourSetting::MSGGraf()
 {
 	QColor newColor = QColorDialog::getColor(msgGrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		msgGrafColor = newColor;
 		setButtonColor(ui->MSGGraf, msgGrafColor);
 		emit msgColorChanged(msgGrafColor);
@@ -82,7 +92,8 @@ void ColourSetting::MSGGraf()
 void ColourSetting::KGraf()
 {
 	QColor newColor = QColorDialog::getColor(kGrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		kGrafColor = newColor;
 		setButtonColor(ui->KGraf, kGrafColor);
 		emit kColorChanged(kGrafColor);
@@ -92,9 +103,34 @@ void ColourSetting::KGraf()
 void ColourSetting::MuGraf()
 {
 	QColor newColor = QColorDialog::getColor(muGrafColor, this);
-	if (newColor.isValid()) {
+	if (newColor.isValid()) 
+	{
 		muGrafColor = newColor;
 		setButtonColor(ui->MuGraf, muGrafColor);
 		emit muColorChanged(muGrafColor);
+	}
+}
+
+void ColourSetting::AmpFrS11()
+{
+	QColor newColor = QColorDialog::getColor(ampS11Color, this);
+	if (newColor.isValid()) 
+	{
+		ampS11Color = newColor;
+		setButtonColor(ui->AmpFrS11, ampS11Color);
+		SystemParameters::ampS11Color = newColor;
+		emit signal();
+	}
+}
+
+void ColourSetting::AmpFrS21()
+{
+	QColor newColor = QColorDialog::getColor(ampS21Color, this);
+	if (newColor.isValid())
+	{
+		ampS21Color = newColor;
+		setButtonColor(ui->AmpFrS21, ampS21Color);
+		SystemParameters::ampS21Color = newColor;
+		emit signal();
 	}
 }

@@ -25,7 +25,6 @@ void SParameters::Show()
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-	set->show();
 	if (extension == "S1P" || extension == "s1p")
 	{
 		grafOne->Load();

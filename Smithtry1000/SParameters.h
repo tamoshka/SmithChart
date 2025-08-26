@@ -12,6 +12,8 @@ public:
 	SParameters(GrafOne&, GrafTwo&,SDiagram1&, SDiagram1&, SDiagram2&, SDiagram2&, SParamTable&, SParamTable&, ColourSetting&);
 	void Show();
 	~SParameters();
+	ColourSetting* set;
+
 private:
 	GrafOne* grafOne;
 	GrafTwo* grafTwo;
@@ -23,6 +25,4 @@ private:
 
 	SParamTable* stable1;
 	SParamTable* stable2;
-
-	ColourSetting* set;
 };

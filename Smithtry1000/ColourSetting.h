@@ -2,7 +2,7 @@
 
 #include <QWidget>
 #include "ui_ColourSetting.h"
-
+#include "renderarea.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class ColourSettingClass; };
 QT_END_NAMESPACE
@@ -21,6 +21,8 @@ public:
 	QColor getMSGColor() const { return msgGrafColor;}
 	QColor getKColor() const { return kGrafColor; }
 	QColor getMuColor() const { return muGrafColor;}
+	QColor getAmpS11Color() const { return ampS11Color; }
+	QColor getAmpS21Color() const { return ampS21Color; }
 
 signals:
 	void s11ColorChanged(const QColor& color);
@@ -29,6 +31,7 @@ signals:
 	void msgColorChanged(const QColor& color);
 	void kColorChanged(const QColor& color);
 	void muColorChanged(const QColor& color);
+	void signal();
 
 private slots:
 	void S11Graf();
@@ -37,6 +40,9 @@ private slots:
 	void MSGGraf();
 	void KGraf();
 	void MuGraf();
+	void AmpFrS11();
+	void AmpFrS21();
+
 private:
 	Ui::ColourSettingClass *ui;
 	QColor s11GrafColor;
@@ -45,6 +51,8 @@ private:
 	QColor msgGrafColor;
 	QColor kGrafColor;
 	QColor muGrafColor;
+	QColor ampS11Color;
+	QColor ampS21Color;
 
 	void setButtonColor(QPushButton* button, const QColor& color);
 };
