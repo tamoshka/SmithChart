@@ -18,6 +18,12 @@ public:
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
 
+	static QColor s11GrafColor;
+	static QColor s22GrafColor;
+	static QColor magGrafColor;
+	static QColor msgGrafColor;
+	static QColor kGrafColor;
+	static QColor muGrafColor;
 	static QColor ampS11Color;
 	static QColor ampS21Color;
 
