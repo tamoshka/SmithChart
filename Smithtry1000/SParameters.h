@@ -11,6 +11,7 @@ class SParameters
 public:
 	SParameters(GrafOne&, GrafTwo&,SDiagram1&, SDiagram1&, SDiagram2&, SDiagram2&, SParamTable&, SParamTable&, ColourSetting&);
 	void Show();
+	void Close();
 	~SParameters();
 	ColourSetting* set;
 

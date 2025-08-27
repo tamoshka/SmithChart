@@ -90,6 +90,7 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
 {
     this->amplitudeFrequence->close();
     this->tuneWidget->close();
+    this->sParameters->Close();
 }
 
 
