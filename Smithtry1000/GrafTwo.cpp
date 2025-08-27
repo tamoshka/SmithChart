@@ -81,22 +81,22 @@ void GrafTwo::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
-	QPen pen1(Qt::blue);
+	QPen pen1(SystemParameters::magGrafColor);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
-	QPen pen2(Qt::red);
+	QPen pen2(SystemParameters::msgGrafColor);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");
 	ui->widget->graph(1)->addData(x, y2);
-	QPen pen3(Qt::green);
+	QPen pen3(SystemParameters::kGrafColor);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(2)->setPen(pen3);
 	ui->widget->graph(2)->setName("K");
 	ui->widget->graph(2)->addData(x, y3);
-	QPen pen4(Qt::black);
+	QPen pen4(SystemParameters::muGrafColor);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(3)->setPen(pen4);
 	ui->widget->graph(3)->setName("μ");

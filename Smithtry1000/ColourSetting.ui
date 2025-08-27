@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>197</width>
+     <width>221</width>
      <height>251</height>
     </rect>
    </property>
@@ -119,10 +119,10 @@
     </item>
     <item row="0" column="1">
      <layout class="QFormLayout" name="formLayout">
-      <item row="1" column="1">
-       <widget class="QPushButton" name="AmpFrS11">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string/>
+         <string> AmpFrS21</string>
         </property>
        </widget>
       </item>
@@ -140,10 +140,66 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_8">
+      <item row="1" column="1">
+       <widget class="QPushButton" name="AmpFrS11">
         <property name="text">
-         <string> AmpFrS21</string>
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="CircleS12">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="CircleS21">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>       S12</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>       S21</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>GridImpedance</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="ColourImpedance">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>GridAdmitance</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPushButton" name="ColourAdmitance">
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>

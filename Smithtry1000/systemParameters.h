@@ -17,9 +17,17 @@ public:
 	//Годограф
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
-
+	 
+	static QColor s11GrafColor;
+	static QColor s22GrafColor;
+	static QColor magGrafColor;
+	static QColor msgGrafColor;
+	static QColor kGrafColor;
+	static QColor muGrafColor;
 	static QColor ampS11Color;
 	static QColor ampS21Color;
+	static QColor circleS12;
+	static QColor circleS21;
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
@@ -45,4 +53,5 @@ public:
 	static QList<Element*> tunedElements;
 	static double er;
 	static double z0line;
+	static bool colorChanged;
 };

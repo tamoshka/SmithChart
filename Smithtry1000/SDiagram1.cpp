@@ -33,11 +33,17 @@ void SDiagram1::Load()
 	//Выбор для S12,S21
 	const auto& sParam = [&]() -> const std::vector<complex_t>&
 	{
-		switch (currentType) 
+		switch (currentType)
 		{
-			case S12: return s.S[0][1];
-			case S21: return s.S[1][0];
-			default: return s.S[0][1];
+			case S12:
+				return s.S[0][1];
+				break;
+			case S21:
+				return s.S[1][0];
+				break;
+			default:
+				return s.S[0][1];
+				break;
 		}
 	}();
 
@@ -103,14 +109,25 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 
+	QColor circle;
 	//Выбор для S12,S21
 	const auto& sParam = [&]() -> const std::vector<complex_t>&
 	{
+
 		switch (currentType) 
 		{
-			case S12: return s.S[0][1];
-			case S21: return s.S[1][0];
-			default: return s.S[0][1];
+			case S12: 
+				circle = SystemParameters::circleS12;
+				return s.S[0][1];
+				break;
+			case S21: 
+				circle = SystemParameters::circleS21;
+				return s.S[1][0];
+				break;
+			default: 
+				circle = SystemParameters::circleS12;
+				return s.S[0][1];
+				break;
 		}
 	}();
 	
@@ -132,7 +149,7 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	for (int i = 0; i < 4; i++)
 	{
 		float scaledRadius = radii[i] * scaleFactor;
-		painter.setPen(QPen(Qt::blue, 1));
+		painter.setPen(QPen(circle,1));
 		painter.drawEllipse(center, scaledRadius, scaledRadius);
 
 		QString label = QString::number(max / 4 * (i + 1), 'f', 3);
@@ -148,7 +165,8 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	float lineWidth = 1.0f * scaleFactor;
 
 	painter.setPen(QPen(Qt::red, lineWidth));
-	for (int i = 0; i < x.size(); i++) {
+	for (int i = 0; i < x.size(); i++) 
+	{
 		QPointF point = center + QPointF(x[i] * 200 * scaleFactor, y[i] * 200 * scaleFactor);
 		painter.drawEllipse(point, pointScale, pointScale);
 
