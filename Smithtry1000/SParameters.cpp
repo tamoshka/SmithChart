@@ -55,3 +55,15 @@ void SParameters::Show()
 		stable2->show();
 	}
 }
+
+void SParameters::Close()
+{
+	grafOne->close();
+	grafTwo->close();
+	d1->close();
+	d2->close();
+	d3->close();
+	d4->close();
+	stable1->close();
+	stable2->close();
+}

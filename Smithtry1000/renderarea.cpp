@@ -361,29 +361,51 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     {
         painter.drawEllipse(cursorPos, 5, 5);
     }
-    for (int ii = 0; ii < index; ii++)
+    int i = 0;
+    int j = 0;
+    for (int ii = 0; ii < allPoints.size(); ii++)
     {
-        if (ii == 0)
+        if (get<1>(allPoints[ii]))
         {
-            double x = circuitElements->firstPoint.x * scale + this->rect().center().x();
-            double y = circuitElements->firstPoint.y * scale + this->rect().center().y();
+            double x = circuitElements->GetCircuitElements()[i]->GetPoint().x * scale + this->rect().center().x();
+            double y = circuitElements->GetCircuitElements()[i]->GetPoint().y * scale + this->rect().center().y();
             QPointF point = QPointF(x, y);
             painter.drawEllipse(point, 5, 5);
+            painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
+            QString s1 = "TP " + QString::number(ii + 1);
+            painter.setFont(QFont("Calibri", 10));
+            painter.drawText(x + 10, y + 10, s1);
+            painter.setPen(Qt::NoPen);
+            i++;
         }
         else
         {
-            double x = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().x * scale + this->rect().center().x();
-            double y = circuitElements->GetCircuitElements()[ii - 1]->GetPoint().y * scale + this->rect().center().y();
-            QPointF point = QPointF(x, y);
-            painter.drawEllipse(point, 5, 5);
+            if (j == 0)
+            {
+                double x = circuitElements->firstPoint.x * scale + this->rect().center().x();
+                double y = circuitElements->firstPoint.y * scale + this->rect().center().y();
+                QPointF point = QPointF(x, y);
+                painter.drawEllipse(point, 5, 5);
+                painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
+                QString s1 = "DP " + QString::number(ii + 1);
+                painter.setFont(QFont("Calibri", 10));
+                painter.drawText(x + 10, y + 10, s1);
+                painter.setPen(Qt::NoPen);
+                j++;
+            }
+            else
+            {
+                double x = morePoints[j-1].x * scale + this->rect().center().x();
+                double y = morePoints[j-1].y * scale + this->rect().center().y();
+                QPointF point = QPointF(x, y);
+                painter.drawEllipse(point, 5, 5);
+                painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
+                QString s1 = "DP " + QString::number(ii + 1);
+                painter.setFont(QFont("Calibri", 10));
+                painter.drawText(x + 10, y + 10, s1);
+                painter.setPen(Qt::NoPen);
+            }
         }
-    }
-    for (int jj = 0; jj < morePoints.size(); jj++)
-    {
-        double x = morePoints[jj].x * scale + this->rect().center().x();
-        double y = morePoints[jj].y * scale + this->rect().center().y();
-        QPointF point = QPointF(x, y);
-        painter.drawEllipse(point, 5, 5);
     }
     painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
     for (int ll = 0; ll < index - 1; ll++)
@@ -469,7 +491,6 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                     painter.drawLine(iPixel, pixel);
                 }
                 iPixel = pixel;
-
             }
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionParallel || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorParallel)

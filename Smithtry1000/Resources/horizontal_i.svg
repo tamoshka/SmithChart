@@ -1,15 +1,16 @@
 <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Вертикальные линии по бокам -->
-  <line x1="6.67" y1="20.00" x2="0" y2="20.00" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="40" y1="20.00" x2="33.17" y2="20.00" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="6" y1="20.00" x2="0" y2="20.00" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="40" y1="20.00" x2="34" y2="20.00" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
 
   <!-- Эллипсы -->
-  <ellipse cx="9.87" cy="20.96" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
-  <ellipse cx="16.44" cy="20.96" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
-  <ellipse cx="23.40" cy="20.96" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
-  <ellipse cx="29.97" cy="20.96" rx="3.2" ry="4.28" stroke="#000" stroke-width="1.5" fill="none"/>
-
-  <!-- Нижний прямоугольник с белым контуром (можно скрыть или заменить) -->
-  <rect x="5.07" y="23.84" width="28.74" height="12.41" stroke="#4b4b4b" stroke-width="6" fill="none"/>
+  <path d="M 6 20
+	   C 7 14, 12 14,13 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 13 20
+	   C 14 14, 19 14,20 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 20 20
+	   C 21 14, 26 14,27 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 27 20
+	   C 28 14, 33 14, 34 20" stroke="#000" stroke-width="1.5" fill="none"/>
 </svg>

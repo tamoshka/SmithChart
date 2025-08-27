@@ -94,6 +94,7 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
 {
     this->amplitudeFrequence->close();
     this->tuneWidget->close();
+    this->sParameters->Close();
 }
 
 
@@ -211,6 +212,7 @@ void Smithtry1000::VerticalLines()
         Point point;
         point.x = lastPointX;
         point.y = lastPointY;
+        allPoints[index + dpIndex - 1] = make_tuple(point, true);
         Complex z = zCalculation(lastPointX, lastPointY);
         Complex y2 = yCalculation(lastPointX, lastPointY);
         map<parameterMode, Complex> parameter;
@@ -271,7 +273,7 @@ void Smithtry1000::VerticalLines()
         points[index] = make_tuple(point, r, t, Model);
         int row = ui->pointTable->rowCount();
         ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
+        ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
         rImpedanceRealCalculation(lastPointX, lastPointY);
         rImpedanceImagCalculation(lastPointX, lastPointY);
         ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
@@ -305,13 +307,13 @@ void Smithtry1000::TableUpdate()
     {
         for (int i = 1; i < ui->pointTable->rowCount(); i++)
         {
+            int id = 0;
             if (ui->pointTable->item(i, 0) == nullptr)
             {
                 string str = ui->pointTable->item(i, 1)->text().toUtf8().constData();
                 size_t pos = str.find(' ');
                 string temp = str.substr(pos + 1);
-                int id = stoi(temp);
-                if (circuitElements->GetCircuitElements()[id - 1] == SystemParameters::tunedElements[j])
+                if (circuitElements->GetCircuitElements()[id] == SystemParameters::tunedElements[j])
                 {
                     ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].real())
                         + " + j" + QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].imag())));
@@ -325,6 +327,7 @@ void Smithtry1000::TableUpdate()
                             SystemParameters::tunedElements[j]->GetParameter()[Z].real()))));
                     }
                 }
+                id++;
             }
         }
     }
@@ -531,6 +534,7 @@ void Smithtry1000::onButtonClicked()
                 point.x = x;
                 point.y = y;
                 circuitElements->firstPoint = point;
+                allPoints[0] = make_tuple(point, false);
                 points[index] = make_tuple(point, r, t, mode::AddPoint);
                 rImpedanceRealCalculation(x, y);
                 double r1 = impedanceRealR;
@@ -579,7 +583,7 @@ void Smithtry1000::onButtonClicked()
                 int row = ui->pointTable->rowCount();
                 ui->pointTable->insertRow(row);
                 ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
-                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex + 1)));
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex+index)));
                 rImpedanceRealCalculation(x, y);
                 rImpedanceImagCalculation(x, y);
                 ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
@@ -592,14 +596,15 @@ void Smithtry1000::onButtonClicked()
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(abs(impedanceImagR / impedanceRealR))));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequencyList[frequencyList.size() - 1])));
-                dpIndex++;
                 Point point;
                 point.x = x;
                 point.y = y;
+                allPoints[index+dpIndex-1] = make_tuple(point, false);
+                dpIndex++;
                 morePoints.append(point);
                 renderArea->setCursorPosOnCircle(temp);
             }
-        }
+        }  
         Model = Default;
     }
 }
@@ -702,6 +707,7 @@ void Smithtry1000::onResistor_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
+            allPoints[index + dpIndex - 1] = make_tuple(point, true);
             Complex z = zCalculation(lastPointX, lastPointY);
             Complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, Complex> parameter;
@@ -723,7 +729,7 @@ void Smithtry1000::onResistor_buttonClicked()
             points[index] = make_tuple(point, r, t, mode::ResistorShunt);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index+dpIndex)));
             rImpedanceRealCalculation(point.x, point.y);
             rImpedanceImagCalculation(point.x, point.y);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
@@ -838,6 +844,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
+            allPoints[index + dpIndex - 1] = make_tuple(point, true);
             Complex z = zCalculation(lastPointX, lastPointY);
             Complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, Complex> parameter;
@@ -859,7 +866,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             points[index] = make_tuple(point, r, t, mode::ResistorParallel);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
             rImpedanceRealCalculation(point.x, point.y);
             rImpedanceImagCalculation(point.x, point.y);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
@@ -889,45 +896,43 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if (((index > 0 && dpIndex == 1) || index > 1) && !SystemParameters::tuneBlock)
+    if (allPoints.size() > 0 && !SystemParameters::tuneBlock)
     {
-        points.erase(index - 1);
-        if (index > 1)
+        if (get<1>(allPoints[allPoints.size() - 1]))
         {
+            points.erase(index - 1);
             auxiliaryWidget->removeLastSvg();
+            renderArea->update();
+            auxiliaryWidget->update();
+            this->circuitElements->DeleteCircuitElements();
+            pointsX.pop_back();
+            pointsY.pop_back();
+            index--;
         }
-        index--;
-        pointsX.pop_back();
-        pointsY.pop_back();
+        else
+        {
+            if (allPoints.size() == 1)
+            {
+                points.erase(index - 1);
+                dpIndex--;
+                this->circuitElements->imagFirstPoint = -9999;
+                this->circuitElements->realFirstPoint = -9999;
+                this->circuitElements->frequencyFirstPoint = -9999;
+                this->circuitElements->firstPoint = Point();
+                pointsX.pop_back();
+                pointsY.pop_back();
+                index--;
+            }
+            else
+            {
+                morePoints.pop_back();
+                dpIndex--;
+            }
+        }
         ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
-        for (int row = 0; row < ui->pointTable->rowCount(); ++row) {
-            bool found = false;
-
-            int col = 1;
-            QTableWidgetItem* item = ui->pointTable->item(row, col);
-            if (item && item->text() == "TP " + QString::number(index)) {
-                found = true;
-                ui->pointTable->removeRow(row);
-                break;
-            }
-            if (found) {
-                break;  // Можно удалить только первую найденную строку, если нужно
-            }
-        }
+        allPoints.erase(allPoints.size() - 1);
         renderArea->update();
         auxiliaryWidget->update();
-        if (index > 0)
-        {
-            this->circuitElements->DeleteCircuitElements();
-        }
-        else if (index == 0)
-        {
-            dpIndex--;
-            this->circuitElements->imagFirstPoint = -9999;
-            this->circuitElements->realFirstPoint = -9999;
-            this->circuitElements->frequencyFirstPoint = -9999;
-            this->circuitElements->firstPoint = Point();
-        }
     }
 }
 
@@ -944,7 +949,7 @@ void Smithtry1000::ImaginaryImpedance()
         {
         case InductionShunt:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_i_circuit.svg"), (index + 2) * 40, 20);
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
             break;
         }
         case CapacitorShunt:
@@ -1027,6 +1032,7 @@ void Smithtry1000::ImaginaryImpedance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
+            allPoints[index + dpIndex - 1] = make_tuple(point, true);
             Complex z = zCalculation(lastPointX, lastPointY);
             Complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, Complex> parameter;
@@ -1060,7 +1066,7 @@ void Smithtry1000::ImaginaryImpedance()
             points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
             rImpedanceRealCalculation(lastPointX, lastPointY);
             rImpedanceImagCalculation(lastPointX, lastPointY);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
@@ -1182,6 +1188,7 @@ void Smithtry1000::ImaginaryAdmitance()
             Point point;
             point.x = lastPointX;
             point.y = lastPointY;
+            allPoints[index + dpIndex - 1] = make_tuple(point, true);
             Complex z = zCalculation(lastPointX, lastPointY);
             Complex y2 = yCalculation(lastPointX, lastPointY);
             map<parameterMode, Complex> parameter;
@@ -1215,7 +1222,7 @@ void Smithtry1000::ImaginaryAdmitance()
             points[index] = make_tuple(point, r, t, Model);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
             rImpedanceRealCalculation(lastPointX, lastPointY);
             rImpedanceImagCalculation(lastPointX, lastPointY);
             ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + " + j" + QString::number(impedanceImagR)));
