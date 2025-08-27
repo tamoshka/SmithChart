@@ -8,14 +8,17 @@
 VerticalLinesDialog::VerticalLinesDialog(QWidget* parent)
     : QDialog(parent)
 {
-    this->setWindowTitle("Line impedance");
+    this->setWindowTitle("Line impedance"); 
+    this->setFixedSize(150, 180);
     okButton = new QPushButton("OK", this);
     Z0Box = new QGroupBox(this);
     ErBox = new QGroupBox(this);
     Z0Field = new QLineEdit(Z0Box);
     ErField = new QLineEdit(ErBox);
     Z0Box->setTitle("Z0 Line impedance");
-    ErBox->setTitle("Er");
+    ErBox->setTitle("Er"); 
+    Z0Field->move(0, 20);
+    ErField->move(0, 20);
     Z0Field->setText("50");
     ErField->setText("1");
     QVBoxLayout* layout = new QVBoxLayout(this);

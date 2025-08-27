@@ -19,6 +19,7 @@
 #include "renderarea.h"
 #include "TuneWidget.h"
 #include "ColourSetting.h"
+#include "LinesDialog.h"
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT

@@ -100,7 +100,52 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
 
 void Smithtry1000::onLine_buttonClicked()
 {
-
+    if (pointsX.size() > 0)
+    {
+        LinesDialog dialog(this);
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            Model = mode::Line;
+            auxiliaryWidget->update();
+            leftClicked = false;
+            rightClicked = false;
+            QPoint centerLocal = renderArea->rect().center();
+            QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
+            Complex zl, yl;
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 39);
+            QCursor::setPos(centerGlobal);
+            this->setCursor(Qt::BlankCursor); // скрываем системный курсор
+            double x;
+            double y; 
+            if (circuitElements->GetCircuitElements().size() > 0)
+            {
+                yl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Y];
+                zl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
+                x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+                y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+            }
+            else
+            {
+                yl = circuitElements->y;
+                zl = circuitElements->z;
+                x = circuitElements->firstPoint.x;
+                y = circuitElements->firstPoint.y;
+            }
+            if (y >= 0 && y < 0.000001)
+            {
+                y = 0.01;
+            }
+            else if (y <= 0 && y > -0.000001)
+            {
+                y = -0.01;
+            }
+            Complex g1 = (zl - double(50)) / (zl + double(50));
+            Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
+            Complex g3 = (z3 - double(50)) / (z3 + double(50));
+            double center = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+            double R = abs(center - g1);
+        }
+    }
 }
 
 void Smithtry1000::onOSLine_buttonClicked()
