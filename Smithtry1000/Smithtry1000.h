@@ -31,6 +31,9 @@ public:
 
 public slots:
     void getsignal();
+    void getS12S21signal();
+    void getsignalDVS();
+
 signals:
     void left();
 

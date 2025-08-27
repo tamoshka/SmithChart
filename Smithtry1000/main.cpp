@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g1, &GrafOne::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
-
+	//Цвета
 	QObject::connect(&set, &ColourSetting::s11ColorChanged, &g1, &GrafOne::updateS11Color);
 	QObject::connect(&set, &ColourSetting::s22ColorChanged, &g1, &GrafOne::updateS22Color);
 	QObject::connect(&set, &ColourSetting::magColorChanged, &g2, &GrafTwo::updateMAGColor);
