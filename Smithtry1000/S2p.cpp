@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cctype>
 #include <fstream>
 #include <string>
 #include <stdio.h>
@@ -7,16 +8,24 @@
 #include <locale.h>
 #include "S2p.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "shlwapi.h"
 #include <iomanip>
-
 int strcasecmp(const char* first, const char* second)
 {
     return lstrcmpiA(first, second);
 }
-#define M_PI 3.1415
+#else
+#include <strings.h>    // для strcasecmp в Linux
+#include <cmath>        // для M_PI и математических функций
+#include <cstdlib>
 #endif
+
+// Убедиться, что M_PI определен
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 using namespace std;
 TouchstoneFile::TouchstoneFile()
 {

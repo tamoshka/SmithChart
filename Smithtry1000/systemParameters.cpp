@@ -27,3 +27,5 @@ bool SystemParameters::colorChanged = false;
 QList<Element*> SystemParameters::tunedElements = {};
 double SystemParameters::er = 1;
 double SystemParameters::z0line = 50;
+double SystemParameters::alpha = 0;
+double SystemParameters::lambda = 0.25;
