@@ -25,6 +25,9 @@ public:
 	QColor getAmpS21Color() const { return ampS21Color; }
 	QColor getCirclS12Color() const { return circleS12; }
 	QColor getCirclS21Color() const { return circleS21; }
+	QColor getImpedanceColor() const { return ImpedanceColor; }
+	QColor getAdmitanceColor() const { return AdmitanceColor; }
+
 signals:
 	void s11ColorChanged(const QColor& color);
 	void s22ColorChanged(const QColor& color);
@@ -34,7 +37,7 @@ signals:
 	void muColorChanged(const QColor& color);
 	void signal();
 	void signalS12S21();
-
+	void signalDVS();
 
 private slots:
 	void S11Graf();
@@ -47,6 +50,8 @@ private slots:
 	void AmpFrS21();
 	void CircleS12();
 	void CircleS21();
+	void ColourImpedance();
+	void ColourAdmitance();
 
 private:
 	Ui::ColourSettingClass *ui;
@@ -60,7 +65,8 @@ private:
 	QColor ampS21Color;
 	QColor circleS12;
 	QColor circleS21;
-
+	QColor ImpedanceColor;
+	QColor AdmitanceColor;
 	void setButtonColor(QPushButton* button, const QColor& color);
 };
 

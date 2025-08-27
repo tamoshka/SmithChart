@@ -23,6 +23,7 @@ bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
 bool SystemParameters::tuned = false;
 bool SystemParameters::tuneBlock = false;
+bool SystemParameters::colorChanged = false;
 QList<Element*> SystemParameters::tunedElements = {};
 double SystemParameters::er = 1;
 double SystemParameters::z0line = 50;

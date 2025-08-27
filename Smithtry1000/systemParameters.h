@@ -17,7 +17,7 @@ public:
 	//Годограф
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
-
+	 
 	static QColor s11GrafColor;
 	static QColor s22GrafColor;
 	static QColor magGrafColor;
@@ -53,4 +53,5 @@ public:
 	static QList<Element*> tunedElements;
 	static double er;
 	static double z0line;
+	static bool colorChanged;
 };

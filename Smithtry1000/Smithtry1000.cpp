@@ -72,6 +72,9 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
     connect(ui->actionColors, &QAction::triggered, this, &Smithtry1000::onMenuToolsCliked);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
+
+    QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
+
     QObject::connect(sParameters->set, &ColourSetting::signal, this, &Smithtry1000::getsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
@@ -2380,4 +2383,10 @@ void Smithtry1000::getS12S21signal()
         sParameters->d2->Load();
         sParameters->d2->update();
     }
+}
+
+void Smithtry1000::getsignalDVS()
+{
+    SystemParameters::colorChanged = true;
+    renderArea->update();
 }
