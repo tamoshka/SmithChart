@@ -16,15 +16,11 @@ public:
 	~ColourSetting();
 
 signals:
-	void s11ColorChanged();
-	void s22ColorChanged();
-	void magColorChanged();
-	void msgColorChanged();
-	void kColorChanged();
-	void muColorChanged();
 	void signal();
 	void signalS12S21();
 	void signalDVS();
+	void grafOneColor();
+	void grafTwoColor();
 
 private slots:
 	void S11Graf();

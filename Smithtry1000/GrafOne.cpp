@@ -127,16 +127,7 @@ void GrafOne::Load()
 	GraphS22->removeFromLegend();
 }
 
-void GrafOne::updateS11Color()
-{
-	if (fileName != "")
-	{
-		this->Load();
-		this->update();
-	}
-}
-
-void GrafOne::updateS22Color()
+void GrafOne::updateGrafOneColor()
 {
 	if (fileName != "")
 	{

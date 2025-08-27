@@ -53,7 +53,7 @@ void ColourSetting::S11Graf()
 	{
 		SystemParameters::s11GrafColor = newColor;
 		setButtonColor(ui->S11Graf, SystemParameters::s11GrafColor);
-		emit s11ColorChanged();
+		emit grafOneColor();
 	}
 }
 
@@ -64,7 +64,7 @@ void ColourSetting::S22Graf()
 	{
 		SystemParameters::s22GrafColor = newColor;
 		setButtonColor(ui->S22Graf, SystemParameters::s22GrafColor);
-		emit s22ColorChanged();
+		emit grafOneColor();
 	}
 }
 
@@ -75,7 +75,7 @@ void ColourSetting::MAGGraf()
 	{
 		SystemParameters::magGrafColor = newColor;
 		setButtonColor(ui->MAGGraf, SystemParameters::magGrafColor);
-		emit magColorChanged();
+		emit grafTwoColor();
 	}
 }
 
@@ -86,7 +86,7 @@ void ColourSetting::MSGGraf()
 	{
 		SystemParameters::msgGrafColor = newColor;
 		setButtonColor(ui->MSGGraf, SystemParameters::msgGrafColor);
-		emit msgColorChanged();
+		emit grafTwoColor();
 	}
 }
 
@@ -97,7 +97,7 @@ void ColourSetting::KGraf()
 	{
 		SystemParameters::kGrafColor = newColor;
 		setButtonColor(ui->KGraf, SystemParameters::kGrafColor);
-		emit kColorChanged();
+		emit grafTwoColor();
 	}
 }
 
@@ -108,7 +108,7 @@ void ColourSetting::MuGraf()
 	{
 		SystemParameters::muGrafColor = newColor;
 		setButtonColor(ui->MuGraf, SystemParameters::muGrafColor);
-		emit muColorChanged();
+		emit grafTwoColor();
 	}
 }
 

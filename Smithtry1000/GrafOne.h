@@ -20,8 +20,7 @@ public:
 
 public slots:
 	void highlightPoint(int index);
-	void updateS11Color();
-	void updateS22Color();
+	void updateGrafOneColor();
 
 private:
 	Ui::GrafOneClass* ui;

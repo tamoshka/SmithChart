@@ -46,12 +46,8 @@ int main(int argc, char *argv[])
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	//Цвета
-	QObject::connect(&set, &ColourSetting::s11ColorChanged, &g1, &GrafOne::updateS11Color);
-	QObject::connect(&set, &ColourSetting::s22ColorChanged, &g1, &GrafOne::updateS22Color);
-	QObject::connect(&set, &ColourSetting::magColorChanged, &g2, &GrafTwo::updateMAGColor);
-	QObject::connect(&set, &ColourSetting::msgColorChanged, &g2, &GrafTwo::updateMSGColor);
-	QObject::connect(&set, &ColourSetting::kColorChanged, &g2, &GrafTwo::updateKColor);
-	QObject::connect(&set, &ColourSetting::muColorChanged, &g2, &GrafTwo::updateMuColor);
+	QObject::connect(&set, &ColourSetting::grafOneColor, &g1, &GrafOne::updateGrafOneColor);
+	QObject::connect(&set, &ColourSetting::grafTwoColor, &g2, &GrafTwo::updateGrafTwoColor);
 
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);

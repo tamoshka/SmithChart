@@ -141,34 +141,7 @@ void GrafTwo::Load()
 	Graphμ->setValueAxis(ui->widget->yAxis2);
 }
 
-void GrafTwo::updateMAGColor()
-{
-	if (fileName != "")
-	{
-		this->Load();
-		this->update();
-	}
-}
-
-void GrafTwo::updateMSGColor()
-{
-	if (fileName != "")
-	{
-		this->Load();
-		this->update();
-	}
-}
-
-void GrafTwo::updateKColor()
-{
-	if (fileName != "")
-	{
-		this->Load();
-		this->update();
-	}
-}
-
-void GrafTwo::updateMuColor()
+void GrafTwo::updateGrafTwoColor()
 {
 	if (fileName != "")
 	{
