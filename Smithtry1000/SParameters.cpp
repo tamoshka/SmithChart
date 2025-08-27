@@ -25,7 +25,6 @@ void SParameters::Show()
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-	set->show();
 	if (extension == "S1P" || extension == "s1p")
 	{
 		grafOne->Load();
@@ -55,4 +54,16 @@ void SParameters::Show()
 		stable2->Load();
 		stable2->show();
 	}
+}
+
+void SParameters::Close()
+{
+	grafOne->close();
+	grafTwo->close();
+	d1->close();
+	d2->close();
+	d3->close();
+	d4->close();
+	stable1->close();
+	stable2->close();
 }

@@ -70,6 +70,12 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->Line_button, &QPushButton::clicked, this, &Smithtry1000::onLine_buttonClicked);
     connect(ui->OSLine_button, &QPushButton::clicked, this, &Smithtry1000::onOSLine_buttonClicked);
     connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
+    connect(ui->actionColors, &QAction::triggered, this, &Smithtry1000::onMenuToolsCliked);
+    QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
+
+    QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
+
+    QObject::connect(sParameters->set, &ColourSetting::signal, this, &Smithtry1000::getsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
@@ -88,12 +94,58 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
 {
     this->amplitudeFrequence->close();
     this->tuneWidget->close();
+    this->sParameters->Close();
 }
 
 
 void Smithtry1000::onLine_buttonClicked()
 {
-
+    if (pointsX.size() > 0)
+    {
+        LinesDialog dialog(this);
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            Model = mode::Line;
+            auxiliaryWidget->update();
+            leftClicked = false;
+            rightClicked = false;
+            QPoint centerLocal = renderArea->rect().center();
+            QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
+            Complex zl, yl;
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 39);
+            QCursor::setPos(centerGlobal);
+            this->setCursor(Qt::BlankCursor); // скрываем системный курсор
+            double x;
+            double y; 
+            if (circuitElements->GetCircuitElements().size() > 0)
+            {
+                yl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Y];
+                zl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
+                x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+                y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+            }
+            else
+            {
+                yl = circuitElements->y;
+                zl = circuitElements->z;
+                x = circuitElements->firstPoint.x;
+                y = circuitElements->firstPoint.y;
+            }
+            if (y >= 0 && y < 0.000001)
+            {
+                y = 0.01;
+            }
+            else if (y <= 0 && y > -0.000001)
+            {
+                y = -0.01;
+            }
+            Complex g1 = (zl - double(50)) / (zl + double(50));
+            Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
+            Complex g3 = (z3 - double(50)) / (z3 + double(50));
+            double center = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+            double R = abs(center - g1);
+        }
+    }
 }
 
 void Smithtry1000::onOSLine_buttonClicked()
@@ -300,13 +352,13 @@ void Smithtry1000::TableUpdate()
     {
         for (int i = 1; i < ui->pointTable->rowCount(); i++)
         {
+            int id = 0;
             if (ui->pointTable->item(i, 0) == nullptr)
             {
                 string str = ui->pointTable->item(i, 1)->text().toUtf8().constData();
                 size_t pos = str.find(' ');
                 string temp = str.substr(pos + 1);
-                int id = stoi(temp);
-                if (circuitElements->GetCircuitElements()[id - 1] == SystemParameters::tunedElements[j])
+                if (circuitElements->GetCircuitElements()[id] == SystemParameters::tunedElements[j])
                 {
                     ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].real())
                         + " + j" + QString::number(SystemParameters::tunedElements[j]->GetParameter()[Z].imag())));
@@ -320,6 +372,7 @@ void Smithtry1000::TableUpdate()
                             SystemParameters::tunedElements[j]->GetParameter()[Z].real()))));
                     }
                 }
+                id++;
             }
         }
     }
@@ -894,7 +947,6 @@ void Smithtry1000::onDelete_buttonClicked()
         {
             points.erase(index - 1);
             auxiliaryWidget->removeLastSvg();
-            ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
             renderArea->update();
             auxiliaryWidget->update();
             this->circuitElements->DeleteCircuitElements();
@@ -922,6 +974,7 @@ void Smithtry1000::onDelete_buttonClicked()
                 dpIndex--;
             }
         }
+        ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
         allPoints.erase(allPoints.size() - 1);
         renderArea->update();
         auxiliaryWidget->update();
@@ -2349,14 +2402,43 @@ Complex Smithtry1000::admitanceImagChartParameters(double x, double y)
 
 void Smithtry1000::onS11_buttonClicked()
 {
-    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
 }
 
 void Smithtry1000::onS22_buttonClicked()
 {
-    extern QString fileName;
     fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
     sParameters->Show();
+}
+
+void Smithtry1000::getsignal()
+{
+    if (pointsX.size() > 1)
+    {
+        amplitudeFrequence->MatrixCalculation();
+        amplitudeFrequence->update();
+    }
+}
+
+void Smithtry1000::onMenuToolsCliked()
+{
+    sParameters->set->show();
+}
+
+void Smithtry1000::getS12S21signal()
+{
+    if (fileName != "")
+    {
+        sParameters->d1->Load();
+        sParameters->d1->update();
+        sParameters->d2->Load();
+        sParameters->d2->update();
+    }
+}
+
+void Smithtry1000::getsignalDVS()
+{
+    SystemParameters::colorChanged = true;
+    renderArea->update();
 }

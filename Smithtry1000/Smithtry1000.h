@@ -18,7 +18,8 @@
 #include "ExportNetlist.h"
 #include "renderarea.h"
 #include "TuneWidget.h"
-
+#include "ColourSetting.h"
+#include "LinesDialog.h"
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
@@ -30,6 +31,9 @@ public:
     CircuitWidget* auxiliaryWidget = new CircuitWidget(this, circuitElements);
 
 public slots:
+    void getsignal();
+    void getS12S21signal();
+    void getsignalDVS();
 
 signals:
     void left();
@@ -56,7 +60,7 @@ private slots:
     void onS22_buttonClicked();
     void onTimeout();
     void TableUpdate();
-
+    void onMenuToolsCliked();
 private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);

@@ -4,6 +4,8 @@
 #include "circuitElements.h"
 #include "general.h"
 #include "qcustomplot.h"
+#include "ColourSetting.h"
+#include "ui_AmplitudeFrequency.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class AmplitudeFrequency; };
 QT_END_NAMESPACE

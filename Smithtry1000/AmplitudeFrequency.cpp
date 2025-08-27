@@ -1,5 +1,4 @@
 #include "AmplitudeFrequency.h"
-#include "ui_AmplitudeFrequency.h"
 const double Z0 = 50;
 
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
@@ -272,15 +271,26 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
     ui->widget->yAxis2->setRange(0, 1);
     ui->widget->yAxis2->setLabel("S21 in dB");
     ui->widget->yAxis2->setVisible(true);
-    QPen pen1(Qt::blue);
+    QPen pen1(SystemParameters::ampS11Color);
+    ui->widget->setInteraction(QCP::iRangeZoom, true);
+    ui->widget->setInteraction(QCP::iRangeDrag, true);
     ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
     ui->widget->graph(0)->addData(x1, y1);
     ui->widget->graph(0)->setPen(pen1);
     ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
     ui->widget->graph(1)->addData(x1, z1);
-    QPen pen(Qt::red);
+    QPen pen(SystemParameters::ampS21Color);
     ui->widget->graph(1)->setPen(pen);
     ui->widget->replot();
+
+    ui->widget->setInteraction(QCP::iRangeZoom, true);
+    ui->widget->setInteraction(QCP::iRangeDrag, true);
+    QList<QCPAxis*> axises;
+    axises.append(ui->widget->xAxis);
+    axises.append(ui->widget->yAxis);
+    axises.append(ui->widget->yAxis2);
+    ui->widget->axisRect()->setRangeDragAxes(axises);
+    ui->widget->axisRect()->setRangeZoomAxes(axises);
 }
 
 AmplitudeFrequency::~AmplitudeFrequency()

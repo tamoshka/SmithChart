@@ -6,6 +6,7 @@
 #include "qpoint.h"
 #include "qcolor.h"
 #include "QEvent.h"
+#include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class S12ParamClass; };
 QT_END_NAMESPACE

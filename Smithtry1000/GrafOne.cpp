@@ -93,7 +93,7 @@ void GrafOne::Load()
 	{
 
 		ui->widget->addGraph();
-		QPen pen1(Qt::blue);
+		QPen pen1(SystemParameters::s11GrafColor);
 		ui->widget->graph(0)->setPen(pen1);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
@@ -101,14 +101,14 @@ void GrafOne::Load()
 	else if (extension == "S2P" || extension == "s2p")
 	{
 		ui->widget->addGraph();
-		QPen pen1(Qt::blue);
+		QPen pen1(SystemParameters::s11GrafColor);
 		ui->widget->graph(0)->setPen(pen1);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 		ui->widget->addGraph();
 		ui->widget->graph(1)->setName("Return Loss S22");
 		ui->widget->graph(1)->addData(x, y2);
-		QPen pen2(Qt::red);
+		QPen pen2(SystemParameters::s22GrafColor);
 		ui->widget->graph(1)->setPen(pen2);
 	}
 
