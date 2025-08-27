@@ -42,17 +42,6 @@ private slots:
 
 private:
 	Ui::ColourSettingClass *ui;
-	QColor s11GrafColor;
-	QColor s22GrafColor;
-	QColor magGrafColor;
-	QColor msgGrafColor;
-	QColor kGrafColor;
-	QColor muGrafColor;
-	QColor ampS11Color;
-	QColor ampS21Color;
-	QColor circleS12;
-	QColor circleS21;
-	QColor ImpedanceColor;
 	void setButtonColor(QPushButton* button, const QColor& color);
 };
 

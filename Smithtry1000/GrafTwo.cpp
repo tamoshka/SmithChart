@@ -141,43 +141,39 @@ void GrafTwo::Load()
 	Graphμ->setValueAxis(ui->widget->yAxis2);
 }
 
-void GrafTwo::updateMAGColor(const QColor& color)
+void GrafTwo::updateMAGColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
-void GrafTwo::updateMSGColor(const QColor& color)
+void GrafTwo::updateMSGColor()
 {
-	if (ui->widget->graphCount() > 1) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
-void GrafTwo::updateKColor(const QColor& color)
+void GrafTwo::updateKColor()
 {
-	if (ui->widget->graphCount() > 2) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(2)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
-void GrafTwo::updateMuColor(const QColor& color)
+void GrafTwo::updateMuColor()
 {
-	if (ui->widget->graphCount() > 3) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(3)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
