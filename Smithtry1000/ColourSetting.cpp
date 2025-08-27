@@ -15,7 +15,6 @@ ColourSetting::ColourSetting(QWidget *parent)
 	, circleS12(Qt::blue)
 	, circleS21(Qt::blue)
 	, ImpedanceColor(Qt::blue)
-	, AdmitanceColor(Qt::red)
 {
 	ui->setupUi(this);
 
@@ -29,7 +28,7 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->AmpFrS21, ampS21Color);
 	setButtonColor(ui->CircleS12, circleS12);
 	setButtonColor(ui->CircleS21, circleS21);
-	setButtonColor(ui->ColourAdmitance, AdmitanceColor);
+	setButtonColor(ui->ColourAdmitance, SystemParameters::AdmitanceColor);
 	setButtonColor(ui->ColourImpedance, ImpedanceColor);
 
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
@@ -65,7 +64,7 @@ void ColourSetting::S11Graf()
 		s11GrafColor = newColor;
 		setButtonColor(ui->S11Graf, s11GrafColor);
 		SystemParameters::s11GrafColor = newColor;
-		emit s11ColorChanged(s11GrafColor);
+		emit s11ColorChanged();
 	}
 }
 
@@ -77,7 +76,7 @@ void ColourSetting::S22Graf()
 		s22GrafColor = newColor;
 		setButtonColor(ui->S22Graf, s22GrafColor);
 		SystemParameters::s22GrafColor = newColor;
-		emit s22ColorChanged(s22GrafColor);
+		emit s22ColorChanged();
 	}
 }
 
@@ -89,7 +88,7 @@ void ColourSetting::MAGGraf()
 		magGrafColor = newColor;
 		setButtonColor(ui->MAGGraf, magGrafColor);
 		SystemParameters::magGrafColor = newColor;
-		emit magColorChanged(magGrafColor);
+		emit magColorChanged();
 	}
 }
 
@@ -101,7 +100,7 @@ void ColourSetting::MSGGraf()
 		msgGrafColor = newColor;
 		setButtonColor(ui->MSGGraf, msgGrafColor);
 		SystemParameters::msgGrafColor = newColor;
-		emit msgColorChanged(msgGrafColor);
+		emit msgColorChanged();
 	}
 }
 
@@ -113,7 +112,7 @@ void ColourSetting::KGraf()
 		kGrafColor = newColor;
 		setButtonColor(ui->KGraf, kGrafColor);
 		SystemParameters::kGrafColor = newColor;
-		emit kColorChanged(kGrafColor);
+		emit kColorChanged();
 	}
 }
 
@@ -125,7 +124,7 @@ void ColourSetting::MuGraf()
 		muGrafColor = newColor;
 		setButtonColor(ui->MuGraf, muGrafColor);
 		SystemParameters::muGrafColor = newColor;
-		emit muColorChanged(muGrafColor);
+		emit muColorChanged();
 	}
 }
 
@@ -191,12 +190,11 @@ void ColourSetting::ColourImpedance()
 
 void ColourSetting::ColourAdmitance()
 {
-	QColor newColor = QColorDialog::getColor(AdmitanceColor, this);
+	QColor newColor = QColorDialog::getColor(SystemParameters::AdmitanceColor, this);
 	if (newColor.isValid())
 	{
-		AdmitanceColor = newColor;
-		setButtonColor(ui->ColourAdmitance, AdmitanceColor);
 		SystemParameters::AdmitanceColor = newColor;
+		setButtonColor(ui->ColourAdmitance, SystemParameters::AdmitanceColor);
 		emit signalDVS();
 	}
 }
