@@ -125,7 +125,7 @@ void AmplitudeFrequency::MatrixCalculation()
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     double r0 = tmp->GetValue();
-                    double t = tmp->GetElectricalLength();
+                    double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
                     double theta = l * w * 1e9 / 299792458;
                     Complex z = Complex(0, -1) * r0/ tan(theta);
@@ -140,7 +140,7 @@ void AmplitudeFrequency::MatrixCalculation()
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     double r0 = tmp->GetValue();
-                    double t = tmp->GetElectricalLength();
+                    double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
                     double theta = l * w * 1e9 / 299792458;
                     Complex z = Complex(0, 1) * r0 * tan(theta);
