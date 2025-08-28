@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <iostream>
+#include <QtMath>
 #include <QString>
 
 SDiagram2::SDiagram2(ParameterType type, QWidget* parent)

@@ -19,8 +19,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     ui->setupUi(this);
     this->sParameters = sParameters1;
     Model = Default;
-    this->resize(1600, 920);
-    this->setMaximumSize(1920, 1080);
+    this->resize(1630, 920);
+    this->setMinimumSize(1630, 920);
     ui->pointTable->setColumnCount(5);
     ui->pointTable->setRowCount(1);
     ui->pointTable->setColumnWidth(0, 40);
@@ -2441,4 +2441,24 @@ void Smithtry1000::getsignalDVS()
 {
     SystemParameters::colorChanged = true;
     renderArea->update();
+}
+
+void Smithtry1000::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+    SystemParameters::sizeChanged = true;
+    renderArea->update();
+    if (event->oldSize().width() != -1)
+    {
+        double coef1 = (double)event->size().width() / (double)event->oldSize().width();
+        double coef2 = (double)event->size().height() / (double)event->oldSize().height();
+        double coef = coef1 * coef2;
+        scale = scale * coef;
+        int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
+        int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
+        renderArea->setFixedWidth(1200 + (scale - 200) * 2);
+        renderArea->setFixedHeight(800 + (scale - 200) * 2);
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (scale / (scale - 100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale - 100)));
+    }
 }

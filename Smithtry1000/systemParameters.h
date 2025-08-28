@@ -56,4 +56,5 @@ public:
 	static bool colorChanged;
 	static double alpha;
 	static double lambda;
+	static bool sizeChanged;
 };

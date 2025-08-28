@@ -30,7 +30,7 @@ private:
 	QVector<double> x, y1, y2, y3, y4;
 private:
 	QCPGraph* GraphK = nullptr;
-	QCPGraph* Graphμ = nullptr;
+	QCPGraph* Graphu = nullptr;
 	QCPGraph* GraphMAG = nullptr;
 	QCPGraph* GraphMSG = nullptr;
 };

@@ -965,13 +965,17 @@ void RenderArea::generateCache()
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    if (!m_cacheValid || defaultScale != scale || SystemParameters::colorChanged) 
+    if (!m_cacheValid || defaultScale != scale || SystemParameters::colorChanged || SystemParameters::sizeChanged)
     {
         generateCache();
         defaultScale = scale;
         if (SystemParameters::colorChanged)
         {
             SystemParameters::colorChanged = false;
+        }
+        if (SystemParameters::sizeChanged)
+        {
+            SystemParameters::sizeChanged = false;
         }
     }
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);

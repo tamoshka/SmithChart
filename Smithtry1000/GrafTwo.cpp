@@ -125,10 +125,10 @@ void GrafTwo::Load()
 	GraphK->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
 	GraphK->removeFromLegend();
 
-	Graphμ = ui->widget->addGraph();
-	Graphμ->setLineStyle(QCPGraph::lsNone);
-	Graphμ->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
-	Graphμ->removeFromLegend();
+	Graphu = ui->widget->addGraph();
+	Graphu->setLineStyle(QCPGraph::lsNone);
+	Graphu->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
+	Graphu->removeFromLegend();
 
 	GraphMAG = ui->widget->addGraph();
 	GraphMAG->setLineStyle(QCPGraph::lsNone);
@@ -143,7 +143,7 @@ void GrafTwo::Load()
 	GraphMAG->setValueAxis(ui->widget->yAxis);
 	GraphMSG->setValueAxis(ui->widget->yAxis);
 	GraphK->setValueAxis(ui->widget->yAxis2);
-	Graphμ->setValueAxis(ui->widget->yAxis2);
+	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
 void GrafTwo::updateMAGColor(const QColor& color)
@@ -195,7 +195,7 @@ void GrafTwo::highlightPoint(int index)
 		GraphMAG->setData(highlightX, QVector<double>{y1[index]});
 		GraphMSG->setData(highlightX, QVector<double>{y2[index]});
 		GraphK->setData(highlightX, QVector<double>{y3[index]});
-		Graphμ->setData(highlightX, QVector<double>{y4[index]});
+		Graphu->setData(highlightX, QVector<double>{y4[index]});
 
 		ui->widget->replot();
 	}
