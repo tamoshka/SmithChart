@@ -5,7 +5,7 @@
 #include "qpainter.h"
 #include "qpoint.h"
 #include "qcolor.h"
-#include "QEvent.h"
+#include <QEvent>
 #include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class S12ParamClass; };
@@ -36,7 +36,6 @@ private:
 	double k, max;
 	int highlightedPoint = -1;
 
-	//Хранит выбор (S12,S21)
+	//РўРёРї РїР°СЂР°РјРµС‚СЂР° (S12,S21)
 	ParameterType currentType;
 };
-

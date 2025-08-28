@@ -1,7 +1,12 @@
-﻿#include "GrafTwo.h"
+#include "GrafTwo.h"
+#include <QMessageBox>
+#include <QtMath>
+#include <QThread>
+#include <cmath>
+#include <exception>
+#include "ui_GrafTwo.h"
 #include <QString>
 #include "S2p.h"
-#include "qvalueaxis.h"
 #include "ColourSetting.h"
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)

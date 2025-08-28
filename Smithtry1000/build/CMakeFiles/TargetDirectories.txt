@@ -1,0 +1,5 @@
+/home/sas/src/SmithChart/Smithtry1000/build/CMakeFiles/Smithtry1000.dir
+/home/sas/src/SmithChart/Smithtry1000/build/CMakeFiles/edit_cache.dir
+/home/sas/src/SmithChart/Smithtry1000/build/CMakeFiles/rebuild_cache.dir
+/home/sas/src/SmithChart/Smithtry1000/build/CMakeFiles/Smithtry1000_autogen_timestamp_deps.dir
+/home/sas/src/SmithChart/Smithtry1000/build/CMakeFiles/Smithtry1000_autogen.dir

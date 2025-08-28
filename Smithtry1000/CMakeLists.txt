@@ -6,17 +6,19 @@ include(qt.cmake)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR}
     COMPONENTS
         Core
         Gui
         Widgets
-        SvgWidgets
+        Svg
         PrintSupport
-        Graphs
 )
 qt_standard_project_setup()
+
+# Добавим путь к заголовочным файлам
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(PROJECT_SOURCES
     systemParameters.h
@@ -101,8 +103,6 @@ target_link_libraries(${PROJECT_NAME}
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt::SvgWidgets
+        Qt::Svg
         Qt::PrintSupport
-        Qt::Graphs
 )
-
