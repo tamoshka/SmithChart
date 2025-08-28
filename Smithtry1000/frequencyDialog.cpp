@@ -9,6 +9,7 @@ FrequencyDialog::FrequencyDialog(QWidget* parent)
     : QDialog(parent)
 {
     this->setWindowTitle("Frequency, MHz");
+    this->setFixedSize(300, 100);
     inputField = new QLineEdit(this);
     okButton = new QPushButton("OK", this);
 
