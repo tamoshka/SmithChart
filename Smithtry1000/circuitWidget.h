@@ -35,6 +35,6 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
-    void enterEvent(QEnterEvent* event) override;
+    void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
 };

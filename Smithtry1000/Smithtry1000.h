@@ -85,8 +85,12 @@ private:
     double tmin;
     double tmax;
     double step;
-    double r;  // радиус в единицах
+    double r;  //   
     double intervalLength = 2 * M_PI;
+    double impedanceRealR;
+    double impedanceImagR;
+    double admitanceRealR;
+    double admitanceImagR;
     QPoint getPointOnCircle(int, int);
     void rImpedanceRealCalculation(double, double);
     void rImpedanceImagCalculation(double, double);
