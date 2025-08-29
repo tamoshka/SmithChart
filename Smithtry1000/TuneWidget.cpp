@@ -553,6 +553,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -689,6 +703,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -825,6 +853,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -960,6 +1002,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1085,6 +1141,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1210,6 +1280,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1354,6 +1438,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1494,6 +1592,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);

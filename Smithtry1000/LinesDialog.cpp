@@ -9,7 +9,7 @@ LinesDialog::LinesDialog(QWidget* parent)
     : QDialog(parent)
 {
     this->setWindowTitle("Line impedance");
-    this->setFixedSize(150, 220);
+    this->setFixedSize(150, 240);
     okButton = new QPushButton("OK", this);
     Z0Box = new QGroupBox(this);
     ErBox = new QGroupBox(this);
