@@ -20,10 +20,8 @@ public:
 
 public slots:
 	void highlightPoint(int index);
-	void updateMAGColor(const QColor& color);
-	void updateMSGColor(const QColor& color);
-	void updateKColor(const QColor& color);
-	void updateMuColor(const QColor& color);
+	void updateGrafTwoColor();
+
 private:
 	Ui::GrafTwoClass* ui;
 	double xBegin, xEnd, yBegin, yEnd, yBeginTwo, yEndTwo;

@@ -146,43 +146,12 @@ void GrafTwo::Load()
 	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
-void GrafTwo::updateMAGColor(const QColor& color)
+void GrafTwo::updateGrafTwoColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateMSGColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 1) 
-	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateKColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 2) 
-	{
-		QPen pen(color);
-		ui->widget->graph(2)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateMuColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 3) 
-	{
-		QPen pen(color);
-		ui->widget->graph(3)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 

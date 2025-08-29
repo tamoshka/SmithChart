@@ -127,23 +127,12 @@ void GrafOne::Load()
 	GraphS22->removeFromLegend();
 }
 
-void GrafOne::updateS11Color(const QColor& color)
+void GrafOne::updateGrafOneColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafOne::updateS22Color(const QColor& color)
-{
-	if (ui->widget->graphCount() > 1) 
-	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
