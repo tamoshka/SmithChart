@@ -5,7 +5,7 @@
 #include "circuitElements.h"
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
-int index = 0;
+int point_index = 0;
 map<int, tuple<Point, double, double, mode>> points;
 QList<double> qCircles;
 int dpIndex = 0;
@@ -36,19 +36,17 @@ int main(int argc, char *argv[])
 	SParamTable stable1(SParamTable::STable1);
 	SParamTable stable2(SParamTable::STable2);
 
-	//ƒË‡„‡ÏÏ˚
+	//–°–∏–≥–Ω–∞–ª—ã
 	QObject::connect(&stable1, &SParamTable::rowClicked, &d1, &SDiagram1::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &d2, &SDiagram1::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowClicked, &d3, &SDiagram2::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &d4, &SDiagram2::highlightPoint);
-	//√‡ÙËÍË
+	//–ì—Ä–∞—Ñ–∏–∫–∏
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g1, &GrafOne::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
-	//÷‚ÂÚ‡
 	QObject::connect(&set, &ColourSetting::grafOneColor, &g1, &GrafOne::updateGrafOneColor);
 	QObject::connect(&set, &ColourSetting::grafTwoColor, &g2, &GrafTwo::updateGrafTwoColor);
-
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);
 	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);

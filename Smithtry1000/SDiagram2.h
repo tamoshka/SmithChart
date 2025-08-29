@@ -7,7 +7,7 @@
 #include <QColor>
 #include <QVector>
 #include <QPoint>
-#include "QEvent.h"
+#include <QEvent>
 QT_BEGIN_NAMESPACE
 namespace Ui { class SDiagram2; };
 QT_END_NAMESPACE
@@ -51,6 +51,6 @@ private:
 	float scale = 200;
 	float scaleFactor;
 
-	//Хранит выбор (S11,S22)
+	//РўРёРї РїР°СЂР°РјРµС‚СЂР° (S11,S22)
 	ParameterType currentType;
 };

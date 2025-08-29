@@ -54,4 +54,7 @@ public:
 	static double er;
 	static double z0line;
 	static bool colorChanged;
+	static double alpha;
+	static double lambda;
+	static bool sizeChanged;
 };

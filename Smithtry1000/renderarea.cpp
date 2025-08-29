@@ -876,7 +876,26 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (Model == mode::Line) 
         {
-
+            Point point;
+            tuple<double, double> tuple1;
+            Complex zl;
+            if (index == 1)
+            {
+                point = circuitElements->firstPoint;
+                zl = circuitElements->z;
+            }
+            else
+            {
+                point = circuitElements->GetCircuitElements()[index - 2]->GetPoint();
+                zl = circuitElements->GetCircuitElements()[index - 2]->GetParameter()[Z];
+            }
+            Complex g1 = (zl - double(50)) / (zl + double(50));
+            Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
+            Complex g3 = (z3 - double(50)) / (z3 + double(50));
+            double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+            qreal R = abs(center2 - g1);
+            painter.setBrush(QBrush(Qt::NoBrush)); // Red solid fill
+            painter.drawEllipse(QPointF(center2*scale+center.x(), center.y()), R*scale, R*scale);
         }
         else if (Model == mode::OSLine)
         {
@@ -965,13 +984,17 @@ void RenderArea::generateCache()
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    if (!m_cacheValid || defaultScale != scale || SystemParameters::colorChanged) 
+    if (!m_cacheValid || defaultScale != scale || SystemParameters::colorChanged || SystemParameters::sizeChanged)
     {
         generateCache();
         defaultScale = scale;
         if (SystemParameters::colorChanged)
         {
             SystemParameters::colorChanged = false;
+        }
+        if (SystemParameters::sizeChanged)
+        {
+            SystemParameters::sizeChanged = false;
         }
     }
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);

@@ -12,25 +12,25 @@ CircuitWidget::~CircuitWidget()
 }
 
 void CircuitWidget::addSvg(QString path, int x, int y) {
-    // Создаем SVG виджет
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅпїЅпїЅпїЅпїЅ
     QSvgWidget* svgWidget = new QSvgWidget(this);
 
-    // Загружаем SVG из ресурсов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
     {
         paths.append(path);
         svgWidgets[svgWidgets.size() - 1]->hide();
         QSvgWidget* widget = svgWidgets.takeLast();
-        widget->deleteLater(); // Безопасное удаление
-        // Устанавливаем позицию и размер (x, y, width, height)
+        widget->deleteLater(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (x, y, width, height)
         svgWidget->setGeometry(x - 40, y, 40, 40);
         svgWidget->show();
 
         svgWidgets.append(svgWidget);
         QSvgWidget* load = new QSvgWidget(this);
 
-        // Загружаем SVG из ресурсов
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         load->load(QString(":/Images/source.svg"));
         load->setGeometry(x, 39, 40, 40);
         load->show();
@@ -512,9 +512,11 @@ void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
     admitanceImagR *= -20;
 }
 
-void CircuitWidget::enterEvent(QEnterEvent* event)
+void CircuitWidget::enterEvent(QEvent* event)
 {
     SystemParameters::circuitHover = true;
+    update();
+    QWidget::enterEvent(event);
 }
 
 void CircuitWidget::leaveEvent(QEvent* event)
