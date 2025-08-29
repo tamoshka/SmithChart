@@ -6,9 +6,13 @@ TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)
 	, ui(new Ui::TuneWidget())
 {
 	ui->setupUi(this);
+	this->setMinimumSize(400, 300);
 	circuitElements = circuit;
 	count = 0;
 	tuned = new CircuitElements();
+	ui->scrollArea->setWidget(mainWidget);
+	ui->scrollArea->setWidgetResizable(true);
+	ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	connect(ui->OKButton, &QPushButton::clicked, this, &TuneWidget::OKButton_clicked);
 	connect(ui->MinMaxButton, &QPushButton::clicked, this, &TuneWidget::MinMaxButton_clicked);
 	connect(ui->RemoveAllButton, &QPushButton::clicked, this, &TuneWidget::RemoveAll);
@@ -35,7 +39,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	tuned->AddCircuitElements(elem);
 	QString name;
 	long long n = 1;
-	QGroupBox* box = new QGroupBox(this);
+	QGroupBox* box = new QGroupBox(mainWidget);
 	int moved = 0;
 	box->move(90 * (tuned->GetCircuitElements().size() - 1 + count) + 10 * (tuned->GetCircuitElements().size() - 1), 0);
 	box->resize(90, 150);
@@ -169,7 +173,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	btn->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
 	btn->show();
 	buttons.append(btn);
-	
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	connect(sld, &QSlider::sliderMoved, this, &TuneWidget::ValueChanged);
 	connect(btn, &QPushButton::clicked, this, &TuneWidget::Remove);
 	update();
@@ -233,6 +237,7 @@ void TuneWidget::Remove()
 	{
 		SystemParameters::tuneBlock = false;
 	}
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	update();
 }
 
@@ -280,6 +285,7 @@ void TuneWidget::RemoveAll()
 		tuned->Remove(i);
 		i--;
 	}
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	emit removeAll();
 	SystemParameters::tuneBlock = false;
 	update();
