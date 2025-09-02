@@ -69,7 +69,6 @@ Point RenderArea::compute_imaginary(double t)
     tmp.x = x;
     tmp.y = y;
     return tmp;
-
 }
 
 Point RenderArea::compute_imaginaryParallel(double t)
@@ -89,6 +88,20 @@ Point RenderArea::compute_imaginaryParallel(double t)
         x = -(cos_t - abs(r)) / r;
         y = -(1 / r) + (1 / r) * sin_t;
     }
+
+    Point tmp;
+    tmp.x = x;
+    tmp.y = y;
+    return tmp;
+}
+
+Point RenderArea::compute_line(double t, double radius)
+{
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x = r+cos_t*radius;
+    double y=sin_t*radius;
+
 
     Point tmp;
     tmp.x = x;
@@ -578,6 +591,91 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::Line)
         {
+            Complex zl;
+            double x1, y1;
+            if (ll == 0)
+            {
+                zl = circuitElements->z;
+                x1 = circuitElements->firstPoint.x;
+                y1 = circuitElements->firstPoint.y;
+            }
+            else
+            {
+                zl = circuitElements->GetCircuitElements()[ll-1]->GetParameter()[Z];
+                x1 = circuitElements->GetCircuitElements()[ll-1]->GetPoint().x;
+                y1 = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
+            }
+            Complex g1 = (zl - double(50)) / (zl + double(50));
+            LinesElement* temp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[ll]);
+            Complex z3 = temp->GetValue() * (zl + Complex(0, temp->GetValue())) / (temp->GetValue() + Complex(0, 1) * zl);
+            Complex g3 = (z3 - double(50)) / (z3 + double(50));
+            double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+            double R = abs(center2 - g1);
+            double dx = x1 - center2;
+            double dy = y1;
+            dy *= -1;
+            double sin_t = dy;
+            double cos_t = dx;
+            double t1 = atan(sin_t / cos_t);
+            if (cos_t >= 0)
+            {
+                t1 *= -1;
+            }
+            else if (sin_t <= 0)
+            {
+                t1 = M_PI - t1;
+            }
+            else
+            {
+                t1 = -M_PI - t1;
+            }
+            r = center2;
+            double x2, y2;
+            x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+            y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+            double sin_t2 = y2 * -1;
+            double cos_t2 = x2 - center2;
+            double t2 = atan(sin_t2 / cos_t2);
+            if (cos_t2 >= 0)
+            {
+                t2 *= -1;
+            }
+            else if (sin_t2 <= 0)
+            {
+                t2 = M_PI - t2;
+            }
+            else
+            {
+                t2 = -M_PI - t2;
+            }
+            step = abs(t2 - t1) / 100;
+            iPoint = compute_line(t1, R);
+            iPixel.setX(iPoint.x* scale + center.x());
+            iPixel.setY(iPoint.y * scale + center.y());
+            if (t1 < t2)
+            {
+                for (t1; t1 < t2; t1 += step)
+                {
+                    Point point = compute_line(t1, R);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(point.y * scale + center.y());
+                    painter.drawLine(iPixel, pixel);
+                    iPixel = pixel;
+                }
+            }
+            else
+            {
+                for (t1; t1 < t2 + 2 * M_PI; t1 += step)
+                {
+                    Point point = compute_line(t1, R);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(point.y * scale + center.y());
+                    painter.drawLine(iPixel, pixel);
+                    iPixel = pixel;
+                }
+            }
 
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::OSLine)
