@@ -1,0 +1,19 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+
+  <line x1="0" y1="1" x2="40" y2="1" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="0" y1="39.5" x2="40" y2="39.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Вертикальные линии -->
+  <line x1="20" y1="0" x2="20" y2="6" stroke="#000" stroke-width="1.5"/>
+  <line x1="20" y1="34" x2="20" y2="40" stroke="#000" stroke-width="1.5"/>
+  <!-- Эллипсы -->
+  <path d="M 20 6
+	   C 14 7, 14 12,20 13" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 20 13
+	   C 14 14, 14 19,20 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 20 20
+	   C 14 21, 14 26,20 27" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 20 27
+	   C 14 28, 14 33, 20 34" stroke="#000" stroke-width="1.5" fill="none"/>
+
+</svg>
