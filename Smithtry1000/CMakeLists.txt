@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Smithtry1000 LANGUAGES CXX)
+project(smith_chart_tool LANGUAGES CXX)
 
 # Если у вас есть qt.cmake, подключаем его
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/qt.cmake")
