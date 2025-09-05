@@ -20,6 +20,7 @@ private:
 	Ui::TuneWidget *ui;
 	CircuitElements* tuned;
 	CircuitElements* circuitElements;
+	QWidget* mainWidget = new QWidget(this);
 	QList<QGroupBox*> boxes;
 	QList<QGroupBox*> slidersBoxes;
 	QList<QSvgWidget*> widgets;

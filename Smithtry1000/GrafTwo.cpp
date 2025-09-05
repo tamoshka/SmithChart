@@ -1,7 +1,12 @@
-﻿#include "GrafTwo.h"
+#include "GrafTwo.h"
+#include <QMessageBox>
+#include <QtMath>
+#include <QThread>
+#include <cmath>
+#include <exception>
+#include "ui_GrafTwo.h"
 #include <QString>
 #include "S2p.h"
-#include "qvalueaxis.h"
 #include "ColourSetting.h"
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)
@@ -21,11 +26,11 @@ void GrafTwo::Load()
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 	ui->widget->clearGraphs();
-	x = QVector<double>(s.f.begin(), s.f.end());
-	y1 = QVector<double>(s.Mg.begin(), s.Mg.end());
-	y2 = QVector<double>(s.Ms.begin(), s.Ms.end());
-	y3 = QVector<double>(s.Mk.begin(), s.Mk.end());
-	y4 = QVector<double>(s.Mu.begin(), s.Mu.end());
+	x = QVector<double>::fromStdVector(s.f);
+	y1 = QVector<double>::fromStdVector(s.Mg);
+	y2 = QVector<double>::fromStdVector(s.Ms);
+	y3 = QVector<double>::fromStdVector(s.Mk);
+	y4 = QVector<double>::fromStdVector(s.Mu);
 
 	double m1, m2, m3, m4;
 	xBegin = 0;
@@ -120,10 +125,10 @@ void GrafTwo::Load()
 	GraphK->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
 	GraphK->removeFromLegend();
 
-	Graphμ = ui->widget->addGraph();
-	Graphμ->setLineStyle(QCPGraph::lsNone);
-	Graphμ->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
-	Graphμ->removeFromLegend();
+	Graphu = ui->widget->addGraph();
+	Graphu->setLineStyle(QCPGraph::lsNone);
+	Graphu->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
+	Graphu->removeFromLegend();
 
 	GraphMAG = ui->widget->addGraph();
 	GraphMAG->setLineStyle(QCPGraph::lsNone);
@@ -138,46 +143,15 @@ void GrafTwo::Load()
 	GraphMAG->setValueAxis(ui->widget->yAxis);
 	GraphMSG->setValueAxis(ui->widget->yAxis);
 	GraphK->setValueAxis(ui->widget->yAxis2);
-	Graphμ->setValueAxis(ui->widget->yAxis2);
+	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
-void GrafTwo::updateMAGColor(const QColor& color)
+void GrafTwo::updateGrafTwoColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateMSGColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 1) 
-	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateKColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 2) 
-	{
-		QPen pen(color);
-		ui->widget->graph(2)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateMuColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 3) 
-	{
-		QPen pen(color);
-		ui->widget->graph(3)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
@@ -190,7 +164,7 @@ void GrafTwo::highlightPoint(int index)
 		GraphMAG->setData(highlightX, QVector<double>{y1[index]});
 		GraphMSG->setData(highlightX, QVector<double>{y2[index]});
 		GraphK->setData(highlightX, QVector<double>{y3[index]});
-		Graphμ->setData(highlightX, QVector<double>{y4[index]});
+		Graphu->setData(highlightX, QVector<double>{y4[index]});
 
 		ui->widget->replot();
 	}

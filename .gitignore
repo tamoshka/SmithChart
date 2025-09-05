@@ -399,4 +399,8 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /CMakeUserPresets.json
+/Smithtry1000/build/
+
+
+
 /out/build/x64-debug

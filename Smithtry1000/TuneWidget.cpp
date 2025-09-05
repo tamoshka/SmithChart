@@ -6,9 +6,13 @@ TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)
 	, ui(new Ui::TuneWidget())
 {
 	ui->setupUi(this);
+	this->setMinimumSize(400, 300);
 	circuitElements = circuit;
 	count = 0;
 	tuned = new CircuitElements();
+	ui->scrollArea->setWidget(mainWidget);
+	ui->scrollArea->setWidgetResizable(true);
+	ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	connect(ui->OKButton, &QPushButton::clicked, this, &TuneWidget::OKButton_clicked);
 	connect(ui->MinMaxButton, &QPushButton::clicked, this, &TuneWidget::MinMaxButton_clicked);
 	connect(ui->RemoveAllButton, &QPushButton::clicked, this, &TuneWidget::RemoveAll);
@@ -35,7 +39,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	tuned->AddCircuitElements(elem);
 	QString name;
 	long long n = 1;
-	QGroupBox* box = new QGroupBox(this);
+	QGroupBox* box = new QGroupBox(mainWidget);
 	int moved = 0;
 	box->move(90 * (tuned->GetCircuitElements().size() - 1 + count) + 10 * (tuned->GetCircuitElements().size() - 1), 0);
 	box->resize(90, 150);
@@ -169,7 +173,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	btn->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
 	btn->show();
 	buttons.append(btn);
-	
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	connect(sld, &QSlider::sliderMoved, this, &TuneWidget::ValueChanged);
 	connect(btn, &QPushButton::clicked, this, &TuneWidget::Remove);
 	update();
@@ -233,6 +237,7 @@ void TuneWidget::Remove()
 	{
 		SystemParameters::tuneBlock = false;
 	}
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	update();
 }
 
@@ -280,6 +285,7 @@ void TuneWidget::RemoveAll()
 		tuned->Remove(i);
 		i--;
 	}
+	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
 	emit removeAll();
 	SystemParameters::tuneBlock = false;
 	update();
@@ -303,7 +309,7 @@ void TuneWidget::paintEvent(QPaintEvent* event)
 		valueLabels[i+count]->setText(QString::number(n*tuned->GetCircuitElements()[i]->GetValue()));
 		if (tuned->GetCircuitElements()[i]->GetMode() == Line)
 		{
-			VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(tuned->GetCircuitElements()[i]);
+			LinesElement* tmp = dynamic_cast<LinesElement*>(tuned->GetCircuitElements()[i]);
 			valueLabels[i + 1]->setText(QString::number(tmp->GetLambda()));
 			count++;
 		}
@@ -404,6 +410,7 @@ void TuneWidget::ValueChanged(int value)
 	}
 	Complex z;
 	Complex y;
+	Complex g;
 	Complex tempZ;
 	Complex tempY;
 	for (j; j < circuitElements->GetCircuitElements().size(); j++)
@@ -413,11 +420,13 @@ void TuneWidget::ValueChanged(int value)
 		{
 			z = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Z);
 			y = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Y);
+			g= circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(G);
 		}
 		else
 		{
 			z = circuitElements->z;
 			y = circuitElements->y;
+			g = circuitElements->g;
 		}
 		double step = 0.1;
 		switch (circuitElements->GetCircuitElements()[j]->GetMode())
@@ -547,6 +556,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -683,6 +706,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -819,6 +856,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -954,6 +1005,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1079,6 +1144,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1204,6 +1283,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1219,6 +1312,169 @@ void TuneWidget::ValueChanged(int value)
 			}
 			case Line:
 			{
+				double x;
+				double y2;
+				if (j != 0)
+				{
+					x = circuitElements->GetCircuitElements()[j - 1]->GetPoint().x;
+					y2 = circuitElements->GetCircuitElements()[j - 1]->GetPoint().y;
+				}
+				else
+				{
+					x = circuitElements->firstPoint.x;
+					y2 = circuitElements->firstPoint.y;
+				}
+				LinesElement* elem = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[j]);
+				double z0 = elem->GetValue();
+				double lambda = elem->GetLambda();
+				Complex g1 = (z - double(50)) / (z + double(50));
+				Complex z3 = z0 * (z + Complex(0, z0)) / (z0 + Complex(0, 1) * z);
+				Complex g3 = (z3 - double(50)) / (z3 + double(50));
+				double center = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+				double R = abs(center - g1);
+				double dx = x - center;
+				double dy = y2;
+				dy *= -1;
+				double sin_t = dy;
+				double cos_t = dx;
+				double t = atan(sin_t / cos_t);
+				if (cos_t >= 0)
+				{
+					t *= -1;
+				}
+				else if (sin_t <= 0)
+				{
+					t = M_PI - t;
+				}
+				else
+				{
+					t = -M_PI - t;
+				}
+				double r = center;
+
+				double RL = z.real();
+				double XL = z.imag();
+				double newLambda = 0;
+				double Length;
+				double L;
+				double Theta;
+				double step = M_PI / 2;
+				bool flag = true;
+				while (max_step < 500)
+				{
+					if (flag == true)
+					{
+						t += step;
+					}
+					else
+					{
+						t -= step;
+					}
+					if (t > M_PI)
+					{
+						t = -M_PI;
+						step /= 2;
+					}
+					else if (t<-M_PI)
+					{
+						t = M_PI;
+						step /= 2;
+					}
+					double cos_t1 = cos(t);
+					double sin_t1 = sin(t);
+					x = cos_t1 * R + center;
+					y2 = sin_t1 * R;
+					if (y2 >= 0 && y2 < 0.000001)
+					{
+						y2 = 0.01;
+					}
+					else if (y2 <= 0 && y2 > -0.000001)
+					{
+						y2 = -0.01;
+					}
+					rImpedanceRealCalculation(x, y2);
+					rImpedanceImagCalculation(x, y2);
+					double R3 = impedanceRealR;
+					double X3 = impedanceImagR;
+					double RR3 = R3 - RL;
+					double sq3 = -sqrt(RR3 * (RL * (pow(X3, 2) + pow(R3, 2)) - R3 * (pow(XL, 2) + pow(RL, 2)))) / RR3;
+					double tanO13 = RR3 * sq3 / (R3 * XL + RL * X3);
+					double tanO23 = -RR3 * sq3 / (R3* XL + RL * X3);
+					double z03;
+					double O3;
+					if (sq3 > 0)
+					{
+						z03 = sq3;
+						O3 = atan(tanO13);
+					}
+					else
+					{
+						z03 = -sq3;
+						O3 = atan(tanO23);
+					}
+					if (O3 < 0)
+					{
+						O3 += M_PI;
+					}
+					Theta = O3 * 180 / M_PI;
+					L = O3 * 299792458 / (M_PI * 1e9);
+					Length = L * 1e3;
+					newLambda = L / 2 * 1e9 / 299792458;
+					if (newLambda > lambda && flag == true)
+					{
+						flag = false;
+						step /= 2;
+					}
+					else if (newLambda < lambda && flag == false)
+					{
+						flag = true;
+						step /= 2;
+					}
+					else if (newLambda == lambda)
+					{
+						break;
+					}
+					max_step++;
+				}
+
+				Point point;
+				point.x = x;
+				point.y = y2;
+				circuitElements->GetCircuitElements()[j]->SetPoint(point);
+				Complex z2 = zCalculation(x, y2);
+				Complex y3 = yCalculation(x, y2);
+				map<parameterMode, Complex> parameter;
+				parameter[Z] = z2;
+				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
+				map<chartMode, tuple<double, double>> chart;
+				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
+				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
+				double er = pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2);
+				elem->SetElectricalLength(L * 1000);
+				elem->SetMechanicalLength(L * 1000);
+				elem->SetTheta(Theta);
 				break;
 			}
 			case OSLine:
@@ -1348,6 +1604,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1359,6 +1629,23 @@ void TuneWidget::ValueChanged(int value)
 				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
 				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
 				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
+				double theta;
+				double lambda;
+				double o;
+				double l;
+				o = atan((y3.imag() - y.imag()) / 1000 * elem->GetValue());
+				if (o < 0)
+				{
+					o += M_PI;
+				}
+				theta = o * 180 / M_PI;
+				l = o * 299792458 / (M_PI * 1e9);
+				lambda = l / 2 * 1e9 / 299792458;
+				double er = pow(elem->GetElectricalLength() / elem->GetMechanicalLength(),2);
+				elem->SetElectricalLength(l*1000);
+				elem->SetMechanicalLength(l * 1000);
+				elem->SetLambda(lambda);
+				elem->SetTheta(theta);
 				break;
 			}
 			case SSLine:
@@ -1488,6 +1775,20 @@ void TuneWidget::ValueChanged(int value)
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
 				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
 				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
@@ -1499,7 +1800,23 @@ void TuneWidget::ValueChanged(int value)
 				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
 				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
 				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
+				double theta;
+				double lambda;
+				double o;
+				double l;
+				o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
+				if (o < 0)
+				{
+					o += M_PI;
+				}
+				theta = o * 180 / M_PI;
+				l = o * 299792458 / (M_PI * 1e9);
+				lambda = l / 2 * 1e9 / 299792458;
+				double er = pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2);
+				elem->SetElectricalLength(l * 1000);
+				elem->SetMechanicalLength(l * 1000);
+				elem->SetLambda(lambda);
+				elem->SetTheta(theta);
 				break;
 			}
 		}

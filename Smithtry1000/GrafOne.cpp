@@ -21,9 +21,9 @@ void GrafOne::Load()
 	ui->widget->clearGraphs();
 	s = t.Load2P(fileName.toStdString().c_str());
 
-	x = QVector<double>(s.f.begin(), s.f.end());
-	y1 = QVector<double>(s.S11.begin(), s.S11.end());
-	y2 = QVector<double>(s.S22.begin(), s.S22.end());
+	x = QVector<double>::fromStdVector(s.f);
+	y1 = QVector<double>::fromStdVector(s.S11);
+	y2 = QVector<double>::fromStdVector(s.S22);
 	double m1, m2;
 	hX = s.f[s.f.size() - 1] / 4;
 
@@ -127,23 +127,12 @@ void GrafOne::Load()
 	GraphS22->removeFromLegend();
 }
 
-void GrafOne::updateS11Color(const QColor& color)
+void GrafOne::updateGrafOneColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafOne::updateS22Color(const QColor& color)
-{
-	if (ui->widget->graphCount() > 1) 
-	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 

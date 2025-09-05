@@ -12,25 +12,25 @@ CircuitWidget::~CircuitWidget()
 }
 
 void CircuitWidget::addSvg(QString path, int x, int y) {
-    // Создаем SVG виджет
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅпїЅпїЅпїЅпїЅ
     QSvgWidget* svgWidget = new QSvgWidget(this);
 
-    // Загружаем SVG из ресурсов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
     {
         paths.append(path);
         svgWidgets[svgWidgets.size() - 1]->hide();
         QSvgWidget* widget = svgWidgets.takeLast();
-        widget->deleteLater(); // Безопасное удаление
-        // Устанавливаем позицию и размер (x, y, width, height)
+        widget->deleteLater(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (x, y, width, height)
         svgWidget->setGeometry(x - 40, y, 40, 40);
         svgWidget->show();
 
         svgWidgets.append(svgWidget);
         QSvgWidget* load = new QSvgWidget(this);
 
-        // Загружаем SVG из ресурсов
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SVG пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         load->load(QString(":/Images/source.svg"));
         load->setGeometry(x, 39, 40, 40);
         load->show();
@@ -140,7 +140,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
     {
         QString s2 = QString::number(round(this->circuitElements->realFirstPoint*10)/10) + "  + j" + QString::number(round(this->circuitElements->imagFirstPoint*10)/10);
         painter.save();
-        painter.translate(40 + 20, 120);
+        painter.translate(40 + 20, 90);
         painter.rotate(90);
         painter.setFont(QFont("Arial", 8));
         painter.drawText(0, 0, s2);
@@ -213,6 +213,38 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case Line:
                 {
+                    double RL = z.real();
+                    double XL = z.imag();
+                    rImpedanceRealCalculation(lastPointX, lastPointY);
+                    rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double R = impedanceRealR;
+                    double X = impedanceImagR;
+                    double RR = R - RL;
+                    double sq = -sqrt(RR * (RL * (pow(X, 2) + pow(R, 2)) - R * (pow(XL, 2) + pow(RL, 2)))) / RR;
+                    double tanO1 = RR * sq / (R * XL + RL * X);
+                    double tanO2 = -RR * sq / (R * XL + RL * X);
+                    double z0;
+                    double O;
+                    if (sq > 0)
+                    {
+                        z0 = sq;
+                        O = atan(tanO1);
+                    }
+                    else
+                    {
+                        z0 = -sq;
+                        O = atan(tanO2);
+                    }
+                    if (O < 0)
+                    {
+                        O += M_PI;
+                    }
+                    double Theta = O * 180 / M_PI;
+                    double l = O * 299792458 / (M_PI * frequency * 1e6);
+                    double Length = l * 1e3;
+                    double lambda = l/2 * 1e9 / 299792458;
+                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm |" + QString::number(round(SystemParameters::alpha * 10) / 10) + "dB/m|lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
                 case OSLine:
@@ -230,8 +262,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     theta = o * 180 / M_PI;
                     l = o * 299792458 / (M_PI * 1e9);
                     lambda = l / 2 * 1e9 / 299792458;
-                    s1 = QString::number(SystemParameters::z0line)+"Ohm | lambda="+QString::number(lambda);
-                    s3 = QString::number(l * 1000 / sqrt(SystemParameters::er)) + "mm(phys)|" + QString::number(l * 1000) + "mm(electr)";
+                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
                 case SSLine:
@@ -249,14 +281,14 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     theta = o * 180 / M_PI;
                     l = o * 299792458 / (M_PI * 1e9);
                     lambda = l / 2 * 1e9 / 299792458;
-                    s1 = QString::number(SystemParameters::z0line) + "Ohm | lambda=" + QString::number(lambda);
-                    s3 = QString::number(l * 1000 / sqrt(SystemParameters::er)) + "mm(phys)|" + QString::number(l * 1000) + "mm(electr)";
+                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
             }
         }
         painter.save();
-        painter.translate((index + 1) * 40 + 20, 120);
+        painter.translate((index + 1) * 40 + 20, 90);
         painter.rotate(90);
         painter.setFont(QFont("Arial", 8));
         painter.drawText(0, 0, s1);
@@ -305,25 +337,28 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case Line:
                 {
+                    LinesElement* tmp = dynamic_cast<LinesElement*>(temp[i]);
+                    s1 = QString::number(round(tmp->GetValue()*10)/10) + "Ohm |" + QString::number(round(tmp->GetAlpha()*10)/10)+ "dB/m|lambda=" +QString::number(round(tmp->GetLambda()*10000)/10000);
+                    s3 = QString::number(round(tmp->GetMechanicalLength()*10)/10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength()*10)/10) + "mm(electr)";
                     break;
                 }
                 case OSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
-                    s1 = QString::number(tmp->GetValue()) + "Ohm | lambda=" + QString::number(tmp->GetLambda());
-                    s3 = QString::number(tmp->GetMechanicalLength()) + "mm(phys)|" + QString::number(tmp->GetElectricalLength()) + "mm(electr)";
+                    s1 = QString::number(round(tmp->GetValue() * 10) / 10) + "Ohm | lambda=" + QString::number(round(tmp->GetLambda() * 10000) / 10000);
+                    s3 = QString::number(round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
                     break;
                 }
                 case SSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
                     s1 = QString::number(tmp->GetValue()) + "Ohm | lambda=" + QString::number(tmp->GetLambda());
-                    s3 = QString::number(tmp->GetMechanicalLength()) + "mm(phys)|" + QString::number(tmp->GetElectricalLength()) + "mm(electr)";
+                    s3 = QString::number(round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
                     break;
                 }
             }
             painter.save();
-            painter.translate((i + 2) * 40 + 20, 120);
+            painter.translate((i + 2) * 40 + 20, 90);
             painter.rotate(90);
             painter.setFont(QFont("Arial", 8));
             painter.drawText(0, 0, s1);
@@ -512,9 +547,11 @@ void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
     admitanceImagR *= -20;
 }
 
-void CircuitWidget::enterEvent(QEnterEvent* event)
+void CircuitWidget::enterEvent(QEvent* event)
 {
     SystemParameters::circuitHover = true;
+    update();
+    QWidget::enterEvent(event);
 }
 
 void CircuitWidget::leaveEvent(QEvent* event)

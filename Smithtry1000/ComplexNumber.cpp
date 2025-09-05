@@ -1,4 +1,5 @@
 #include "ComplexNumber.h"
+#include <cmath>
 
 complexNumber::complexNumber()
 {
@@ -47,15 +48,15 @@ complexNumber complexNumber::operator*(complexNumber a)
 {
 	complexNumber b;
 	b.real = real * a.real - imag * a.imag;
-	b.imag = imag * a.real + real * a.imag;
+	b.imag = real * a.imag + imag * a.real;
 	return b;
 }
 
 complexNumber complexNumber::operator/(complexNumber a)
 {
 	complexNumber b;
-	b.real = (real * a.real + imag * a.imag) / (pow(a.real, 2) + pow(a.imag, 2));
 	b.imag = (imag * a.real - real * a.imag) / (pow(a.real, 2) + pow(a.imag, 2));
+	b.real = (real * a.real + imag * a.imag) / (pow(a.real, 2) + pow(a.imag, 2));
 	return b;
 }
 
@@ -67,7 +68,7 @@ complexNumber complexNumber::inverse()
 	return b;
 }
 
-double complexNumber::abs(complexNumber a)  //модуль числа
+double complexNumber::abs(complexNumber a)  //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 {
 	return (sqrt(a.Re() * a.Re() + a.Im() * a.Im()));
 }
