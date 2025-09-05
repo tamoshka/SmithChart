@@ -1,4 +1,4 @@
-#ifndef FREQUENCYDIALOG_H
+﻿#ifndef FREQUENCYDIALOG_H
 #define FREQUENCYDIALOG_H
 
 #include <QDialog>

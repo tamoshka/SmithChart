@@ -1,4 +1,4 @@
-#include "systemParameters.h"
+﻿#include "systemParameters.h"
 
 QColor SystemParameters::MainCircleColor = QColor(Qt::black);
 QColor SystemParameters::ImpedanceColor = QColor(Qt::blue);

@@ -1,4 +1,4 @@
-#include "ExportNetlist.h"
+﻿#include "ExportNetlist.h"
 #include "ui_ExportNetlist.h"
 
 ExportNetlist::ExportNetlist(QWidget* parent, CircuitElements* circuitElements)

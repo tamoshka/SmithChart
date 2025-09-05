@@ -1,4 +1,4 @@
-#include "SParameters.h"
+﻿#include "SParameters.h"
 #include <QString>
 
 
