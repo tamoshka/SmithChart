@@ -1,35 +1,35 @@
-cmake_minimum_required(VERSION 3.16)
+п»їcmake_minimum_required(VERSION 3.16)
 project("Smithtry1000" LANGUAGES CXX)
 
-# Настройки C++
+# РќР°СЃС‚СЂРѕР№РєРё C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Проверяем наличие Conan toolchain и подключаем его при наличии
+# РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Conan toolchain Рё РїРѕРґРєР»СЋС‡Р°РµРј РµРіРѕ РїСЂРё РЅР°Р»РёС‡РёРё
 set(CONAN_TOOLCHAIN_PATH "${CMAKE_SOURCE_DIR}/build/generators/conan_toolchain.cmake")
 if(EXISTS ${CONAN_TOOLCHAIN_PATH})
-    message(STATUS "Найден Conan toolchain, используем Conan зависимости")
+    message(STATUS "РќР°Р№РґРµРЅ Conan toolchain, РёСЃРїРѕР»СЊР·СѓРµРј Conan Р·Р°РІРёСЃРёРјРѕСЃС‚Рё")
     include(${CONAN_TOOLCHAIN_PATH})
     set(USING_CONAN TRUE)
 else()
-    message(STATUS "Conan toolchain не найден, используем системные Qt библиотеки")
+    message(STATUS "Conan toolchain РЅРµ РЅР°Р№РґРµРЅ, РёСЃРїРѕР»СЊР·СѓРµРј СЃРёСЃС‚РµРјРЅС‹Рµ Qt Р±РёР±Р»РёРѕС‚РµРєРё")
     set(USING_CONAN FALSE)
 endif()
 
-# Поиск Qt зависимостей
+# РџРѕРёСЃРє Qt Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№
 if(USING_CONAN)
-    # Через Conan
+    # Р§РµСЂРµР· Conan
     find_package(Qt NAMES Qt5 REQUIRED COMPONENTS Core)
     find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
 else()
-    # Системные Qt библиотеки
+    # РЎРёСЃС‚РµРјРЅС‹Рµ Qt Р±РёР±Р»РёРѕС‚РµРєРё
     find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
 endif()
 
-# Автоматическая генерация MOC, UIC, RCC
+# РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РіРµРЅРµСЂР°С†РёСЏ MOC, UIC, RCC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# Добавляем поддиректорию с основным проектом
+# Р”РѕР±Р°РІР»СЏРµРј РїРѕРґРґРёСЂРµРєС‚РѕСЂРёСЋ СЃ РѕСЃРЅРѕРІРЅС‹Рј РїСЂРѕРµРєС‚РѕРј
 add_subdirectory("Smithtry1000")

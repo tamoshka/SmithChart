@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "VerticalLinesElement.h"
 
 class LinesElement :public VerticalLinesElement

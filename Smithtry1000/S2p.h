@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _TOUCHSTONE_FILE_H_
 #define _TOUCHSTONE_FILE_H_
 

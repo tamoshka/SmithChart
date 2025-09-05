@@ -1,4 +1,4 @@
-#include "LinesDialog.h"
+п»ї#include "LinesDialog.h"
 #include "systemParameters.h"
 #include <QLineEdit>
 #include <QPushButton>
@@ -75,7 +75,7 @@ void LinesDialog::onAccept()
     else
     {
         reject();
-    } // закрыть окно
+    } // Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ
 }
 
 void LinesDialog::onChanged()
