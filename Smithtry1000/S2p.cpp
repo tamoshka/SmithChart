@@ -25,7 +25,7 @@ int strcasecmp(const char* first, const char* second)
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
+typedef unsigned char byte;
 using namespace std;
 TouchstoneFile::TouchstoneFile()
 {

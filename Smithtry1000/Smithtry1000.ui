@@ -1115,14 +1115,7 @@ background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="icon">
           <iconset resource="Resources/FirstTime.qrc">
-           <normaloff>:/Images/vertical_i.svg</normaloff>
-           <normalon>:/Images/vertical_i_selected.svg</normalon>
-           <disabledoff>:/Images/vertical_i_selected.svg</disabledoff>
-           <disabledon>:/Images/vertical_i_selected.svg</disabledon>
-           <activeoff>:/Images/vertical_i_selected.svg</activeoff>
-           <activeon>:/Images/vertical_i_selected.svg</activeon>
-           <selectedoff>:/Images/vertical_i_selected.svg</selectedoff>
-           <selectedon>:/Images/vertical_i_selected.svg</selectedon>:/Images/vertical_i.svg</iconset>
+           <normaloff>:/Images/vertical_i.svg</normaloff>:/Images/vertical_i.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
