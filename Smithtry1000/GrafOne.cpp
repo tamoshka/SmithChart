@@ -1,4 +1,4 @@
-#include "GrafOne.h"
+﻿#include "GrafOne.h"
 #include "S2p.h"
 #include <QString>
 

@@ -1,4 +1,4 @@
-#include "circuitElements.h"
+﻿#include "circuitElements.h"
 
 CircuitElements::CircuitElements()
 {

@@ -1,4 +1,4 @@
-#include "AmplitudeFrequency.h"
+﻿#include "AmplitudeFrequency.h"
 const double Z0 = 50;
 
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)

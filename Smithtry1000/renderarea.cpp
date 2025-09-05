@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include "renderarea.h"
 #include <QPushButton>
 #include <QPaintEvent>

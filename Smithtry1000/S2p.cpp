@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <cctype>
 #include <fstream>
 #include <string>
@@ -16,12 +16,12 @@ int strcasecmp(const char* first, const char* second)
     return lstrcmpiA(first, second);
 }
 #else
-#include <strings.h>    // для strcasecmp в Linux
-#include <cmath>        // для M_PI и математических функций
+#include <strings.h>    // РґР»СЏ strcasecmp РІ Linux
+#include <cmath>        // РґР»СЏ M_PI Рё РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… С„СѓРЅРєС†РёР№
 #include <cstdlib>
 #endif
 
-// Убедиться, что M_PI определен
+// РЈР±РµРґРёС‚СЊСЃСЏ, С‡С‚Рѕ M_PI РѕРїСЂРµРґРµР»РµРЅ
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif

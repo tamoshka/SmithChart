@@ -1,4 +1,4 @@
-#include "VerticalLinesDialog.h"
+п»ї#include "VerticalLinesDialog.h"
 #include "systemParameters.h"
 #include <QLineEdit>
 #include <QPushButton>
@@ -47,5 +47,5 @@ void VerticalLinesDialog::onAccept()
         SystemParameters::z0line = valueZ0;
         SystemParameters::er = valueEr;
         accept();
-    } // закрыть окно
+    } // Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ
 }

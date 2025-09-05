@@ -1,4 +1,4 @@
-#include "TuneWidget.h"
+﻿#include "TuneWidget.h"
 #include "ui_TuneWidget.h"
 
 TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)

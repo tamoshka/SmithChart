@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "S2p.h"
 #include <QWidget>
@@ -27,6 +27,6 @@ signals:
 private:
 	Ui::SParamTableClass* ui;
 
-	//Хранит выбор (STable1,STable2)
+	//РҐСЂР°РЅРёС‚ РІС‹Р±РѕСЂ (STable1,STable2)
 	TableType currentType;
 };
