@@ -1,4 +1,4 @@
-#include "Element.h"
+﻿#include "Element.h"
 
 Element::Element(mode mode, double value, double frequency, Point point, map<chartMode, tuple<double, double>> chartParameters, map<parameterMode, Complex> parameter)
 {

@@ -1,4 +1,4 @@
-from conan import ConanFile
+﻿from conan import ConanFile
 from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout, CMake
 from conan.tools.files import copy, collect_libs
 import os
@@ -7,7 +7,7 @@ class Smithtry1000Conan(ConanFile):
     name = "smith_chart_tool"
     version = "1.0.0"
     package_type = "application"
-    
+
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "shared": [True, False],
