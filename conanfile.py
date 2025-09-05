@@ -6,6 +6,7 @@ import os
 class Smithtry1000Conan(ConanFile):
     name = "smithtry1000"
     version = "1.0.0"
+    package_type = "application"
     
     settings = "os", "compiler", "build_type", "arch"
     options = {
