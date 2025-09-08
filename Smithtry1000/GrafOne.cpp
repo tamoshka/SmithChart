@@ -93,22 +93,28 @@ void GrafOne::Load()
 	{
 
 		ui->widget->addGraph();
-		QPen pen1(SystemParameters::s11GrafColor);
+		QPen penGid(SystemParameters::gridGrafOneColor, SystemParameters::sPlotline[9], Qt::DotLine);
+		QPen pen1(SystemParameters::s11GrafColor, SystemParameters::sPlotline[6]);
 		ui->widget->graph(0)->setPen(pen1);
+		ui->widget->xAxis->grid()->setPen(penGid);
+		ui->widget->yAxis->grid()->setPen(penGid);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 	}
 	else if (extension == "S2P" || extension == "s2p")
 	{
 		ui->widget->addGraph();
-		QPen pen1(SystemParameters::s11GrafColor);
+		QPen penGid(SystemParameters::gridGrafOneColor, SystemParameters::sPlotline[9], Qt::DotLine);
+		QPen pen1(SystemParameters::s11GrafColor, SystemParameters::sPlotline[6]);
 		ui->widget->graph(0)->setPen(pen1);
+		ui->widget->xAxis->grid()->setPen(penGid);
+		ui->widget->yAxis->grid()->setPen(penGid);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 		ui->widget->addGraph();
 		ui->widget->graph(1)->setName("Return Loss S22");
 		ui->widget->graph(1)->addData(x, y2);
-		QPen pen2(SystemParameters::s22GrafColor);
+		QPen pen2(SystemParameters::s22GrafColor, SystemParameters::sPlotline[7]);
 		ui->widget->graph(1)->setPen(pen2);
 	}
 

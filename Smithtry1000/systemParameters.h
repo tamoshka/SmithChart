@@ -10,14 +10,16 @@ public:
 	static QColor ImpedanceColor;
 	//Круги слева
 	static QColor AdmitanceColor;
+
 	//Цвета точек на диаграмме
 	static QColor DataPointsColor;
 	//Предлогаемый маршрут передвижения мышки
 	static QColor RootColor;
+
 	//Годограф
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
-	 
+	//S параметры, АЧХ
 	static QColor s11GrafColor;
 	static QColor s22GrafColor;
 	static QColor magGrafColor;
@@ -28,11 +30,15 @@ public:
 	static QColor ampS21Color;
 	static QColor circleS12;
 	static QColor circleS21;
+	static QColor gridGrafOneColor;
+	static QColor gridGrafTwoColor;
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor
 	static QList<double> linesWidth;
+	//0-
+	static QList<int>sPlotline;
 	static mode Model;
 	static double frequency;
 	static QList<Point> morePoints;

@@ -26,7 +26,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -129,7 +129,7 @@
           </rect>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="DatapointCirclesColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -512,7 +512,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_28">
+        <widget class="QPushButton" name="TempLinesColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -607,7 +607,7 @@
           <string>Sweeppoint circles</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_30">
+        <widget class="QPushButton" name="ElementLinesColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -825,10 +825,10 @@
           </rect>
          </property>
          <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
          <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_3">
@@ -841,13 +841,13 @@
           </rect>
          </property>
          <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
+          <enum>QAbstractSpinBox::UpDownArrows</enum>
          </property>
          <property name="maximum">
           <number>102</number>
          </property>
          <property name="stepType">
-          <enum>QAbstractSpinBox::StepType::DefaultStepType</enum>
+          <enum>QAbstractSpinBox::DefaultStepType</enum>
          </property>
          <property name="value">
           <number>0</number>
@@ -892,10 +892,10 @@
           </rect>
          </property>
          <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
          <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          <enum>Qt::ScrollBarAsNeeded</enum>
          </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_4">
@@ -1253,6 +1253,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_6">
          <property name="geometry">
@@ -1262,6 +1268,12 @@
            <width>51</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_7">
@@ -1273,6 +1285,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_8">
          <property name="geometry">
@@ -1282,6 +1300,12 @@
            <width>51</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_9">
@@ -1293,6 +1317,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_10">
          <property name="geometry">
@@ -1302,6 +1332,12 @@
            <width>51</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_11">
@@ -1313,6 +1349,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_12">
          <property name="geometry">
@@ -1322,6 +1364,12 @@
            <width>51</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_16">
@@ -1337,7 +1385,7 @@
           <string>Grid lines Gain Graph</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="GridGrafTwoColor">
          <property name="geometry">
           <rect>
            <x>260</x>
@@ -1359,6 +1407,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_26">
          <property name="geometry">
@@ -1373,7 +1427,7 @@
           <string>Grid lines Return Loss Graph</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="GridGrafOneColor">
          <property name="geometry">
           <rect>
            <x>260</x>
@@ -1394,6 +1448,12 @@
            <width>51</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
        </widget>
@@ -1614,7 +1674,7 @@
     <string>Restore defaults</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_5">
+  <widget class="QPushButton" name="ButtonOK">
    <property name="geometry">
     <rect>
      <x>500</x>
@@ -1627,7 +1687,7 @@
     <string>OK</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_6">
+  <widget class="QPushButton" name="ButtonCancel">
    <property name="geometry">
     <rect>
      <x>590</x>

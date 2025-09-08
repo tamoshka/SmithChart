@@ -3,8 +3,8 @@
 QColor SystemParameters::MainCircleColor = QColor(Qt::black);
 QColor SystemParameters::ImpedanceColor = QColor(Qt::blue);
 QColor SystemParameters::AdmitanceColor = QColor(Qt::red);
-QColor SystemParameters::DataPointsColor = QColor(Qt::magenta);
-QColor SystemParameters::RootColor = QColor(Qt::green);
+QColor SystemParameters::DataPointsColor = QColor(Qt::blue);
+QColor SystemParameters::RootColor = QColor(Qt::red);
 QColor SystemParameters::ElementsColor = QColor(Qt::black);
 QColor SystemParameters::BackgroundColor = QColor(Qt::white);
 QColor SystemParameters::ampS11Color = QColor(Qt::blue);
@@ -17,7 +17,9 @@ QColor SystemParameters::kGrafColor = QColor(Qt::green);
 QColor SystemParameters::muGrafColor = QColor(Qt::black);
 QColor SystemParameters::circleS12 = QColor(Qt::blue);
 QColor SystemParameters::circleS21 = QColor(Qt::blue);
-
+QColor SystemParameters::gridGrafOneColor = QColor(Qt::black);
+QColor SystemParameters::gridGrafTwoColor = QColor(Qt::black);
+QList<int> SystemParameters::sPlotline = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 QList<double> SystemParameters::linesWidth = { 2, 0.5, 0.5, 2, 2, 2, 1 };
 bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
