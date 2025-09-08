@@ -109,7 +109,7 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 
-	QColor circle;
+	QPen circle;
 	//Выбор для S12,S21
 	const auto& sParam = [&]() -> const std::vector<complex_t>&
 	{
@@ -117,15 +117,15 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 		switch (currentType) 
 		{
 			case S12: 
-				circle = SystemParameters::circleS12;
+				circle = QPen(SystemParameters::circleS12, SystemParameters::sPlotline[0]);
 				return s.S[0][1];
 				break;
 			case S21: 
-				circle = SystemParameters::circleS21;
+				circle = QPen(SystemParameters::circleS21, SystemParameters::sPlotline[1]);
 				return s.S[1][0];
 				break;
 			default: 
-				circle = SystemParameters::circleS12;
+				circle = QPen(SystemParameters::circleS12, SystemParameters::sPlotline[0]);
 				return s.S[0][1];
 				break;
 		}
@@ -149,9 +149,9 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	for (int i = 0; i < 4; i++)
 	{
 		float scaledRadius = radii[i] * scaleFactor;
-		painter.setPen(QPen(circle,1));
+		painter.setPen(circle);
 		painter.drawEllipse(center, scaledRadius, scaledRadius);
-
+		painter.setPen(QPen(Qt::black, 1));
 		QString label = QString::number(max / 4 * (i + 1), 'f', 3);
 		QPointF labelPos = center + QPointF(scaledRadius - 20 * scaleFactor, 0);
 		painter.drawText(labelPos, label);

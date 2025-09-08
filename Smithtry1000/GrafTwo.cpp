@@ -86,22 +86,26 @@ void GrafTwo::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
-	QPen pen1(SystemParameters::magGrafColor);
+	QPen pen1(SystemParameters::magGrafColor, SystemParameters::sPlotline[2]);
+	QPen penGid(SystemParameters::gridGrafTwoColor, SystemParameters::sPlotline[8], Qt::DotLine);
+	ui->widget->xAxis->grid()->setPen(penGid);
+	ui->widget->yAxis->grid()->setPen(penGid);
+	ui->widget->yAxis2->grid()->setPen(penGid);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
-	QPen pen2(SystemParameters::msgGrafColor);
+	QPen pen2(SystemParameters::msgGrafColor,SystemParameters::sPlotline[3]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");
 	ui->widget->graph(1)->addData(x, y2);
-	QPen pen3(SystemParameters::kGrafColor);
+	QPen pen3(SystemParameters::kGrafColor, SystemParameters::sPlotline[4]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(2)->setPen(pen3);
 	ui->widget->graph(2)->setName("K");
 	ui->widget->graph(2)->addData(x, y3);
-	QPen pen4(SystemParameters::muGrafColor);
+	QPen pen4(SystemParameters::muGrafColor, SystemParameters::sPlotline[5]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(3)->setPen(pen4);
 	ui->widget->graph(3)->setName("μ");
