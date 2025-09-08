@@ -237,9 +237,9 @@ void Smithtry1000::onLine_buttonClicked()
                     O += M_PI;
                 }
                 double Theta = O * 180 / M_PI;
-                double L = O * 299792458 / (M_PI * 1e9);
+                double L = O * 299792458 / (2*M_PI * 1e9);
                 double Length = L * 1e3;
-                double Lambda = L/2 * 1e9 / 299792458;
+                double Lambda = L * 1e9 / 299792458;
                 LinesElement* temp3 = new LinesElement(Line, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
                     L * 1000, L * 1000 / sqrt(SystemParameters::er), Theta, Lambda, SystemParameters::alpha);
                 this->circuitElements->AddCircuitElements(temp3);
@@ -435,8 +435,8 @@ void Smithtry1000::VerticalLines()
                 o += M_PI;
             }
             theta = o * 180 / M_PI;
-            l = o * 299792458 / (M_PI * 1e9);
-            lambda = l / 2 * 1e9 / 299792458;
+            l = o * 299792458 / (2*M_PI * 1e9);
+            lambda = l * 1e9 / 299792458;
             VerticalLinesElement* temp = new VerticalLinesElement(OSLine, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
                 l * 1000, l * 1000 / sqrt(SystemParameters::er), theta, lambda);
             this->circuitElements->AddCircuitElements(temp);
@@ -454,8 +454,8 @@ void Smithtry1000::VerticalLines()
                 o += M_PI;
             }
             theta = o * 180 / M_PI;
-            l = o * 299792458 / (M_PI * 1e9);
-            lambda = l / 2 * 1e9 / 299792458;
+            l = o * 299792458 / (2*M_PI * 1e9);
+            lambda = l * 1e9 / 299792458;
             VerticalLinesElement* temp = new VerticalLinesElement(SSLine, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter, l * 1000, l * 1000 / sqrt(SystemParameters::er), theta, lambda);
             this->circuitElements->AddCircuitElements(temp);
             break;

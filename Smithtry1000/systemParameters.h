@@ -10,6 +10,10 @@ public:
 	static QColor ImpedanceColor;
 	//Круги слева
 	static QColor AdmitanceColor;
+	//Единичный круг справа
+	static QColor MainImpedanceColor;
+	//Единичный круг слева
+	static QColor MainAdmitanceColor;
 	//Цвета точек на диаграмме
 	static QColor DataPointsColor;
 	//Предлогаемый маршрут передвижения мышки
@@ -31,7 +35,7 @@ public:
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
-	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor
+	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
 	static QList<double> linesWidth;
 	static mode Model;
 	static double frequency;

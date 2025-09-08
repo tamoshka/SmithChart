@@ -240,9 +240,9 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                         O += M_PI;
                     }
                     double Theta = O * 180 / M_PI;
-                    double l = O * 299792458 / (M_PI * frequency * 1e6);
+                    double l = O * 299792458 / (M_PI * 1e9*2);
                     double Length = l * 1e3;
-                    double lambda = l/2 * 1e9 / 299792458;
+                    double lambda = l * 1e9 / 299792458;
                     s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm |" + QString::number(round(SystemParameters::alpha * 10) / 10) + "dB/m|lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
@@ -260,8 +260,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                         o += M_PI;
                     }
                     theta = o * 180 / M_PI;
-                    l = o * 299792458 / (M_PI * 1e9);
-                    lambda = l / 2 * 1e9 / 299792458;
+                    l = o * 299792458 / (2*M_PI * 1e9);
+                    lambda = l * 1e9 / 299792458;
                     s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
@@ -279,8 +279,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                         o += M_PI;
                     }
                     theta = o * 180 / M_PI;
-                    l = o * 299792458 / (M_PI * 1e9);
-                    lambda = l / 2 * 1e9 / 299792458;
+                    l = o * 299792458 / (2*M_PI * 1e9);
+                    lambda = l * 1e9 / 299792458;
                     s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;

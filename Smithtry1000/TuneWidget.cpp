@@ -1417,9 +1417,9 @@ void TuneWidget::ValueChanged(int value)
 						O3 += M_PI;
 					}
 					Theta = O3 * 180 / M_PI;
-					L = O3 * 299792458 / (M_PI * 1e9);
+					L = O3 * 299792458 / (2*M_PI * 1e9);
 					Length = L * 1e3;
-					newLambda = L / 2 * 1e9 / 299792458;
+					newLambda = L * 1e9 / 299792458;
 					if (newLambda > lambda && flag == true)
 					{
 						flag = false;
@@ -1639,8 +1639,8 @@ void TuneWidget::ValueChanged(int value)
 					o += M_PI;
 				}
 				theta = o * 180 / M_PI;
-				l = o * 299792458 / (M_PI * 1e9);
-				lambda = l / 2 * 1e9 / 299792458;
+				l = o * 299792458 / (2*M_PI * 1e9);
+				lambda = l * 1e9 / 299792458;
 				double er = pow(elem->GetElectricalLength() / elem->GetMechanicalLength(),2);
 				elem->SetElectricalLength(l*1000);
 				elem->SetMechanicalLength(l * 1000);
@@ -1810,8 +1810,8 @@ void TuneWidget::ValueChanged(int value)
 					o += M_PI;
 				}
 				theta = o * 180 / M_PI;
-				l = o * 299792458 / (M_PI * 1e9);
-				lambda = l / 2 * 1e9 / 299792458;
+				l = o * 299792458 / (2*M_PI * 1e9);
+				lambda = l * 1e9 / 299792458;
 				double er = pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2);
 				elem->SetElectricalLength(l * 1000);
 				elem->SetMechanicalLength(l * 1000);

@@ -167,18 +167,11 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 )
 
             {
-                painter.setPen(QPen(SystemParameters::DataPointsColor, SystemParameters::linesWidth[3]));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x * scale + center.x(), -point.y * scale + center.y(), s1);
-                painter.setPen(SystemParameters::ImpedanceColor);
                 flagi = true;
             }
-
-
-
-            painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
-
             if (pow(point.x, 2) + pow(point.y, 2) < 1)
             {
                 painter.drawLine(iPixel, pixel);
@@ -223,16 +216,14 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((floor(point.y * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                painter.setPen(QPen(SystemParameters::DataPointsColor, SystemParameters::linesWidth[3]));
                 QString s1 = QString::number(r * 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x * scale + center.x(), center.y(), s1);
-                painter.setPen(SystemParameters::ImpedanceColor);
                 flagi == true;
             }
             if (r == 1)
             {
-                painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1] * 6));
+                painter.setPen(QPen(SystemParameters::MainImpedanceColor, SystemParameters::linesWidth[7]));
             }
             if (r == 0)
             {
@@ -286,17 +277,11 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                     )
                 )
             {
-                painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
                 QString s1 = QString::number(r * 1000 / -50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x * scale + center.x() + 10, -point.y * scale + center.y() - 10, s1);
                 flagi = true;
             }
-
-
-
-            painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
-
             if (pow(point.x, 2) + pow(point.y, 2) < 1)
             {
                 painter.drawLine(iPixel, pixel);
@@ -340,7 +325,6 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 
             if ((floor(point.y * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
                 QString s1 = QString::number(r * 1000 / 50);
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x * scale + center.x(), center.y() + 10, s1);
@@ -349,7 +333,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             }
             if (r == 1)
             {
-                painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2] * 6));
+                painter.setPen(QPen(SystemParameters::MainAdmitanceColor, SystemParameters::linesWidth[8]));
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
