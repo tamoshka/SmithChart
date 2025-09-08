@@ -232,6 +232,110 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
         k *= 2;
         r = k;
     }
+    painter.setPen(Qt::red);
+    m = 0;
+    for (SDiagram2::r = -10; SDiagram2::r <= 10; SDiagram2::r += 0) {
+        if (r == -10)
+        {
+            m = -8;
+        }
+        if (r == -0.25)
+        {
+            r = -0.2;
+        }
+        if (r == 0.25)
+        {
+            r = 0.2;
+        }
+        if (r == 8)
+        {
+            r = 10;
+        }
+        iPoint = compute_imaginary(0);
+        iPixel.setX
+        (-iPoint.x() * scale + center.x());
+        iPixel.setY(-iPoint.y() * scale + center.y());
+        bool flagi = false;
+        for (float t = step; t < intervalLength; t += step)
+        {
+            QPointF point = compute_imaginary(t);
+            QPointF pixel;
+            pixel.setX(-point.x() * scale + center.x());
+            pixel.setY(-point.y() * scale + center.y());
+            if ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) < 0.012) &&
+                ((abs(pow(point.x(), 2) + pow(point.y(), 2) - 1) > 0.005)) &&
+                flagi == false &&
+                r < 0 &&
+                (
+                    (point.y() * scale + center.y() > iPixel.y() + 1) ||
+                    (point.y() * scale + center.y() < iPixel.y() - 1)
+                    )
+                )
+            {
+                painter.setPen(QPen(Qt::green, 2));
+                QString s1 = QString::number(r * 1000 / -50);
+                painter.setFont(QFont("Arial", 8));
+                painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
+                painter.setPen(Qt::red);
+                flagi = true;
+            }
+            painter.setPen(Qt::red);
+            if (pow(point.x(), 2) + pow(point.y(), 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+        if (m < 0 && m < -0.25)
+        {
+            m /= 2;
+        }
+        else if (m > 0)
+        {
+            m *= 2;
+        }
+        else if (m < 0)
+        {
+            m *= -1;
+        }
+        r = m;
+    }
+    k = 0.25;
+    for (SDiagram2::r = 0.25; SDiagram2::r < 10; SDiagram2::r += 0) {
+        if (r == 0.25)
+        {
+            r = 0.2;
+        }
+        if (r == 8)
+        {
+            r = 10;
+        }
+        iPoint = compute_real(0);
+        iPixel.setX(-iPoint.x() * scale + center.x());
+        iPixel.setY(-iPoint.y() * scale + center.y());
+        bool flagi = false;
+        for (float t = 0; t < intervalLength; t += step)
+        {
+            QPointF point = compute_real(t);
+            QPointF pixel;
+            pixel.setX(-point.x() * scale + center.x());
+            pixel.setY(point.y() * scale + center.y());
+
+            if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
+            {
+                painter.setPen(QPen(Qt::green, 2));
+                QString s1 = QString::number(r * 1000 / 50);
+                painter.setFont(QFont("Arial", 8));
+                painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
+                painter.setPen(Qt::red);
+                flagi == true;
+            }
+            painter.drawLine(iPixel, pixel);
+            iPixel = pixel;
+        }
+        k *= 2;
+        r = k;
+    }
 }
 
 void SDiagram2::generateCache()
