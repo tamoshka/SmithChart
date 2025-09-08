@@ -1,4 +1,4 @@
-#include "Line.h"
+﻿#include "Line.h"
 
 void LinesElement::SetAlpha(double alpha)
 {

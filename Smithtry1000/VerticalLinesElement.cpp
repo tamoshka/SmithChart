@@ -1,4 +1,4 @@
-#include "VerticalLinesElement.h"
+﻿#include "VerticalLinesElement.h"
 
 void VerticalLinesElement::SetElectricalLength(double electricalLength)
 {

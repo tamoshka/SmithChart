@@ -1,4 +1,4 @@
-#include "AmplitudeFrequency.h"
+﻿#include "AmplitudeFrequency.h"
 const double Z0 = 50;
 
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
@@ -117,19 +117,28 @@ void AmplitudeFrequency::MatrixCalculation()
                     A1[1][1] = 1;
                     break;
                 }
-                /*case Line:
+                case Line:
                 {
+                    LinesElement* tmp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[i]);
+                    double r0 = tmp->GetValue();
+                    double t = tmp->GetTheta();
+                    double l = t * 299792458 / (360 * 1e9);
+                    double theta = l * w/1e9 * 1e9 / 299792458;
+                    A1[0][0] = cos(theta);
+                    A1[0][1] = cos(theta);
+                    A1[1][0] = Complex(0, r0)*sin(theta);
+                    A1[1][1] = Complex(0, sin(theta))/r0;
                     break;
-                }*/
+                }
                 case OSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     double r0 = tmp->GetValue();
-                    double t = tmp->GetElectricalLength();
+                    double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w * 1e9 / 299792458;
-                    Complex z = Complex(0, -1) * r0/ tan(theta);
-                    Complex y = Complex(1, 0) / z;
+                    double theta = l * w/1e9 * 1e9 / 299792458;
+                    Complex z = Complex(0, -r0)/ tan(theta);
+                    Complex y = (double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
                     A1[1][0] = y;
@@ -140,11 +149,11 @@ void AmplitudeFrequency::MatrixCalculation()
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     double r0 = tmp->GetValue();
-                    double t = tmp->GetElectricalLength();
+                    double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w * 1e9 / 299792458;
-                    Complex z = Complex(0, 1) * r0 * tan(theta);
-                    Complex y = Complex(1, 0) / z;
+                    double theta = l * w * 1e9/1e9 / 299792458;
+                    Complex z = Complex(0, r0) * tan(theta);
+                    Complex y = (double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
                     A1[1][0] = y;

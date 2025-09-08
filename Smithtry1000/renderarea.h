@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <QWidget>
 #include <QColor>
 #include <QVector>
@@ -46,6 +46,7 @@ private:
     Point compute_realParallel(double t);
     Point compute_imaginary(double t);
     Point compute_imaginaryParallel(double t);
+    Point compute_line(double t, double radius);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;

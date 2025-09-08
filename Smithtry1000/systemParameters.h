@@ -1,20 +1,24 @@
-#include "Element.h"
+п»ї#include "Element.h"
 #include <QColor>
 
 class SystemParameters
 {
 public:
-	//Главный круг
+	//Р“Р»Р°РІРЅС‹Р№ РєСЂСѓРі
 	static QColor MainCircleColor;
-	//Круги справа
+	//РљСЂСѓРіРё СЃРїСЂР°РІР°
 	static QColor ImpedanceColor;
-	//Круги слева
+	//РљСЂСѓРіРё СЃР»РµРІР°
 	static QColor AdmitanceColor;
-	//Цвета точек на диаграмме
+	//Р•РґРёРЅРёС‡РЅС‹Р№ РєСЂСѓРі СЃРїСЂР°РІР°
+	static QColor MainImpedanceColor;
+	//Р•РґРёРЅРёС‡РЅС‹Р№ РєСЂСѓРі СЃР»РµРІР°
+	static QColor MainAdmitanceColor;
+	//Р¦РІРµС‚Р° С‚РѕС‡РµРє РЅР° РґРёР°РіСЂР°РјРјРµ
 	static QColor DataPointsColor;
-	//Предлогаемый маршрут передвижения мышки
+	//РџСЂРµРґР»РѕРіР°РµРјС‹Р№ РјР°СЂС€СЂСѓС‚ РїРµСЂРµРґРІРёР¶РµРЅРёСЏ РјС‹С€РєРё
 	static QColor RootColor;
-	//Годограф
+	//Р“РѕРґРѕРіСЂР°С„
 	static QColor ElementsColor;
 	static QColor BackgroundColor;
 	 
@@ -31,7 +35,7 @@ public:
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
-	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor
+	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
 	static QList<double> linesWidth;
 	static mode Model;
 	static double frequency;
