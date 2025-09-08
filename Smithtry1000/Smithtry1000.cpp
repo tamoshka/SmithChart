@@ -114,7 +114,7 @@ void Smithtry1000::onLine_buttonClicked()
             QPoint centerLocal = renderArea->rect().center();
             QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
             Complex zl, yl;
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 39);
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 20);
             QCursor::setPos(centerGlobal);
             this->setCursor(Qt::BlankCursor); // скрываем системный курсор
             double x;
@@ -164,10 +164,7 @@ void Smithtry1000::onLine_buttonClicked()
             {
                 t = -M_PI - t;
             }
-            if (x + 1 != 0)
-            {
-                r = center;
-            }
+            r = center;
             tmin = -M_PI;
             tmax = M_PI;
             trackingEnabled = !trackingEnabled;
@@ -213,9 +210,37 @@ void Smithtry1000::onLine_buttonClicked()
                 chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
                 chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
                 chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-                //LinesElement* temp = new LinesElement(OSLine, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
-                //    l * 1000, l * 1000 / sqrt(SystemParameters::er), theta, lambda);
-                //this->circuitElements->AddCircuitElements(temp);
+                double RL = zl.real();
+                double XL = zl.imag();
+                double R = z.real();
+                double X = z.imag();
+                double RR = R - RL;
+                double sq = -sqrt(RR * (RL * (pow(X, 2) + pow(R, 2)) - R * (pow(XL, 2) + pow(RL, 2)))) / RR;
+                double tanO1 = RR * sq / (R * XL + RL * X);
+                double tanO2 = -RR * sq / (R * XL + RL * X);
+                double z0;
+                double O;
+                if (sq > 0)
+                {
+                    z0 = sq;
+                    O = atan(tanO1);
+                }
+                else
+                {
+                    z0 = -sq;
+                    O = atan(tanO2);
+                }
+                if (O < 0)
+                {
+                    O += M_PI;
+                }
+                double Theta = O * 180 / M_PI;
+                double L = O * 299792458 / (2*M_PI * 1e9);
+                double Length = L * 1e3;
+                double Lambda = L * 1e9 / 299792458;
+                LinesElement* temp3 = new LinesElement(Line, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
+                    L * 1000, L * 1000 / sqrt(SystemParameters::er), Theta, Lambda, SystemParameters::alpha);
+                this->circuitElements->AddCircuitElements(temp3);
                 pointsX.append(lastPointX);
                 pointsY.append(lastPointY);
                 QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
@@ -408,8 +433,8 @@ void Smithtry1000::VerticalLines()
                 o += M_PI;
             }
             theta = o * 180 / M_PI;
-            l = o * 299792458 / (M_PI * 1e9);
-            lambda = l / 2 * 1e9 / 299792458;
+            l = o * 299792458 / (2*M_PI * 1e9);
+            lambda = l * 1e9 / 299792458;
             VerticalLinesElement* temp = new VerticalLinesElement(OSLine, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
                 l * 1000, l * 1000 / sqrt(SystemParameters::er), theta, lambda);
             this->circuitElements->AddCircuitElements(temp);
@@ -427,8 +452,8 @@ void Smithtry1000::VerticalLines()
                 o += M_PI;
             }
             theta = o * 180 / M_PI;
-            l = o * 299792458 / (M_PI * 1e9);
-            lambda = l / 2 * 1e9 / 299792458;
+            l = o * 299792458 / (2*M_PI * 1e9);
+            lambda = l * 1e9 / 299792458;
             VerticalLinesElement* temp = new VerticalLinesElement(SSLine, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter, l * 1000, l * 1000 / sqrt(SystemParameters::er), theta, lambda);
             this->circuitElements->AddCircuitElements(temp);
             break;

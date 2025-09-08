@@ -1,10 +1,12 @@
-#include "systemParameters.h"
+﻿#include "systemParameters.h"
 
 QColor SystemParameters::MainCircleColor = QColor(Qt::black);
 QColor SystemParameters::ImpedanceColor = QColor(Qt::blue);
 QColor SystemParameters::AdmitanceColor = QColor(Qt::red);
-QColor SystemParameters::DataPointsColor = QColor(Qt::blue);
-QColor SystemParameters::RootColor = QColor(Qt::red);
+QColor SystemParameters::MainImpedanceColor = QColor(Qt::blue);
+QColor SystemParameters::MainAdmitanceColor = QColor(Qt::red);
+QColor SystemParameters::DataPointsColor = QColor(Qt::magenta);
+QColor SystemParameters::RootColor = QColor(Qt::green);
 QColor SystemParameters::ElementsColor = QColor(Qt::black);
 QColor SystemParameters::BackgroundColor = QColor(Qt::white);
 QColor SystemParameters::ampS11Color = QColor(Qt::blue);

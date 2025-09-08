@@ -1,4 +1,4 @@
-#ifndef VERTICALLINESDIALOG_H
+﻿#ifndef VERTICALLINESDIALOG_H
 #define VERTICALLINESDIALOG_H
 
 #include <QDialog>

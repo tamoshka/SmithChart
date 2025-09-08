@@ -1,4 +1,4 @@
-#include "SParamTable.h"
+﻿#include "SParamTable.h"
 #include <QFileDialog>
 #include <QString>
 #include <qtablewidget.h>

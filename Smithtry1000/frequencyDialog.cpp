@@ -1,4 +1,4 @@
-#include "frequencyDialog.h"
+п»ї#include "frequencyDialog.h"
 #include "general.h"
 #include <QLineEdit>
 #include <QPushButton>
@@ -37,5 +37,5 @@ void FrequencyDialog::onAccept()
         }
         frequencyList.append(value);
         accept();
-    } // закрыть окно
+    } // Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ
 }

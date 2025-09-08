@@ -1,4 +1,4 @@
-#include "ColourSetting.h"
+﻿#include "ColourSetting.h"
 #include <QColorDialog>
 using namespace std;
 ColourSetting::ColourSetting(QWidget *parent)

@@ -48,6 +48,7 @@ struct Point
     double x;
     double y;
 };
+
 extern QString fileName;
 extern mode Model;
 extern double frequency;
