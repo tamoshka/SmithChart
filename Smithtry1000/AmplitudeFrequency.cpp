@@ -280,7 +280,7 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
     ui->widget->yAxis2->setRange(0, 1);
     ui->widget->yAxis2->setLabel("S21 in dB");
     ui->widget->yAxis2->setVisible(true);
-    QPen pen1(SystemParameters::ampS11Color);
+    QPen pen1(SystemParameters::ampS11Color, SystemParameters::ampFrline[0]);
     ui->widget->setInteraction(QCP::iRangeZoom, true);
     ui->widget->setInteraction(QCP::iRangeDrag, true);
     ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
@@ -288,7 +288,7 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
     ui->widget->graph(0)->setPen(pen1);
     ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
     ui->widget->graph(1)->addData(x1, z1);
-    QPen pen(SystemParameters::ampS21Color);
+    QPen pen(SystemParameters::ampS21Color, SystemParameters::ampFrline[1]);
     ui->widget->graph(1)->setPen(pen);
     ui->widget->replot();
 

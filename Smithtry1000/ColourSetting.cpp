@@ -25,6 +25,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->DatapointCirclesColor, SystemParameters::DataPointsColor);
 	setButtonColor(ui->TempLinesColor, SystemParameters::RootColor);
 	setButtonColor(ui->ElementLinesColor, SystemParameters::ElementsColor);
+	setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColor);
+	setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColor);
 
 	sBoxIndex[ui->spinBox_5] = 0;
 	sBoxIndex[ui->spinBox_6] = 1;
@@ -36,6 +38,18 @@ ColourSetting::ColourSetting(QWidget *parent)
 	sBoxIndex[ui->spinBox_12] = 7;
 	sBoxIndex[ui->spinBox_21] = 8;
 	sBoxIndex[ui->spinBox_22] = 9;
+
+	sBoxDVSIndex[ui->spinBox] = 1;
+	sBoxDVSIndex[ui->spinBox_2] = 2;
+	sBoxDVSIndex[ui->spinBox_25] = 3;
+	sBoxDVSIndex[ui->spinBox_46] = 4;
+	sBoxDVSIndex[ui->spinBox_47] = 5;
+	sBoxDVSIndex[ui->spinBox_43] = 7;
+	sBoxDVSIndex[ui->spinBox_44] = 8;
+
+
+	sBoxAmpFrIndex[ui->spinBox_24] = 0;
+	sBoxAmpFrIndex[ui->spinBox_23] = 1;
 
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
 	connect(ui->S22Graf, &QPushButton::clicked, this, &ColourSetting::S22Graf);
@@ -56,6 +70,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->DatapointCirclesColor, &QPushButton::clicked, this, &ColourSetting::DatapointCirclesColor);
 	connect(ui->TempLinesColor, &QPushButton::clicked, this, &ColourSetting::TempLinesColor);
 	connect(ui->ElementLinesColor, &QPushButton::clicked, this, &ColourSetting::ElementLinesColor);
+	connect(ui->RefYColor, &QPushButton::clicked, this, &ColourSetting::RefYColor);
+	connect(ui->RefZColor, &QPushButton::clicked, this, &ColourSetting::RefZColor);
 	connect(ui->spinBox_5, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineCircleS12S21);
 	connect(ui->spinBox_6, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineCircleS12S21);
 	connect(ui->spinBox_7, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineGrafTwo);
@@ -66,6 +82,16 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->spinBox_11, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineGrafOne);
 	connect(ui->spinBox_12, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineGrafOne);
 	connect(ui->spinBox_22, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineGrafOne);
+	connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_2, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_25, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_43, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_44, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_46, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->spinBox_47, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+
+	connect(ui->spinBox_23, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
+	connect(ui->spinBox_24, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
 }
 
 ColourSetting::~ColourSetting()
@@ -277,6 +303,28 @@ void ColourSetting::ElementLinesColor()
 	}
 }
 
+void ColourSetting::RefYColor()
+{
+	QColor newColor = QColorDialog::getColor(SystemParameters::MainAdmitanceColor, this);
+	if (newColor.isValid())
+	{
+		SystemParameters::MainAdmitanceColor = newColor;
+		setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColor);
+		emit signalDVS();
+	}
+}
+
+void ColourSetting::RefZColor()
+{
+	QColor newColor = QColorDialog::getColor(SystemParameters::MainImpedanceColor, this);
+	if (newColor.isValid())
+	{
+		SystemParameters::MainImpedanceColor = newColor;
+		setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColor);
+		emit signalDVS();
+	}
+}
+
 void ColourSetting::LineCircleS12S21(int line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -307,5 +355,27 @@ void ColourSetting::LineGrafTwo(int line)
 		int number = sBoxIndex.value(sBox);
 		SystemParameters::sPlotline[number] = line;
 		emit grafTwoColor();
+	}
+}
+
+void ColourSetting::DVSLine(float line)
+{
+	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
+	if (sBox && sBoxDVSIndex.contains(sBox))
+	{
+		float number = sBoxDVSIndex.value(sBox);
+		SystemParameters::linesWidth[number] = line;
+		emit signalDVS();
+	}
+}
+
+void ColourSetting::AmpFrLine(int line)
+{
+	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
+	if (sBox && sBoxAmpFrIndex.contains(sBox))
+	{
+		float number = sBoxAmpFrIndex.value(sBox);
+		SystemParameters::ampFrline[number] = line;
+		emit signal();
 	}
 }
