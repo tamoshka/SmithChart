@@ -38,11 +38,14 @@ public:
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
+	//9 - VSWRColor
 	static QList<double> linesWidth;
 	//0-
 	static QList<int>sPlotline;
 	static mode Model;
 	static double frequency;
+	static double Im;
+	static double Re;
 	static QList<Point> morePoints;
 	static int index;
 	static int dpIndex;
@@ -65,4 +68,6 @@ public:
 	static double alpha;
 	static double lambda;
 	static bool sizeChanged;
+	static systemMode sys;
+	static QSet<double> VSWRCircles;
 };

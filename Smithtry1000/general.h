@@ -9,6 +9,7 @@
 #include <complex>
 #include <cmath>
 #include <map>
+#include <QSet>
 using namespace std;
 
 // Макрос для замены index на point_index
@@ -43,6 +44,12 @@ enum parameterMode
     Y,
     G
 };
+enum systemMode
+{
+    Impedance,
+    Admittance,
+    ReflectionCoefficient
+};
 struct Point
 {
     double x;
@@ -58,6 +65,7 @@ extern map<int, tuple<Point, bool>> allPoints;
 extern QList<double> qCircles;
 extern int point_index;
 extern int dpIndex;
+extern int allpointindex;
 extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
 extern map<int, tuple<Point, double, double, mode>> points;

@@ -2,7 +2,7 @@
 
 #include <QWidget>
 #include "ui_ColourSetting.h"
-#include "renderarea.h"
+#include "circuitElements.h"
 #include <map>
 QT_BEGIN_NAMESPACE
 namespace Ui { class ColourSettingClass; };

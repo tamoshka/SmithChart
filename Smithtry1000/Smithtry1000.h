@@ -20,6 +20,8 @@
 #include "TuneWidget.h"
 #include "ColourSetting.h"
 #include "LinesDialog.h"
+#include "KeyboardDialog.h"
+#include "CirclesWidget.h"
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
@@ -34,6 +36,7 @@ public slots:
     void getsignal();
     void getS12S21signal();
     void getsignalDVS();
+    void getCirclesSignal();
 
 signals:
     void left();
@@ -61,11 +64,14 @@ private slots:
     void onTimeout();
     void TableUpdate();
     void onMenuToolsCliked();
+    void onKeyboard_buttonClicked();
+    void onCirclesClicked();
 private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
+    CirclesWidget* circlesWidget = new CirclesWidget(nullptr);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();

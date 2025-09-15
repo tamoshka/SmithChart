@@ -26,6 +26,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Все исходные файлы проекта
 set(PROJECT_SOURCES
+    KeyboardDialog.h
+    KeyboardDialog.cpp
     systemParameters.h
     systemParameters.cpp
     general.h
@@ -77,6 +79,9 @@ set(PROJECT_SOURCES
     ColourSetting.ui
     ColourSetting.h
     ColourSetting.cpp
+    CirclesWidget.ui
+    CirclesWidget.h
+    CirclesWidget.cpp
     TuneWidget.ui
     TuneWidget.h
     TuneWidget.cpp
