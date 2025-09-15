@@ -360,7 +360,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     }
     int i = 0;
     int j = 0;
-    for (int ii = 0; ii < allPoints.size(); ii++)
+    for (int ii = 0; ii < allpointindex; ii++)
     {
         if (get<1>(allPoints[ii]))
         {
@@ -401,6 +401,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 painter.setFont(QFont("Calibri", 10));
                 painter.drawText(x + 10, y + 10, s1);
                 painter.setPen(Qt::NoPen);
+                j++;
             }
         }
     }
@@ -976,7 +977,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             Complex g3 = (z3 - double(50)) / (z3 + double(50));
             double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
             qreal R = abs(center2 - g1);
-            painter.setBrush(QBrush(Qt::NoBrush)); // Red solid fill
+            painter.setBrush(QBrush(Qt::NoBrush));
             painter.drawEllipse(QPointF(center2*scale+center.x(), center.y()), R*scale, R*scale);
         }
         else if (Model == mode::OSLine)
@@ -1039,6 +1040,18 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 iPixel = pixel;
             }
         }
+    }
+    QSetIterator<double> k(SystemParameters::VSWRCircles);
+    while (k.hasNext())
+    {
+        double vswr = k.next();
+        double radius = (vswr - 1) / (vswr + 1);
+        painter.setBrush(QBrush(Qt::NoBrush));
+        painter.setPen(QPen(SystemParameters::VSWRColor, SystemParameters::linesWidth[9]));
+        painter.drawEllipse(QPointF(center.x(), center.y()), radius* scale, radius* scale);
+        QString s1 = "VSWR = " + QString::number(vswr);
+        painter.setFont(QFont("Arial", 8));
+        painter.drawText(center.x(), -radius * scale + center.y(), s1);
     }
 }
 

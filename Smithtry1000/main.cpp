@@ -6,6 +6,7 @@
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
+int allpointindex = 0;
 map<int, tuple<Point, double, double, mode>> points;
 QList<double> qCircles;
 int dpIndex = 0;

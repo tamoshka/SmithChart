@@ -50,7 +50,7 @@ void AmplitudeFrequency::MatrixCalculation()
     double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
     double f = frequency * 1e6;
     bool flag = false;
-    for (double freq = 1; freq <= 2 * f+1; freq += (2 * f - 1) / 99)
+    for (double freq = 1; freq <= 3 * f+1; freq += (3 * f -1) / 99)
     {
         w = 2 * M_PI * freq;
 
@@ -123,11 +123,11 @@ void AmplitudeFrequency::MatrixCalculation()
                     double r0 = tmp->GetValue();
                     double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w/1e9 * 1e9 / 299792458;
+                    double theta = l * w / 299792458;
                     A1[0][0] = cos(theta);
-                    A1[0][1] = cos(theta);
-                    A1[1][0] = Complex(0, r0)*sin(theta);
-                    A1[1][1] = Complex(0, sin(theta))/r0;
+                    A1[1][1] = cos(theta);
+                    A1[0][1] = Complex(0, 1)*r0*sin(theta);
+                    A1[1][0] = Complex(0, sin(theta))/r0;
                     break;
                 }
                 case OSLine:
@@ -136,8 +136,8 @@ void AmplitudeFrequency::MatrixCalculation()
                     double r0 = tmp->GetValue();
                     double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w/1e9 * 1e9 / 299792458;
-                    Complex z = Complex(0, -r0)/ tan(theta);
+                    double theta = l * w / 299792458;
+                    Complex z = Complex(0, -1)*r0/ tan(theta);
                     Complex y = (double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
@@ -151,8 +151,8 @@ void AmplitudeFrequency::MatrixCalculation()
                     double r0 = tmp->GetValue();
                     double t = tmp->GetTheta();
                     double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w * 1e9/1e9 / 299792458;
-                    Complex z = Complex(0, r0) * tan(theta);
+                    double theta = l * w/ 299792458;
+                    Complex z = Complex(0, 1)*r0 * tan(theta);
                     Complex y = (double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
