@@ -34,6 +34,7 @@ public:
 	static QColor circleS21;
 	static QColor gridGrafOneColor;
 	static QColor gridGrafTwoColor;
+	static QColor gridAmpFrColor;
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
@@ -41,6 +42,7 @@ public:
 	static QList<double> linesWidth;
 	//0-
 	static QList<int>sPlotline;
+	static QList<int>ampFrline;
 	static mode Model;
 	static double frequency;
 	static QList<Point> morePoints;

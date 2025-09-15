@@ -26,7 +26,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -92,6 +92,21 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::DefaultStepType</enum>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_12">
          <property name="geometry">
@@ -128,6 +143,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QPushButton" name="DatapointCirclesColor">
          <property name="geometry">
@@ -150,6 +171,12 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_27">
@@ -200,6 +227,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_29">
          <property name="geometry">
@@ -249,6 +282,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QPushButton" name="pushButton_11">
          <property name="geometry">
@@ -272,6 +311,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_29">
          <property name="geometry">
@@ -281,6 +326,12 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QPushButton" name="pushButton_12">
@@ -304,6 +355,12 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_31">
@@ -341,6 +398,12 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_32">
          <property name="geometry">
@@ -376,6 +439,12 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_33">
@@ -430,7 +499,7 @@
           <string>Ref Z-circle lines</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_16">
+        <widget class="QPushButton" name="RefZColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -452,6 +521,15 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>3</number>
+         </property>
         </widget>
         <widget class="QLabel" name="label_48">
          <property name="geometry">
@@ -466,7 +544,7 @@
           <string>Ref Y-circle lines</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_26">
+        <widget class="QPushButton" name="RefYColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -488,6 +566,15 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>3</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_45">
          <property name="geometry">
@@ -497,6 +584,15 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>2</number>
          </property>
         </widget>
         <widget class="QPushButton" name="pushButton_27">
@@ -560,6 +656,15 @@
            <height>21</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_47">
          <property name="geometry">
@@ -569,6 +674,15 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>2</number>
          </property>
         </widget>
         <widget class="QPushButton" name="pushButton_29">
@@ -592,6 +706,12 @@
            <width>61</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
         <widget class="QLabel" name="label_51">
@@ -1644,6 +1764,12 @@
            <height>27</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
         </widget>
         <widget class="QSpinBox" name="spinBox_24">
          <property name="geometry">
@@ -1653,6 +1779,12 @@
            <width>61</width>
            <height>27</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
          </property>
         </widget>
        </widget>

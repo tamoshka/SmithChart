@@ -125,7 +125,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
     Point iPoint;
     QPointF iPixel;
     step = intervalLength / stepCount;
-    painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
+    painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]*0.5));
     double m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
@@ -231,12 +231,12 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-            painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]));
+            painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1] * 0.5));
         }
         k *= 2;
         r = k;
     }
-    painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
+    painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2] * 0.5));
     m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
@@ -337,7 +337,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
-            painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2]));
+            painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2] * 0.5));
         }
         k *= 2;
         r = k;
