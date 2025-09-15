@@ -21,6 +21,7 @@ signals:
 	void signalDVS();
 	void grafOneColor();
 	void grafTwoColor();
+
 private slots:
 	void S11Graf();
 	void S22Graf();
@@ -41,12 +42,21 @@ private slots:
 	void DatapointCirclesColor();
 	void TempLinesColor();
 	void ElementLinesColor();
+	void RefYColor();
+	void RefZColor();
+
+	//По sBoxIndex
 	void LineCircleS12S21(int line);
 	void LineGrafOne(int line);
 	void LineGrafTwo(int line);
+	void DVSLine(float line);
+	void AmpFrLine(int line);
+
 private:
 	Ui::ColourSettingClass *ui;
 	void setButtonColor(QPushButton* button, const QColor& color);
 	QMap<QSpinBox*, int> sBoxIndex;
+	QMap<QSpinBox*, int> sBoxDVSIndex;
+	QMap<QSpinBox*, int> sBoxAmpFrIndex;
 };
 
