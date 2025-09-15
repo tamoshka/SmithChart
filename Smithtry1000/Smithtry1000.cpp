@@ -75,6 +75,10 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->OSLine_button, &QPushButton::clicked, this, &Smithtry1000::onOSLine_buttonClicked);
     connect(ui->SSLine_button, &QPushButton::clicked, this, &Smithtry1000::onSSLine_buttonClicked);
     connect(ui->actionColors, &QAction::triggered, this, &Smithtry1000::onMenuToolsCliked);
+    connect(ui->ParametersButton, &QPushButton::clicked, this, &Smithtry1000::onMenuToolsCliked);
+    connect(ui->KeyboardButton, &QPushButton::clicked, this, &Smithtry1000::onKeyboard_buttonClicked);
+    connect(ui->CirclesButton, &QPushButton::clicked, this, &Smithtry1000::onCirclesClicked);
+    QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
     QObject::connect(sParameters->set, &ColourSetting::signal, this, &Smithtry1000::getsignal);
@@ -97,8 +101,19 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
     this->amplitudeFrequence->close();
     this->tuneWidget->close();
     this->sParameters->Close();
+    this->circlesWidget->close();
 }
 
+void Smithtry1000::onCirclesClicked()
+{
+    circlesWidget->show();
+    circlesWidget->activateWindow();
+}
+
+void Smithtry1000::getCirclesSignal()
+{
+    renderArea->update();
+}
 
 void Smithtry1000::onLine_buttonClicked()
 {
@@ -266,6 +281,7 @@ void Smithtry1000::onLine_buttonClicked()
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
                 index++;
+                allpointindex++;
                 renderArea->setCursorPosOnCircle(temp);
             }
             if (rightClicked)
@@ -303,6 +319,163 @@ void Smithtry1000::onSSLine_buttonClicked()
         {
             Model = mode::SSLine;
             VerticalLines();
+        }
+    }
+}
+
+void Smithtry1000::onKeyboard_buttonClicked()
+{
+    KeyboardDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        double Re = SystemParameters::Re;
+        double Im = SystemParameters::Im;
+        double frequency = SystemParameters::frequency;
+        double x, y;
+        if (SystemParameters::sys == Impedance)
+        {
+            Re /= 50;
+            Im /= 50;
+            double denominator = (Re + 1) * (Re + 1) + Im * Im;
+
+            if (denominator != 0) {
+                x = (Re * Re + Im * Im - 1) / denominator;
+                y = (2 * Im) / denominator;
+            }
+            else {
+                x = -1;
+                y = 0;
+            }
+        }
+        else if (SystemParameters::sys == Admittance)
+        {
+            Re /= 20;
+            Im /= 20;
+            double denominator = (1 + Re) * (1 + Re) + Im * Im;
+
+            if (denominator != 0) {
+                x = (1 - Re * Re - Im * Im) / denominator;
+                y = (-2 * Im) / denominator;
+            }
+            else {
+                x = -1;
+                y = 0;
+            }
+        }
+        else if (SystemParameters::sys == ReflectionCoefficient)
+        {
+            x = Re;
+            y = Im;
+        }
+        y *= -1;
+        QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
+        renderArea->setCursorPosOnCircle(temp);
+        if (index == 0)
+        {
+            pointsX.append(x);
+            pointsY.append(y);
+            lastPointX = x;
+            lastPointY = y;
+            Point point = Point();
+            point.x = x;
+            point.y = y;
+            circuitElements->firstPoint = point;
+            allPoints[0] = make_tuple(point, false);
+            points[index] = make_tuple(point, r, t, mode::AddPoint);
+            rImpedanceRealCalculation(x, y);
+            double r1 = impedanceRealR;
+            circuitElements->realFirstPoint = r1;
+            rImpedanceImagCalculation(x, y);
+            double r2 = impedanceImagR;
+            circuitElements->imagFirstPoint = r2;
+            Complex z = zCalculation(lastPointX, lastPointY);
+            Complex y2 = yCalculation(lastPointX, lastPointY);
+            circuitElements->z = z;
+            circuitElements->y = y2;
+            Complex g;
+            if (x >= 0)
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), atan(y / x) * 180 / M_PI * -1);
+            }
+            else if (y <= 0)
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), 180 - atan(y / x) * 180 / M_PI);
+            }
+            else
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), -180 - atan(y / x) * 180 / M_PI);
+            }
+            circuitElements->g = g;
+            circuitElements->frequencyFirstPoint = frequency;
+            map<chartMode, tuple<double, double>> chart;
+            Complex rRealImpedance = impedanceRealChartParameters(point.x, point.y);
+            Complex rImagImpedance = impedanceImagChartParameters(point.x, point.y);
+            Complex rRealAdmitance = admitanceRealChartParameters(point.x, point.y);
+            Complex rImagAdmitance = admitanceImagChartParameters(point.x, point.y);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+            circuitElements->chart = chart;
+            int row = ui->pointTable->rowCount();
+            ui->pointTable->insertRow(row);
+            ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+            rImpedanceRealCalculation(x, y);
+            rImpedanceImagCalculation(x, y);
+            QString temp2 = " + j";
+            if (impedanceImagR < 0)
+            {
+                temp2 = " - j";
+            }
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + temp2 + QString::number(impedanceImagR)));
+            if (impedanceRealR == 0)
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(impedanceImagR / impedanceRealR)));
+            }
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
+            index++;
+            dpIndex++; 
+            allpointindex++;
+            renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->update();
+        }
+        else
+        {
+            int row = ui->pointTable->rowCount();
+            ui->pointTable->insertRow(row);
+            ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex + index)));
+            rImpedanceRealCalculation(x, y);
+            rImpedanceImagCalculation(x, y);
+            QString temp2 = " + j";
+            if (impedanceImagR < 0)
+            {
+                temp2 = " - j";
+            }
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(impedanceRealR) + temp2 + QString::number(impedanceImagR)));
+            if (impedanceRealR == 0||abs(impedanceRealR)<1e-5)
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(abs(impedanceImagR / impedanceRealR))));
+            }
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequencyList[frequencyList.size() - 1])));
+            Point point;
+            point.x = x;
+            point.y = y;
+            allPoints[index + dpIndex - 1] = make_tuple(point, false);
+            dpIndex++;
+            allpointindex++;
+            morePoints.append(point);
+            renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->update();
         }
     }
 }
@@ -484,6 +657,7 @@ void Smithtry1000::VerticalLines()
         }
         ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
         index++;
+        allpointindex++;
         renderArea->setCursorPosOnCircle(temp);
     }
     if (rightClicked)
@@ -796,6 +970,7 @@ void Smithtry1000::onButtonClicked()
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
                 index++;
                 dpIndex++;
+                allpointindex++;
                 renderArea->setCursorPosOnCircle(temp);
                 auxiliaryWidget->update();
             }
@@ -827,6 +1002,7 @@ void Smithtry1000::onButtonClicked()
                 point.y = y;
                 allPoints[index + dpIndex - 1] = make_tuple(point, false);
                 dpIndex++;
+                allpointindex++;
                 morePoints.append(point);
                 renderArea->setCursorPosOnCircle(temp);
             }
@@ -988,6 +1164,7 @@ void Smithtry1000::onResistor_buttonClicked()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
+            allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
@@ -1144,6 +1321,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
+            allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
@@ -1160,9 +1338,9 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if (allPoints.size() > 0 && !SystemParameters::tuneBlock)
+    if (allpointindex > 0 && !SystemParameters::tuneBlock)
     {
-        if (get<1>(allPoints[allPoints.size() - 1]))
+        if (get<1>(allPoints[allpointindex-1]))
         {
             points.erase(index - 1);
             auxiliaryWidget->removeLastSvg();
@@ -1172,10 +1350,11 @@ void Smithtry1000::onDelete_buttonClicked()
             pointsX.pop_back();
             pointsY.pop_back();
             index--;
+            allpointindex--;
         }
         else
         {
-            if (allPoints.size() == 1)
+            if (allpointindex == 1)
             {
                 points.erase(index - 1);
                 dpIndex--;
@@ -1189,11 +1368,13 @@ void Smithtry1000::onDelete_buttonClicked()
                 pointsX.pop_back();
                 pointsY.pop_back();
                 index--;
+                allpointindex--;
             }
             else
             {
                 morePoints.pop_back();
                 dpIndex--;
+                allpointindex--;
             }
         }
         ui->pointTable->removeRow(ui->pointTable->rowCount() - 1);
@@ -1366,6 +1547,7 @@ void Smithtry1000::ImaginaryImpedance()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
+            allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
@@ -1541,6 +1723,7 @@ void Smithtry1000::ImaginaryAdmitance()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number(frequency)));
             index++;
+            allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
         }
         if (rightClicked)
