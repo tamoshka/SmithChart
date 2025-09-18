@@ -46,8 +46,6 @@ set(PROJECT_SOURCES
     frequencyDialog.cpp
     circuitElements.h
     circuitElements.cpp
-    ComplexNumber.h
-    ComplexNumber.cpp
     qcustomplot.h
     qcustomplot.cpp
     AmplitudeFrequency.ui

@@ -47,6 +47,7 @@ private:
     Point compute_imaginary(double t);
     Point compute_imaginaryParallel(double t);
     Point compute_line(double t, double radius);
+    Point compute_q(double t, double radius);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;

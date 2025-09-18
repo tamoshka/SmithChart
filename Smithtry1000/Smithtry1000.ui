@@ -32,8 +32,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-background-color: rgb(75, 75, 75);
+         <string notr="true">
 border-color: rgb(0, 0, 0);
 border-bottom-color: rgb(0, 0, 0);</string>
         </property>

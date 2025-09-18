@@ -85,9 +85,3 @@ extern double gCenterY;
 extern double bRadius;
 extern double bCenterX;
 extern double bCenterY;
-
-// Добавим недостающие переменные
-extern double impedanceRealR;
-extern double impedanceImagR;
-extern double admitanceRealR;
-extern double admitanceImagR;

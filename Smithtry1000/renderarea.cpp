@@ -109,6 +109,19 @@ Point RenderArea::compute_line(double t, double radius)
     return tmp;
 }
 
+Point RenderArea::compute_q(double t, double radius)
+{
+    double cos_t = cos(t);
+    double sin_t = sin(t);
+    double x = cos_t * radius;
+    double y = r+sin_t * radius;
+
+    Point tmp;
+    tmp.x = x;
+    tmp.y = y;
+    return tmp;
+}
+
 void RenderArea::drawStaticObjects(QPainter& painter)
 {
     center = this->rect().center();
@@ -1052,6 +1065,48 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         QString s1 = "VSWR = " + QString::number(vswr);
         painter.setFont(QFont("Arial", 8));
         painter.drawText(center.x(), -radius * scale + center.y(), s1);
+    }
+    QSetIterator<double> l(SystemParameters::QCircles);
+    while (l.hasNext())
+    {
+        double q = l.next();
+        QPointF centertemp = QPointF(0, -1 / q);
+        double radius = sqrt(1 + 1 / pow(q, 2));
+        painter.setBrush(QBrush(Qt::NoBrush));
+        painter.setPen(QPen(SystemParameters::QCirclesColor, SystemParameters::linesWidth[10]));
+        double t1 = 0;
+        double t2 = 2 * M_PI;
+        step = t2 / 2000;
+        r = centertemp.y();
+        for (t1; t1 < t2; t1 += step)
+        {
+            Point point = compute_q(t1, radius);
+            QPointF pixel;
+            pixel.setX(point.x * scale + center.x());
+            pixel.setY(point.y * scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) <= 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+        t1 = 0;
+        r = -centertemp.y();
+        for (t1; t1 < t2; t1 += step)
+        {
+            Point point = compute_q(t1, radius);
+            QPointF pixel;
+            pixel.setX(point.x * scale + center.x());
+            pixel.setY(point.y * scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) <= 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+        QString s1 = "Q = " + QString::number(q);
+        painter.setFont(QFont("Arial", 8));
+        painter.drawText(center.x(), -centertemp.y() * scale -radius*scale + center.y(), s1);
     }
 }
 

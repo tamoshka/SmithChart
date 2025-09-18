@@ -17,10 +17,6 @@ QList<double> frequencyList;
 double lastPointX = 0;
 double lastPointY = 0;
 
-double admitanceImagR = 0;
-double admitanceRealR = 0;
-double impedanceImagR = 0;
-double impedanceRealR = 0;
 QString fileName = "";
 
 int main(int argc, char *argv[])

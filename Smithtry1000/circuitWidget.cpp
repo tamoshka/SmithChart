@@ -86,43 +86,6 @@ void CircuitWidget::removeLastSvg() {
     }
 }
 
-void CircuitWidget::rImpedanceRealCalculation(double x, double y)
-{
-    if (y >= 0 && y < 0.000001)
-    {
-        y = 0.01;
-    }
-    else if (y <= 0 && y > -0.000001)
-    {
-        y = -0.01;
-    }
-    double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-    double xCenter = 1 - circleRadius;
-    double dx = x - xCenter;
-    double dy = y;
-    double sin_t = dy;
-    double cos_t = dx;
-    double t1;
-    t1 = atan(sin_t / cos_t);
-    if (cos_t < 0 && sin_t < 0)
-    {
-        t1 += M_PI;
-    }
-    else if (cos_t > 0 && sin_t < 0)
-    {
-        t1 = 2 * M_PI - abs(t1);
-    }
-    else if (sin_t > 0 && cos_t < 0)
-    {
-        t1 = M_PI - abs(t1);
-    }
-    if (x - 1 != 0)
-    {
-        impedanceRealR = (cos(t1) - x) / (x - 1);
-    }
-    impedanceRealR *= 50;
-}
-
 void CircuitWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
@@ -166,48 +129,48 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case ResistorShunt:
                 {
                     double r1 = z.real();
-                    rImpedanceRealCalculation(lastPointX, lastPointY);
-                    double r2 = impedanceRealR;
+                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::impedanceRealR;
                     s1 = QString::number(round((r2 - r1)*10)/10);
                     break;
                 }
                 case InductionShunt:
                 {
                     double r1 = z.imag();
-                    rImpedanceImagCalculation(lastPointX, lastPointY);
-                    double r2 = impedanceImagR;
+                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::impedanceImagR;
                     s1 = QString::number(round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
                     break;
                 }
                 case CapacitorShunt:
                 {
                     double r1 = z.imag();
-                    rImpedanceImagCalculation(lastPointX, lastPointY);
-                    double r2 = impedanceImagR;
+                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::impedanceImagR;
                     s1 = QString::number(round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
                     break;
                 }
                 case ResistorParallel:
                 {
                     double r1 = y.real();
-                    rAdmitanceRealCalculation(lastPointX, lastPointY);
-                    double r2 = admitanceRealR;
+                    SystemParameters::rAdmitanceRealCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::admitanceRealR;
                     s1 = QString::number(round(1000 / (r2 - r1)*10)/10);
                     break;
                 }
                 case InductionParallel:
                 {
                     double r1 = y.imag();
-                    rAdmitanceImagCalculation(lastPointX, lastPointY);
-                    double r2 = admitanceImagR;
+                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::admitanceImagR;
                     s1 = QString::number(round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
                     break;
                 }
                 case CapacitorParallel:
                 {
                     double r1 = y.imag();
-                    rAdmitanceImagCalculation(lastPointX, lastPointY);
-                    double r2 = admitanceImagR;
+                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    double r2 = SystemParameters::admitanceImagR;
                     s1 = QString::number(round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
                     break;
                 }
@@ -215,10 +178,10 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 {
                     double RL = z.real();
                     double XL = z.imag();
-                    rImpedanceRealCalculation(lastPointX, lastPointY);
-                    rImpedanceImagCalculation(lastPointX, lastPointY);
-                    double R = impedanceRealR;
-                    double X = impedanceImagR;
+                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    double R = SystemParameters::impedanceRealR;
+                    double X = SystemParameters::impedanceImagR;
                     double RR = R - RL;
                     double sq = -sqrt(RR * (RL * (pow(X, 2) + pow(R, 2)) - R * (pow(XL, 2) + pow(RL, 2)))) / RR;
                     double tanO1 = RR * sq / (R * XL + RL * X);
@@ -253,8 +216,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double lambda;
                     double o;
                     double l;
-                    rAdmitanceImagCalculation(lastPointX, lastPointY);
-                    o = atan((admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line);
+                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    o = atan((SystemParameters::admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line);
                     if (o < 0)
                     {
                         o += M_PI;
@@ -272,8 +235,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double lambda;
                     double o;
                     double l;
-                    rAdmitanceImagCalculation(lastPointX, lastPointY);
-                    o = -atan(1 / ((admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line));
+                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    o = -atan(1 / ((SystemParameters::admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line));
                     if (o < 0)
                     {
                         o += M_PI;
@@ -430,123 +393,6 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         left = false;
     }
 }
-
-void CircuitWidget::rAdmitanceRealCalculation(double x, double y)
-{
-    if (y >= 0 && y < 0.000001)
-    {
-        y = 0.01;
-    }
-    else if (y <= 0 && y > -0.000001)
-    {
-        y = -0.01;
-    }
-    double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-    double xCenter = -1 - circleRadius;
-    double dx = x - xCenter;
-    double dy = y;
-    dy *= -1;
-    double sin_t = dy;
-    double cos_t = dx;
-    double t1;
-    t1 = atan(sin_t / cos_t);
-    if (cos_t < 0 && sin_t < 0)
-    {
-        t1 = abs(t1) - M_PI;
-    }
-    else if (sin_t > 0 && cos_t < 0)
-    {
-        t1 = M_PI - abs(t1);
-    }
-    if (x - 1 != 0)
-    {
-        admitanceRealR = (cos(t1) - x) / (x + 1);
-    }
-    admitanceRealR *= 20;
-}
-
-void CircuitWidget::rImpedanceImagCalculation(double x, double y)
-{
-    if (y >= 0 && y < 0.000001)
-    {
-        y = 0.01;
-    }
-    else if (y <= 0 && y > -0.000001)
-    {
-        y = -0.01;
-    }
-    double cos_t;
-    double sin_t;
-    double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-    double xCenter = 1 - circleRadius;
-    double dx = x - xCenter;
-    double dy = y;
-    sin_t = dy;
-    cos_t = dx;
-    double t1;
-    t1 = atan(cos_t / sin_t);
-    if (y < 0)
-    {
-        t1 += M_PI;
-    }
-    else
-    {
-        t1 += 2 * M_PI;
-    }
-    if (x - 1 != 0)
-    {
-        impedanceImagR = cos(t1) / (x - 1);
-    }
-    else
-    {
-        impedanceImagR = (1 + sin(t1)) / y;
-    }
-    if (y < 0)
-    {
-        impedanceImagR = abs(impedanceImagR);
-    }
-    else
-    {
-        impedanceImagR = abs(impedanceImagR) * (-1);
-    }
-    impedanceImagR *= 50;
-}
-
-void CircuitWidget::rAdmitanceImagCalculation(double x, double y)
-{
-    double cos_t;
-    double sin_t;
-    if (y >= 0 && y < 0.000001)
-    {
-        y = 0.01;
-    }
-    else if (y <= 0 && y > -0.000001)
-    {
-        y = -0.01;
-    }
-    double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-    double yCenter = -circleRadius;
-    double dx = x + 1;
-    double dy = y - yCenter;
-    sin_t = -dy;
-    cos_t = dx;
-    double t1;
-    t1 = atan(sin_t / cos_t);
-    if (x + 1 != 0)
-    {
-        admitanceImagR = cos(t1) / (x + 1);
-    }
-    else
-    {
-        admitanceImagR = (1 + sin(t1)) / y;
-    }
-    if (y > 0)
-    {
-        admitanceImagR *= -1;
-    }
-    admitanceImagR *= -20;
-}
-
 void CircuitWidget::enterEvent(QEvent* event)
 {
     SystemParameters::circuitHover = true;

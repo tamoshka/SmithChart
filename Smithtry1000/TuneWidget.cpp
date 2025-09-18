@@ -551,8 +551,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -571,10 +571,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -701,8 +701,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -721,10 +721,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -851,8 +851,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -871,10 +871,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1000,8 +1000,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1020,10 +1020,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1139,8 +1139,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1159,10 +1159,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1278,8 +1278,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1298,10 +1298,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1392,10 +1392,10 @@ void TuneWidget::ValueChanged(int value)
 					{
 						y2 = -0.01;
 					}
-					rImpedanceRealCalculation(x, y2);
-					rImpedanceImagCalculation(x, y2);
-					double R3 = impedanceRealR;
-					double X3 = impedanceImagR;
+					SystemParameters::rImpedanceRealCalculation(x, y2);
+					SystemParameters::rImpedanceImagCalculation(x, y2);
+					double R3 = SystemParameters::impedanceRealR;
+					double X3 = SystemParameters::impedanceImagR;
 					double RR3 = R3 - RL;
 					double sq3 = -sqrt(RR3 * (RL * (pow(X3, 2) + pow(R3, 2)) - R3 * (pow(XL, 2) + pow(RL, 2)))) / RR3;
 					double tanO13 = RR3 * sq3 / (R3 * XL + RL * X3);
@@ -1441,8 +1441,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1461,10 +1461,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1599,8 +1599,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1619,10 +1619,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1770,8 +1770,8 @@ void TuneWidget::ValueChanged(int value)
 				point.x = x;
 				point.y = y2;
 				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = zCalculation(x, y2);
-				Complex y3 = yCalculation(x, y2);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
 				map<parameterMode, Complex> parameter;
 				parameter[Z] = z2;
 				parameter[Y] = y3;
@@ -1790,10 +1790,10 @@ void TuneWidget::ValueChanged(int value)
 				}
 				parameter[G] = g;
 				map<chartMode, tuple<double, double>> chart;
-				Complex rRealImpedance = impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = admitanceImagChartParameters(x, y2);
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
 				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
 				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
 				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1927,337 +1927,4 @@ void TuneWidget::MinMaxButton_clicked()
 		i++;
 	}
 	update();
-}
-
-Complex TuneWidget::zCalculation(double x, double y)
-{
-	rImpedanceRealCalculation(x, y);
-	rImpedanceImagCalculation(x, y);
-	return Complex(impedanceRealR, impedanceImagR);
-}
-
-Complex TuneWidget::yCalculation(double x, double y)
-{
-	rAdmitanceRealCalculation(x, y);
-	rAdmitanceImagCalculation(x, y);
-	return Complex(admitanceRealR, admitanceImagR);
-}
-
-Complex TuneWidget::impedanceRealChartParameters(double x, double y)
-{
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-	double xCenter = 1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	double sin_t = dy;
-	double cos_t = dx;
-	double t1, r1;
-	t1 = atan(sin_t / cos_t);
-	if (cos_t < 0 && sin_t < 0)
-	{
-		t1 += M_PI;
-	}
-	else if (cos_t > 0 && sin_t < 0)
-	{
-		t1 = 2 * M_PI - abs(t1);
-	}
-	else if (sin_t > 0 && cos_t < 0)
-	{
-		t1 = M_PI - abs(t1);
-	}
-	if (x - 1 != 0)
-	{
-		r1 = (cos(t1) - x) / (x - 1);
-	}
-	return Complex(r1, t1);
-}
-
-Complex TuneWidget::admitanceRealChartParameters(double x, double y)
-{
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-	double xCenter = -1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	dy *= -1;
-	double sin_t = dy;
-	double cos_t = dx;
-	double t1, r1;
-	t1 = atan(sin_t / cos_t);
-	if (cos_t < 0 && sin_t < 0)
-	{
-		t1 = abs(t1) - M_PI;
-	}
-	else if (sin_t > 0 && cos_t < 0)
-	{
-		t1 = M_PI - abs(t1);
-	}
-	if (x - 1 != 0)
-	{
-		r1 = abs((cos(t1) - x) / (x + 1));
-	}
-	return Complex(r1, t1);
-}
-
-Complex TuneWidget::impedanceImagChartParameters(double x, double y)
-{
-	double cos_t;
-	double sin_t;
-	if (y >= 0 && y < 0.01)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.01)
-	{
-		y = -0.01;
-	}
-	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-	double xCenter = 1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	sin_t = dy;
-	cos_t = dx;
-	double t1, r1;
-	t1 = atan(cos_t / sin_t);
-	if (y < 0)
-	{
-		t1 += M_PI;
-	}
-	else
-	{
-		t1 += 2 * M_PI;
-	}
-	if (x - 1 != 0)
-	{
-		r1 = cos(t1) / (x - 1);
-	}
-	else
-	{
-		r1 = (1 + sin(t1)) / y;
-	}
-	if (y < 0)
-	{
-		r1 = abs(r1);
-	}
-	else
-	{
-		r1 = abs(r1) * (-1);
-	}
-	if (y == 0)
-	{
-		r1 = 0;
-	}
-	return Complex(r1, t1);
-}
-
-Complex TuneWidget::admitanceImagChartParameters(double x, double y)
-{
-	double cos_t;
-	double sin_t;
-	if (y >= 0 && y < 0.01)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.01)
-	{
-		y = -0.01;
-	}
-	double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-	double yCenter = -circleRadius;
-	double dx = x + 1;
-	double dy = y - yCenter;
-	sin_t = -dy;
-	cos_t = dx;
-	double t1, r1;
-	t1 = atan(sin_t / cos_t);
-	if (x + 1 != 0)
-	{
-		r1 = cos(t1) / (x + 1);
-	}
-	else
-	{
-		r1 = (1 + sin(t1)) / y;
-	}
-	if (y > 0)
-	{
-		r1 *= -1;
-	}
-	if (y == 0)
-	{
-		r1 = 0;
-		t1 = -M_PI / 2;
-	}
-	return Complex(r1, t1);
-}
-
-void TuneWidget::rImpedanceRealCalculation(double x, double y)
-{
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-	double xCenter = 1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	double sin_t = dy;
-	double cos_t = dx;
-	double t1;
-	t1 = atan(sin_t / cos_t);
-	if (cos_t < 0 && sin_t < 0)
-	{
-		t1 += M_PI;
-	}
-	else if (cos_t > 0 && sin_t < 0)
-	{
-		t1 = 2 * M_PI - abs(t1);
-	}
-	else if (sin_t > 0 && cos_t < 0)
-	{
-		t1 = M_PI - abs(t1);
-	}
-	if (x - 1 != 0)
-	{
-		impedanceRealR = abs((cos(t1) - x) / (x - 1));
-	}
-	impedanceRealR *= 50;
-}
-
-void TuneWidget::rAdmitanceRealCalculation(double x, double y)
-{
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
-	double xCenter = -1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	dy *= -1;
-	double sin_t = dy;
-	double cos_t = dx;
-	double t1;
-	t1 = atan(sin_t / cos_t);
-	if (cos_t < 0 && sin_t < 0)
-	{
-		t1 = abs(t1) - M_PI;
-	}
-	else if (sin_t > 0 && cos_t < 0)
-	{
-		t1 = M_PI - abs(t1);
-	}
-	if (x - 1 != 0)
-	{
-		admitanceRealR = abs((cos(t1) - x) / (x + 1));
-	}
-	admitanceRealR *= 20;
-}
-
-void TuneWidget::rImpedanceImagCalculation(double x, double y)
-{
-	double cos_t;
-	double sin_t;
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-	double xCenter = 1 - circleRadius;
-	double dx = x - xCenter;
-	double dy = y;
-	sin_t = dy;
-	cos_t = dx;
-	double t1;
-	t1 = atan(cos_t / sin_t);
-	if (y < 0)
-	{
-		t1 += M_PI;
-	}
-	else
-	{
-		t1 += 2 * M_PI;
-	}
-	if (x - 1 != 0)
-	{
-		impedanceImagR = cos(t1) / (x - 1);
-	}
-	else
-	{
-		impedanceImagR = (1 + sin(t1)) / y;
-	}
-	if (y < 0)
-	{
-		impedanceImagR = abs(impedanceImagR);
-	}
-	else
-	{
-		impedanceImagR = abs(impedanceImagR) * (-1);
-	}
-	if (y == 0 || (abs(y) < 1e-7 && x < 0.999))
-	{
-		impedanceImagR = 0;
-	}
-	impedanceImagR *= 50;
-}
-
-void TuneWidget::rAdmitanceImagCalculation(double x, double y)
-{
-	double cos_t;
-	double sin_t;
-	if (y >= 0 && y < 0.000001)
-	{
-		y = 0.01;
-	}
-	else if (y <= 0 && y > -0.000001)
-	{
-		y = -0.01;
-	}
-	double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-	double yCenter = -circleRadius;
-	double dx = x + 1;
-	double dy = y - yCenter;
-	sin_t = -dy;
-	cos_t = dx;
-	double t1;
-	t1 = atan(sin_t / cos_t);
-	if (x + 1 != 0)
-	{
-		admitanceImagR = cos(t1) / (x + 1);
-	}
-	else
-	{
-		admitanceImagR = (1 + sin(t1)) / y;
-	}
-	if (y > 0)
-	{
-		admitanceImagR *= -1;
-	}
-	admitanceImagR *= -20;
 }

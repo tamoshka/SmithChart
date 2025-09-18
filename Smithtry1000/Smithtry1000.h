@@ -12,7 +12,6 @@
 #include <QScrollArea>
 #include "frequencyDialog.h"
 #include "VerticalLinesDialog.h"
-#include "ComplexNumber.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
 #include "ExportNetlist.h"
@@ -93,23 +92,7 @@ private:
     double step;
     double r;  //   
     double intervalLength = 2 * M_PI;
-    double impedanceRealR;
-    double impedanceImagR;
-    double admitanceRealR;
-    double admitanceImagR;
     QPoint getPointOnCircle(int, int);
-    void rImpedanceRealCalculation(double, double);
-    void rImpedanceImagCalculation(double, double);
-    void rAdmitanceRealCalculation(double, double);
-    void rAdmitanceImagCalculation(double, double);
-
-    Complex zCalculation(double, double);
-    Complex yCalculation(double, double);
-
-    Complex impedanceRealChartParameters(double, double);
-    Complex impedanceImagChartParameters(double, double);
-    Complex admitanceRealChartParameters(double, double);
-    Complex admitanceImagChartParameters(double, double);
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
