@@ -7,15 +7,15 @@ QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
 int allpointindex = 0;
-map<int, tuple<Point, double, double, mode>> points;
+map<int, tuple<Point, long double, long double, mode>> points;
 QList<double> qCircles;
 int dpIndex = 0;
 double scale = 200;
 QList<QSvgWidget*> svgWidgets;
-double frequency = 500;
-QList<double> frequencyList;
-double lastPointX = 0;
-double lastPointY = 0;
+long double frequency = 500;
+QList<long double> frequencyList;
+long double lastPointX = 0;
+long double lastPointY = 0;
 
 QString fileName = "";
 

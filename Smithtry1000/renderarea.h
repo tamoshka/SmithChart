@@ -36,18 +36,18 @@ public slots:
 
 private:
     CircuitElements* circuitElements = new CircuitElements();
-    double r;
+    long double r;
     QPointF center;
     QColor mBackGroundColor;
     QColor mShapeColor;
     Mode mMode;
-    double mScale;
-    Point compute_real(double t);
-    Point compute_realParallel(double t);
-    Point compute_imaginary(double t);
-    Point compute_imaginaryParallel(double t);
-    Point compute_line(double t, double radius);
-    Point compute_q(double t, double radius);
+    long double mScale;
+    Point compute_real(long double t);
+    Point compute_realParallel(long double t);
+    Point compute_imaginary(long double t);
+    Point compute_imaginaryParallel(long double t);
+    Point compute_line(long double t, long double radius);
+    Point compute_q(long double t, long double radius);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;
@@ -55,7 +55,7 @@ private:
     void drawDynamicObject(QPainter&);
     qreal m_scaleFactor;
     void generateCache();
-    double defaultScale = 200;
+    long double defaultScale = 200;
 
 
 

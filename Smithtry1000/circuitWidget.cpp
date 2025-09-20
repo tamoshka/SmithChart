@@ -101,7 +101,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
     }
     if (this->circuitElements->imagFirstPoint != -9999)
     {
-        QString s2 = QString::number(round(this->circuitElements->realFirstPoint*10)/10) + "  + j" + QString::number(round(this->circuitElements->imagFirstPoint*10)/10);
+        QString s2 = QString::number((double)round(this->circuitElements->realFirstPoint*10)/10) + "  + j" + QString::number((double)round(this->circuitElements->imagFirstPoint*10)/10);
         painter.save();
         painter.translate(40 + 20, 90);
         painter.rotate(90);
@@ -139,7 +139,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    s1 = QString::number(round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
+                    s1 = QString::number((double)round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
                     break;
                 }
                 case CapacitorShunt:
@@ -147,7 +147,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    s1 = QString::number(round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
+                    s1 = QString::number((double)round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
                     break;
                 }
                 case ResistorParallel:
@@ -163,7 +163,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    s1 = QString::number(round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
+                    s1 = QString::number((double)round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
                     break;
                 }
                 case CapacitorParallel:
@@ -171,7 +171,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    s1 = QString::number(round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
+                    s1 = QString::number((double)round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
                     break;
                 }
                 case Line:
@@ -206,7 +206,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double l = O * 299792458 / (M_PI * 1e9*2);
                     double Length = l * 1e3;
                     double lambda = l * 1e9 / 299792458;
-                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm |" + QString::number(round(SystemParameters::alpha * 10) / 10) + "dB/m|lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s1 = QString::number((double)round(SystemParameters::z0line * 10) / 10) + "Ohm |" + QString::number(round(SystemParameters::alpha * 10) / 10) + "dB/m|lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
@@ -225,7 +225,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     theta = o * 180 / M_PI;
                     l = o * 299792458 / (2*M_PI * 1e9);
                     lambda = l * 1e9 / 299792458;
-                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s1 = QString::number((double)round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
@@ -244,7 +244,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     theta = o * 180 / M_PI;
                     l = o * 299792458 / (2*M_PI * 1e9);
                     lambda = l * 1e9 / 299792458;
-                    s1 = QString::number(round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
+                    s1 = QString::number((double)round(SystemParameters::z0line * 10) / 10) + "Ohm | lambda=" + QString::number(round(lambda * 10000) / 10000);
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
@@ -301,22 +301,22 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case Line:
                 {
                     LinesElement* tmp = dynamic_cast<LinesElement*>(temp[i]);
-                    s1 = QString::number(round(tmp->GetValue()*10)/10) + "Ohm |" + QString::number(round(tmp->GetAlpha()*10)/10)+ "dB/m|lambda=" +QString::number(round(tmp->GetLambda()*10000)/10000);
-                    s3 = QString::number(round(tmp->GetMechanicalLength()*10)/10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength()*10)/10) + "mm(electr)";
+                    s1 = QString::number((double)round(tmp->GetValue()*10)/10) + "Ohm |" + QString::number((double)round(tmp->GetAlpha()*10)/10)+ "dB/m|lambda=" +QString::number((double)round(tmp->GetLambda()*10000)/10000);
+                    s3 = QString::number((double)round(tmp->GetMechanicalLength()*10)/10) + "mm(phys)|" + QString::number((double)round(tmp->GetElectricalLength()*10)/10) + "mm(electr)";
                     break;
                 }
                 case OSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
-                    s1 = QString::number(round(tmp->GetValue() * 10) / 10) + "Ohm | lambda=" + QString::number(round(tmp->GetLambda() * 10000) / 10000);
-                    s3 = QString::number(round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
+                    s1 = QString::number((double)round(tmp->GetValue() * 10) / 10) + "Ohm | lambda=" + QString::number((double)round(tmp->GetLambda() * 10000) / 10000);
+                    s3 = QString::number((double)round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number((double)round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
                     break;
                 }
                 case SSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
-                    s1 = QString::number(tmp->GetValue()) + "Ohm | lambda=" + QString::number(tmp->GetLambda());
-                    s3 = QString::number(round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number(round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
+                    s1 = QString::number((double)tmp->GetValue()) + "Ohm | lambda=" + QString::number((double)tmp->GetLambda());
+                    s3 = QString::number((double)round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number((double)round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
                     break;
                 }
             }

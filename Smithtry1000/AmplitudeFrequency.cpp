@@ -44,13 +44,13 @@ Complex AmplitudeFrequency::GetGamma2()
 void AmplitudeFrequency::MatrixCalculation()
 {
     int k = 0;
-    double startFrequency = 1;
-    double w;
+    long double startFrequency = 1;
+    long double w;
     Complex A[2][2], A1[2][2];
-    double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
-    double f = frequency * 1e6;
+    long double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
+    long double f = frequency * 1e6;
     bool flag = false;
-    for (double freq = 1; freq <= 3 * f+1; freq += (3 * f -1) / 99)
+    for (long double freq = 1; freq <= 3 * f+1; freq += (3 * f -1) / 99)
     {
         w = 2 * M_PI * freq;
 
@@ -120,10 +120,10 @@ void AmplitudeFrequency::MatrixCalculation()
                 case Line:
                 {
                     LinesElement* tmp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    double r0 = tmp->GetValue();
-                    double t = tmp->GetTheta();
-                    double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w / 299792458;
+                    long double r0 = tmp->GetValue();
+                    long double t = tmp->GetTheta();
+                    long double l = t * 299792458 / (360 * 1e9);
+                    long double theta = l * w / 299792458;
                     A1[0][0] = cos(theta);
                     A1[1][1] = cos(theta);
                     A1[0][1] = Complex(0, 1)*r0*sin(theta);
@@ -133,12 +133,12 @@ void AmplitudeFrequency::MatrixCalculation()
                 case OSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    double r0 = tmp->GetValue();
-                    double t = tmp->GetTheta();
-                    double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w / 299792458;
+                    long double r0 = tmp->GetValue();
+                    long double t = tmp->GetTheta();
+                    long double l = t * 299792458 / (360 * 1e9);
+                    long double theta = l * w / 299792458;
                     Complex z = Complex(0, -1)*r0/ tan(theta);
-                    Complex y = (double)1 / z;
+                    Complex y = (long double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
                     A1[1][0] = y;
@@ -148,12 +148,12 @@ void AmplitudeFrequency::MatrixCalculation()
                 case SSLine:
                 {
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    double r0 = tmp->GetValue();
-                    double t = tmp->GetTheta();
-                    double l = t * 299792458 / (360 * 1e9);
-                    double theta = l * w/ 299792458;
+                    long double r0 = tmp->GetValue();
+                    long double t = tmp->GetTheta();
+                    long double l = t * 299792458 / (360 * 1e9);
+                    long double theta = l * w/ 299792458;
                     Complex z = Complex(0, 1)*r0 * tan(theta);
-                    Complex y = (double)1 / z;
+                    Complex y = (long double)1 / z;
                     A1[0][0] = 1;
                     A1[0][1] = 0;
                     A1[1][0] = y;
@@ -183,9 +183,9 @@ void AmplitudeFrequency::MatrixCalculation()
         }
         Complex dT = A[0][0] + A[0][1] / z0 + A[1][0] * z0 + A[1][1];
         Complex s11 = (A[0][0] + A[0][1] / z0 - A[1][0] * z0 - A[1][1]) / dT;
-        Complex s12 = (double)(2) * (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / dT;
-        Complex s21 = (double)(2) / dT;
-        Complex s22 = ((double)(-1) * A[0][0] + A[0][1] / z0 - A[1][0] * z0 + A[1][1]) / dT;
+        Complex s12 = (long double)(2) * (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / dT;
+        Complex s21 = (long double)(2) / dT;
+        Complex s22 = ((long double)(-1) * A[0][0] + A[0][1] / z0 - A[1][0] * z0 + A[1][1]) / dT;
 
         Complex R2(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real(), -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag());
         Complex R1(circuitElements->z.real(), -circuitElements->z.imag());
@@ -204,15 +204,15 @@ void AmplitudeFrequency::MatrixCalculation()
             SetGamma2((R2 - z0) / (R2 + z0));
             Complex sopr1(gamma1.real(), -gamma1.imag());
             Complex sopr2(gamma2.real(), -gamma2.imag());
-            double g1 = abs(gamma1);
-            double g2 = abs(gamma2);
-            Complex a1 = ((double)(1) - sopr1) * sqrt(1-pow(g1,2)) / abs((double)(1)-gamma1);
-            Complex a2 = ((double)(1) - sopr2) * sqrt(1 - pow(g2, 2)) / abs((double)(1) - gamma2);
-            Complex D = ((double)(1) - gamma1 * s11) * ((double)(1) - gamma2 * s22) - gamma1 * gamma2 * s12 * s21;
+            long double g1 = abs(gamma1);
+            long double g2 = abs(gamma2);
+            Complex a1 = ((long double)(1) - sopr1) * sqrt(1-pow(g1,2)) / abs((long double)(1)-gamma1);
+            Complex a2 = ((long double)(1) - sopr2) * sqrt(1 - pow(g2, 2)) / abs((long double)(1) - gamma2);
+            Complex D = ((long double)(1) - gamma1 * s11) * ((long double)(1) - gamma2 * s22) - gamma1 * gamma2 * s12 * s21;
             Complex sopra1(a1.real(), -a1.imag());
             Complex sopra2(a2.real(), -a2.imag());
-            s11 = (sopra1 * (((double)(1) - gamma2 * s22) * (s11 - sopr1) + gamma2 * s12 * s21)) / (a1 * D);
-            s22 = (sopra2 * (((double)(1) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
+            s11 = (sopra1 * (((long double)(1) - gamma2 * s22) * (s11 - sopr1) + gamma2 * s12 * s21)) / (a1 * D);
+            s22 = (sopra2 * (((long double)(1) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
             s12 = (sopra2 * s12 * (1-pow(g1,2))) / (a1 * D);
             s21 = (sopra1 * s21 * (1 - pow(g2, 2))) / (a2 * D);
         }
@@ -233,7 +233,7 @@ void AmplitudeFrequency::MatrixCalculation()
     }
 }
 
-void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
+void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double z[])
 {
     ui->widget->clearGraphs();
     QVector<double> x1, y1, z1;
@@ -243,10 +243,10 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
         y1.append(y[i]);
         z1.append(z[i]);
     }
-    double xBegin = x1[0];
-    double xEnd = x1[99];
-    double yBegin, yEnd;
-    double zBegin, zEnd;
+    long double xBegin = x1[0];
+    long double xEnd = x1[99];
+    long double yBegin, yEnd;
+    long double zBegin, zEnd;
     zBegin = z1[0];
     zEnd = z1[0];
     yBegin = y1[0];

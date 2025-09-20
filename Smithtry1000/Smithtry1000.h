@@ -80,18 +80,18 @@ private:
     bool leftClicked;
     bool rightClicked;
     bool tableChanged=false;
-    double tempPointX;
-    double tempPointY;
-    double tempX=0;
-    double tempY=0;
-    QList<double> pointsX;
-    QList<double> pointsY;
-    double t;
-    double tmin;
-    double tmax;
-    double step;
-    double r;  //   
-    double intervalLength = 2 * M_PI;
+    long double tempPointX;
+    long double tempPointY;
+    long double tempX=0;
+    long double tempY=0;
+    QList<long double> pointsX;
+    QList<long double> pointsY;
+    long double t;
+    long double tmin;
+    long double tmax;
+    long double step;
+    long double r;  //   
+    long double intervalLength = 2 * M_PI;
     QPoint getPointOnCircle(int, int);
 
 protected:
