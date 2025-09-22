@@ -49,6 +49,7 @@ class Smithtry1000Conan(ConanFile):
         cmake.configure()
         cmake.build()
     
+    
     def package(self):
         if (self.settings.os == "Windows"):
             self._copy_qt_runtime()
