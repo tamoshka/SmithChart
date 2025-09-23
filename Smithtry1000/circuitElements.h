@@ -14,10 +14,10 @@ public:
 	Complex z = Complex(-9999, -9999);
 	Complex y = Complex(-9999, -9999);
 	Complex g = Complex(-9999, -9999);
-	double realFirstPoint = -9999;
-	double imagFirstPoint = -9999;
-	double frequencyFirstPoint = -9999;
+	long double realFirstPoint = -9999;
+	long double imagFirstPoint = -9999;
+	long double frequencyFirstPoint = -9999;
 	Point firstPoint;
-	map<chartMode, tuple<double, double>> chart;
+	map<chartMode, tuple<long double, long double>> chart;
 	~CircuitElements();
 };

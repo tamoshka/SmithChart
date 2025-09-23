@@ -28,5 +28,7 @@
         <file>vertical_r_circuit.svg</file>
         <file>settings.png</file>
         <file>Circles.png</file>
+        <file>vertical_transform.svg</file>
+        <file>vertical_transform_circuit.svg</file>
     </qresource>
 </RCC>

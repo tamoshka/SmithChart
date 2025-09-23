@@ -16,10 +16,6 @@ public:
     void addSvg(QString, int, int);
     void removeLastSvg();
 private:
-    void rImpedanceRealCalculation(double x, double y);
-    void rAdmitanceRealCalculation(double x, double y);
-    void rImpedanceImagCalculation(double x, double y);
-    void rAdmitanceImagCalculation(double x, double y);
     QList<int> tuned;
     QList<QString> paths;
     CircuitElements* circuitElements;

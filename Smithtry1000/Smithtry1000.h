@@ -12,7 +12,6 @@
 #include <QScrollArea>
 #include "frequencyDialog.h"
 #include "VerticalLinesDialog.h"
-#include "ComplexNumber.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
 #include "ExportNetlist.h"
@@ -66,6 +65,8 @@ private slots:
     void onMenuToolsCliked();
     void onKeyboard_buttonClicked();
     void onCirclesClicked();
+    void onTransform_buttonClicked();
+
 private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
@@ -81,35 +82,19 @@ private:
     bool leftClicked;
     bool rightClicked;
     bool tableChanged=false;
-    double tempPointX;
-    double tempPointY;
-    double tempX=0;
-    double tempY=0;
-    QList<double> pointsX;
-    QList<double> pointsY;
-    double t;
-    double tmin;
-    double tmax;
-    double step;
-    double r;  //   
-    double intervalLength = 2 * M_PI;
-    double impedanceRealR;
-    double impedanceImagR;
-    double admitanceRealR;
-    double admitanceImagR;
+    long double tempPointX;
+    long double tempPointY;
+    long double tempX=0;
+    long double tempY=0;
+    QList<long double> pointsX;
+    QList<long double> pointsY;
+    long double t;
+    long double tmin;
+    long double tmax;
+    long double step;
+    long double r;  //   
+    long double intervalLength = 2 * M_PI;
     QPoint getPointOnCircle(int, int);
-    void rImpedanceRealCalculation(double, double);
-    void rImpedanceImagCalculation(double, double);
-    void rAdmitanceRealCalculation(double, double);
-    void rAdmitanceImagCalculation(double, double);
-
-    Complex zCalculation(double, double);
-    Complex yCalculation(double, double);
-
-    Complex impedanceRealChartParameters(double, double);
-    Complex impedanceImagChartParameters(double, double);
-    Complex admitanceRealChartParameters(double, double);
-    Complex admitanceImagChartParameters(double, double);
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;

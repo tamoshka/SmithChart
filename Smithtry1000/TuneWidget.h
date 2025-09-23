@@ -32,18 +32,6 @@ private:
 	QList<double> maxValue;
 	QList<double> minValue;
 	int count;
-	void rImpedanceRealCalculation(double, double);
-	void rImpedanceImagCalculation(double, double);
-	void rAdmitanceRealCalculation(double, double);
-	void rAdmitanceImagCalculation(double, double);
-
-	Complex zCalculation(double, double);
-	Complex yCalculation(double, double);
-
-	Complex impedanceRealChartParameters(double, double);
-	Complex impedanceImagChartParameters(double, double);
-	Complex admitanceRealChartParameters(double, double);
-	Complex admitanceImagChartParameters(double, double);
 
 private slots:
 	void OKButton_clicked();
