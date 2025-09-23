@@ -21,7 +21,7 @@ public:
 public slots:
 	void highlightPoint(int index);
 	void updateGrafOneColor();
-
+	void SaveGrafOne();
 private:
 	Ui::GrafOneClass* ui;
 	double xBegin, xEnd, yBegin, yEnd, hY, hX;

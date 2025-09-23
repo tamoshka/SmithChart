@@ -21,7 +21,7 @@ void GrafTwo::Load()
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-
+	connect(ui->SaveGrafTwo, &QPushButton::clicked, this, &GrafTwo::SaveGrafTwo);
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
@@ -156,6 +156,38 @@ void GrafTwo::updateGrafTwoColor()
 	{
 		this->Load();
 		this->update();
+	}
+}
+
+void GrafTwo::SaveGrafTwo()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+	if (!fileName.isEmpty())
+	{
+		bool success = false;
+
+		if (fileName.endsWith(".png", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+		}
+		else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
+		{
+			success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+		}
+		else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePdf(fileName);
+		}
+
+		if (success)
+		{
+			QMessageBox::information(this, "Success", QString("The graph is saved to a file:\n%1").arg(fileName));
+		}
+		else
+		{
+			QMessageBox::warning(this, "Error", "Couldn't save graph!");
+		}
 	}
 }
 
