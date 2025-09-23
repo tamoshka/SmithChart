@@ -22,6 +22,8 @@ private:
 	void SetGamma1(Complex);
 	void SetGamma2(Complex);
 	QVector<double> freqs;
+public slots:
+	void SaveAmpFr();
 public:
 	void ReflectionCalculation();
 	Complex GetGamma1();

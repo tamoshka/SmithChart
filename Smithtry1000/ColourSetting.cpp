@@ -7,7 +7,7 @@ ColourSetting::ColourSetting(QWidget *parent)
 
 {
 	ui->setupUi(this);
-
+	this->setFixedSize(780,550);
 	setButtonColor(ui->S11Graf, SystemParameters::s11GrafColor);
 	setButtonColor(ui->S22Graf, SystemParameters::s22GrafColor);
 	setButtonColor(ui->MAGGraf, SystemParameters::magGrafColor);
