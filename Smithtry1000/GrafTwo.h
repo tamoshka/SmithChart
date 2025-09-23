@@ -21,7 +21,7 @@ public:
 public slots:
 	void highlightPoint(int index);
 	void updateGrafTwoColor();
-
+	void SaveGrafTwo();
 private:
 	Ui::GrafTwoClass* ui;
 	double xBegin, xEnd, yBegin, yEnd, yBeginTwo, yEndTwo;

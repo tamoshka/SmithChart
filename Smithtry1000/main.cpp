@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&set, &ColourSetting::grafOneColor, &g1, &GrafOne::updateGrafOneColor);
 	QObject::connect(&set, &ColourSetting::grafTwoColor, &g2, &GrafTwo::updateGrafTwoColor);
+
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);
 	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);

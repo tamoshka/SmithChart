@@ -6,8 +6,9 @@ AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuit
 	, ui(new Ui::AmplitudeFrequency())
 {
 	ui->setupUi(this);
-    setMinimumSize(100, 100);
+    setMinimumSize(150, 150);
     this->circuitElements = circuitElements;
+    connect(ui->SaveAmpFr, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
 }
 
 
@@ -300,6 +301,38 @@ void AmplitudeFrequency::SetPoint(double x[], double y[], double z[])
     axises.append(ui->widget->yAxis2);
     ui->widget->axisRect()->setRangeDragAxes(axises);
     ui->widget->axisRect()->setRangeZoomAxes(axises);
+}
+
+void AmplitudeFrequency::SaveAmpFr()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+    if (!fileName.isEmpty())
+    {
+        bool success = false;
+
+        if (fileName.endsWith(".png", Qt::CaseInsensitive))
+        {
+            success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+        }
+        else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
+        {
+            success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+        }
+        else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
+        {
+            success = ui->widget->savePdf(fileName);
+        }
+
+        if (success)
+        {
+            QMessageBox::information(this, "Success", QString("The graph is saved to a file:\n%1").arg(fileName));
+        }
+        else
+        {
+            QMessageBox::warning(this, "Error", "Couldn't save graph!");
+        }
+    }
 }
 
 AmplitudeFrequency::~AmplitudeFrequency()
