@@ -18,9 +18,8 @@ public:
 	QString generateNetlistScs();
 private:
 	Ui::ExportNetlist* ui;
-	QString generateElementLineCir(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount);
+	QString generateElementLineCir(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount);
 	QString generateElementLineCkt(Element* element, int& nodeCounter);
-	QString generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount);
-	QString getSpiceElementType(mode elementMode);
+	QString generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount);
 	CircuitElements* circuit;
 };

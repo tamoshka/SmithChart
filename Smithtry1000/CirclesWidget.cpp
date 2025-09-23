@@ -13,12 +13,24 @@ CirclesWidget::CirclesWidget(QWidget *parent)
 	checkBoxVSWRIndex[ui->checkBox2VSWR] = 2;
 	checkBoxVSWRIndex[ui->checkBox1point5VSWR] = 1.5;
 	checkBoxVSWRIndex[ui->checkBox1point2VSWR] = 1.2;
+	checkBoxQIndex[ui->checkBox10Q] = 10;
+	checkBoxQIndex[ui->checkBox5Q] = 5;
+	checkBoxQIndex[ui->checkBox2Q] = 2;
+	checkBoxQIndex[ui->checkBox1Q] = 1;
+	checkBoxQIndex[ui->checkBox0point5Q] = 0.5;
+	checkBoxQIndex[ui->checkBox0point2Q] = 0.2;
 	reverseCheckBoxVSWRIndex[10] = ui->checkBox10VSWR;
 	reverseCheckBoxVSWRIndex[5] = ui->checkBox5VSWR;
 	reverseCheckBoxVSWRIndex[3] = ui->checkBox3VSWR;
 	reverseCheckBoxVSWRIndex[2] = ui->checkBox2VSWR;
 	reverseCheckBoxVSWRIndex[1.5] = ui->checkBox1point5VSWR;
 	reverseCheckBoxVSWRIndex[1.2] = ui->checkBox1point2VSWR;
+	reverseCheckBoxQIndex[10] = ui->checkBox10Q;
+	reverseCheckBoxQIndex[5] = ui->checkBox5Q;
+	reverseCheckBoxQIndex[2] = ui->checkBox2Q;
+	reverseCheckBoxQIndex[1] = ui->checkBox1Q;
+	reverseCheckBoxQIndex[0.5] = ui->checkBox0point5Q;
+	reverseCheckBoxQIndex[0.2] = ui->checkBox0point2Q;
 	connect(ui->SelectAllButtonVSWR, &QPushButton::clicked, this, &CirclesWidget::selectAllClickedVSWR);
 	connect(ui->ClearAllDefinedButtonVSWR, &QPushButton::clicked, this, &CirclesWidget::clearAllDefinedClickedVSWR);
 	connect(ui->checkBox10VSWR, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedVSWR);
@@ -27,9 +39,66 @@ CirclesWidget::CirclesWidget(QWidget *parent)
 	connect(ui->checkBox2VSWR, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedVSWR);
 	connect(ui->checkBox1point5VSWR, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedVSWR);
 	connect(ui->checkBox1point2VSWR, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedVSWR);
+	connect(ui->SelectAllButtonQ, &QPushButton::clicked, this, &CirclesWidget::selectAllClickedQ);
+	connect(ui->ClearAllDefinedButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllDefinedClickedQ);
+	connect(ui->checkBox10Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
+	connect(ui->checkBox5Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
+	connect(ui->checkBox2Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
+	connect(ui->checkBox1Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
+	connect(ui->checkBox0point5Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
+	connect(ui->checkBox0point2Q, &QCheckBox::stateChanged, this, &CirclesWidget::checkboxCheckedQ);
 	connect(ui->OkButton, &QPushButton::clicked, this, &CirclesWidget::okClicked);
 	connect(ui->CancelButton, &QPushButton::clicked, this, &CirclesWidget::cancelClicked);
 	connect(ui->InsertButtonVSWR, &QPushButton::clicked, this, &CirclesWidget::insertVSWRClicked);
+	connect(ui->DeleteButtonVSWR, &QPushButton::clicked, this, &CirclesWidget::deleteVSWRClicked);
+	connect(ui->ClearAllOtherButtonVSWR, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedVSWR);
+	connect(ui->InsertButtonQ, &QPushButton::clicked, this, &CirclesWidget::insertQClicked);
+	connect(ui->DeleteButtonQ, &QPushButton::clicked, this, &CirclesWidget::deleteQClicked);
+	connect(ui->ClearAllOtherButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedQ);
+}
+
+void CirclesWidget::clearAllOthersClickedVSWR()
+{
+	for (auto item : ui->listWidgetVSWR->findItems("*", Qt::MatchWildcard))
+	{
+		double valueVswr = item->text().toDouble();
+		SystemParameters::VSWRCircles.remove(valueVswr);
+		ui->listWidgetVSWR->takeItem(ui->listWidgetVSWR->row(item));
+	}
+	emit circle();
+}
+
+void CirclesWidget::clearAllOthersClickedQ()
+{
+	for (auto item : ui->listWidgetQ->findItems("*", Qt::MatchWildcard))
+	{
+		double valueQ = item->text().toDouble();
+		SystemParameters::QCircles.remove(valueQ);
+		ui->listWidgetQ->takeItem(ui->listWidgetQ->row(item));
+	}
+	emit circle();
+}
+
+void CirclesWidget::deleteVSWRClicked()
+{
+	for (auto item : ui->listWidgetVSWR->selectedItems())
+	{
+		double valueVswr = item->text().toDouble();
+		SystemParameters::VSWRCircles.remove(valueVswr);
+		ui->listWidgetVSWR->takeItem(ui->listWidgetVSWR->row(item));
+	}
+	emit circle();
+}
+
+void CirclesWidget::deleteQClicked()
+{
+	for (auto item : ui->listWidgetQ->selectedItems())
+	{
+		double valueQ = item->text().toDouble();
+		SystemParameters::QCircles.remove(valueQ);
+		ui->listWidgetQ->takeItem(ui->listWidgetQ->row(item));
+	}
+	emit circle();
 }
 
 void CirclesWidget::insertVSWRClicked()
@@ -37,7 +106,7 @@ void CirclesWidget::insertVSWRClicked()
 	QString tempVswr = ui->FieldVSWR->text();
 	bool validateVswr = true;
 	double valueVswr = ui->FieldVSWR->text().toFloat(&validateVswr);
-    if (validateVswr&&valueVswr>=1)
+    if (validateVswr&&valueVswr>=1&&!SystemParameters::VSWRCircles.contains(valueVswr))
 	{
 		SystemParameters::VSWRCircles.insert(valueVswr);
 		if (valueVswr == 10 || valueVswr == 5 || valueVswr == 3 || valueVswr == 2 || valueVswr == 1.5 || valueVswr == 1.2)
@@ -51,6 +120,27 @@ void CirclesWidget::insertVSWRClicked()
 		}
 	}
 	ui->FieldVSWR->setText("");
+}
+
+void CirclesWidget::insertQClicked()
+{
+	QString tempQ = ui->FieldQ->text();
+	bool validateQ = true;
+	double valueQ = ui->FieldQ->text().toFloat(&validateQ);
+	if (validateQ && valueQ > 0 && !SystemParameters::QCircles.contains(valueQ))
+	{
+		SystemParameters::QCircles.insert(valueQ);
+		if (valueQ == 10 || valueQ == 5 || valueQ == 2 || valueQ == 1 || valueQ == 0.5 || valueQ == 0.2)
+		{
+			reverseCheckBoxQIndex[valueQ]->setChecked(true);
+		}
+		else
+		{
+			ui->listWidgetQ->addItem(QString::number(valueQ));
+			emit circle();
+		}
+	}
+	ui->FieldQ->setText("");
 }
 
 void CirclesWidget::okClicked()
@@ -78,6 +168,20 @@ void CirclesWidget::checkboxCheckedVSWR(int state)
 	if (state == Qt::Unchecked)
 	{
 		int valueindex = SystemParameters::VSWRCircles.remove(checkBoxVSWRIndex[checkBox]);
+	}
+	emit circle();
+}
+
+void CirclesWidget::checkboxCheckedQ(int state)
+{
+	QCheckBox* checkBox = qobject_cast<QCheckBox*>(sender());
+	if (state == Qt::Checked)
+	{
+		SystemParameters::QCircles.insert(checkBoxQIndex[checkBox]);
+	}
+	if (state == Qt::Unchecked)
+	{
+		int valueindex = SystemParameters::QCircles.remove(checkBoxQIndex[checkBox]);
 	}
 	emit circle();
 }
@@ -123,6 +227,47 @@ void CirclesWidget::selectAllClickedVSWR()
 	emit circle();
 }
 
+void CirclesWidget::selectAllClickedQ()
+{
+	ui->checkBox10Q->setChecked(true);
+	qreal value10 = 10;
+	if (!SystemParameters::QCircles.contains(value10))
+	{
+		SystemParameters::QCircles.insert(value10);
+	}
+	ui->checkBox5Q->setChecked(true);
+	qreal value5 = 5;
+	if (!SystemParameters::QCircles.contains(value5))
+	{
+		SystemParameters::QCircles.insert(value5);
+	}
+	ui->checkBox2Q->setChecked(true);
+	qreal value2 = 2;
+	if (!SystemParameters::QCircles.contains(value2))
+	{
+		SystemParameters::QCircles.insert(value2);
+	}
+	ui->checkBox1Q->setChecked(true);
+	qreal value1 = 1;
+	if (!SystemParameters::QCircles.contains(value1))
+	{
+		SystemParameters::QCircles.insert(value1);
+	}
+	ui->checkBox0point5Q->setChecked(true);
+	qreal value0point5 = 0.5;
+	if (!SystemParameters::QCircles.contains(value0point5))
+	{
+		SystemParameters::QCircles.insert(value0point5);
+	}
+	ui->checkBox0point2Q->setChecked(true);
+	qreal value0point2 = 0.2;
+	if (!SystemParameters::QCircles.contains(value0point2))
+	{
+		SystemParameters::QCircles.insert(value0point2);
+	}
+	emit circle();
+}
+
 void CirclesWidget::clearAllDefinedClickedVSWR()
 {
 	ui->checkBox10VSWR->setChecked(false);
@@ -160,6 +305,47 @@ void CirclesWidget::clearAllDefinedClickedVSWR()
 	if (SystemParameters::VSWRCircles.contains(value1point2))
 	{
 		SystemParameters::VSWRCircles.remove(value1point2);
+	}
+	emit circle();
+}
+
+void CirclesWidget::clearAllDefinedClickedQ()
+{
+	ui->checkBox10Q->setChecked(false);
+	qreal value10 = 10;
+	if (SystemParameters::QCircles.contains(value10))
+	{
+		SystemParameters::QCircles.remove(value10);
+	}
+	ui->checkBox5Q->setChecked(false);
+	qreal value5 = 5;
+	if (SystemParameters::QCircles.contains(value5))
+	{
+		SystemParameters::QCircles.remove(value5);
+	}
+	ui->checkBox2Q->setChecked(false);
+	qreal value2 = 2;
+	if (SystemParameters::QCircles.contains(value2))
+	{
+		SystemParameters::QCircles.remove(value2);
+	}
+	ui->checkBox1Q->setChecked(false);
+	qreal value1 = 1;
+	if (SystemParameters::QCircles.contains(value1))
+	{
+		SystemParameters::QCircles.remove(value1);
+	}
+	ui->checkBox0point5Q->setChecked(false);
+	qreal value0point5 = 0.5;
+	if (SystemParameters::QCircles.contains(value0point5))
+	{
+		SystemParameters::QCircles.remove(value0point5);
+	}
+	ui->checkBox0point2Q->setChecked(false);
+	qreal value0point2 = 0.2;
+	if (SystemParameters::QCircles.contains(value0point2))
+	{
+		SystemParameters::QCircles.remove(value0point2);
 	}
 	emit circle();
 }

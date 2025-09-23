@@ -1,6 +1,6 @@
 ﻿#include "Element.h"
 
-Element::Element(mode mode, double value, double frequency, Point point, map<chartMode, tuple<double, double>> chartParameters, map<parameterMode, Complex> parameter)
+Element::Element(mode mode, long double value, long double frequency, Point point, map<chartMode, tuple<long double, long double>> chartParameters, map<parameterMode, Complex> parameter)
 {
 	this->SetMode(mode);
 	this->SetValue(value);
@@ -15,12 +15,12 @@ void Element::SetMode(mode mode)
 	this->elementMode = mode;
 }
 
-void Element::SetValue(double value)
+void Element::SetValue(long double value)
 {
 	this->value = value;
 }
 
-void Element::SetFrequency(double value)
+void Element::SetFrequency(long double value)
 {
 	this->frequency = value;
 }
@@ -30,7 +30,7 @@ void Element::SetPoint(Point point)
 	this->point = point;
 }
 
-void Element::SetChartParameters(map<chartMode, tuple<double, double>> chartParameters)
+void Element::SetChartParameters(map<chartMode, tuple<long double, long double>> chartParameters)
 {
 	this->chartParameters = chartParameters;
 }
@@ -45,17 +45,17 @@ mode Element::GetMode()
 	return this->elementMode;
 }
 
-double Element::GetValue()
+long double Element::GetValue()
 {
 	return this->value;
 }
 
-double Element::GetFrequency()
+long double Element::GetFrequency()
 {
 	return this->frequency;
 }
 
-map<chartMode, tuple<double, double>> Element::GetChartParameters()
+map<chartMode, tuple<long double, long double>> Element::GetChartParameters()
 {
 	return this->chartParameters;
 }

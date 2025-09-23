@@ -15,7 +15,7 @@ using namespace std;
 // Макрос для замены index на point_index
 #define index point_index
 
-using Complex = complex<double>;
+using Complex = complex<long double>;
 
 enum mode
 {
@@ -28,6 +28,7 @@ enum mode
     Line,
     OSLine,
     SSLine,
+    Transform,
     AddPoint,
     Default
 }; 
@@ -52,14 +53,14 @@ enum systemMode
 };
 struct Point
 {
-    double x;
-    double y;
+    long double x;
+    long double y;
 };
 
 extern QString fileName;
 extern mode Model;
-extern double frequency;
-extern QList<double> frequencyList;
+extern long double frequency;
+extern QList<long double> frequencyList;
 extern QList<Point> morePoints;
 extern map<int, tuple<Point, bool>> allPoints;
 extern QList<double> qCircles;
@@ -68,26 +69,20 @@ extern int dpIndex;
 extern int allpointindex;
 extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
-extern map<int, tuple<Point, double, double, mode>> points;
+extern map<int, tuple<Point, long double, long double, mode>> points;
 extern chartMode cMode;
 extern parameterMode pMode;
-extern double lastPointX;
-extern double lastPointY;
-extern double rRadius;
-extern double rCenterX;
-extern double rCenterY;
-extern double iRadius;
-extern double iCenterX;
-extern double iCenterY;
-extern double gRadius;
-extern double gCenterX;
-extern double gCenterY;
-extern double bRadius;
-extern double bCenterX;
-extern double bCenterY;
-
-// Добавим недостающие переменные
-extern double impedanceRealR;
-extern double impedanceImagR;
-extern double admitanceRealR;
-extern double admitanceImagR;
+extern long double lastPointX;
+extern long double lastPointY;
+extern long double rRadius;
+extern long double rCenterX;
+extern long double rCenterY;
+extern long double iRadius;
+extern long double iCenterX;
+extern long double iCenterY;
+extern long double gRadius;
+extern long double gCenterX;
+extern long double gCenterY;
+extern long double bRadius;
+extern long double bCenterX;
+extern long double bCenterY;

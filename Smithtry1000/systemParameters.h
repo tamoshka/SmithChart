@@ -39,37 +39,51 @@ public:
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
-	//9 - VSWRColor
+	//9 - VSWRColor, 10 - QCirclesColor
 	static QList<double> linesWidth;
 	//0-
 	static QList<int>sPlotline;
 	static QList<int>ampFrline;
 	static mode Model;
-	static double frequency;
-	static double Im;
-	static double Re;
+	static long double frequency;
+	static long double Im;
+	static long double Re;
 	static QList<Point> morePoints;
 	static int index;
 	static int dpIndex;
-	static double lastPointX;
-	static double lastPointY;
-	static double scale;
+	static long double lastPointX;
+	static long double lastPointY;
+	static long double scale;
 	static QList<QSvgWidget*> svgWidgets;
-	static double impedanceRealR;
-	static double impedanceImagR;
-	static double admitanceRealR;
-	static double admitanceImagR;
+	static long double impedanceRealR;
+	static long double impedanceImagR;
+	static long double admitanceRealR;
+	static long double admitanceImagR;
 	static bool circuitHover;
 	static bool tune;
 	static bool tuned;
 	static bool tuneBlock;
 	static QList<Element*> tunedElements;
 	static double er;
-	static double z0line;
+	static long double z0line;
 	static bool colorChanged;
 	static double alpha;
 	static double lambda;
 	static bool sizeChanged;
 	static systemMode sys;
 	static QSet<double> VSWRCircles;
+	static QSet<double> QCircles;
+
+	static void rImpedanceRealCalculation(long double, long double);
+	static void rImpedanceImagCalculation(long double, long double);
+	static void rAdmitanceRealCalculation(long double, long double);
+	static void rAdmitanceImagCalculation(long double, long double);
+
+	static Complex zCalculation(long double, long double);
+	static Complex yCalculation(long double, long double);
+
+	static Complex impedanceRealChartParameters(long double, long double);
+	static Complex impedanceImagChartParameters(long double, long double);
+	static Complex admitanceRealChartParameters(long double, long double);
+	static Complex admitanceImagChartParameters(long double, long double);
 };
