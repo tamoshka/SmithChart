@@ -770,6 +770,94 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 }
             }
         }
+        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == Transform)
+        {
+            Complex zl;
+            long double dx, dy;
+            if (ll == 0)
+            {
+                zl = circuitElements->z;
+            }
+            else
+            {
+                zl = circuitElements->GetCircuitElements()[ll - 1]->GetParameter()[Z];
+            }
+            long double q = zl.imag() / zl.real();
+            long double ycenter = -1 / q;
+            long double R = sqrt(1 + 1 / pow(q, 2));
+            if (ll == 0)
+            {
+                dx = circuitElements->firstPoint.x;
+                dy = circuitElements->firstPoint.y + ycenter;
+            }
+            else
+            {
+                dx = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+                dy = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y + ycenter;
+            }
+            
+            long double sin_t = dy;
+            long double cos_t = dx;
+            long double t1 = atan(sin_t / cos_t);
+            if (cos_t >= 0)
+            {
+                t1 *= -1;
+            }
+            else if (sin_t <= 0)
+            {
+                t1 = M_PI - t1;
+            }
+            else
+            {
+                t1 = -M_PI - t1;
+            }
+            Complex z = circuitElements->GetCircuitElements()[ll]->GetParameter()[Z];
+            q = z.imag() / z.real();
+            ycenter = -1 / q;
+            R = sqrt(1 + 1 / pow(q, 2));
+
+            dx = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+            dy = circuitElements->GetCircuitElements()[ll]->GetPoint().y + ycenter;
+            sin_t = dy;
+            cos_t = dx;
+            long double t2 = atan(sin_t / cos_t);
+            if (cos_t >= 0)
+            {
+                t2 *= -1;
+            }
+            else if (sin_t <= 0)
+            {
+                t2 = M_PI - t2;
+            }
+            else
+            {
+                t2 = -M_PI - t2;
+            }
+            if (t1 > t2)
+            {
+                long double temp = t2;
+                t2 = t1;
+                t1 = temp;
+            }
+            bool flagi = false;
+            step = abs(t2 - t1) / 100;
+            r = ycenter;
+            iPoint = compute_q(t1, R);
+            iPixel.setX(iPoint.x * scale + this->rect().center().x());
+            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
+            for (t1; t1 < t2; t1 += step)
+            {
+                Point point = compute_q(t1, R);
+                QPointF pixel;
+                pixel.setX(point.x * scale + center.x());
+                pixel.setY(-point.y * scale + center.y());
+                if (pow(point.x, 2) + pow(-point.y, 2) <= 1)
+                {
+                    painter.drawLine(iPixel, pixel);
+                }
+                iPixel = pixel;
+            }
+        }
     }
 
     painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
@@ -1050,6 +1138,37 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 pixel.setX(point.x * scale + this->rect().center().x());
                 pixel.setY(-point.y * scale + this->rect().center().y());
                 painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+            }
+        }
+        else if (Model == mode::Transform)
+        {
+            Complex zl;
+            if (index == 1)
+            {
+                zl = circuitElements->z;
+            }
+            else
+            {
+                zl = circuitElements->GetCircuitElements()[index - 2]->GetParameter()[Z];
+            }
+            long double q = zl.imag() / zl.real();
+            QPointF centertemp = QPointF(0, -1 / q);
+            double radius = sqrt(1 + 1 / pow(q, 2));
+            double t1 = 0;
+            double t2 = 2 * M_PI;
+            step = t2 / 2000;
+            r = -centertemp.y();
+            for (t1; t1 < t2; t1 += step)
+            {
+                Point point = compute_q(t1, radius);
+                QPointF pixel;
+                pixel.setX(point.x * scale + center.x());
+                pixel.setY(point.y * scale + center.y());
+                if (pow(point.x, 2) + pow(point.y, 2) <= 1)
+                {
+                    painter.drawLine(iPixel, pixel);
+                }
                 iPixel = pixel;
             }
         }

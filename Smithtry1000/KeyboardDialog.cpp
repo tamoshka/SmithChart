@@ -81,6 +81,11 @@ void KeyboardDialog::onAccept()
             {
                 SystemParameters::sys = ReflectionCoefficient;
             }
+            if (dpIndex == 0)
+            {
+                frequency = valueFrequency;
+            }
+            frequencyList.append(valueFrequency);
             SystemParameters::frequency = valueFrequency;
             SystemParameters::Re = valueRe;
             SystemParameters::Im = valueIm;

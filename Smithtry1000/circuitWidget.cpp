@@ -248,6 +248,17 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     s3 = QString::number(round(l * 1000 / sqrt(SystemParameters::er) * 10) / 10) + "mm(phys)|" + QString::number(round(l * 1000 * 10) / 10) + "mm(electr)";
                     break;
                 }
+                case Transform:
+                {
+                    double theta;
+                    double lambda;
+                    double o;
+                    double l;
+                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+                    double n = sqrt(SystemParameters::impedanceRealR / z.real());
+                    s1 = "1:" + QString::number(n);
+                    break;
+                }
             }
         }
         painter.save();
@@ -317,6 +328,11 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(temp[i]);
                     s1 = QString::number((double)tmp->GetValue()) + "Ohm | lambda=" + QString::number((double)tmp->GetLambda());
                     s3 = QString::number((double)round(tmp->GetMechanicalLength() * 10) / 10) + "mm(phys)|" + QString::number((double)round(tmp->GetElectricalLength() * 10) / 10) + "mm(electr)";
+                    break;
+                }
+                case Transform:
+                {
+                    s1 = "1:" + QString::number(temps1);
                     break;
                 }
             }

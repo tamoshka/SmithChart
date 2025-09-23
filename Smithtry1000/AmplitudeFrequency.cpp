@@ -50,11 +50,11 @@ void AmplitudeFrequency::MatrixCalculation()
     long double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
     long double f = frequency * 1e6;
     bool flag = false;
-    for (long double freq = 1; freq <= 3 * f+1; freq += (3 * f -1) / 99)
+    for (long double freq = 1e8; freq <= 3e9; freq += (3e9 - 1e8) / 99)
     {
         w = 2 * M_PI * freq;
 
-        for (int i = 0; i < circuitElements->GetCircuitElements().size(); i++)
+        for (int i = circuitElements->GetCircuitElements().size()-1; i >= 0; i--)
         {
             switch (circuitElements->GetCircuitElements()[i]->GetMode())
             {
@@ -122,7 +122,7 @@ void AmplitudeFrequency::MatrixCalculation()
                     LinesElement* tmp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[i]);
                     long double r0 = tmp->GetValue();
                     long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9);
+                    long double l = t * 299792458 / (360 * 1e9)* tmp->GetElectricalLength() / tmp->GetMechanicalLength();
                     long double theta = l * w / 299792458;
                     A1[0][0] = cos(theta);
                     A1[1][1] = cos(theta);
@@ -135,7 +135,7 @@ void AmplitudeFrequency::MatrixCalculation()
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     long double r0 = tmp->GetValue();
                     long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9);
+                    long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength()/tmp->GetMechanicalLength();
                     long double theta = l * w / 299792458;
                     Complex z = Complex(0, -1)*r0/ tan(theta);
                     Complex y = (long double)1 / z;
@@ -150,7 +150,7 @@ void AmplitudeFrequency::MatrixCalculation()
                     VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
                     long double r0 = tmp->GetValue();
                     long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9);
+                    long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength() / tmp->GetMechanicalLength();
                     long double theta = l * w/ 299792458;
                     Complex z = Complex(0, 1)*r0 * tan(theta);
                     Complex y = (long double)1 / z;
@@ -160,8 +160,17 @@ void AmplitudeFrequency::MatrixCalculation()
                     A1[1][1] = 1;
                     break;
                 }
+                case Transform:
+                {
+                    Complex n = circuitElements->GetCircuitElements()[i]->GetValue();
+                    A1[0][0] = n;
+                    A1[0][1] = 0;
+                    A1[1][0] = 0;
+                    A1[1][1] = (long double)1/n;
+                    break;
+                }
             }
-            if (i == 0)
+            if (i == circuitElements->GetCircuitElements().size() - 1)
             {
                 A[0][0] = A1[0][0];
                 A[0][1] = A1[0][1];
@@ -187,11 +196,11 @@ void AmplitudeFrequency::MatrixCalculation()
         Complex s21 = (long double)(2) / dT;
         Complex s22 = ((long double)(-1) * A[0][0] + A[0][1] / z0 - A[1][0] * z0 + A[1][1]) / dT;
 
-        Complex R2(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real(), -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag());
-        Complex R1(circuitElements->z.real(), -circuitElements->z.imag());
+        Complex R1(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real(), -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag());
+        Complex R2(circuitElements->z.real(), -circuitElements->z.imag());
 
 
-        if ((R1.real() == z0) && (R2.real() == z0))
+        if ((R1.real() == z0) && (R2.real() == z0) && (R1.imag()==0) &&(R2.imag()==0))
         {
             s11 = s11;
             s12 = s12;

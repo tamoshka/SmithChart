@@ -1819,6 +1819,63 @@ void TuneWidget::ValueChanged(int value)
 				elem->SetTheta(theta);
 				break;
 			}
+			case Transform:
+			{
+				long double x;
+				long double y2;
+				long double t;
+				long double r1 = z.real();
+				long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(),2)*r1;
+				r2 = r2 / 50;
+				long double q = z.imag() / z.real();
+				long double rIm = q * r2;
+				long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;
+
+				if (denominator != 0) {
+					x = (r2 * r2 + rIm * rIm - 1) / denominator;
+					y2 = (2 * rIm) / denominator;
+				}
+				else {
+					x = -1;
+					y2 = 0;
+				}
+				y2 *= -1;
+				Point point;
+				point.x = x;
+				point.y = y2;
+				circuitElements->GetCircuitElements()[j]->SetPoint(point);
+				Complex z2 = SystemParameters::zCalculation(x, y2);
+				Complex y3 = SystemParameters::yCalculation(x, y2);
+				map<parameterMode, Complex> parameter;
+				parameter[Z] = z2;
+				parameter[Y] = y3;
+				Complex g;
+				if (x >= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
+				}
+				else if (y2 <= 0)
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
+				}
+				else
+				{
+					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
+				}
+				parameter[G] = g;
+				map<chartMode, tuple<long double, long double>> chart;
+				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
+				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
+				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
+				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
+				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
+				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
+				break;
+			}
 		}
 		SystemParameters::tunedElements = temp;
 		SystemParameters::tuned = true;

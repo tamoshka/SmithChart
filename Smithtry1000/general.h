@@ -28,6 +28,7 @@ enum mode
     Line,
     OSLine,
     SSLine,
+    Transform,
     AddPoint,
     Default
 }; 

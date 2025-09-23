@@ -65,6 +65,8 @@ private slots:
     void onMenuToolsCliked();
     void onKeyboard_buttonClicked();
     void onCirclesClicked();
+    void onTransform_buttonClicked();
+
 private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);

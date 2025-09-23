@@ -78,6 +78,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->ParametersButton, &QPushButton::clicked, this, &Smithtry1000::onMenuToolsCliked);
     connect(ui->KeyboardButton, &QPushButton::clicked, this, &Smithtry1000::onKeyboard_buttonClicked);
     connect(ui->CirclesButton, &QPushButton::clicked, this, &Smithtry1000::onCirclesClicked);
+    connect(ui->Transform_button, &QPushButton::clicked, this, &Smithtry1000::onTransform_buttonClicked);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
@@ -113,6 +114,152 @@ void Smithtry1000::onCirclesClicked()
 void Smithtry1000::getCirclesSignal()
 {
     renderArea->update();
+}
+
+void Smithtry1000::onTransform_buttonClicked()
+{
+    if (pointsX.size() > 0 && pointsY[pointsY.size()-1]!=0)
+    {
+        Model = mode::Transform;
+        auxiliaryWidget->update();
+        leftClicked = false;
+        rightClicked = false;
+        QPoint centerLocal = renderArea->rect().center();
+        QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
+        Complex zl, yl;
+        auxiliaryWidget->addSvg(QString(":/Images/vertical_transform_circuit.svg"), (index + 2) * 40, 39);
+        QCursor::setPos(centerGlobal);
+        this->setCursor(Qt::BlankCursor); // скрываем системный курсор
+        long double x;
+        long double y;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            yl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Y];
+            zl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
+            x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+        }
+        else
+        {
+            yl = circuitElements->y;
+            zl = circuitElements->z;
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
+        if (y >= 0 && y < 0.000001)
+        {
+            y = 0.000001;
+        }
+        else if (y <= 0 && y > -0.000001)
+        {
+            y = -0.000001;
+        }
+        long double q = zl.imag() / zl.real();
+        long double ycenter = -1 / q;
+        long double R = sqrt(1 + 1 / pow(q, 2));
+        long double dx = x;
+        long double dy = y+ycenter;
+        long double sin_t = dy;
+        long double cos_t = dx;
+        t = atan(sin_t / cos_t);
+        if (cos_t >= 0)
+        {
+            t *= -1;
+        }
+        else if (sin_t <= 0)
+        {
+            t = M_PI - t;
+        }
+        else
+        {
+            t = -M_PI - t;
+        }
+        r = ycenter;
+        tmin = -M_PI;
+        tmax = M_PI;
+        trackingEnabled = !trackingEnabled;
+        while (!leftClicked && !rightClicked)
+        {
+            QCoreApplication::processEvents();
+        }
+        if (leftClicked)
+        {
+            SystemParameters::rAdmitanceImagCalculation(pointsX[pointsX.size() - 1], pointsY[pointsY.size() - 1]);
+            long double r1 = SystemParameters::admitanceImagR;
+            SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+            long double r2 = SystemParameters::admitanceImagR;
+            Point point;
+            point.x = lastPointX;
+            point.y = lastPointY;
+            allPoints[index + dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
+            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            map<parameterMode, Complex> parameter;
+            parameter[Z] = z;
+            parameter[Y] = y2;
+            Complex g;
+            if (x >= 0)
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), atan(y / x) * 180 / M_PI * -1);
+            }
+            else if (y <= 0)
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), 180 - atan(y / x) * 180 / M_PI);
+            }
+            else
+            {
+                g = Complex(pow(x, 2) + pow(y, 2), -180 - atan(y / x) * 180 / M_PI);
+            }
+            parameter[G] = g;
+            map<chartMode, tuple<long double, long double>> chart;
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
+            chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
+            chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
+            chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
+            long double n = sqrt(z.real() / zl.real());
+            this->circuitElements->AddCircuitElements(new Element(Transform, n, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
+            pointsX.append(lastPointX);
+            pointsY.append(lastPointY);
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            points[index] = make_tuple(point, r, t, Model);
+            int row = ui->pointTable->rowCount();
+            ui->pointTable->insertRow(row);
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
+            SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+            SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+            QString temp2 = " + j";
+            if (SystemParameters::impedanceImagR < 0)
+            {
+                temp2 = " - j";
+            }
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+            if (SystemParameters::impedanceRealR == 0)
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+            }
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)frequency)));
+            index++;
+            allpointindex++;
+            renderArea->setCursorPosOnCircle(temp);
+        }
+        if (rightClicked)
+        {
+            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            renderArea->setCursorPosOnCircle(temp);
+            auxiliaryWidget->removeLastSvg();
+            auxiliaryWidget->update();
+        }
+        this->unsetCursor(); // возвращаем курсор
+        Model = Default;
+    }
 }
 
 void Smithtry1000::onLine_buttonClicked()
@@ -1823,14 +1970,17 @@ void Smithtry1000::onTimeout()
     {
         // Вычисляем точку на окружности и ставим туда курсор
         QPoint posOnCircle = getPointOnCircle(dx, dy);
-        /*if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(scale, 2))
+        if (Model == Transform)
         {
-            QCursor::setPos(tempX, tempY);
-            posOnCircle.setX(tempX);
-            posOnCircle.setY(tempY);
+            if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(scale, 2))
+            {
+                QCursor::setPos(tempX, tempY);
+                posOnCircle.setX(tempX);
+                posOnCircle.setY(tempY);
+            }
+            tempX = posOnCircle.x();
+            tempY = posOnCircle.y();
         }
-        tempX = posOnCircle.x();
-        tempY = posOnCircle.y();*/
         QCursor::setPos(renderArea->mapToGlobal(posOnCircle));
         renderArea->setCursorPosOnCircle(posOnCircle);
         // Возвращаем системный курсор обратно в центр
@@ -2786,6 +2936,155 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         auxiliaryWidget->update();
         return QPoint(x, y);
+    }
+    else if (Model == Transform)
+    {
+        long double tprev = t;
+        t = t;
+        long double x, y;
+        int dxABS = abs(dx);
+        int dyABS = abs(dy);
+        long double dif;
+        bool flag;
+        if (dyABS > dxABS)
+        {
+            flag = true;
+            dif = dyABS;
+        }
+        else
+        {
+            flag = false;
+            dif = dxABS;
+        }
+        step = 0.01 + dif / 800;
+        x = 0;
+        y = 0;
+        if (dx == 0 && dy == 0)
+        {
+        }
+        else if (t <= 0 && t > tmin)
+        {
+            if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t < M_PI / 2 * (-1)) || (dy<0 && flag == true && t>M_PI / 2 * (-1)))
+            {
+                if (t - step < tmin)
+                {
+                    t = tmin;
+                }
+                else
+                {
+                    t -= step;
+                }
+            }
+            else if ((dx > 0 && flag == false) || (dy > 0 && flag == true && t > M_PI / 2 * (-1)) || (dy < 0 && flag == true && t < M_PI / 2 * (-1)))
+            {
+                if (t + step > tmax)
+                {
+                    t = tmax;
+                }
+                else
+                {
+                    t += step;
+                }
+            }
+        }
+        else if (t >= 0 && t < tmax)
+        {
+            if ((dx < 0 && flag == false) || (dy > 0 && flag == true && t < M_PI / 2) || (dy < 0 && flag == true && t > M_PI / 2))
+            {
+                if (t + step > tmax)
+                {
+                    t = tmax;
+                }
+                else
+                {
+                    t += step;
+                }
+            }
+            else if ((dx > 0 && flag == false) || (dy < 0 && flag == true && t < M_PI / 2) || (dy > 0 && flag == true && t > M_PI / 2))
+            {
+                if (t - step < tmin)
+                {
+                    t = tmin;
+                }
+                else
+                {
+                    t -= step;
+                }
+            }
+        }
+
+        long double cos_t = cos(t);
+        long double sin_t = sin(t);
+        Complex zl, yl;
+        if (circuitElements->GetCircuitElements().size() > 0)
+        {
+            yl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Y];
+            zl = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
+        }
+        else
+        {
+            yl = circuitElements->y;
+            zl = circuitElements->z;
+        }
+        long double q = zl.imag() / zl.real();
+        long double ycenter = -1 / q;
+        long double R = sqrt(1 + 1 / pow(q, 2));
+        x = cos_t * R;
+        if (abs(x) >= 1)
+        {
+            t = tprev;
+        }
+        else
+        {
+            y = sin_t * R + r;
+            y *= -1;
+            if (y >= 0 && y < 0.000001)
+            {
+                y = 0.000001;
+            }
+            else if (y <= 0 && y > -0.000001)
+            {
+                y = -0.000001;
+            }
+            lastPointX = x;
+            lastPointY = y;
+            SystemParameters::rImpedanceRealCalculation(x, y);
+            SystemParameters::rAdmitanceRealCalculation(x, y);
+            SystemParameters::rImpedanceImagCalculation(x, y);
+            SystemParameters::rAdmitanceImagCalculation(x, y);
+            QString temp = "+j";
+            if (SystemParameters::impedanceImagR < 0)
+            {
+                temp = "-j";
+            }
+            ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+            if (SystemParameters::admitanceImagR < 0)
+            {
+                temp = "-j";
+            }
+            else
+            {
+                temp = "+j";
+            }
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
+            if (x >= 0)
+            {
+                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)pow(x, 2) + (double)pow(y, 2)) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            }
+            else if (y <= 0)
+            {
+                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)pow(x, 2) + (double)pow(y, 2)) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            }
+            else
+            {
+                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)pow(x, 2) + (double)pow(y, 2)) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            }
+            x = x * scale + renderArea->rect().center().x();
+            y = y * scale + renderArea->rect().center().y();
+
+            auxiliaryWidget->update();
+            return QPoint(x, y);
+        }
     }
 }
 
