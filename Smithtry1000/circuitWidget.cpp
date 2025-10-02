@@ -343,6 +343,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             painter.drawText(0, 0, s1);
             painter.translate(0, +15);
             painter.drawText(0, 0, s3);
+            s3 = "";
             painter.restore();
         }
         if (SystemParameters::tune && SystemParameters::circuitHover)

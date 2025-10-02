@@ -198,10 +198,10 @@ void AmplitudeFrequency::MatrixCalculation()
         Complex s22 = ((long double)(-1) * A[0][0] + A[0][1] / z0 - A[1][0] * z0 + A[1][1]) / dT;
 
         Complex R1(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real(), -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag());
-        Complex R2(circuitElements->z.real(), -circuitElements->z.imag());
+        Complex R2(circuitElements->z.real(), circuitElements->z.imag());
+        Complex s110, s220, s120, s210;
 
-
-        if ((R1.real() == z0) && (R2.real() == z0) && (R1.imag()==0) &&(R2.imag()==0))
+        if ((R1 == z0) || (R2 == z0))
         {
             s11 = s11;
             s12 = s12;
@@ -221,26 +221,19 @@ void AmplitudeFrequency::MatrixCalculation()
             Complex D = ((long double)(1) - gamma1 * s11) * ((long double)(1) - gamma2 * s22) - gamma1 * gamma2 * s12 * s21;
             Complex sopra1(a1.real(), -a1.imag());
             Complex sopra2(a2.real(), -a2.imag());
-            s11 = (sopra1 * (((long double)(1) - gamma2 * s22) * (s11 - sopr1) + gamma2 * s12 * s21)) / (a1 * D);
-            s22 = (sopra2 * (((long double)(1) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
-            s12 = (sopra2 * s12 * (1-pow(g1,2))) / (a1 * D);
-            s21 = (sopra1 * s21 * (1 - pow(g2, 2))) / (a2 * D);
+            s110 = (sopra1 * (((long double)(1) - gamma2 * s22) * (s11 - sopr1) + gamma2 * s12 * s21)) / (a1 * D);
+            s220 = (sopra2 * (((long double)(1) - gamma1 * s11) * (s22 - sopr2) + gamma1 * s12 * s21)) / (a2 * D);
+            s120 = (sopra2 * s12 * (1-pow(g1,2))) / (a1 * D);
+            s210 = (sopra1 * s21 * (1 - pow(g2, 2))) / (a2 * D);
         }
         Chas[k] = freq;
-        Znach21[k] = abs(s21);
-        Znach11[k] = abs(s11);
-        Znach22[k] = abs(s22);
-        Znach12[k] = abs(s12);
+        Znach21[k] = abs(s210);
+        Znach11[k] = abs(s110);
+        Znach22[k] = abs(s220);
+        Znach12[k] = abs(s120);
         k++;
     }
-    if (flag == true)
-    {
-        SetPoint(Chas, Znach22, Znach12);
-    }
-    else
-    {
-        SetPoint(Chas, Znach11, Znach21);
-    }
+    SetPoint(Chas, Znach11, Znach21);
 }
 
 void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double z[])

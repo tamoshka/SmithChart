@@ -21,6 +21,7 @@
 #include "LinesDialog.h"
 #include "KeyboardDialog.h"
 #include "CirclesWidget.h"
+#include "SaveDialog.h"
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
@@ -66,6 +67,7 @@ private slots:
     void onKeyboard_buttonClicked();
     void onCirclesClicked();
     void onTransform_buttonClicked();
+    void Save();
 
 private:
     SParameters* sParameters;

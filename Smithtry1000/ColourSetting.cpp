@@ -51,6 +51,15 @@ ColourSetting::ColourSetting(QWidget *parent)
 	sBoxAmpFrIndex[ui->spinBox_24] = 0;
 	sBoxAmpFrIndex[ui->spinBox_23] = 1;
 
+	for (auto it = sBoxDVSIndex.begin(); it != sBoxDVSIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::linesWidth[it.value()]);
+	}
+	for (auto it = sBoxIndex.begin(); it != sBoxIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::sPlotline[it.value()]);
+	}
+	for (auto it = sBoxAmpFrIndex.begin(); it != sBoxAmpFrIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::ampFrline[it.value()]);
+	}
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
 	connect(ui->S22Graf, &QPushButton::clicked, this, &ColourSetting::S22Graf);
 	connect(ui->MAGGraf, &QPushButton::clicked, this, &ColourSetting::MAGGraf);
@@ -92,6 +101,7 @@ ColourSetting::ColourSetting(QWidget *parent)
 
 	connect(ui->spinBox_23, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
 	connect(ui->spinBox_24, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
+	connect(ui->DefaultButton, &QPushButton::clicked, this, &ColourSetting::DefaultClicked);
 }
 
 ColourSetting::~ColourSetting()
@@ -378,4 +388,63 @@ void ColourSetting::AmpFrLine(int line)
 		SystemParameters::ampFrline[number] = line;
 		emit signal();
 	}
+}
+
+void ColourSetting::DefaultClicked()
+{
+	setButtonColor(ui->S11Graf, SystemParameters::s11GrafColorDefault);
+	setButtonColor(ui->S22Graf, SystemParameters::s22GrafColorDefault);
+	setButtonColor(ui->MAGGraf, SystemParameters::magGrafColorDefault);
+	setButtonColor(ui->MSGGraf, SystemParameters::msgGrafColorDefault);
+	setButtonColor(ui->KGraf, SystemParameters::kGrafColorDefault);
+	setButtonColor(ui->MuGraf, SystemParameters::muGrafColorDefault);
+	setButtonColor(ui->AmpFrS11, SystemParameters::ampS11ColorDefault);
+	setButtonColor(ui->AmpFrS21, SystemParameters::ampS21ColorDefault);
+	setButtonColor(ui->CircleS12, SystemParameters::circleS12Default);
+	setButtonColor(ui->CircleS21, SystemParameters::circleS21Default);
+	setButtonColor(ui->ColourAdmitance, SystemParameters::AdmitanceColorDefault);
+	setButtonColor(ui->ColourImpedance, SystemParameters::ImpedanceColorDefault);
+	setButtonColor(ui->GridGrafOneColor, SystemParameters::gridGrafOneColorDefault);
+	setButtonColor(ui->GridGrafTwoColor, SystemParameters::gridGrafTwoColorDefault);
+	setButtonColor(ui->DatapointCirclesColor, SystemParameters::DataPointsColorDefault);
+	setButtonColor(ui->TempLinesColor, SystemParameters::RootColorDefault);
+	setButtonColor(ui->ElementLinesColor, SystemParameters::ElementsColorDefault);
+	setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColorDefault);
+	setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColorDefault);
+	SystemParameters::s11GrafColor = SystemParameters::s11GrafColorDefault;
+	SystemParameters::s22GrafColor = SystemParameters::s22GrafColorDefault;
+	SystemParameters::magGrafColor = SystemParameters::magGrafColorDefault;
+	SystemParameters::msgGrafColor = SystemParameters::msgGrafColorDefault;
+	SystemParameters::kGrafColor = SystemParameters::kGrafColorDefault;
+	SystemParameters::muGrafColor = SystemParameters::muGrafColorDefault;
+	SystemParameters::ampS11Color = SystemParameters::ampS11ColorDefault;
+	SystemParameters::ampS21Color = SystemParameters::ampS21ColorDefault;
+	SystemParameters::circleS12 = SystemParameters::circleS12Default;
+	SystemParameters::circleS21 = SystemParameters::circleS21Default;
+	SystemParameters::AdmitanceColor = SystemParameters::AdmitanceColorDefault;
+	SystemParameters::ImpedanceColor = SystemParameters::ImpedanceColorDefault;
+	SystemParameters::gridGrafOneColor = SystemParameters::gridGrafOneColorDefault;
+	SystemParameters::gridGrafTwoColor = SystemParameters::gridGrafTwoColorDefault;
+	SystemParameters::DataPointsColor = SystemParameters::DataPointsColorDefault;
+	SystemParameters::RootColor = SystemParameters::RootColorDefault;
+	SystemParameters::ElementsColor = SystemParameters::ElementsColorDefault;
+	SystemParameters::MainImpedanceColor = SystemParameters::MainImpedanceColorDefault;
+	SystemParameters::MainAdmitanceColor = SystemParameters::MainAdmitanceColorDefault;
+	SystemParameters::linesWidth = SystemParameters::linesWidthDefault;
+	SystemParameters::ampFrline = SystemParameters::ampFrlineDefault;
+	SystemParameters::sPlotline = SystemParameters::sPlotlineDefault;
+	for (auto it = sBoxDVSIndex.begin(); it != sBoxDVSIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::linesWidth[it.value()]);
+	}
+	for (auto it = sBoxIndex.begin(); it != sBoxIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::sPlotline[it.value()]);
+	}
+	for (auto it = sBoxAmpFrIndex.begin(); it != sBoxAmpFrIndex.end(); ++it) {
+		it.key()->setValue(SystemParameters::ampFrline[it.value()]);
+	}
+	emit signal();
+	emit signalDVS();
+	emit grafTwoColor();
+	emit signalS12S21();
+	emit grafOneColor();
 }

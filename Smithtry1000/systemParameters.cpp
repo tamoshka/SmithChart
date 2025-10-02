@@ -27,6 +27,33 @@ QColor SystemParameters::gridAmpFrColor = QColor(Qt::black);
 QList<int> SystemParameters::sPlotline = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 QList<int> SystemParameters::ampFrline = { 1,1,1 };
 QList<double> SystemParameters::linesWidth = { 2, 1, 1, 2, 2, 2, 1, 3, 3, 2, 2};
+QColor SystemParameters::MainCircleColorDefault = QColor(Qt::black);
+QColor SystemParameters::ImpedanceColorDefault = QColor(Qt::blue);
+QColor SystemParameters::AdmitanceColorDefault = QColor(Qt::red);
+QColor SystemParameters::MainImpedanceColorDefault = QColor(Qt::blue);
+QColor SystemParameters::MainAdmitanceColorDefault = QColor(Qt::red);
+QColor SystemParameters::DataPointsColorDefault = QColor(Qt::magenta);
+QColor SystemParameters::RootColorDefault = QColor(Qt::green);
+QColor SystemParameters::ElementsColorDefault = QColor(Qt::black);
+QColor SystemParameters::BackgroundColorDefault = QColor(Qt::white);
+QColor SystemParameters::VSWRColorDefault = QColor(137, 81, 41);
+QColor SystemParameters::QCirclesColorDefault = QColor(0, 255, 255);
+QColor SystemParameters::ampS11ColorDefault = QColor(Qt::blue);
+QColor SystemParameters::ampS21ColorDefault = QColor(Qt::red);
+QColor SystemParameters::s11GrafColorDefault = QColor(Qt::blue);
+QColor SystemParameters::s22GrafColorDefault = QColor(Qt::red);
+QColor SystemParameters::magGrafColorDefault = QColor(Qt::blue);
+QColor SystemParameters::msgGrafColorDefault = QColor(Qt::red);
+QColor SystemParameters::kGrafColorDefault = QColor(Qt::green);
+QColor SystemParameters::muGrafColorDefault = QColor(Qt::black);
+QColor SystemParameters::circleS12Default = QColor(Qt::blue);
+QColor SystemParameters::circleS21Default = QColor(Qt::blue);
+QColor SystemParameters::gridGrafOneColorDefault = QColor(Qt::black);
+QColor SystemParameters::gridGrafTwoColorDefault = QColor(Qt::black);
+QColor SystemParameters::gridAmpFrColorDefault = QColor(Qt::black);
+QList<int> SystemParameters::sPlotlineDefault = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+QList<int> SystemParameters::ampFrlineDefault = { 1,1,1 };
+QList<double> SystemParameters::linesWidthDefault = { 2, 1, 1, 2, 2, 2, 1, 3, 3, 2, 2 };
 bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
 bool SystemParameters::tuned = false;
@@ -48,18 +75,23 @@ long double SystemParameters::impedanceRealR = 0;
 long double SystemParameters::impedanceImagR = 0;
 long double SystemParameters::admitanceImagR = 0;
 long double SystemParameters::admitanceRealR = 0;
+int SystemParameters::saved = 0;
 
 void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
 {
+    long double tempy=pow(y,2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+
+    long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -88,15 +120,18 @@ void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
 
 void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
 {
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
+    long double circleRadius = -1 - ((pow(x, 2) + tempy - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -124,15 +159,18 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
 {
     long double cos_t;
     long double sin_t;
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+    long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -169,17 +207,20 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
 
 void SystemParameters::rAdmitanceImagCalculation(long double x, long double y)
 {
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
     long double cos_t;
     long double sin_t;
-    long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+    long double circleRadius = (pow(x, 2) + 2 * x + 1 + tempy) / (-2 * y);
     long double yCenter = -circleRadius;
     long double dx = x + 1;
     long double dy = y - yCenter;
@@ -218,15 +259,18 @@ Complex SystemParameters::yCalculation(long double x, long double y)
 
 Complex SystemParameters::impedanceRealChartParameters(long double x, long double y)
 {
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+    long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -255,15 +299,18 @@ Complex SystemParameters::impedanceRealChartParameters(long double x, long doubl
 
 Complex SystemParameters::admitanceRealChartParameters(long double x, long double y)
 {
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
+    long double circleRadius = -1 - ((pow(x, 2) + tempy - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -291,15 +338,18 @@ Complex SystemParameters::impedanceImagChartParameters(long double x, long doubl
 {
     long double cos_t;
     long double sin_t;
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+    long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
     long double dx = x - xCenter;
     long double dy = y;
@@ -338,15 +388,18 @@ Complex SystemParameters::admitanceImagChartParameters(long double x, long doubl
 {
     long double cos_t;
     long double sin_t;
+    long double tempy = pow(y, 2);
     if (y >= 0 && y < 0.000001)
     {
         y = 0.000001;
+        tempy = 0.000001;
     }
     else if (y <= 0 && y > -0.000001)
     {
         y = -0.000001;
+        tempy = -0.000001;
     }
-    long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+    long double circleRadius = (pow(x, 2) + 2 * x + 1 + tempy) / (-2 * y);
     long double yCenter = -circleRadius;
     long double dx = x + 1;
     long double dy = y - yCenter;
@@ -367,4 +420,193 @@ Complex SystemParameters::admitanceImagChartParameters(long double x, long doubl
         r1 *= -1;
     }
     return Complex(r1, t1);
+}
+
+void SystemParameters::SaveToJSON()
+{
+    QJsonObject json;
+    QJsonObject colors;
+    colors["MainCircleColor"] = colorToString(SystemParameters::MainCircleColor);
+    colors["ImpedanceColor"] = colorToString(SystemParameters::ImpedanceColor);
+    colors["AdmitanceColor"] = colorToString(SystemParameters::AdmitanceColor);
+    colors["MainImpedanceColor"] = colorToString(SystemParameters::MainImpedanceColor);
+    colors["MainAdmitanceColor"] = colorToString(SystemParameters::MainAdmitanceColor);
+    colors["DataPointsColor"] = colorToString(SystemParameters::DataPointsColor);
+    colors["RootColor"] = colorToString(SystemParameters::RootColor);
+    colors["ElementsColor"] = colorToString(SystemParameters::ElementsColor);
+    colors["BackgroundColor"] = colorToString(SystemParameters::BackgroundColor);
+    colors["s11GrafColor"] = colorToString(SystemParameters::s11GrafColor);
+    colors["s22GrafColor"] = colorToString(SystemParameters::s22GrafColor);
+    colors["magGrafColor"] = colorToString(SystemParameters::magGrafColor);
+    colors["msgGrafColor"] = colorToString(SystemParameters::msgGrafColor);
+    colors["kGrafColor"] = colorToString(SystemParameters::kGrafColor);
+    colors["muGrafColor"] = colorToString(SystemParameters::muGrafColor);
+    colors["ampS11Color"] = colorToString(SystemParameters::ampS11Color);
+    colors["ampS21Color"] = colorToString(SystemParameters::ampS21Color);
+    colors["circleS12"] = colorToString(SystemParameters::circleS12);
+    colors["circleS21"] = colorToString(SystemParameters::circleS21);
+    colors["gridGrafOneColor"] = colorToString(SystemParameters::gridGrafOneColor);
+    colors["gridGrafTwoColor"] = colorToString(SystemParameters::gridGrafTwoColor);
+    colors["gridAmpFrColor"] = colorToString(SystemParameters::gridAmpFrColor);
+    colors["QCirclesColor"] = colorToString(SystemParameters::QCirclesColor);
+    colors["VSWRColor"] = colorToString(SystemParameters::VSWRColor);
+
+    json["colors"] = colors;
+
+    // Сериализация толщины линий
+    QJsonArray linesWidthArray;
+    for (double width : SystemParameters::linesWidth) {
+        linesWidthArray.append(width);
+    }
+    json["linesWidth"] = linesWidthArray;
+
+    // Сериализация параметров линий графиков
+    QJsonArray sPlotlineArray;
+    for (int line : SystemParameters::sPlotline) {
+        sPlotlineArray.append(line);
+    }
+    json["sPlotline"] = sPlotlineArray;
+
+    QJsonArray ampFrlineArray;
+    for (int line : SystemParameters::ampFrline) {
+        ampFrlineArray.append(line);
+    }
+    json["ampFrline"] = ampFrlineArray;
+    QJsonDocument doc(json);
+    QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir dir;
+    dir.mkpath(appDataPath); // Создаем папку если не существует
+    QFile file(appDataPath+"/app_settings.json");
+    if (!file.open(QIODevice::WriteOnly)) {
+        qDebug() << "Не удалось открыть файл для записи:" << fileName;
+    }
+    file.write(doc.toJson());
+    file.close();
+}
+
+void SystemParameters::deserializeFromJson()
+{
+    QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir dir;
+    dir.mkpath(appDataPath); // Создаем папку если не существует
+    QFile file(appDataPath + "/app_settings.json");
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Не удалось открыть файл для чтения:" << fileName;
+    }
+    QFileInfo fileInfo(appDataPath + "app_settings.json");
+    qDebug() << "Файл существует:" << fileInfo.exists();
+    qDebug() << "Размер файла:" << fileInfo.size() << "байт";
+    qDebug() << "Можно читать:" << fileInfo.isReadable();
+    qDebug() << "Можно писать:" << fileInfo.isWritable();
+    qDebug() << "Абсолютный путь:" << fileInfo.absoluteFilePath();
+    QByteArray data = file.readAll();
+    file.close();
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        qDebug() << "Ошибка парсинга JSON:" << error.errorString();
+    }
+    QJsonObject& json = doc.object();
+    try {
+        // Десериализация цветов
+        if (json.contains("colors") && json["colors"].isObject()) {
+            QJsonObject colors = json["colors"].toObject();
+
+            if (colors.contains("MainCircleColor"))
+                SystemParameters::MainCircleColor = stringToColor(colors["MainCircleColor"].toString());
+            if (colors.contains("ImpedanceColor"))
+                SystemParameters::ImpedanceColor = stringToColor(colors["ImpedanceColor"].toString());
+            if (colors.contains("AdmitanceColor"))
+                SystemParameters::AdmitanceColor = stringToColor(colors["AdmitanceColor"].toString());
+            if (colors.contains("MainImpedanceColor"))
+                SystemParameters::MainImpedanceColor = stringToColor(colors["MainImpedanceColor"].toString());
+            if (colors.contains("MainAdmitanceColor"))
+                SystemParameters::MainAdmitanceColor = stringToColor(colors["MainAdmitanceColor"].toString());
+            if (colors.contains("DataPointsColor"))
+                SystemParameters::DataPointsColor = stringToColor(colors["DataPointsColor"].toString());
+            if (colors.contains("RootColor"))
+                SystemParameters::RootColor = stringToColor(colors["RootColor"].toString());
+            if (colors.contains("ElementsColor"))
+                SystemParameters::ElementsColor = stringToColor(colors["ElementsColor"].toString());
+            if (colors.contains("BackgroundColor"))
+                SystemParameters::BackgroundColor = stringToColor(colors["BackgroundColor"].toString());
+            if (colors.contains("s11GrafColor"))
+                SystemParameters::s11GrafColor = stringToColor(colors["s11GrafColor"].toString());
+            if (colors.contains("s22GrafColor"))
+                SystemParameters::s22GrafColor = stringToColor(colors["s22GrafColor"].toString());
+            if (colors.contains("magGrafColor"))
+                SystemParameters::magGrafColor = stringToColor(colors["magGrafColor"].toString());
+            if (colors.contains("msgGrafColor"))
+                SystemParameters::msgGrafColor = stringToColor(colors["msgGrafColor"].toString());
+            if (colors.contains("kGrafColor"))
+                SystemParameters::kGrafColor = stringToColor(colors["kGrafColor"].toString());
+            if (colors.contains("muGrafColor"))
+                SystemParameters::muGrafColor = stringToColor(colors["muGrafColor"].toString());
+            if (colors.contains("ampS11Color"))
+                SystemParameters::ampS11Color = stringToColor(colors["ampS11Color"].toString());
+            if (colors.contains("ampS21Color"))
+                SystemParameters::ampS21Color = stringToColor(colors["ampS21Color"].toString());
+            if (colors.contains("circleS12"))
+                SystemParameters::circleS12 = stringToColor(colors["circleS12"].toString());
+            if (colors.contains("circleS21"))
+                SystemParameters::circleS21 = stringToColor(colors["circleS21"].toString());
+            if (colors.contains("gridGrafOneColor"))
+                SystemParameters::gridGrafOneColor = stringToColor(colors["gridGrafOneColor"].toString());
+            if (colors.contains("gridGrafTwoColor"))
+                SystemParameters::gridGrafTwoColor = stringToColor(colors["gridGrafTwoColor"].toString());
+            if (colors.contains("gridAmpFrColor"))
+                SystemParameters::gridAmpFrColor = stringToColor(colors["gridAmpFrColor"].toString());
+            if (colors.contains("QCirclesColor"))
+                SystemParameters::QCirclesColor = stringToColor(colors["QCirclesColor"].toString());
+            if (colors.contains("VSWRColor"))
+                SystemParameters::VSWRColor = stringToColor(colors["VSWRColor"].toString());
+        }
+
+        // Десериализация толщины линий
+        if (json.contains("linesWidth") && json["linesWidth"].isArray()) {
+            QJsonArray linesWidthArray = json["linesWidth"].toArray();
+            SystemParameters::linesWidth.clear();
+            for (const auto& value : linesWidthArray) {
+                SystemParameters::linesWidth.append(value.toDouble());
+            }
+        }
+
+        // Десериализация параметров линий графиков
+        if (json.contains("sPlotline") && json["sPlotline"].isArray()) {
+            QJsonArray sPlotlineArray = json["sPlotline"].toArray();
+            SystemParameters::sPlotline.clear();
+            for (const auto& value : sPlotlineArray) {
+                SystemParameters::sPlotline.append(value.toInt());
+            }
+        }
+
+        if (json.contains("ampFrline") && json["ampFrline"].isArray()) {
+            QJsonArray ampFrlineArray = json["ampFrline"].toArray();
+            SystemParameters::ampFrline.clear();
+            for (const auto& value : ampFrlineArray) {
+                SystemParameters::ampFrline.append(value.toInt());
+            }
+        }
+
+    }
+    catch (...) {
+        qDebug() << "Ошибка при десериализации параметров";
+    }
+}
+
+
+QString SystemParameters::colorToString(const QColor& color)
+{
+    if (color.alpha() == 255) {
+        return color.name(); // #RRGGBB
+    }
+    else {
+        return color.name(QColor::HexArgb); // #AARRGGBB
+    }
+}
+
+QColor SystemParameters::stringToColor(const QString& colorString)
+{
+    return QColor(colorString);
 }

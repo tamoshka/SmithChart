@@ -21,6 +21,18 @@ QString fileName = "";
 
 int main(int argc, char *argv[])
 {
+	QCoreApplication::setApplicationName("Smithtry1000");
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setOrganizationName("Tamoshka");
+	QCoreApplication::setOrganizationDomain("Tamoshka.com");
+	try 
+	{
+		SystemParameters::deserializeFromJson();
+	}
+	catch(exception e)
+	{
+
+	}
     QApplication a(argc, argv);
 
 	GrafOne g1;

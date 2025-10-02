@@ -52,6 +52,8 @@ private slots:
 	void DVSLine(float line);
 	void AmpFrLine(int line);
 
+	void DefaultClicked();
+
 private:
 	Ui::ColourSettingClass *ui;
 	void setButtonColor(QPushButton* button, const QColor& color);

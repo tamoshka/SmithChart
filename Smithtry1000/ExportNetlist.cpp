@@ -90,11 +90,11 @@ QString ExportNetlist::generateNetlistScs()
     netlistLines << "simulator lang=spectre";
     netlistLines << "* -- CIRCUIT";
     int nodeCounter = 1;  // Current node (start from input)
-    int rCount = 1, lCount = 1, cCount = 1, tlCount = 1;  // Element counters
+    int rCount = 1, lCount = 1, cCount = 1, tlCount = 1, trCount=1;  // Element counters
     QList <QString> lines;
     for (int i = circuit->GetCircuitElements().size() - 1; i >= 0; i--)
     {
-        QString line = generateElementLineScs(circuit->GetCircuitElements()[i], nodeCounter, rCount, lCount, cCount, tlCount);
+        QString line = generateElementLineScs(circuit->GetCircuitElements()[i], nodeCounter, rCount, lCount, cCount, tlCount, trCount);
         if (!line.isEmpty()) {
             lines.append(line);
         }
@@ -175,6 +175,8 @@ QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter
     }
     case Transform:
     {
+        line = QString("L%1 %2 0 %5\nL%3 0 %4 1\nK%1%3 L%1 L%3 1.0").arg(lCount++).arg(nodeCounter).arg(lCount++).arg(nodeCounter+1).arg(value*value);
+        nodeCounter++;
         break;
     }
     default:
@@ -259,6 +261,8 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     }
     case Transform:
     {
+        line = QString("XFER %1 %2 0 0 N=%3").arg(nodeCounter).arg(nodeCounter+1).arg(value);
+        nodeCounter++;
         break;
     }
     default:
@@ -270,7 +274,7 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     return line;
 }
 
-QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount)
+QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount, int& trCount)
 {
     const mode elMode = element->GetMode();
     const double value = element->GetValue();
@@ -332,6 +336,8 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
     }
     case Transform:
     {
+        line = QString("TRF%1 %2 0 %3 0 transformer N=%4").arg(tlCount++).arg(nodeCounter + 1).arg(nodeCounter).arg(value);
+        nodeCounter++;
         break;
     }
     default:

@@ -933,17 +933,15 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             long double t = get<1>(tuple1);
             if (y < 0)
             {
-                r = abs(r);
                 tmin = t;
-                tmax = 2*M_PI;
+                tmax = M_PI*3/2;
             }
             else
             {
-                r = abs(r) * (-1);
                 tmax = t;
-                tmin = M_PI;
+                tmin = M_PI*3/2;
             }
-            step = intervalLength / stepCount;
+            step = (tmax - tmin) / 100;
             iPoint = compute_imaginary(tmin);
             iPixel.setX
             (iPoint.x * scale + center.x());

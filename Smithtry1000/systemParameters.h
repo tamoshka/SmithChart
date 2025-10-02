@@ -38,12 +38,52 @@ public:
 
 	static QColor QCirclesColor;
 	static QColor VSWRColor;
+	//Главный круг
+	static QColor MainCircleColorDefault;
+	//Круги справа
+	static QColor ImpedanceColorDefault;
+	//Круги слева
+	static QColor AdmitanceColorDefault;
+	//Единичный круг справа
+	static QColor MainImpedanceColorDefault;
+	//Единичный круг слева
+	static QColor MainAdmitanceColorDefault;
+	//Цвета точек на диаграмме
+	static QColor DataPointsColorDefault;
+	//Предлогаемый маршрут передвижения мышки
+	static QColor RootColorDefault;
+	//Годограф
+	static QColor ElementsColorDefault;
+	static QColor BackgroundColorDefault;
+	//S ���������, ���
+	static QColor s11GrafColorDefault;
+	static QColor s22GrafColorDefault;
+	static QColor magGrafColorDefault;
+	static QColor msgGrafColorDefault;
+	static QColor kGrafColorDefault;
+	static QColor muGrafColorDefault;
+	static QColor ampS11ColorDefault;
+	static QColor ampS21ColorDefault;
+	static QColor circleS12Default;
+	static QColor circleS21Default;
+	static QColor gridGrafOneColorDefault;
+	static QColor gridGrafTwoColorDefault;
+	static QColor gridAmpFrColorDefault;
+
+	static QColor QCirclesColorDefault;
+	static QColor VSWRColorDefault;
 	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
 	//9 - VSWRColor, 10 - QCirclesColor
 	static QList<double> linesWidth;
 	//0-
 	static QList<int>sPlotline;
 	static QList<int>ampFrline;
+	//0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
+	//9 - VSWRColor, 10 - QCirclesColor
+	static QList<double> linesWidthDefault;
+	//0-
+	static QList<int>sPlotlineDefault;
+	static QList<int>ampFrlineDefault;
 	static mode Model;
 	static long double frequency;
 	static long double Im;
@@ -73,6 +113,11 @@ public:
 	static systemMode sys;
 	static QSet<double> VSWRCircles;
 	static QSet<double> QCircles;
+	//0 - Диаграмма, 1 - Цепь
+	static int saved;
+
+	static void SaveToJSON();
+	static void deserializeFromJson();
 
 	static void rImpedanceRealCalculation(long double, long double);
 	static void rImpedanceImagCalculation(long double, long double);
@@ -86,4 +131,7 @@ public:
 	static Complex impedanceImagChartParameters(long double, long double);
 	static Complex admitanceRealChartParameters(long double, long double);
 	static Complex admitanceImagChartParameters(long double, long double);
+private:
+	static QString colorToString(const QColor&);
+	static QColor stringToColor(const QString&);
 };

@@ -1793,7 +1793,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton_4">
+  <widget class="QPushButton" name="DefaultButton">
    <property name="geometry">
     <rect>
      <x>380</x>

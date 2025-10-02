@@ -1,5 +1,8 @@
 ﻿#include "Smithtry1000.h"
 #include <QCursor>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QPoint>
 #include <QRect>
 #include "Smithtry1000.h"
@@ -79,6 +82,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->KeyboardButton, &QPushButton::clicked, this, &Smithtry1000::onKeyboard_buttonClicked);
     connect(ui->CirclesButton, &QPushButton::clicked, this, &Smithtry1000::onCirclesClicked);
     connect(ui->Transform_button, &QPushButton::clicked, this, &Smithtry1000::onTransform_buttonClicked);
+    connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
@@ -102,7 +106,9 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
     this->amplitudeFrequence->close();
     this->tuneWidget->close();
     this->sParameters->Close();
+    SystemParameters::SaveToJSON();
     this->circlesWidget->close();
+
 }
 
 void Smithtry1000::onCirclesClicked()
@@ -114,6 +120,52 @@ void Smithtry1000::onCirclesClicked()
 void Smithtry1000::getCirclesSignal()
 {
     renderArea->update();
+}
+
+void Smithtry1000::Save()
+{
+    SaveDialog dialog(this);
+    {
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            QWidget* widget;
+            if (SystemParameters::saved == 0)
+            {
+                widget = renderArea;
+            }
+            else
+            {
+                widget = auxiliaryWidget;
+            }
+            QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+            QPixmap pixmap(widget->size());
+            widget->render(&pixmap);
+
+            QString extension = QFileInfo(fileName).suffix().toLower();
+
+            if (extension == "pdf") {
+                QPrinter printer(QPrinter::HighResolution);
+                printer.setOutputFormat(QPrinter::PdfFormat);
+                printer.setOutputFileName(fileName);
+                printer.setPageSize(QPageSize(widget->size()/10, QPageSize::Point));
+
+                QPainter painter(&printer);
+                widget->render(&painter);
+                painter.end();
+            }
+            else if (extension == "jpg" || extension == "jpeg") {
+                pixmap.save(fileName, "JPG", 90);
+            }
+            else if (extension == "png") {
+                pixmap.save(fileName, "PNG");
+            }
+            else {
+                // По умолчанию сохраняем как PNG
+                pixmap.save(fileName + ".png", "PNG");
+            }
+        }
+    }
 }
 
 void Smithtry1000::onTransform_buttonClicked()
@@ -519,6 +571,14 @@ void Smithtry1000::onKeyboard_buttonClicked()
         renderArea->setCursorPosOnCircle(temp);
         if (index == 0)
         {
+            if (y >= 0 && y < 0.000001)
+            {
+                y = 0.000001;
+            }
+            else if (y <= 0 && y > -0.000001)
+            {
+                y = -0.000001;
+            }
             pointsX.append(x);
             pointsY.append(y);
             lastPointX = x;
