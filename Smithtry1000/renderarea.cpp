@@ -465,43 +465,63 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             r = get<0>(tuple1);
             long double t2 = get<1>(tuple1);
             tuple<long double, long double> tuple2;
+            long double x, y;
             long double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(ImagImpedance);
                 t = get<1>(tuple2);
+                x = circuitElements->firstPoint.x;
+                y = circuitElements->firstPoint.y;
             }
             else
             {
                 tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagImpedance);
                 t = get<1>(tuple2);
+                x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+                y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
             }
-            step = abs(t2 - t) / 100;
-            long double tmin, tmax;
-            if (t2 > t)
+            if (abs(y) <= 0.000001)
             {
-                tmax = t2;
-                tmin = t;
+                long double x2, y2;
+                x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+                y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+                QPointF pixel;
+                iPixel.setX(x* scale + this->rect().center().x());
+                iPixel.setY(y * scale + this->rect().center().y());
+                pixel.setX(x2* scale + center.x());
+                pixel.setY(y2 * scale + center.y());
+                painter.drawLine(iPixel, pixel);
             }
             else
             {
-                tmax = t;
-                tmin = t2;
-            }
-            iPoint = compute_imaginary(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                Point point = compute_imaginary(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + center.x());
-                pixel.setY(-point.y * scale + center.y());
-                if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                step = abs(t2 - t) / 100;
+                long double tmin, tmax;
+                if (t2 > t)
                 {
-                    painter.drawLine(iPixel, pixel);
+                    tmax = t2;
+                    tmin = t;
                 }
-                iPixel = pixel;
+                else
+                {
+                    tmax = t;
+                    tmin = t2;
+                }
+                iPoint = compute_imaginary(tmin);
+                iPixel.setX(iPoint.x * scale + this->rect().center().x());
+                iPixel.setY(-iPoint.y * scale + this->rect().center().y());
+                for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+                    Point point = compute_imaginary(tmin);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(-point.y * scale + center.y());
+                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                    {
+                        painter.drawLine(iPixel, pixel);
+                    }
+                    iPixel = pixel;
+                }
             }
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionParallel || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorParallel)
@@ -547,44 +567,64 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
             long double t2 = get<1>(tuple1);
             tuple<long double, long double> tuple2;
+            long double x, y;
             long double t;
             if (ll == 0)
             {
                 tuple2 = circuitElements->chart.at(ImagAdmitance);
                 t = get<1>(tuple2);
+                x = circuitElements->firstPoint.x;
+                y = circuitElements->firstPoint.y;
             }
             else
             {
                 tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagAdmitance);
                 t = get<1>(tuple2);
+                x = circuitElements->GetCircuitElements()[ll-1]->GetPoint().x;
+                y = circuitElements->GetCircuitElements()[ll-1]->GetPoint().y;
             }
-            r = get<0>(tuple1);
-            step = abs(t2 - t) / 100;
-            long double tmin, tmax;
-            if (t2 > t)
+            if (abs(y) <= 0.000001)
             {
-                tmax = t2;
-                tmin = t;
+                long double x2, y2;
+                x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+                y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+                QPointF pixel;
+                iPixel.setX(x * scale + this->rect().center().x());
+                iPixel.setY(y * scale + this->rect().center().y());
+                pixel.setX(x2 * scale + center.x());
+                pixel.setY(y2 * scale + center.y());
+                painter.drawLine(iPixel, pixel);
             }
             else
             {
-                tmax = t;
-                tmin = t2;
-            }
-            iPoint = compute_imaginaryParallel(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(iPoint.y * scale + this->rect().center().y());
-            for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                Point point = compute_imaginaryParallel(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + center.x());
-                pixel.setY(point.y * scale + center.y());
-                if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                r = get<0>(tuple1);
+                step = abs(t2 - t) / 100;
+                long double tmin, tmax;
+                if (t2 > t)
                 {
-                    painter.drawLine(iPixel, pixel);
+                    tmax = t2;
+                    tmin = t;
                 }
-                iPixel = pixel;
+                else
+                {
+                    tmax = t;
+                    tmin = t2;
+                }
+                iPoint = compute_imaginaryParallel(tmin);
+                iPixel.setX(iPoint.x * scale + this->rect().center().x());
+                iPixel.setY(iPoint.y * scale + this->rect().center().y());
+                for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+                    Point point = compute_imaginaryParallel(tmin);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(point.y * scale + center.y());
+                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                    {
+                        painter.drawLine(iPixel, pixel);
+                    }
+                    iPixel = pixel;
+                }
             }
         }
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::Line)
@@ -921,13 +961,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagImpedance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);
@@ -1017,13 +1057,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagAdmitance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);

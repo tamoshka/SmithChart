@@ -17,6 +17,7 @@ public:
 
 private slots:
     void onAccept();
+    void onChanged();
 
 private:
     QLineEdit* frequencyLine;
@@ -25,8 +26,11 @@ private:
     QRadioButton* impedance;
     QRadioButton* admittance;
     QRadioButton* reflectionCoefficient;
+    QRadioButton* polar;
+    QRadioButton* cartesian;
     QGroupBox* chartSystem;
     QGroupBox* frequencyBox;
+    QGroupBox* valuesType;
     QHBoxLayout* valuesBox;
     QGroupBox* ReBox;
     QGroupBox* ImBox;

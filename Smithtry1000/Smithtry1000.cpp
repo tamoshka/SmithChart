@@ -170,7 +170,16 @@ void Smithtry1000::Save()
 
 void Smithtry1000::onTransform_buttonClicked()
 {
-    if (pointsX.size() > 0 && pointsY[pointsY.size()-1]!=0)
+    long double y0=0;
+    if (circuitElements->GetCircuitElements().size() > 0)
+    {
+        y0 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+    }
+    else if (pointsX.size() > 0)
+    {
+        y0 = circuitElements->firstPoint.y;
+    }
+    if (pointsX.size() > 0 && abs(y0)>=0.01)
     {
         Model = mode::Transform;
         auxiliaryWidget->update();
@@ -198,13 +207,13 @@ void Smithtry1000::onTransform_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         long double q = zl.imag() / zl.real();
         long double ycenter = -1 / q;
@@ -347,13 +356,13 @@ void Smithtry1000::onLine_buttonClicked()
                 x = circuitElements->firstPoint.x;
                 y = circuitElements->firstPoint.y;
             }
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             Complex g1 = (zl - long double(50)) / (zl + long double(50));
             Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
@@ -527,57 +536,103 @@ void Smithtry1000::onKeyboard_buttonClicked()
     KeyboardDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted)
     {
-        long double Re = SystemParameters::Re;
-        long double Im = SystemParameters::Im;
         long double frequency = SystemParameters::frequency;
         long double x, y;
-        if (SystemParameters::sys == Impedance)
+        long double Re = SystemParameters::Re;
+        long double Im = SystemParameters::Im;
+        if (SystemParameters::val == Cartesian)
         {
-            Re /= 50;
-            Im /= 50;
-            long double denominator = (Re + 1) * (Re + 1) + Im * Im;
+            if (SystemParameters::sys == Impedance)
+            {
+                Re /= 50;
+                Im /= 50;
+                long double denominator = (Re + 1) * (Re + 1) + Im * Im;
 
-            if (denominator != 0) {
-                x = (Re * Re + Im * Im - 1) / denominator;
-                y = (2 * Im) / denominator;
+                if (denominator != 0) {
+                    x = (Re * Re + Im * Im - 1) / denominator;
+                    y = (2 * Im) / denominator;
+                }
+                else {
+                    x = -1;
+                    y = 0;
+                }
             }
-            else {
-                x = -1;
-                y = 0;
+            else if (SystemParameters::sys == Admittance)
+            {
+                Re /= 20;
+                Im /= 20;
+                long double denominator = (1 + Re) * (1 + Re) + Im * Im;
+
+                if (denominator != 0) {
+                    x = (1 - Re * Re - Im * Im) / denominator;
+                    y = (-2 * Im) / denominator;
+                }
+                else {
+                    x = -1;
+                    y = 0;
+                }
+            }
+            else if (SystemParameters::sys == ReflectionCoefficient)
+            {
+                x = Re;
+                y = Im;
             }
         }
-        else if (SystemParameters::sys == Admittance)
+        else if (SystemParameters::val == Polar)
         {
-            Re /= 20;
-            Im /= 20;
-            long double denominator = (1 + Re) * (1 + Re) + Im * Im;
+            if (SystemParameters::sys == Impedance)
+            {
+                Re /= 50;
+                Im = Im * M_PI/180;
+                double Z_real = Re * cos(Im);
+                double Z_imag = Re * sin(Im);
+                double denominator = (Z_real + 1) * (Z_real + 1) + Z_imag * Z_imag;
 
-            if (denominator != 0) {
-                x = (1 - Re * Re - Im * Im) / denominator;
-                y = (-2 * Im) / denominator;
+                if (denominator != 0) {
+                    x = (Z_real * Z_real + Z_imag * Z_imag - 1) / denominator;
+                    y = (2 * Z_imag) / denominator;
+                }
+                else {
+                    x = -1;
+                    y = 0;
+                }
             }
-            else {
-                x = -1;
-                y = 0;
+            else if (SystemParameters::sys == Admittance)
+            {
+                Re /= 20;
+                Im = Im * M_PI / 180;
+                double Z_real = Re * cos(Im);
+                double Z_imag = Re * sin(Im);
+                long double denominator = (1 + Z_real) * (1 + Z_real) + Z_imag * Z_imag;
+
+                if (denominator != 0) {
+                    x = (1 - Z_real * Z_real - Z_imag * Z_imag) / denominator;
+                    y = (-2 * Z_imag) / denominator;
+                }
+                else {
+                    x = -1;
+                    y = 0;
+                }
             }
-        }
-        else if (SystemParameters::sys == ReflectionCoefficient)
-        {
-            x = Re;
-            y = Im;
+            else if (SystemParameters::sys == ReflectionCoefficient)
+            {
+                double angle = Im * M_PI / 180;
+                x = Re * cos(angle);
+                y = Re * sin(angle);
+            }
         }
         y *= -1;
         QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
         renderArea->setCursorPosOnCircle(temp);
         if (index == 0)
         {
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             pointsX.append(x);
             pointsY.append(y);
@@ -726,13 +781,13 @@ void Smithtry1000::VerticalLines()
         x = circuitElements->firstPoint.x;
         y = circuitElements->firstPoint.y;
     }
-    if (y >= 0 && y < 0.000001)
+    if (y >= 0 && y < 0.0001)
     {
         y = 0.000001;
     }
-    else if (y <= 0 && y > -0.000001)
+    else if (y <= 0 && y > -0.0001)
     {
-        y = -0.000001;
+        y = -0.0001;
     }
     long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
@@ -1059,13 +1114,13 @@ void Smithtry1000::onButtonClicked()
             long double y = point.y();
             x = (x - centerGlobal.x()) / scale;
             y = (y - centerGlobal.y()) / scale;
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             long double xCenter = 1 - circleRadius;
@@ -1262,13 +1317,13 @@ void Smithtry1000::onResistor_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
         long double xCenter = 1 - circleRadius;
@@ -1295,13 +1350,13 @@ void Smithtry1000::onResistor_buttonClicked()
         }
         if (y < 0)
         {
-            r = abs(r);
+            r = fabs(r);
             tmin = t;
             tmax = M_PI * 3 / 2;
         }
         else
         {
-            r = abs(r) * (-1);
+            r = fabs(r) * (-1);
             tmax = t;
             tmin = M_PI * 3 / 2;
         }
@@ -1428,13 +1483,13 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
         long double yCenter = -circleRadius;
@@ -1630,13 +1685,13 @@ void Smithtry1000::ImaginaryImpedance()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
         long double xCenter = 1 - circleRadius;
@@ -1809,13 +1864,13 @@ void Smithtry1000::ImaginaryAdmitance()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
         long double xCenter = -1 - circleRadius;
@@ -2142,13 +2197,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         long double sin_t = sin(t);
         x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
         y = (1 / (r + 1)) * sin_t;
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2282,13 +2337,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2398,13 +2453,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         x = 1 + (1 / r) * cos_t;
         y = (1 / r) + (1 / r) * sin_t;
         y = y * (-1);
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
@@ -2510,13 +2565,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             x = -(cos_t - abs(r)) / r;
             y = -(1 / r) + (1 / r) * sin_t;
         }
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2652,13 +2707,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2794,13 +2849,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2950,13 +3005,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         long double R = abs(center - g1);
         x = cos_t*R+r;
         y = sin_t*R;
-        if (y >= 0 && y < 0.000001)
+        if (y >= 0 && y < 0.0001)
         {
             y = 0.000001;
         }
-        else if (y <= 0 && y > -0.000001)
+        else if (y <= 0 && y > -0.0001)
         {
-            y = -0.000001;
+            y = -0.0001;
         }
         lastPointX = x;
         lastPointY = y;
@@ -3098,13 +3153,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = sin_t * R + r;
             y *= -1;
-            if (y >= 0 && y < 0.000001)
+            if (y >= 0 && y < 0.0001)
             {
                 y = 0.000001;
             }
-            else if (y <= 0 && y > -0.000001)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.000001;
+                y = -0.0001;
             }
             lastPointX = x;
             lastPointY = y;

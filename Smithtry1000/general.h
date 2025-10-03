@@ -51,6 +51,11 @@ enum systemMode
     Admittance,
     ReflectionCoefficient
 };
+enum valueMode
+{
+    Polar,
+    Cartesian
+};
 struct Point
 {
     long double x;

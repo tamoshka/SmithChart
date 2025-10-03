@@ -111,6 +111,7 @@ public:
 	static double lambda;
 	static bool sizeChanged;
 	static systemMode sys;
+	static valueMode val;
 	static QSet<double> VSWRCircles;
 	static QSet<double> QCircles;
 	//0 - Диаграмма, 1 - Цепь
