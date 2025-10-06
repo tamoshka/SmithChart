@@ -82,15 +82,15 @@ int SystemParameters::saved = 0;
 void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
 {
     long double tempy=pow(y,2);
-    if (y >= 0 && y < 0.01)
+    if (y >= 0 && y < 0.0001)
     {
-        y = 0.01;
-        tempy = 0.0001;
+        y = 0.0001;
+        tempy = 0.00000001;
     }
-    else if (y <= 0 && y > -0.01)
+    else if (y <= 0 && y > -0.0001)
     {
-        y = -0.01;
-        tempy = 0.0001;
+        y = -0.0001;
+        tempy = 0.00000001;
     }
     long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
@@ -122,15 +122,15 @@ void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
 void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
 {
     long double tempy = pow(y, 2);
-    if (y >= 0 && y < 0.01)
+    if (y >= 0 && y < 0.0001)
     {
-        y = 0.01;
-        tempy = 0.0001;
+        y = 0.0001;
+        tempy = 0.00000001;
     }
-    else if (y <= 0 && y > -0.01)
+    else if (y <= 0 && y > -0.0001)
     {
-        y = -0.01;
-        tempy = 0.0001;
+        y = -0.0001;
+        tempy = 0.00000001;
     }
     long double circleRadius = -1 - ((pow(x, 2) + tempy - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
@@ -161,7 +161,7 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
     long double cos_t;
     long double sin_t;
     long double tempy = pow(y, 2);
-    if (abs(y) >= 0 && abs(y) < 0.01)
+    if (abs(y) >= 0 && abs(y) < 0.0001)
     {
         double denominator = (1 - x) * (1 - x) + y * y;
         impedanceImagR = 2 * y / denominator;
@@ -259,15 +259,15 @@ Complex SystemParameters::yCalculation(long double x, long double y)
 Complex SystemParameters::impedanceRealChartParameters(long double x, long double y)
 {
     long double tempy = pow(y, 2);
-    if (y >= 0 && y < 0.01)
+    if (y >= 0 && y < 0.0001)
     {
-        y = 0.01;
-        tempy = 0.0001;
+        y = 0.0001;
+        tempy = 0.00000001;
     }
-    else if (y <= 0 && y > -0.01)
+    else if (y <= 0 && y > -0.0001)
     {
-        y = -0.01;
-        tempy = 0.0001;
+        y = -0.0001;
+        tempy = 0.00000001;
     }
     long double circleRadius = 1 - ((pow(x, 2) + tempy - 1) / (2 * (x - 1)));
     long double xCenter = 1 - circleRadius;
@@ -299,15 +299,15 @@ Complex SystemParameters::impedanceRealChartParameters(long double x, long doubl
 Complex SystemParameters::admitanceRealChartParameters(long double x, long double y)
 {
     long double tempy = pow(y, 2);
-    if (y >= 0 && y < 0.01)
+    if (y >= 0 && y < 0.0001)
     {
-        y = 0.01;
-        tempy = 0.0001;
+        y = 0.0001;
+        tempy = 0.00000001;
     }
-    else if (y <= 0 && y > -0.01)
+    else if (y <= 0 && y > -0.0001)
     {
-        y = -0.01;
-        tempy = 0.0001;
+        y = -0.0001;
+        tempy = 0.00000001;
     }
     long double circleRadius = -1 - ((pow(x, 2) + tempy - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
@@ -339,7 +339,7 @@ Complex SystemParameters::impedanceImagChartParameters(long double x, long doubl
     long double cos_t;
     long double sin_t;
     long double tempy = pow(y, 2);
-    if (abs(y) > 0 && abs(y) < 0.01)
+    if (abs(y) > 0 && abs(y) < 0.0001)
     {
         double denominator = (1 - x) * (1 - x) + y * y;
         r1 = 2 * y / denominator;
@@ -385,7 +385,7 @@ Complex SystemParameters::admitanceImagChartParameters(long double x, long doubl
     long double cos_t;
     long double sin_t;
     long double tempy = pow(y, 2);
-    if (abs(y) > 0 && abs(y) < 0.01)
+    if (abs(y) > 0 && abs(y) < 0.0001)
     {
         double denominator = (1 + x) * (1 + x) + y * y;
         r1 = (-2 * y) / denominator;

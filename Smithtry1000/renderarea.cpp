@@ -482,7 +482,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
             }
             long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y2) <= 0.01)
+            if (abs(y2) <= 0.0001)
             {
                 long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
@@ -584,7 +584,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[ll-1]->GetPoint().y;
             }
             long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y2) <= 0.01)
+            if (abs(y2) <= 0.0001)
             {
                 long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
@@ -961,13 +961,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagImpedance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.01)
+            if (y >= 0 && y < 0.0001)
             {
-                y = 0.01;
+                y = 0.0001;
             }
-            else if (y <= 0 && y > -0.01)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.01;
+                y = -0.0001;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);
@@ -1057,13 +1057,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagAdmitance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.01)
+            if (y >= 0 && y < 0.0001)
             {
-                y = 0.01;
+                y = 0.0001;
             }
-            else if (y <= 0 && y > -0.01)
+            else if (y <= 0 && y > -0.0001)
             {
-                y = -0.01;
+                y = -0.0001;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);
