@@ -103,6 +103,7 @@ public:
 	static bool tune;
 	static bool tuned;
 	static bool tuneBlock;
+	static bool resistorLinear;
 	static QList<Element*> tunedElements;
 	static double er;
 	static long double z0line;

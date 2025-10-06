@@ -207,13 +207,13 @@ void Smithtry1000::onTransform_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         long double q = zl.imag() / zl.real();
         long double ycenter = -1 / q;
@@ -356,13 +356,13 @@ void Smithtry1000::onLine_buttonClicked()
                 x = circuitElements->firstPoint.x;
                 y = circuitElements->firstPoint.y;
             }
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             Complex g1 = (zl - long double(50)) / (zl + long double(50));
             Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
@@ -626,13 +626,13 @@ void Smithtry1000::onKeyboard_buttonClicked()
         renderArea->setCursorPosOnCircle(temp);
         if (index == 0)
         {
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             pointsX.append(x);
             pointsY.append(y);
@@ -781,13 +781,13 @@ void Smithtry1000::VerticalLines()
         x = circuitElements->firstPoint.x;
         y = circuitElements->firstPoint.y;
     }
-    if (y >= 0 && y < 0.0001)
+    if (y >= 0 && y < 0.01)
     {
-        y = 0.000001;
+        y = 0.01;
     }
-    else if (y <= 0 && y > -0.0001)
+    else if (y <= 0 && y > -0.01)
     {
-        y = -0.0001;
+        y = -0.01;
     }
     long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
     long double xCenter = -1 - circleRadius;
@@ -1114,13 +1114,13 @@ void Smithtry1000::onButtonClicked()
             long double y = point.y();
             x = (x - centerGlobal.x()) / scale;
             y = (y - centerGlobal.y()) / scale;
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
             long double xCenter = 1 - circleRadius;
@@ -1317,48 +1317,68 @@ void Smithtry1000::onResistor_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            SystemParameters::resistorLinear = true;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            SystemParameters::resistorLinear = true;
         }
-        long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
-        long double xCenter = 1 - circleRadius;
-        long double dx = x - xCenter;
-        long double dy = y;
-        sin_t = dy;
-        cos_t = dx;
-        t = atan(cos_t / sin_t);
-        if (y < 0)
+        if (SystemParameters::resistorLinear)
         {
-            t += M_PI;
-        }
-        else
-        {
-            t += 2 * M_PI;
-        }
-        if (x - 1 != 0)
-        {
-            r = cos(t) / (x - 1);
+            long double denominator = (1 - x) * (1 - x) + y * y;
+
+            if (denominator > 1e-12) {
+                r = (1 - x * x - y * y) / denominator;
+                if (y < 0)
+                {
+                    r = fabs(r);
+                }
+                else
+                {
+                    r = fabs(r) * -1;
+                }
+            }
+            t = M_PI * 3 / 2;
         }
         else
         {
-            r = (1 + sin(t)) / y;
-        }
-        if (y < 0)
-        {
-            r = fabs(r);
-            tmin = t;
-            tmax = M_PI * 3 / 2;
-        }
-        else
-        {
-            r = fabs(r) * (-1);
-            tmax = t;
-            tmin = M_PI * 3 / 2;
+            long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
+            long double xCenter = 1 - circleRadius;
+            long double dx = x - xCenter;
+            long double dy = y;
+            sin_t = dy;
+            cos_t = dx;
+            t = atan(cos_t / sin_t);
+            if (y < 0)
+            {
+                t += M_PI;
+            }
+            else
+            {
+                t += 2 * M_PI;
+            }
+            if (x - 1 != 0)
+            {
+                r = cos(t) / (x - 1);
+            }
+            else
+            {
+                r = (1 + sin(t)) / y;
+            }
+            if (y < 0)
+            {
+                r = fabs(r);
+                tmin = t;
+                tmax = M_PI * 3 / 2;
+            }
+            else
+            {
+                r = fabs(r) * (-1);
+                tmax = t;
+                tmin = M_PI * 3 / 2;
+            }
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -1439,6 +1459,7 @@ void Smithtry1000::onResistor_buttonClicked()
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
+        SystemParameters::resistorLinear = false;
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
@@ -1483,39 +1504,59 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            SystemParameters::resistorLinear = true;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            SystemParameters::resistorLinear = true;
         }
-        long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
-        long double yCenter = -circleRadius;
-        long double dx = x + 1;
-        long double dy = y - yCenter;
-        sin_t = -dy;
-        cos_t = dx;
-        t = atan(sin_t / cos_t);
-        if (x + 1 != 0)
+        if (SystemParameters::resistorLinear)
         {
-            r = cos(t) / (x + 1);
-        }
-        else
-        {
-            r = (1 + sin(t)) / y;
-        }
-        if (y > 0)
-        {
-            r *= -1;
-            tmin = t;
-            tmax = M_PI / 2;
+            long double denominator = (1 + x) * (1 + x) + y * y;
+
+            if (denominator > 1e-12) {
+                r = (1 - x * x - y * y) / denominator;
+                if (y < 0)
+                {
+                    r = fabs(r);
+                }
+                else
+                {
+                    r = fabs(r) * -1;
+                }
+            }
+            t = M_PI * 3 / 2;
         }
         else
         {
-            tmax = t;
-            tmin = -M_PI / 2;
+            long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y, 2)) / (-2 * y);
+            long double yCenter = -circleRadius;
+            long double dx = x + 1;
+            long double dy = y - yCenter;
+            sin_t = -dy;
+            cos_t = dx;
+            t = atan(sin_t / cos_t);
+            if (x + 1 != 0)
+            {
+                r = cos(t) / (x + 1);
+            }
+            else
+            {
+                r = (1 + sin(t)) / y;
+            }
+            if (y > 0)
+            {
+                r *= -1;
+                tmin = t;
+                tmax = M_PI / 2;
+            }
+            else
+            {
+                tmax = t;
+                tmin = -M_PI / 2;
+            }
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -1596,6 +1637,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
+        SystemParameters::resistorLinear = false;
         Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
@@ -1685,13 +1727,13 @@ void Smithtry1000::ImaginaryImpedance()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         long double circleRadius = 1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 * (x - 1)));
         long double xCenter = 1 - circleRadius;
@@ -1864,13 +1906,13 @@ void Smithtry1000::ImaginaryAdmitance()
             x = circuitElements->firstPoint.x;
             y = circuitElements->firstPoint.y;
         }
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         long double circleRadius = -1 - ((pow(x, 2) + pow(y, 2) - 1) / (2 + 2 * x));
         long double xCenter = -1 - circleRadius;
@@ -2197,13 +2239,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         long double sin_t = sin(t);
         x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
         y = (1 / (r + 1)) * sin_t;
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2337,13 +2379,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2386,80 +2428,111 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if (Model == mode::ResistorShunt)
     {
-        t = t;
         long double x, y;
-        int dxABS = abs(dx);
-        int dyABS = abs(dy);
-        dy = dy * -1;
-        int dif;
-        bool flag;
-        if (dyABS > dxABS)
+        if (SystemParameters::resistorLinear)
         {
-            flag = true;
-            dif = dyABS;
+            step = abs(r) / 1000;
+            step += step * abs(dx);
+            if (dx > 0 && lastPointX < 1)
+            {
+                if (lastPointX + step > 1)
+                {
+                    lastPointX = 1-step;
+                }
+                else
+                {
+                    x = lastPointX + step;
+                }
+            }
+            else if (dx<0 && lastPointX>-1)
+            {
+                if (lastPointX - step < -1)
+                {
+                    lastPointX = -1+step;
+                }
+                else
+                {
+                    x = lastPointX - step;
+                }
+            }
+            y = 0;
         }
         else
         {
-            flag = false;
-            dif = dxABS;
-        }
-        step = abs(r) / 1000;
-        step += step * dif;
-        x = 0;
-        y = 0;
-        if (lastPointY > 0)
-        {
-            dx *= -1;
-        }
-        if (dx == 0 && dy == 0)
-        {
-        }
-        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
-        {
-            if (t - step <= tmin)
+            t = t;
+            int dxABS = abs(dx);
+            int dyABS = abs(dy);
+            dy = dy * -1;
+            int dif;
+            bool flag;
+            if (dyABS > dxABS)
             {
-                t = tmin + step;
+                flag = true;
+                dif = dyABS;
             }
             else
             {
+                flag = false;
+                dif = dxABS;
+            }
+            step = abs(r) / 1000;
+            step += step * dif;
+            x = 0;
+            y = 0;
+            if (lastPointY > 0)
+            {
+                dx *= -1;
+            }
+            if (dx == 0 && dy == 0)
+            {
+            }
+            else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
+            {
+                if (t - step <= tmin)
+                {
+                    t = tmin + step;
+                }
+                else
+                {
+                    t -= step;
+                }
+            }
+            else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag == true && dy < 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
+            {
+                if (t + step >= tmax)
+                {
+                    t = tmax - step;
+                }
+                else
+                {
+                    t += step;
+                }
+            }
+            else if (t >= tmax)
+            {
+                step = 0.01;
+                t = tmax;
                 t -= step;
             }
-        }
-        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag == true && dy < 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
-        {
-            if (t + step >= tmax)
+            else if (t <= tmin)
             {
-                t = tmax - step;
-            }
-            else
-            {
+                t = tmin;
+                step = 0.01;
                 t += step;
             }
-        }
-        else if (t >= tmax)
-        {
-            step = 0.01;
-            t = tmax;
-            t -= step;
-        }
-        else if (t <= tmin)
-        {
-            t = tmin;
-            step = 0.01;
-            t += step;
-        }
-        long double cos_t = cos(t);
-        long double sin_t = sin(t);
-        x = 1 + (1 / r) * cos_t;
-        y = (1 / r) + (1 / r) * sin_t;
-        y = y * (-1);
-        if (y >= 0 && y < 0.0001)
-        {
-            y = 0.000001;
-        }
-        else if (y <= 0 && y > -0.0001)
-        {
-            y = -0.0001;
+            long double cos_t = cos(t);
+            long double sin_t = sin(t);
+            x = 1 + (1 / r) * cos_t;
+            y = (1 / r) + (1 / r) * sin_t;
+            y = y * (-1);
+            if (y >= 0 && y < 0.01)
+            {
+                y = 0.01;
+            }
+            else if (y <= 0 && y > -0.01)
+            {
+                y = -0.01;
+            }
         }
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
@@ -2502,76 +2575,107 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     }
     else if (Model == mode::ResistorParallel)
     {
-        t = t;
         long double x, y;
-        int dxABS = abs(dx);
-        int dyABS = abs(dy);
-        dy = dy * -1;
-        int dif;
-        bool flag;
-        if (dyABS > dxABS)
+        if (SystemParameters::resistorLinear)
         {
-            flag = true;
-            dif = dyABS;
+            step = abs(r) / 1000;
+            step += step * abs(dx);
+            if (dx > 0 && lastPointX < 1)
+            {
+                if (lastPointX + step > 1)
+                {
+                    lastPointX = 1 - step;
+                }
+                else
+                {
+                    x = lastPointX + step;
+                }
+            }
+            else if (dx<0 && lastPointX>-1)
+            {
+                if (lastPointX - step < -1)
+                {
+                    lastPointX = -1 + step;
+                }
+                else
+                {
+                    x = lastPointX - step;
+                }
+            }
+            y = 0;
         }
         else
         {
-            flag = false;
-            dif = dxABS;
-        }
-        step = abs(r) / 1000;
-        step += step * dif;
-        x = 0;
-        y = 0;
-        if (lastPointY > 0)
-        {
-            dx *= -1;
-        }
-        if (dx == 0 && dy == 0)
-        {
-        }
-        else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY >= 0) || (flag == true && dy < 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
-        {
-            if (t - step <= tmin)
+            t = t;
+            int dxABS = abs(dx);
+            int dyABS = abs(dy);
+            dy = dy * -1;
+            int dif;
+            bool flag;
+            if (dyABS > dxABS)
             {
-                t = tmin + step;
+                flag = true;
+                dif = dyABS;
             }
             else
             {
-                t -= step;
+                flag = false;
+                dif = dxABS;
             }
-        }
-        else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy > 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
-        {
-            if (t + step >= tmax)
+            step = abs(r) / 1000;
+            step += step * dif;
+            x = 0;
+            y = 0;
+            if (lastPointY > 0)
             {
-                t = tmax - step;
+                dx *= -1;
+            }
+            if (dx == 0 && dy == 0)
+            {
+            }
+            else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY >= 0) || (flag == true && dy < 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
+            {
+                if (t - step <= tmin)
+                {
+                    t = tmin + step;
+                }
+                else
+                {
+                    t -= step;
+                }
+            }
+            else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy > 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
+            {
+                if (t + step >= tmax)
+                {
+                    t = tmax - step;
+                }
+                else
+                {
+                    t += step;
+                }
+            }
+            long double cos_t = cos(t);
+            long double sin_t = sin(t);
+            if (lastPointY < 0)
+            {
+                x = (cos_t - abs(r)) / r;
+                y = (1 / r) + (1 / r) * sin_t;
+                y *= -1;
             }
             else
             {
-                t += step;
+                x = -(cos_t - abs(r)) / r;
+                y = -(1 / r) + (1 / r) * sin_t;
             }
-        }
-        long double cos_t = cos(t);
-        long double sin_t = sin(t);
-        if (lastPointY < 0)
-        {
-            x = (cos_t - abs(r)) / r;
-            y = (1 / r) + (1 / r) * sin_t;
-            y *= -1;
-        }
-        else
-        {
-            x = -(cos_t - abs(r)) / r;
-            y = -(1 / r) + (1 / r) * sin_t;
-        }
-        if (y >= 0 && y < 0.0001)
-        {
-            y = 0.000001;
-        }
-        else if (y <= 0 && y > -0.0001)
-        {
-            y = -0.0001;
+            if (y >= 0 && y < 0.01)
+            {
+                y = 0.01;
+            }
+            else if (y <= 0 && y > -0.01)
+            {
+                y = -0.01;
+            }
         }
         lastPointX = x;
         lastPointY = y;
@@ -2707,13 +2811,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         lastPointX = x;
         lastPointY = y;
@@ -2849,13 +2953,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 
         x = (cos(t) - r) / (r + 1);
         y = (1 / (r + 1)) * sin_t * -1;
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         lastPointX = x;
         lastPointY = y;
@@ -3005,13 +3109,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         long double R = abs(center - g1);
         x = cos_t*R+r;
         y = sin_t*R;
-        if (y >= 0 && y < 0.0001)
+        if (y >= 0 && y < 0.01)
         {
-            y = 0.000001;
+            y = 0.01;
         }
-        else if (y <= 0 && y > -0.0001)
+        else if (y <= 0 && y > -0.01)
         {
-            y = -0.0001;
+            y = -0.01;
         }
         lastPointX = x;
         lastPointY = y;
@@ -3153,13 +3257,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = sin_t * R + r;
             y *= -1;
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             lastPointX = x;
             lastPointY = y;

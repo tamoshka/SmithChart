@@ -481,11 +481,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
                 y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
             }
-            if (abs(y) <= 0.000001)
+            long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+            if (abs(y2) <= 0.01)
             {
-                long double x2, y2;
+                long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
                 QPointF pixel;
                 iPixel.setX(x* scale + this->rect().center().x());
                 iPixel.setY(y * scale + this->rect().center().y());
@@ -583,11 +583,11 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 x = circuitElements->GetCircuitElements()[ll-1]->GetPoint().x;
                 y = circuitElements->GetCircuitElements()[ll-1]->GetPoint().y;
             }
-            if (abs(y) <= 0.000001)
+            long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+            if (abs(y2) <= 0.01)
             {
-                long double x2, y2;
+                long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
                 QPointF pixel;
                 iPixel.setX(x * scale + this->rect().center().x());
                 iPixel.setY(y * scale + this->rect().center().y());
@@ -961,13 +961,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagImpedance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);
@@ -1057,13 +1057,13 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagAdmitance);
                 y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
             }
-            if (y >= 0 && y < 0.0001)
+            if (y >= 0 && y < 0.01)
             {
-                y = 0.000001;
+                y = 0.01;
             }
-            else if (y <= 0 && y > -0.0001)
+            else if (y <= 0 && y > -0.01)
             {
-                y = -0.0001;
+                y = -0.01;
             }
             r = get<0>(tuple1);
             long double t = get<1>(tuple1);

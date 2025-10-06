@@ -477,17 +477,6 @@ void TuneWidget::ValueChanged(int value)
 				x = 1 + (1 / r) * cos_t;
 				y2 = (1 / r) + (1 / r) * sin_t;
 				y2 = y2 * (-1);
-				if (y2 >= 0 && abs(y2) < 0.0001)
-				{
-					if (flag2)
-					{
-						y2 = -0.0001;
-					}
-					else
-					{
-						y2 = 0.0001;
-					}
-				}
 				while (max_step < 5000)
 				{
 					if (r3 > r2 && flag == true)
@@ -513,15 +502,15 @@ void TuneWidget::ValueChanged(int value)
 					x = 1 + (1 / r) * cos_t;
 					y2 = (1 / r) + (1 / r) * sin_t;
 					y2 = y2 * (-1);
-					if (y2 >= 0 && abs(y2) < 0.0001)
+					if (abs(y2) >= 0 && abs(y2) < 0.01)
 					{
 						if (flag2)
 						{
-							y2 = -0.0001;
+							y2 = -0.01;
 						}
 						else
 						{
-							y2 = 0.0001;
+							y2 = 0.01;
 						}
 					}
 					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
@@ -553,6 +542,26 @@ void TuneWidget::ValueChanged(int value)
 					{
 						max_step = 0;
 						break;
+					}
+				}
+				if (abs(x) > 1)
+				{
+					if (flag2)
+					{
+						y2 = -0.01;
+					}
+					else
+					{
+						y2 = 0.01;
+					}
+					long double denominator = (r2 + 1) * (r2 + 1);
+
+					if (denominator != 0) {
+						x = (r2 * r2 - 1) / denominator;
+					}
+					else
+					{
+						x = -1;
 					}
 				}
 				Point point;
@@ -626,13 +635,13 @@ void TuneWidget::ValueChanged(int value)
 				long double sin_t = sin(t);
 				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 				y2 = (1 / (r + 1)) * sin_t;
-				if (y2 >= 0 && y2 < 0.0001)
+				if (y2 >= 0 && y2 < 0.01)
 				{
-					y2 = 0.0001;
+					y2 = 0.01;
 				}
-				else if (y2 <= 0 && y2 > -0.0001)
+				else if (y2 <= 0 && y2 > -0.01)
 				{
-					y2 = -0.0001;
+					y2 = -0.01;
 				}
 				while (max_step < 500)
 				{
@@ -658,13 +667,13 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 					y2 = (1 / (r + 1)) * sin_t;
-					if (y2 >= 0 && y2 < 0.0001)
+					if (y2 >= 0 && y2 < 0.01)
 					{
-						y2 = 0.0001;
+						y2 = 0.01;
 					}
-					else if (y2 <= 0 && y2 > -0.0001)
+					else if (y2 <= 0 && y2 > -0.01)
 					{
-						y2 = -0.0001;
+						y2 = -0.01;
 					}
 					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
 					long double xCenter = 1 - circleRadius;
@@ -776,13 +785,13 @@ void TuneWidget::ValueChanged(int value)
 				long double sin_t = sin(t);
 				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 				y2 = (1 / (r + 1)) * sin_t;
-				if (y2 >= 0 && y2 < 0.0001)
+				if (y2 >= 0 && y2 < 0.01)
 				{
-					y2 = 0.0001;
+					y2 = 0.01;
 				}
-				else if (y2 <= 0 && y2 > -0.0001)
+				else if (y2 <= 0 && y2 > -0.01)
 				{
-					y2 = -0.0001;
+					y2 = -0.01;
 				}
 				while (max_step < 500)
 				{
@@ -808,13 +817,13 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
 					y2 = (1 / (r + 1)) * sin_t;
-					if (y2 >= 0 && y2 < 0.0001)
+					if (y2 >= 0 && y2 < 0.01)
 					{
-						y2 = 0.0001;
+						y2 = 0.01;
 					}
-					else if (y2 <= 0 && y2 > -0.0001)
+					else if (y2 <= 0 && y2 > -0.01)
 					{
-						y2 = -0.0001;
+						y2 = -0.01;
 					}
 					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
 					long double xCenter = 1 - circleRadius;
@@ -946,17 +955,6 @@ void TuneWidget::ValueChanged(int value)
 					x = -(cos_t - abs(r)) / r;
 					y2 = -(1 / r) + (1 / r) * sin_t;
 				}
-				if (y2 >= 0 && abs(y2) < 0.0001)
-				{
-					if (flag2)
-					{
-						y2 = -0.0001;
-					}
-					else
-					{
-						y2 = 0.0001;
-					}
-				}
 				while (max_step < 5000)
 				{
 					if (r3 > r2 && flag == true)
@@ -969,7 +967,7 @@ void TuneWidget::ValueChanged(int value)
 						step /= 2;
 						flag = true;
 					}
-					if ((flag == false && flag2==false)||(flag==true && flag2==true))
+					if ((flag == false && flag2 == false) || (flag == true && flag2 == true))
 					{
 						t -= step;
 					}
@@ -979,7 +977,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					cos_t = cos(t);
 					sin_t = sin(t);
-					if (flag2==true)
+					if (flag2 == true)
 					{
 						x = (cos_t - abs(r)) / r;
 						y2 = (1 / r) + (1 / r) * sin_t;
@@ -990,15 +988,15 @@ void TuneWidget::ValueChanged(int value)
 						x = -(cos_t - abs(r)) / r;
 						y2 = -(1 / r) + (1 / r) * sin_t;
 					}
-					if (y2 >= 0 && abs(y2) < 0.0001)
+					if (abs(y2) >= 0 && abs(y2) < 0.01)
 					{
 						if (flag2)
 						{
-							y2 = -0.0001;
+							y2 = -0.01;
 						}
 						else
 						{
-							y2 = 0.0001;
+							y2 = 0.01;
 						}
 					}
 					long double circleRadius = -1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 + 2 * x));
@@ -1027,6 +1025,25 @@ void TuneWidget::ValueChanged(int value)
 					{
 						max_step = 0;
 						break;
+					}
+				}
+				if (abs(x) > 1)
+				{
+					if (flag2)
+					{
+						y2 = -0.01;
+					}
+					else
+					{
+						y2 = 0.01;
+					}
+					long double denominator = (1 + r2) * (1 + r2);
+
+					if (denominator != 0) {
+						x = (1 - r2 * r2) / denominator;
+					}
+					else {
+						x = -1;
 					}
 				}
 				Point point;
@@ -1101,13 +1118,13 @@ void TuneWidget::ValueChanged(int value)
 				long double sin_t = sin(t);
 				x = (cos(t) - r) / (r + 1);
 				y2 = (1 / (r + 1)) * sin_t * -1;
-				if (y2 >= 0 && y2 < 0.0001)
+				if (y2 >= 0 && y2 < 0.01)
 				{
-					y2 = 0.0001;
+					y2 = 0.01;
 				}
-				else if (y2 <= 0 && y2 > -0.0001)
+				else if (y2 <= 0 && y2 > -0.01)
 				{
-					y2 = -0.0001;
+					y2 = -0.01;
 				}
 				while (max_step < 500)
 				{
@@ -1133,13 +1150,13 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (cos(t) - r) / (r + 1);
 					y2 = (1 / (r + 1)) * sin_t * -1;
-					if (y2 >= 0 && y2 < 0.0001)
+					if (y2 >= 0 && y2 < 0.01)
 					{
-						y2 = 0.0001;
+						y2 = 0.01;
 					}
-					else if (y2 <= 0 && y2 > -0.0001)
+					else if (y2 <= 0 && y2 > -0.01)
 					{
-						y2 = -0.0001;
+						y2 = -0.01;
 					}
 					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
 					long double yCenter = -circleRadius;
@@ -1240,13 +1257,13 @@ void TuneWidget::ValueChanged(int value)
 				long double sin_t = sin(t);
 				x = (cos(t) - r) / (r + 1);
 				y2 = (1 / (r + 1)) * sin_t * -1;
-				if (y2 >= 0 && y2 < 0.0001)
+				if (y2 >= 0 && y2 < 0.01)
 				{
-					y2 = 0.0001;
+					y2 = 0.01;
 				}
-				else if (y2 <= 0 && y2 > -0.0001)
+				else if (y2 <= 0 && y2 > -0.01)
 				{
-					y2 = -0.0001;
+					y2 = -0.01;
 				}
 				while (max_step<500)
 				{
@@ -1272,13 +1289,13 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (cos(t) - r) / (r + 1);
 					y2 = (1 / (r + 1)) * sin_t * -1;
-					if (y2 >= 0 && y2 < 0.0001)
+					if (y2 >= 0 && y2 < 0.01)
 					{
-						y2 = 0.0001;
+						y2 = 0.01;
 					}
-					else if (y2 <= 0 && y2 > -0.0001)
+					else if (y2 <= 0 && y2 > -0.01)
 					{
-						y2 = -0.0001;
+						y2 = -0.01;
 					}
 					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
 					long double yCenter = -circleRadius;
@@ -1417,13 +1434,13 @@ void TuneWidget::ValueChanged(int value)
 					long double sin_t1 = sin(t);
 					x = cos_t1 * R + center;
 					y2 = sin_t1 * R;
-					if (y2 >= 0 && y2 < 0.0001)
+					if (y2 >= 0 && y2 < 0.01)
 					{
-						y2 = 0.0001;
+						y2 = 0.01;
 					}
-					else if (y2 <= 0 && y2 > -0.0001)
+					else if (y2 <= 0 && y2 > -0.01)
 					{
-						y2 = -0.0001;
+						y2 = -0.01;
 					}
 					SystemParameters::rImpedanceRealCalculation(x, y2);
 					SystemParameters::rImpedanceImagCalculation(x, y2);
