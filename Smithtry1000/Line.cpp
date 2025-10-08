@@ -16,3 +16,14 @@ LinesElement::LinesElement(mode mode, long double value, long double frequency, 
 {
 	this->SetAlpha(alpha);
 }
+
+ QJsonObject LinesElement::toJson() const 
+{
+    // Получаем JSON от родителя (VerticalLinesElement)
+    QJsonObject json = VerticalLinesElement::toJson();
+
+    // Добавляем специфичное для LinesElement поле
+    json["alpha"] = (double)_alpha;
+
+    return json;
+}

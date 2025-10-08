@@ -82,7 +82,9 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->KeyboardButton, &QPushButton::clicked, this, &Smithtry1000::onKeyboard_buttonClicked);
     connect(ui->CirclesButton, &QPushButton::clicked, this, &Smithtry1000::onCirclesClicked);
     connect(ui->Transform_button, &QPushButton::clicked, this, &Smithtry1000::onTransform_buttonClicked);
+    connect(ui->CopyButton, &QPushButton::clicked, this, &Smithtry1000::Copy);
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
+    connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
@@ -123,6 +125,168 @@ void Smithtry1000::getCirclesSignal()
 }
 
 void Smithtry1000::Save()
+{
+    if (index > 1)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
+        try
+        {
+            circuitElements->saveToFile(fileName);
+        }
+        catch (exception e)
+        {
+
+        }
+    }
+}
+
+void Smithtry1000::Load()
+{
+    if (index == 0)
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open project"), "", tr("JSON Files (*.json)"));
+        try
+        {
+            circuitElements->loadFromFile(fileName);
+            dpIndex = 1;
+            index = circuitElements->GetCircuitElements().size()+1;
+            allPoints[0] = make_tuple(circuitElements->firstPoint, false);
+            pointsX.append(circuitElements->firstPoint.x);
+            pointsY.append(circuitElements->firstPoint.y);
+            int row = ui->pointTable->rowCount();
+            ui->pointTable->insertRow(row);
+            ui->pointTable->setItem(row, 0, new QTableWidgetItem("Yes"));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+            SystemParameters::rImpedanceRealCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+            SystemParameters::rImpedanceImagCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+            QString temp2 = " + j";
+            if (SystemParameters::impedanceImagR < 0)
+            {
+                temp2 = " - j";
+            }
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+            if (SystemParameters::impedanceRealR == 0)
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+            }
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)frequency)));
+            QString name;
+            for (int i = 0; i < circuitElements->GetCircuitElements().size(); i++)
+            {
+                int row = ui->pointTable->rowCount();
+                ui->pointTable->insertRow(row);
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(i+2)));
+                SystemParameters::rImpedanceRealCalculation(circuitElements->GetCircuitElements()[i]->GetPoint().x, circuitElements->GetCircuitElements()[i]->GetPoint().y);
+                SystemParameters::rImpedanceImagCalculation(circuitElements->GetCircuitElements()[i]->GetPoint().x, circuitElements->GetCircuitElements()[i]->GetPoint().y);
+                QString temp2 = " + j";
+                if (SystemParameters::impedanceImagR < 0)
+                {
+                    temp2 = " - j";
+                }
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+                if (SystemParameters::impedanceRealR == 0)
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+                }
+                else
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                }
+                ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)frequency)));
+                allPoints[i+1]= make_tuple(circuitElements->GetCircuitElements()[i]->GetPoint(), true);
+                bool mood;
+                switch (circuitElements->GetCircuitElements()[i]->GetMode())
+                {
+                    case ResistorShunt:
+                    {
+                        name = "horizontal_r";
+                        mood = true;
+                        break;
+                    }
+                    case ResistorParallel:
+                    {
+                        name = "vertical_r_circuit";
+                        mood = false;
+                        break;
+                    }
+                    case CapacitorShunt:
+                    {
+                        name = "horizontal_c";
+                        mood = true;
+                        break;
+                    }
+                    case CapacitorParallel:
+                    {
+                        name = "vertical_c_circuit";
+                        mood = false;
+                        break;
+                    }
+                    case InductionShunt:
+                    {
+                        name = "horizontal_i";
+                        mood = true;
+                        break;
+                    }
+                    case InductionParallel:
+                    {
+                        name = "vertical_i_circuit";
+                        mood = false;
+                        break;
+                    }
+                    case Line:
+                    {
+                        name = "horizontal_line_circuit";
+                        mood = true;
+                        break;
+                    }
+                    case OSLine:
+                    {
+                        name = "os_circuit";
+                        mood = false;
+                        break;
+                    }
+                    case SSLine:
+                    {
+                        name = "ss_circuit";
+                        mood = false;
+                        break;
+                    }
+                    case Transform:
+                    {
+                        name = "vertical_transform_circuit";
+                        mood = false;
+                        break;
+                    }
+                }
+                int val;
+                if (mood == false)
+                {
+                    val = 39;
+                }
+                else
+                {
+                    val = 20;
+                }
+                auxiliaryWidget->addSvg(QString(":/Images/"+name+".svg"), (i + 3) * 40, val);
+                pointsX.append(circuitElements->GetCircuitElements()[i]->GetPoint().x);
+                pointsY.append(circuitElements->GetCircuitElements()[i]->GetPoint().y);
+            }
+            allpointindex = index;
+            renderArea->update();
+            auxiliaryWidget->update();
+        }
+        catch (exception e)
+        {
+
+        }
+    }
+}
+
+void Smithtry1000::Copy()
 {
     SaveDialog dialog(this);
     {

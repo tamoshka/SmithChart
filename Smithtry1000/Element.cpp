@@ -74,3 +74,41 @@ map<parameterMode, Complex> Element::GetParameter()
 Element::~Element()
 {
 }
+
+QJsonObject Element::toJson() const
+{
+    QJsonObject json;
+    json["elementType"] = static_cast<int>(getElementType());
+    // Сериализация Point
+    QJsonObject pointObj;
+    pointObj["x"] = (double)this->point.x;
+    pointObj["y"] = (double)this->point.y;
+    json["point"] = pointObj;
+
+    // Сериализация простых полей
+    json["frequency"] = (double)frequency;
+    json["value"] = (double)value;
+    json["elementMode"] = static_cast<int>(elementMode);
+
+    // Сериализация chartParameters (map<chartMode, tuple<long double, long double>>)
+    QJsonObject chartParamsObj;
+    for (const auto& [chartMode, values] : chartParameters) {
+        QJsonObject tupleObj;
+        tupleObj["first"] = (double)std::get<0>(values);
+        tupleObj["second"] = (double)std::get<1>(values);
+        chartParamsObj[QString::number(static_cast<int>(chartMode))] = tupleObj;
+    }
+    json["chartParameters"] = chartParamsObj;
+
+    // Сериализация parameters (map<parameterMode, Complex>)
+    QJsonObject paramsObj;
+    for (const auto& [paramMode, complex] : parameters) {
+        QJsonObject complexObj;
+        complexObj["real"] = (double)complex.real();
+        complexObj["imag"] = (double)complex.imag();
+        paramsObj[QString::number(static_cast<int>(paramMode))] = complexObj;
+    }
+    json["parameters"] = paramsObj;
+
+    return json;
+}

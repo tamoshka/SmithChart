@@ -1,5 +1,9 @@
 ﻿#pragma once
 #include "general.h"
+
+class VerticalLinesElement;
+class LinesElement;
+
 class Element
 {
 private:
@@ -24,4 +28,6 @@ public:
 	map<parameterMode, Complex> GetParameter();
 	Element(mode, long double, long double, Point, map<chartMode, tuple<long double, long double>>, map<parameterMode, Complex>);
 	virtual ~Element();
+	virtual QJsonObject toJson() const;
+	virtual ElementType getElementType() const { return ElementType::BaseElement; }
 };

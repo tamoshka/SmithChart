@@ -20,4 +20,7 @@ public:
 	long double GetLambda();
 	VerticalLinesElement(mode mode, long double value, long double frequency, Point point, map<chartMode, tuple<long double, long double>> chartParameters,
 		map<parameterMode, Complex> parameters, long double electricalLength, long double mechanicalLength, long double theta, long double lambda);
+	virtual ElementType getElementType() const override { return ElementType::VerticalLines; }
+	virtual QJsonObject toJson() const override;
+	static VerticalLinesElement* createFromJson(const QJsonObject& json);
 };

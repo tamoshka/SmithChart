@@ -17,6 +17,13 @@ using namespace std;
 
 using Complex = complex<long double>;
 
+enum ElementType
+{
+    BaseElement = 0,
+    VerticalLines = 1,
+    Lines = 2
+};
+
 enum mode
 {
     CapacitorParallel,

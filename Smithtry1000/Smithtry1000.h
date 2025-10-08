@@ -67,7 +67,9 @@ private slots:
     void onKeyboard_buttonClicked();
     void onCirclesClicked();
     void onTransform_buttonClicked();
+    void Copy();
     void Save();
+    void Load();
 
 private:
     SParameters* sParameters;

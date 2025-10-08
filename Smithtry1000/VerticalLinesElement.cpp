@@ -49,3 +49,17 @@ VerticalLinesElement::VerticalLinesElement(mode mode, long double value, long do
 	this->SetTheta(theta);
 	this->SetLambda(lambda);
 }
+
+QJsonObject VerticalLinesElement::toJson() const
+{
+	// Получаем базовый JSON
+	QJsonObject json = Element::toJson();
+
+	// Добавляем специфичные для VerticalLinesElement поля
+	json["electricalLength"] = (double)_electricalLength;
+	json["mechanicalLength"] = (double)_mechanicalLength;
+	json["lambda"] = (double)_lambda;
+	json["theta"] = (double)_theta;
+
+	return json;
+}

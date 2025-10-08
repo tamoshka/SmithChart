@@ -31,6 +31,8 @@ set(PROJECT_SOURCES
     systemParameters.h
     systemParameters.cpp
     general.h
+    ElementFactory.h
+    ElementFactory.cpp
     Element.h
     Element.cpp
     main.cpp
