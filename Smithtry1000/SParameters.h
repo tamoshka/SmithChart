@@ -6,6 +6,9 @@
 #include "SParamTable.h"
 #include "ColourSetting.h"
 
+/// <summary>
+/// Хаб для окон связанных с S-параметрами и окна настройки визуализации.
+/// </summary>
 class SParameters
 {
 public:

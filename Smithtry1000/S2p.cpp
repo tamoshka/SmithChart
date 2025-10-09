@@ -27,15 +27,27 @@ int strcasecmp(const char* first, const char* second)
 #endif
 typedef unsigned char byte;
 using namespace std;
+
+/// <summary>
+/// Конструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::TouchstoneFile()
 {
     setlocale(LC_NUMERIC, "C");
 }
 
+/// <summary>
+/// Деструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::~TouchstoneFile()
 {
 }
 
+/// <summary>
+/// Загрузка S-параметров из S1P и S2P файлов.
+/// </summary>
+/// <param name="filename">Путь к файлу.</param>
+/// <returns>S-параметры.</returns>
 spar_t TouchstoneFile::Load2P(const char* filename)
 {
     ifstream File;

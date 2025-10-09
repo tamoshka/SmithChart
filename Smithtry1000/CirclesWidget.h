@@ -6,6 +6,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class CirclesWidget; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс выбора и отображения вспомогательных кругов.
+/// </summary>
 class CirclesWidget : public QWidget
 {
 	Q_OBJECT

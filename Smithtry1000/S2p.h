@@ -9,6 +9,9 @@ using namespace std;
 typedef enum { GHz, MHz, KHz, Hz }FUnit;
 typedef enum { DB, MA, RI }SFormat;
 
+/// <summary>
+/// Класс для получения S-параметров.
+/// </summary>
 class TouchstoneFile
 {
 public:

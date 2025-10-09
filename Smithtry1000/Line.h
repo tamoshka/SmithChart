@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include "VerticalLinesElement.h"
 
+/// <summary>
+/// Класс хранения линий передач.
+/// </summary>
 class LinesElement :public VerticalLinesElement
 {
 private:

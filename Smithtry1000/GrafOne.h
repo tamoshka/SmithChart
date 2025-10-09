@@ -9,6 +9,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class GrafOneClass; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения графика S11/S22.
+/// </summary>
 class GrafOne : public QWidget
 {
 	Q_OBJECT

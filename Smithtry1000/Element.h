@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "general.h"
 
-class VerticalLinesElement;
-class LinesElement;
-
+/// <summary>
+/// Класс элемента.
+/// </summary>
 class Element
 {
 private:

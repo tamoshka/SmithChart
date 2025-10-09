@@ -11,6 +11,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class S12ParamClass; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс отображения кругов S12 и S21.
+/// </summary>
 class SDiagram1 : public QWidget
 {
 	Q_OBJECT

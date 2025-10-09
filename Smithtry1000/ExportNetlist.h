@@ -6,6 +6,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class ExportNetlist; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс экспорта цепи в Netlist.
+/// </summary>
 class ExportNetlist : public QWidget
 {
 	Q_OBJECT

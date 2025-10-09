@@ -1,6 +1,9 @@
 ﻿#include "Element.h"
 #include <QColor>
 
+/// <summary>
+/// Статический класс, хранящий все цвета, ряд методов и параметров необходимых другим классам (сервисный класс).
+/// </summary>
 class SystemParameters
 {
 public:

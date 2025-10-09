@@ -6,6 +6,10 @@
 #include <QWidget>
 #include <QScrollArea>
 #include "circuitElements.h"
+
+/// <summary>
+/// Класс отображения цепи.
+/// </summary>
 class CircuitWidget : public QWidget
 {
     Q_OBJECT

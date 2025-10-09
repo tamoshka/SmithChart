@@ -2,6 +2,10 @@
 #include "S2p.h"
 #include <QString>
 
+/// <summary>
+/// Конструктор класса GrafOne.
+/// </summary>
+/// <param name="parent"></param>
 GrafOne::GrafOne(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafOneClass())
@@ -9,6 +13,9 @@ GrafOne::GrafOne(QWidget* parent)
 	ui->setupUi(this);
 }
 
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void GrafOne::Load()
 {
 	extern QString fileName;
@@ -133,6 +140,9 @@ void GrafOne::Load()
 	GraphS22->removeFromLegend();
 }
 
+/// <summary>
+/// Обновление цвета на виджете.
+/// </summary>
 void GrafOne::updateGrafOneColor()
 {
 	if (fileName != "")
@@ -142,6 +152,9 @@ void GrafOne::updateGrafOneColor()
 	}
 }
 
+/// <summary>
+/// Сохранение изображения виджета.
+/// </summary>
 void GrafOne::SaveGrafOne()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,"Save the graph",QDir::homePath() + "/graph.png","PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
@@ -173,6 +186,11 @@ void GrafOne::SaveGrafOne()
 		}
 	}
 }
+
+/// <summary>
+/// Выбор подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void GrafOne::highlightPoint(int index)
 {
 	if (index >= 0 && index < x.size())
@@ -188,6 +206,9 @@ void GrafOne::highlightPoint(int index)
 	}
 }
 
+/// <summary>
+/// Деструктор класса GrafOne.
+/// </summary>
 GrafOne::~GrafOne()
 {
 	delete ui;

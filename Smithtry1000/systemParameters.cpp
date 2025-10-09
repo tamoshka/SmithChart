@@ -24,8 +24,18 @@ QColor SystemParameters::circleS21 = QColor(Qt::blue);
 QColor SystemParameters::gridGrafOneColor = QColor(Qt::black);
 QColor SystemParameters::gridGrafTwoColor = QColor(Qt::black);
 QColor SystemParameters::gridAmpFrColor = QColor(Qt::black);
+/// <summary>
+/// 
+/// </summary>
 QList<int> SystemParameters::sPlotline = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-QList<int> SystemParameters::ampFrline = { 1,1,1 };
+/// <summary>
+/// 
+/// </summary>
+QList<int> SystemParameters::ampFrline = { 1,1 };
+/// <summary>
+/// 0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
+/// 9 - VSWRColor, 10 - QCirclesColor
+/// </summary>
 QList<double> SystemParameters::linesWidth = { 2, 1, 1, 2, 2, 2, 1, 3, 3, 2, 2};
 QColor SystemParameters::MainCircleColorDefault = QColor(Qt::black);
 QColor SystemParameters::ImpedanceColorDefault = QColor(Qt::blue);
@@ -51,8 +61,18 @@ QColor SystemParameters::circleS21Default = QColor(Qt::blue);
 QColor SystemParameters::gridGrafOneColorDefault = QColor(Qt::black);
 QColor SystemParameters::gridGrafTwoColorDefault = QColor(Qt::black);
 QColor SystemParameters::gridAmpFrColorDefault = QColor(Qt::black);
+/// <summary>
+/// 
+/// </summary>
 QList<int> SystemParameters::sPlotlineDefault = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+/// <summary>
+/// 
+/// </summary>
 QList<int> SystemParameters::ampFrlineDefault = { 1,1,1 };
+/// <summary>
+/// 0 - MainCircleColor, 1 - ImpedanceColor, 2 - AdmitanceColor, 3 - DataPointsColor, 4 - RootColor, 5 - ElementsColor, 6 - BackgroundColor, 7 - MainImpedanceColor, 8 - MainAdmitanceColor
+/// 9 - VSWRColor, 10 - QCirclesColor
+/// </summary>
 QList<double> SystemParameters::linesWidthDefault = { 2, 1, 1, 2, 2, 2, 1, 3, 3, 2, 2 };
 bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
@@ -79,6 +99,11 @@ long double SystemParameters::admitanceImagR = 0;
 long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
 
+/// <summary>
+/// Расчёт действительной части сопротивления.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
 void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
 {
     long double tempy=pow(y,2);
@@ -119,6 +144,11 @@ void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
     impedanceRealR *= 50;
 }
 
+/// <summary>
+/// Расчёт действительной части проводимости.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
 void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
 {
     long double tempy = pow(y, 2);
@@ -156,6 +186,11 @@ void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
     admitanceRealR *= 20;
 }
 
+/// <summary>
+/// Расчёт мнимой части сопротивления.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
 void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
 {
     long double cos_t;
@@ -204,6 +239,11 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
     }
 }
 
+/// <summary>
+/// Расчёт мнимой части проводимости.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
 void SystemParameters::rAdmitanceImagCalculation(long double x, long double y)
 {
     long double tempy = pow(y, 2);
@@ -242,6 +282,12 @@ void SystemParameters::rAdmitanceImagCalculation(long double x, long double y)
     
 }
 
+/// <summary>
+/// Расчёт Z-параметра.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Z complex.</returns>
 Complex SystemParameters::zCalculation(long double x, long double y)
 {
     rImpedanceRealCalculation(x, y);
@@ -249,6 +295,12 @@ Complex SystemParameters::zCalculation(long double x, long double y)
     return Complex(impedanceRealR, impedanceImagR);
 }
 
+/// <summary>
+/// Расчёт Y-параметра.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Y complex.</returns>
 Complex SystemParameters::yCalculation(long double x, long double y)
 {
     rAdmitanceRealCalculation(x, y);
@@ -256,6 +308,12 @@ Complex SystemParameters::yCalculation(long double x, long double y)
     return Complex(admitanceRealR, admitanceImagR);
 }
 
+/// <summary>
+/// Расчёт параметров действительной части сопротивления для диаграммы.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Параметры для диаграммы.</returns>
 Complex SystemParameters::impedanceRealChartParameters(long double x, long double y)
 {
     long double tempy = pow(y, 2);
@@ -296,6 +354,12 @@ Complex SystemParameters::impedanceRealChartParameters(long double x, long doubl
     return Complex(r1, t1);
 }
 
+/// <summary>
+/// Расчёт параметров действительной части проводимости для диаграммы.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Параметры для диаграммы.</returns>
 Complex SystemParameters::admitanceRealChartParameters(long double x, long double y)
 {
     long double tempy = pow(y, 2);
@@ -333,6 +397,12 @@ Complex SystemParameters::admitanceRealChartParameters(long double x, long doubl
     return Complex(r1, t1);
 }
 
+/// <summary>
+/// Расчёт параметров мнимой части сопротивления для диаграммы.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Параметры для диаграммы.</returns>
 Complex SystemParameters::impedanceImagChartParameters(long double x, long double y)
 {
     long double t1, r1;
@@ -379,6 +449,12 @@ Complex SystemParameters::impedanceImagChartParameters(long double x, long doubl
     return Complex(r1, t1);
 }
 
+/// <summary>
+/// Расчёт параметров мнимой части проводимости для диаграммы.
+/// </summary>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <returns>Параметры для диаграммы.</returns>
 Complex SystemParameters::admitanceImagChartParameters(long double x, long double y)
 {
     long double t1, r1;
@@ -413,6 +489,9 @@ Complex SystemParameters::admitanceImagChartParameters(long double x, long doubl
     return Complex(r1, t1);
 }
 
+/// <summary>
+/// Сохранение в JSON параметров цветов и толщины линий.
+/// </summary>
 void SystemParameters::SaveToJSON()
 {
     QJsonObject json;
@@ -475,6 +554,9 @@ void SystemParameters::SaveToJSON()
     file.close();
 }
 
+/// <summary>
+/// Десериализация из JSON параметров цветов и толщин линий.
+/// </summary>
 void SystemParameters::deserializeFromJson()
 {
     QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -586,7 +668,11 @@ void SystemParameters::deserializeFromJson()
     }
 }
 
-
+/// <summary>
+/// Преобразование цвета в String.
+/// </summary>
+/// <param name="color">Цвет.</param>
+/// <returns>Строка.</returns>
 QString SystemParameters::colorToString(const QColor& color)
 {
     if (color.alpha() == 255) {
@@ -597,6 +683,11 @@ QString SystemParameters::colorToString(const QColor& color)
     }
 }
 
+/// <summary>
+/// Преобразование строки в цвет.
+/// </summary>
+/// <param name="colorString">Строка.</param>
+/// <returns>Цвет.</returns>
 QColor SystemParameters::stringToColor(const QString& colorString)
 {
     return QColor(colorString);

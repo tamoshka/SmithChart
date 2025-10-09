@@ -1,6 +1,11 @@
 ﻿#include "ColourSetting.h"
 #include <QColorDialog>
 using namespace std;
+
+/// <summary>
+/// Конструктор класса ColourSetting.
+/// </summary>
+/// <param name="parent"></param>
 ColourSetting::ColourSetting(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::ColourSettingClass())
@@ -104,17 +109,28 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->DefaultButton, &QPushButton::clicked, this, &ColourSetting::DefaultClicked);
 }
 
+/// <summary>
+/// Деструктор класса ColourSetting.
+/// </summary>
 ColourSetting::~ColourSetting()
 {
 	delete ui;
 }
 
+/// <summary>
+/// Установка цвета кнопке.
+/// </summary>
+/// <param name="button">Кнопка.</param>
+/// <param name="color">Цвет.</param>
 void ColourSetting::setButtonColor(QPushButton* button, const QColor& color)
 {
 	QString style = QString("QPushButton {background-color: %1; color: white;}").arg(color.name());
 	button->setStyleSheet(style);
 }
 
+/// <summary>
+/// Настройка цветов для S11.
+/// </summary>
 void ColourSetting::S11Graf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::s11GrafColor, this);
@@ -126,6 +142,9 @@ void ColourSetting::S11Graf()
 	}
 }
 
+/// <summary>
+/// Настройка цветов для S22.
+/// </summary>
 void ColourSetting::S22Graf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::s22GrafColor, this);
@@ -137,17 +156,25 @@ void ColourSetting::S22Graf()
 	}
 }
 
+/// <summary>
+/// Обработка отмены изменений.
+/// </summary>
 void ColourSetting::ButtonCancel()
 {
 	this->close();
 }
 
+/// <summary>
+/// Обработка принятия изменений.
+/// </summary>
 void ColourSetting::ButtonOK()
 {
 	this->close();
 }
 
-
+/// <summary>
+/// Настройка цвета MAG.
+/// </summary>
 void ColourSetting::MAGGraf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::magGrafColor, this);
@@ -159,6 +186,9 @@ void ColourSetting::MAGGraf()
 	}
 }
 
+/// <summary>
+/// Настройка цвета MSG.
+/// </summary>
 void ColourSetting::MSGGraf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::msgGrafColor, this);
@@ -170,6 +200,9 @@ void ColourSetting::MSGGraf()
 	}
 }
 
+/// <summary>
+/// Настройка цвета K.
+/// </summary>
 void ColourSetting::KGraf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::kGrafColor, this);
@@ -181,6 +214,9 @@ void ColourSetting::KGraf()
 	}
 }
 
+/// <summary>
+/// Настройка цвета mu.
+/// </summary>
 void ColourSetting::MuGraf()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::muGrafColor, this);
@@ -192,6 +228,9 @@ void ColourSetting::MuGraf()
 	}
 }
 
+/// <summary>
+/// Настройка цвета S11 для АЧХ.
+/// </summary>
 void ColourSetting::AmpFrS11()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::ampS11Color, this);
@@ -203,6 +242,9 @@ void ColourSetting::AmpFrS11()
 	}
 }
 
+/// <summary>
+/// Настройка цвета S21 для АЧХ.
+/// </summary>
 void ColourSetting::AmpFrS21()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::ampS21Color, this);
@@ -214,6 +256,9 @@ void ColourSetting::AmpFrS21()
 	}
 }
 
+/// <summary>
+/// Настройка цвета S12.
+/// </summary>
 void ColourSetting::CircleS12()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::circleS12, this);
@@ -225,6 +270,9 @@ void ColourSetting::CircleS12()
 	}
 }
 
+/// <summary>
+/// Настройка цвета S21.
+/// </summary>
 void ColourSetting::CircleS21()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::circleS21, this);
@@ -236,6 +284,9 @@ void ColourSetting::CircleS21()
 	}
 }
 
+/// <summary>
+/// Настройка цвета линий сопротивления.
+/// </summary>
 void ColourSetting::ColourImpedance()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::ImpedanceColor, this);
@@ -247,6 +298,9 @@ void ColourSetting::ColourImpedance()
 	}
 }
 
+/// <summary>
+/// Настройка цвета линии проводимости.
+/// </summary>
 void ColourSetting::ColourAdmitance()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::AdmitanceColor, this);
@@ -258,6 +312,9 @@ void ColourSetting::ColourAdmitance()
 	}
 }
 
+/// <summary>
+/// Настройка цвета сетки у графика S11/S22.
+/// </summary>
 void ColourSetting::GridGrafOneColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::gridGrafOneColor, this);
@@ -269,6 +326,9 @@ void ColourSetting::GridGrafOneColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета сетки у графиков K, mu, Mag, MSG.
+/// </summary>
 void ColourSetting::GridGrafTwoColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::gridGrafTwoColor, this);
@@ -280,6 +340,9 @@ void ColourSetting::GridGrafTwoColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета точек.
+/// </summary>
 void ColourSetting::DatapointCirclesColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::DataPointsColor, this);
@@ -291,6 +354,9 @@ void ColourSetting::DatapointCirclesColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета маршрутов для передвижения курсора.
+/// </summary>
 void ColourSetting::TempLinesColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::RootColor, this);
@@ -302,6 +368,9 @@ void ColourSetting::TempLinesColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета годографов.
+/// </summary>
 void ColourSetting::ElementLinesColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::ElementsColor, this);
@@ -313,6 +382,9 @@ void ColourSetting::ElementLinesColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета опорной проводимости.
+/// </summary>
 void ColourSetting::RefYColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::MainAdmitanceColor, this);
@@ -324,6 +396,9 @@ void ColourSetting::RefYColor()
 	}
 }
 
+/// <summary>
+/// Настройка цвета опорного сопротивления.
+/// </summary>
 void ColourSetting::RefZColor()
 {
 	QColor newColor = QColorDialog::getColor(SystemParameters::MainImpedanceColor, this);
@@ -335,6 +410,10 @@ void ColourSetting::RefZColor()
 	}
 }
 
+/// <summary>
+/// Настройка толщин линий S12 м S21.
+/// </summary>
+/// <param name="line">Толщина линии.</param>
 void ColourSetting::LineCircleS12S21(int line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -346,6 +425,10 @@ void ColourSetting::LineCircleS12S21(int line)
 	}
 }
 
+/// <summary>
+/// Настройка толщин линий для S11/S22 графиков.
+/// </summary>
+/// <param name="line">Толщина линии.</param>
 void ColourSetting::LineGrafOne(int line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -357,6 +440,10 @@ void ColourSetting::LineGrafOne(int line)
 	}
 }
 
+/// <summary>
+/// Настройка толщин линий для mu, k, MSG, MAG графиков.
+/// </summary>
+/// <param name="line">Толщина линии.</param>
 void ColourSetting::LineGrafTwo(int line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -368,6 +455,10 @@ void ColourSetting::LineGrafTwo(int line)
 	}
 }
 
+/// <summary>
+/// Настройка толщин линий для ДВС.
+/// </summary>
+/// <param name="line">Толщина линии.</param>
 void ColourSetting::DVSLine(float line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -379,6 +470,10 @@ void ColourSetting::DVSLine(float line)
 	}
 }
 
+/// <summary>
+/// Настройка толщин линий для АЧХ.
+/// </summary>
+/// <param name="line">Толщина линии.</param>
 void ColourSetting::AmpFrLine(int line)
 {
 	QSpinBox* sBox = qobject_cast<QSpinBox*>(sender());
@@ -390,6 +485,9 @@ void ColourSetting::AmpFrLine(int line)
 	}
 }
 
+/// <summary>
+/// Сброс всех настроек в стандарт.
+/// </summary>
 void ColourSetting::DefaultClicked()
 {
 	setButtonColor(ui->S11Graf, SystemParameters::s11GrafColorDefault);

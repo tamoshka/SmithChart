@@ -5,6 +5,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class SaveDialog; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Диалог для сохранения изображения виджета.
+/// </summary>
 class SaveDialog : public QDialog
 {
 	Q_OBJECT

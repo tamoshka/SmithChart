@@ -5,6 +5,10 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+/// <summary>
+/// Конструктор класса LinesDialog.
+/// </summary>
+/// <param name="parent"></param>
 LinesDialog::LinesDialog(QWidget* parent)
     : QDialog(parent)
 {
@@ -44,6 +48,9 @@ LinesDialog::LinesDialog(QWidget* parent)
     connect(okButton, &QPushButton::clicked, this, &LinesDialog::onAccept);
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void LinesDialog::onAccept()
 {
     QString tempZ0 = Z0Field->text();
@@ -75,9 +82,12 @@ void LinesDialog::onAccept()
     else
     {
         reject();
-    } // закрыть окно
+    }
 }
 
+/// <summary>
+/// Изменение активности поля lambda в зависимости от alpha.
+/// </summary>
 void LinesDialog::onChanged()
 {
     QString tempAlpha = AlphaField->text();

@@ -1,7 +1,18 @@
 ﻿#include "SParameters.h"
 #include <QString>
 
-
+/// <summary>
+/// Конструктор класса SParameters.
+/// </summary>
+/// <param name="grafOne1">GrafOne.</param>
+/// <param name="grafTwo1">GrafTwo.</param>
+/// <param name="d12">S12.</param>
+/// <param name="d21">S21.</param>
+/// <param name="d11">S11.</param>
+/// <param name="d22">S22.</param>
+/// <param name="t1">Таблица S-параметров.</param>
+/// <param name="t2">Таблица Mag, Msg, K, mu параметров.</param>
+/// <param name="set1">Настройка цветов и толщины линий.</param>
 SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21, SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2, ColourSetting& set1)
 {
 	grafOne = &grafOne1;
@@ -14,11 +25,18 @@ SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, S
 	stable2 = &t2;
 	set = &set1;
 }
+
+/// <summary>
+/// Деструктор класса SParameters.
+/// </summary>
 SParameters::~SParameters()
 {
 
 }
 
+/// <summary>
+/// Выбор отображаемых окон.
+/// </summary>
 void SParameters::Show()
 {
 	extern QString fileName;
@@ -56,6 +74,9 @@ void SParameters::Show()
 	}
 }
 
+/// <summary>
+/// Закрытие окон.
+/// </summary>
 void SParameters::Close()
 {
 	grafOne->close();

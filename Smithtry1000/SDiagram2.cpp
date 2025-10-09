@@ -8,6 +8,11 @@
 #include <QtMath>
 #include <QString>
 
+/// <summary>
+/// Конструктор класса SDiagram2.
+/// </summary>
+/// <param name="type">Тип, S11/S22.</param>
+/// <param name="parent"></param>
 SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     : QWidget(parent),
     mBackGroundColor(255, 255, 255),
@@ -22,6 +27,9 @@ SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     scaleFactor = qMin(this->width(), this->height()) / 450.0f;
 }
 
+/// <summary>
+/// Получение параметров из SnP файла.
+/// </summary>
 void SDiagram2::Load()
 {
     extern QString fileName;
@@ -94,6 +102,11 @@ void SDiagram2::Load()
     }
 }
 
+/// <summary>
+/// Расчёт действительной части сопротивления.
+/// </summary>
+/// <param name="t">Угол отклонения в радианах.</param>
+/// <returns>Точка.</returns>
 QPointF SDiagram2::compute_real(float t)
 {
     float cos_t = cos(t);
@@ -103,6 +116,11 @@ QPointF SDiagram2::compute_real(float t)
     return QPointF(x, y);
 }
 
+/// <summary>
+/// Расчёт мнимой части сопротивления.
+/// </summary>
+/// <param name="t">Угол отклонения в радианах.</param>
+/// <returns>Точка.</returns>
 QPointF SDiagram2::compute_imaginary(float t)
 {
     float cos_t = cos(t);
@@ -112,6 +130,10 @@ QPointF SDiagram2::compute_imaginary(float t)
     return QPointF(x, y);
 }
 
+/// <summary>
+/// Отрисовка статических объектов.
+/// </summary>
+/// <param name="painter"></param>
 void SDiagram2::drawStaticObjects(QPainter& painter)
 {
     scale = defaultScale * scaleFactor;
@@ -338,6 +360,9 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Генерация кэша статических объектов.
+/// </summary>
 void SDiagram2::generateCache()
 {
     QSize scaledSize = size() * m_scaleFactor;
@@ -353,6 +378,10 @@ void SDiagram2::generateCache()
     m_cacheValid = true;
 }
 
+/// <summary>
+/// Отрисовка виджета.
+/// </summary>
+/// <param name="event"></param>
 void SDiagram2::paintEvent(QPaintEvent* event)
 {
     extern QString fileName;
@@ -434,14 +463,19 @@ void SDiagram2::paintEvent(QPaintEvent* event)
     }
 }
 
-
+/// <summary>
+/// Отображение подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void SDiagram2::highlightPoint(int index)
 {
     highlightedPoint = index;
     update();
 }
 
-
+/// <summary>
+/// Деструктор класса SDiagram2.
+/// </summary>
 SDiagram2::~SDiagram2()
 {
 }

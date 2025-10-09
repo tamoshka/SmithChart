@@ -1,6 +1,10 @@
 #include "CirclesWidget.h"
 #include "ui_CirclesWidget.h"
 
+/// <summary>
+/// Конструктор класса CirclesWidget.
+/// </summary>
+/// <param name="parent"></param>
 CirclesWidget::CirclesWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::CirclesWidget())
@@ -57,6 +61,9 @@ CirclesWidget::CirclesWidget(QWidget *parent)
 	connect(ui->ClearAllOtherButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedQ);
 }
 
+/// <summary>
+/// Очистка всех кругов VSWR, введённых вручную.
+/// </summary>
 void CirclesWidget::clearAllOthersClickedVSWR()
 {
 	for (auto item : ui->listWidgetVSWR->findItems("*", Qt::MatchWildcard))
@@ -68,6 +75,9 @@ void CirclesWidget::clearAllOthersClickedVSWR()
 	emit circle();
 }
 
+/// <summary>
+/// Очистка всех кругов Q, введённых вручную.
+/// </summary>
 void CirclesWidget::clearAllOthersClickedQ()
 {
 	for (auto item : ui->listWidgetQ->findItems("*", Qt::MatchWildcard))
@@ -79,6 +89,9 @@ void CirclesWidget::clearAllOthersClickedQ()
 	emit circle();
 }
 
+/// <summary>
+/// Удаление выбранного VSWR круга.
+/// </summary>
 void CirclesWidget::deleteVSWRClicked()
 {
 	for (auto item : ui->listWidgetVSWR->selectedItems())
@@ -90,6 +103,9 @@ void CirclesWidget::deleteVSWRClicked()
 	emit circle();
 }
 
+/// <summary>
+/// Удаление выбранного Q круга.
+/// </summary>
 void CirclesWidget::deleteQClicked()
 {
 	for (auto item : ui->listWidgetQ->selectedItems())
@@ -101,6 +117,9 @@ void CirclesWidget::deleteQClicked()
 	emit circle();
 }
 
+/// <summary>
+/// Вставка нового VSWR круга.
+/// </summary>
 void CirclesWidget::insertVSWRClicked()
 {
 	QString tempVswr = ui->FieldVSWR->text();
@@ -122,6 +141,9 @@ void CirclesWidget::insertVSWRClicked()
 	ui->FieldVSWR->setText("");
 }
 
+/// <summary>
+/// Вставка нового Q круга.
+/// </summary>
 void CirclesWidget::insertQClicked()
 {
 	QString tempQ = ui->FieldQ->text();
@@ -143,21 +165,34 @@ void CirclesWidget::insertQClicked()
 	ui->FieldQ->setText("");
 }
 
+/// <summary>
+/// Обработка принятия изменений.
+/// </summary>
 void CirclesWidget::okClicked()
 {
 	this->hide();
 }
 
+/// <summary>
+/// Обработка отмены изменений.
+/// </summary>
 void CirclesWidget::cancelClicked()
 {
 	this->hide();
 }
 
+/// <summary>
+/// Деструктор класса CirclesWidget.
+/// </summary>
 CirclesWidget::~CirclesWidget()
 {
 	delete ui;
 }
 
+/// <summary>
+/// Выбирание/убирание VSWR круга.
+/// </summary>
+/// <param name="state">Состояние чекбокса.</param>
 void CirclesWidget::checkboxCheckedVSWR(int state)
 {
 	QCheckBox* checkBox = qobject_cast<QCheckBox*>(sender());
@@ -172,6 +207,10 @@ void CirclesWidget::checkboxCheckedVSWR(int state)
 	emit circle();
 }
 
+/// <summary>
+/// Выбирание/убирание VSWR круга.
+/// </summary>
+/// <param name="state">Состояние чекбокса.</param>
 void CirclesWidget::checkboxCheckedQ(int state)
 {
 	QCheckBox* checkBox = qobject_cast<QCheckBox*>(sender());
@@ -186,6 +225,9 @@ void CirclesWidget::checkboxCheckedQ(int state)
 	emit circle();
 }
 
+/// <summary>
+/// Выбор всех стандартных кругов VSWR.
+/// </summary>
 void CirclesWidget::selectAllClickedVSWR()
 {
 	ui->checkBox10VSWR->setChecked(true);
@@ -227,6 +269,9 @@ void CirclesWidget::selectAllClickedVSWR()
 	emit circle();
 }
 
+/// <summary>
+/// Выбор всех стандартных кругов Q.
+/// </summary>
 void CirclesWidget::selectAllClickedQ()
 {
 	ui->checkBox10Q->setChecked(true);
@@ -268,6 +313,9 @@ void CirclesWidget::selectAllClickedQ()
 	emit circle();
 }
 
+/// <summary>
+/// Очистка всех стандартных кругов VSWR.
+/// </summary>
 void CirclesWidget::clearAllDefinedClickedVSWR()
 {
 	ui->checkBox10VSWR->setChecked(false);
@@ -309,6 +357,9 @@ void CirclesWidget::clearAllDefinedClickedVSWR()
 	emit circle();
 }
 
+/// <summary>
+/// Очистка всех стандартных кругов Q.
+/// </summary>
 void CirclesWidget::clearAllDefinedClickedQ()
 {
 	ui->checkBox10Q->setChecked(false);

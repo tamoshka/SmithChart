@@ -1,6 +1,11 @@
 ﻿#include "TuneWidget.h"
 #include "ui_TuneWidget.h"
 
+/// <summary>
+/// Конструктор класса TuneWidget.
+/// </summary>
+/// <param name="parent"></param>
+/// <param name="circuit">Цепь.</param>
 TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)
 	: QWidget(parent)
 	, ui(new Ui::TuneWidget())
@@ -18,21 +23,36 @@ TuneWidget::TuneWidget(QWidget *parent, CircuitElements* circuit)
 	connect(ui->RemoveAllButton, &QPushButton::clicked, this, &TuneWidget::RemoveAll);
 }
 
+/// <summary>
+/// Деструктор класса TuneWidget.
+/// </summary>
 TuneWidget::~TuneWidget()
 {
 	delete ui;
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void TuneWidget::OKButton_clicked()
 {
 	SystemParameters::tune = false;
 }
 
+/// <summary>
+/// Закрытие виджета.
+/// </summary>
+/// <param name="event"></param>
 void TuneWidget::closeEvent(QCloseEvent *event)
 {
 	SystemParameters::tune = false;
 }
 
+/// <summary>
+/// Получение сигнала о новом настраиваемом элементе.
+/// </summary>
+/// <param name="elem"></param>
+/// <param name="path"></param>
 void TuneWidget::GetSignal(Element* elem, QString path)
 {
 	SystemParameters::tuneBlock = true;
@@ -179,6 +199,9 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	update();
 }
 
+/// <summary>
+/// Удаление настраиваемого элемента.
+/// </summary>
 void TuneWidget::Remove()
 {
 	QPushButton* btn = qobject_cast<QPushButton*>(sender());
@@ -241,6 +264,9 @@ void TuneWidget::Remove()
 	update();
 }
 
+/// <summary>
+/// Удаление всех настраиваемых элементов.
+/// </summary>
 void TuneWidget::RemoveAll()
 {
 	int i = boxes.size() - 1;
@@ -291,6 +317,10 @@ void TuneWidget::RemoveAll()
 	update();
 }
 
+/// <summary>
+/// Отрисовка виджета.
+/// </summary>
+/// <param name="event"></param>
 void TuneWidget::paintEvent(QPaintEvent* event)
 {
 	int i = 0;
@@ -329,6 +359,10 @@ void TuneWidget::paintEvent(QPaintEvent* event)
 	}
 }
 
+/// <summary>
+/// Обработка изменения значений у ползунков.
+/// </summary>
+/// <param name="value"></param>
 void TuneWidget::ValueChanged(int value)
 {
 	QSlider* sld = qobject_cast<QSlider*>(sender());
@@ -605,7 +639,7 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = z.imag();
-				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*1e6*frequency+r1;
+				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*frequency+r1;
 				long double step = 0.1;
 				r2 = r2 / 50;
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
@@ -755,7 +789,7 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = z.imag();
-				long double r2 = r1-1/(circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*frequency*1e6);
+				long double r2 = r1-1/(circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*frequency);
 				long double step = 0.1;
 				r2 = r2 / 50;
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
@@ -1087,7 +1121,7 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = y.imag();
-				long double r2 = r1-(M_PI*500*100)/(circuitElements->GetCircuitElements()[j]->GetValue()*frequency*1e9);
+				long double r2 = r1-(M_PI*500*100)/(circuitElements->GetCircuitElements()[j]->GetValue()*frequency*1e9/1e6);
 				r2 *= -1;
 				long double step = 0.1;
 				r2 = r2 / 20;
@@ -1226,7 +1260,7 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = y.imag();
-				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI*frequency*1e12)/500;
+				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI*frequency*1e12/1e6)/500;
 				r2 *= -1;
 				long double step = 0.1;
 				r2 = r2 / 20;
@@ -1933,6 +1967,9 @@ void TuneWidget::ValueChanged(int value)
 	update();
 }
 
+/// <summary>
+/// Сброс минимального/максимального значения у элемента.
+/// </summary>
 void TuneWidget::MinMaxButton_clicked()
 {
 	int i = 0;

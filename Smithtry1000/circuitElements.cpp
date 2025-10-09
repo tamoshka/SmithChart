@@ -1,35 +1,60 @@
 ﻿#include "circuitElements.h"
 
+/// <summary>
+/// Конструктор класса CircuitElements.
+/// </summary>
 CircuitElements::CircuitElements()
 {
 	this->circuitElements = QList<Element*>();
 }
 
+/// <summary>
+/// Деструктор класса CircuitElements.
+/// </summary>
 CircuitElements::~CircuitElements()
 {
 }
 
+/// <summary>
+/// Добавление нового элемента в цепь.
+/// </summary>
+/// <param name="element">Элемент.</param>
 void CircuitElements::AddCircuitElements(Element* element)
 {
 	this->circuitElements.append(element);
 }
 
+/// <summary>
+/// Удаление последнего элемента из цепи.
+/// </summary>
 void CircuitElements::DeleteCircuitElements()
 {
 	delete this->circuitElements.last();
 	this->circuitElements.pop_back();
 }
 
+/// <summary>
+/// Получение цепи.
+/// </summary>
+/// <returns>Цепь.</returns>
 QList<Element*> CircuitElements::GetCircuitElements()
 {
 	return this->circuitElements;
 }
 
+/// <summary>
+/// Убирание конкретного элемента из цепи (Для TuneWidget).
+/// </summary>
+/// <param name="i">Индекс элемента.</param>
 void CircuitElements::Remove(int i)
 {
 	this->circuitElements.takeAt(i);
 }
 
+/// <summary>
+/// Сериализация цепи, создание объекта JSON.
+/// </summary>
+/// <returns>JsonObject.</returns>
 QJsonObject CircuitElements::toJson() const
 {
     QJsonObject json;
@@ -63,10 +88,40 @@ QJsonObject CircuitElements::toJson() const
         chartObj[QString::number(static_cast<int>(mode))] = valueObj;
     }
     json["chart"] = chartObj;
+    
+    QJsonArray morePointsObj;
+    for (const Point point : morePoints)
+    {
+        QJsonObject pointObj;
+        pointObj["x"] = (double)point.x;
+        pointObj["y"] = (double)point.y;
+
+        morePointsObj.append(pointObj);
+    }
+    json["morePoints"] = morePointsObj;
+
+    QJsonArray pointIndexesObj;
+    for (const int ind : pointIndexes)
+    {
+        pointIndexesObj.append(ind);
+    }
+    json["pointIndexes"] = pointIndexesObj;
+
+    QJsonArray elementIndexesObj;
+    for (const int ind : elementIndexes)
+    {
+        elementIndexesObj.append(ind);
+    }
+    json["elementIndexes"] = elementIndexesObj;
 
     return json;
 }
 
+/// <summary>
+/// Загрузка из JSON.
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <returns>Получилось/не получилось.</returns>
 bool CircuitElements::fromJson(const QJsonObject& json)
 {
     try {
@@ -122,6 +177,36 @@ bool CircuitElements::fromJson(const QJsonObject& json)
             }
         }
 
+        if (json.contains("morePoints") && json["morePoints"].isArray())
+        {
+            QJsonArray morePointsArray = json["morePoints"].toArray();
+            for (const auto& value : morePointsArray)
+            {
+                Point point;
+                point.x = value.toObject()["x"].toDouble();
+                point.y = value.toObject()["y"].toDouble();
+                morePoints.append(point);
+            }
+        }
+
+        if (json.contains("elementIndexes") && json["elementIndexes"].isArray())
+        {
+            QJsonArray elementIndexesObj = json["elementIndexes"].toArray();
+            for (const auto& value : elementIndexesObj)
+            {
+                elementIndexes.append(value.toInt());
+            }
+        }
+
+        if (json.contains("pointIndexes") && json["pointIndexes"].isArray())
+        {
+            QJsonArray pointIndexesObj = json["pointIndexes"].toArray();
+            for (const auto& value : pointIndexesObj)
+            {
+                pointIndexes.append(value.toInt());
+            }
+        }
+
         return true;
     }
     catch (...) {
@@ -130,6 +215,11 @@ bool CircuitElements::fromJson(const QJsonObject& json)
     }
 }
 
+/// <summary>
+/// Помощь в сериализации комплексных чисел.
+/// </summary>
+/// <param name="c">Число.</param>
+/// <returns>JsonObject.</returns>
 QJsonObject CircuitElements::complexToJson(const Complex& c)
 {
     QJsonObject obj;
@@ -138,6 +228,11 @@ QJsonObject CircuitElements::complexToJson(const Complex& c)
     return obj;
 }
 
+/// <summary>
+/// Помощь в десериализации комплексных чисел.
+/// </summary>
+/// <param name="obj">JsonObject.</param>
+/// <returns>Число.</returns>
 Complex CircuitElements::jsonToComplex(const QJsonObject& obj)
 {
     long double real = obj["real"].toDouble();
@@ -145,6 +240,11 @@ Complex CircuitElements::jsonToComplex(const QJsonObject& obj)
     return Complex(real, imag);
 }
 
+/// <summary>
+/// Помощь в сериализации элементов цепи.
+/// </summary>
+/// <param name="element">Элемент.</param>
+/// <returns>JsonObject.</returns>
 QJsonObject CircuitElements::elementToJson(const Element* element)
 {
     if (!element) {
@@ -154,11 +254,21 @@ QJsonObject CircuitElements::elementToJson(const Element* element)
     return element->toJson();
 }
 
+/// <summary>
+/// Помощь в десериализации элементов цепи.
+/// </summary>
+/// <param name="obj">JsonObject.</param>
+/// <returns>Элемент.</returns>
 Element* CircuitElements::jsonToElement(const QJsonObject& obj)
 {
     return ElementFactory::createFromJson(obj);
 }
 
+/// <summary>
+/// Загрузка из JSON.
+/// </summary>
+/// <param name="filePath">Путь к файлу.</param>
+/// <returns>Получилось/не получилось.</returns>
 bool CircuitElements::loadFromFile(const QString& filePath)
 {
     if (!QFile::exists(filePath)) {
@@ -191,6 +301,11 @@ bool CircuitElements::loadFromFile(const QString& filePath)
     return fromJson(doc.object());
 }
 
+/// <summary>
+/// Сохранение в файл JSON.
+/// </summary>
+/// <param name="filePath">Путь к файлу.</param>
+/// <returns>Получилось/не получилось.</returns>
 bool CircuitElements::saveToFile(const QString& filePath) const
 {
     QJsonObject json = toJson();

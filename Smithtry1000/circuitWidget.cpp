@@ -1,4 +1,10 @@
 #include "circuitWidget.h"
+
+/// <summary>
+/// Конструктор класса CircuitWidget.
+/// </summary>
+/// <param name="parent">Родитель (Smithtry1000).</param>
+/// <param name="circuitElements">Цепь.</param>
 CircuitWidget::CircuitWidget(QWidget* parent, CircuitElements* circuitElements) :
     QWidget(parent)
 {
@@ -7,30 +13,35 @@ CircuitWidget::CircuitWidget(QWidget* parent, CircuitElements* circuitElements) 
     this->tuneElements = new CircuitElements();
 }
 
+/// <summary>
+/// Деструктор класса CircuitWidget.
+/// </summary>
 CircuitWidget::~CircuitWidget()
 {
 }
 
+/// <summary>
+/// Добавление SVG на виджет.
+/// </summary>
+/// <param name="path">Путь к изображению.</param>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
 void CircuitWidget::addSvg(QString path, int x, int y) {
-    // ������� SVG ������
     QSvgWidget* svgWidget = new QSvgWidget(this);
 
-    // ��������� SVG �� ��������
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
     {
         paths.append(path);
         svgWidgets[svgWidgets.size() - 1]->hide();
         QSvgWidget* widget = svgWidgets.takeLast();
-        widget->deleteLater(); // ���������� ��������
-        // ������������� ������� � ������ (x, y, width, height)
+        widget->deleteLater();
         svgWidget->setGeometry(x - 40, y, 40, 40);
         svgWidget->show();
 
         svgWidgets.append(svgWidget);
         QSvgWidget* load = new QSvgWidget(this);
 
-        // ��������� SVG �� ��������
         load->load(QString(":/Images/source.svg"));
         load->setGeometry(x, 39, 40, 40);
         load->show();
@@ -44,6 +55,10 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
     }
 }
 
+/// <summary>
+/// Удаление настраиваемого элемента из цепи (Для TuneWidget).
+/// </summary>
+/// <param name="el">Элемент.</param>
 void CircuitWidget::RemoveElement(Element* el)
 {
     int i = 0;
@@ -60,6 +75,9 @@ void CircuitWidget::RemoveElement(Element* el)
     update();
 }
 
+/// <summary>
+/// Удаление всех настраиваемых элементов из цепи (Для TuneWidget).
+/// </summary>
 void CircuitWidget::RemoveAll()
 {
     int i = tuneElements->GetCircuitElements().size() - 1;
@@ -72,6 +90,9 @@ void CircuitWidget::RemoveAll()
     update();
 }
 
+/// <summary>
+/// Удаление последнего SVG.
+/// </summary>
 void CircuitWidget::removeLastSvg() {
     paths.pop_back();
     if (!svgWidgets.isEmpty() && svgWidgets.size()>2) {
@@ -86,6 +107,10 @@ void CircuitWidget::removeLastSvg() {
     }
 }
 
+/// <summary>
+/// Отрисовка виджета.
+/// </summary>
+/// <param name="event"></param>
 void CircuitWidget::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
@@ -139,7 +164,26 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    s1 = QString::number((double)round((r2 - r1) / (2 * M_PI * 1000000 * frequency) * 1000000000*10)/10) + " nH";
+                    double val = (r2 - r1) / (2 * M_PI * frequency) * 1000000000;
+                    QString power;
+                    if (val < 1)
+                    {
+                        val *= 1000;
+                        power = " pH";
+                    }
+                    else if (val < 1000)
+                    {
+                        power = " nH";
+                    }
+                    else if (val < 1000000)
+                    {
+                        power = " uH";
+                    }
+                    else
+                    {
+                        power = " mH";
+                    }
+                    s1 = QString::number((double)round(val*10)/10) + power;
                     break;
                 }
                 case CapacitorShunt:
@@ -147,7 +191,26 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    s1 = QString::number((double)round(10*1 / ((r1 - r2) * (2 * M_PI * 1000000 * frequency)) * 1000000000000)/10) + " pF";
+                    double val = 10 / ((r1 - r2) * (2 * M_PI * frequency)) * 100000000000;
+                    QString power;
+                    if (val < 1)
+                    {
+                        val *= 1000;
+                        power = " fF";
+                    }
+                    else if (val < 1000)
+                    {
+                        power = " pF";
+                    }
+                    else if (val < 1000000)
+                    {
+                        power = " nF";
+                    }
+                    else
+                    {
+                        power = " uF";
+                    }
+                    s1 = QString::number((double)round(val * 10) / 10) + power;
                     break;
                 }
                 case ResistorParallel:
@@ -163,7 +226,26 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    s1 = QString::number((double)round(10*M_PI/(r1-r2) * 100/frequency*500)/10) + " nH";
+                    double val = M_PI / (r1 - r2) * 100 / frequency * 1e6 * 500;
+                    QString power;
+                    if (val < 1)
+                    {
+                        val *= 1000;
+                        power = " pH";
+                    }
+                    else if (val < 1000)
+                    {
+                        power = " nH";
+                    }
+                    else if (val < 1000000)
+                    {
+                        power = " uH";
+                    }
+                    else
+                    {
+                        power = " mH";
+                    }
+                    s1 = QString::number((double)round(val * 10) / 10) + power;
                     break;
                 }
                 case CapacitorParallel:
@@ -171,7 +253,26 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    s1 = QString::number((double)round((r2 - r1) / M_PI * 500/frequency*10)/10) + " pF";
+                    double val = (r2 - r1) / M_PI * 500 / frequency * 1000000;
+                    QString power;
+                    if (val < 1)
+                    {
+                        val *= 1000;
+                        power = " fF";
+                    }
+                    else if (val < 1000)
+                    {
+                        power = " pF";
+                    }
+                    else if (val < 1000000)
+                    {
+                        power = " nF";
+                    }
+                    else
+                    {
+                        power = " uF";
+                    }
+                    s1 = QString::number((double)round(val * 10) / 10) + power;
                     break;
                 }
                 case Line:
@@ -410,6 +511,11 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         left = false;
     }
 }
+
+/// <summary>
+/// Обработка при наведении на виджет.
+/// </summary>
+/// <param name="event"></param>
 void CircuitWidget::enterEvent(QEvent* event)
 {
     SystemParameters::circuitHover = true;
@@ -417,11 +523,18 @@ void CircuitWidget::enterEvent(QEvent* event)
     QWidget::enterEvent(event);
 }
 
+/// <summary>
+/// Обработка при выходе с виджета.
+/// </summary>
+/// <param name="event"></param>
 void CircuitWidget::leaveEvent(QEvent* event)
 {
     SystemParameters::circuitHover = false;
 }
 
+/// <summary>
+/// Обработка нажатия левой кнопки мыши.
+/// </summary>
 void CircuitWidget::getLeft()
 {
     left = true;

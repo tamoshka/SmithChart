@@ -9,6 +9,9 @@
 class QLineEdit;
 class QPushButton;
 
+/// <summary>
+/// Диалог задания точки с использованием клавиатуры.
+/// </summary>
 class KeyboardDialog : public QDialog {
     Q_OBJECT
 

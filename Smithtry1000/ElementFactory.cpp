@@ -3,6 +3,11 @@
 #include "VerticalLinesElement.h"
 #include "Line.h"
 
+/// <summary>
+/// Создание элемента из JSON..
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <returns>Элемент.</returns>
 Element* ElementFactory::createFromJson(const QJsonObject& json)
 {
     // Определяем тип элемента
@@ -23,6 +28,11 @@ Element* ElementFactory::createFromJson(const QJsonObject& json)
     }
 }
 
+/// <summary>
+/// Создание базового элемента.
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <returns>Элемент.</returns>
 Element* ElementFactory::createBaseElement(const QJsonObject& json)
 {
     try {
@@ -43,6 +53,11 @@ Element* ElementFactory::createBaseElement(const QJsonObject& json)
     }
 }
 
+/// <summary>
+/// Создание вертикальных элементов (шлейфов КЗ и ХХ).
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <returns>Шлейф.</returns>
 VerticalLinesElement* ElementFactory::createVerticalLinesElement(const QJsonObject& json)
 {
     try {
@@ -70,6 +85,11 @@ VerticalLinesElement* ElementFactory::createVerticalLinesElement(const QJsonObje
     }
 }
 
+/// <summary>
+/// Создание линии передач.
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <returns>Линия передач.</returns>
 LinesElement* ElementFactory::createLinesElement(const QJsonObject& json)
 {
     try {
@@ -100,6 +120,16 @@ LinesElement* ElementFactory::createLinesElement(const QJsonObject& json)
     }
 }
 
+/// <summary>
+/// Вспомогательная функция для парсинга общих полей.
+/// </summary>
+/// <param name="json">JsonObject.</param>
+/// <param name="pt">Точка.</param>
+/// <param name="freq">Частота.</param>
+/// <param name="val">Значение.</param>
+/// <param name="elemMode">Тип элемента.</param>
+/// <param name="chartParams">Параметры диаграммы.</param>
+/// <param name="params">Параметры(Z, Y, G).</param>
 void ElementFactory::parseCommonFields(const QJsonObject& json,
     Point& pt,
     long double& freq,

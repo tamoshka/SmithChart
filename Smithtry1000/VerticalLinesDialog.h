@@ -7,6 +7,9 @@
 class QLineEdit;
 class QPushButton;
 
+/// <summary>
+/// Диалог задания Шлейфоф КЗ и ХХ.
+/// </summary>
 class VerticalLinesDialog : public QDialog {
     Q_OBJECT
 

@@ -3,6 +3,11 @@
 #include "math.h"
 #include <QString>
 
+/// <summary>
+/// Конструктор класса SDiagram1
+/// </summary>
+/// <param name="type">Тип, S12/S21.</param>
+/// <param name="parent"></param>
 SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 	: QWidget(parent),
 	mBackGroundColor(255, 255, 255),
@@ -14,6 +19,9 @@ SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 	this->setStyleSheet("background-color: white;");
 }
 
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void SDiagram1::Load()
 {
 	extern QString fileName;
@@ -92,12 +100,20 @@ void SDiagram1::Load()
 	}
 }
 
+/// <summary>
+/// Отображение подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void SDiagram1::highlightPoint(int index)
 {
 	highlightedPoint = index;
 	update();
 }
 
+/// <summary>
+/// Отрисовка виджета.
+/// </summary>
+/// <param name="event"></param>
 void SDiagram1::paintEvent(QPaintEvent* event)
 {
 	extern QString fileName;
@@ -200,7 +216,9 @@ void SDiagram1::paintEvent(QPaintEvent* event)
 	}
 }
 
+/// <summary>
+/// Деструктор класса SDiagram1.
+/// </summary>
 SDiagram1::~SDiagram1()
 {
 }
-

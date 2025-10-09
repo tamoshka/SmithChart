@@ -2,6 +2,10 @@
 #include "Line.h"
 #include "ElementFactory.h"
 #include "systemParameters.h"
+
+/// <summary>
+/// Класс хранения цепи.
+/// </summary>
 class CircuitElements
 {
 private:
@@ -14,6 +18,9 @@ private:
 
 	static Element* jsonToElement(const QJsonObject& obj);
 public:
+	QList<Point> morePoints;
+	QList<int> elementIndexes;
+	QList<int> pointIndexes;
 	void AddCircuitElements(Element*);
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();

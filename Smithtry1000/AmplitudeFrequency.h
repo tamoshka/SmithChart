@@ -10,6 +10,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class AmplitudeFrequency; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс расчёта и отображения АЧХ.
+/// </summary>
 class AmplitudeFrequency : public QWidget
 {
 	Q_OBJECT

@@ -22,6 +22,10 @@
 #include "KeyboardDialog.h"
 #include "CirclesWidget.h"
 #include "SaveDialog.h"
+
+/// <summary>
+/// Класс работы с курсором, являющийся также главным хабом и окном приложения.
+/// </summary>
 class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT

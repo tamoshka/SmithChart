@@ -8,6 +8,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class TuneWidget; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс, позволяющий проводить настройку элементов в цепи.
+/// </summary>
 class TuneWidget : public QWidget
 {
 	Q_OBJECT

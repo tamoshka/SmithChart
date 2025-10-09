@@ -2,6 +2,10 @@
 #include "systemParameters.h"
 #include "ui_SaveDialog.h"
 
+/// <summary>
+/// Конструктор класса SaveDialog.
+/// </summary>
+/// <param name="parent"></param>
 SaveDialog::SaveDialog(QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::SaveDialog())
@@ -12,11 +16,17 @@ SaveDialog::SaveDialog(QWidget *parent)
 	connect(ui->CancelButton, &QPushButton::clicked, this, &SaveDialog::Cancel);
 }
 
+/// <summary>
+/// Деструктор класса SaveDialog.
+/// </summary>
 SaveDialog::~SaveDialog()
 {
 	delete ui;
 }
 
+/// <summary>
+/// Выбор сохраняемого объекта и принятие.
+/// </summary>
 void SaveDialog::Save()
 {
 	if (ui->DiagramRadioButton->isChecked())
@@ -30,6 +40,9 @@ void SaveDialog::Save()
 	accept();
 }
 
+/// <summary>
+/// Отмена.
+/// </summary>
 void SaveDialog::Cancel()
 {
 	reject();

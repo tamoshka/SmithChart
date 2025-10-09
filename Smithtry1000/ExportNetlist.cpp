@@ -1,6 +1,11 @@
 ﻿#include "ExportNetlist.h"
 #include "ui_ExportNetlist.h"
 
+/// <summary>
+/// Конструктор класса ExportNetlist.
+/// </summary>
+/// <param name="parent"></param>
+/// <param name="circuitElements">Цепь.</param>
 ExportNetlist::ExportNetlist(QWidget* parent, CircuitElements* circuitElements)
     : QWidget(parent)
     , ui(new Ui::ExportNetlist())
@@ -9,6 +14,10 @@ ExportNetlist::ExportNetlist(QWidget* parent, CircuitElements* circuitElements)
     circuit = circuitElements;
 }
 
+/// <summary>
+/// Создание текста для Cir файла.
+/// </summary>
+/// <returns>Текст в cir файл.</returns>
 QString ExportNetlist::generateNetlistCir()
 {
     if (!circuit || circuit->GetCircuitElements().isEmpty()) {
@@ -40,6 +49,10 @@ QString ExportNetlist::generateNetlistCir()
     return temp;
 }
 
+/// <summary>
+/// Создание текста для Ckt файла.
+/// </summary>
+/// <returns>Текст для Ckt файла.</returns>
 QString ExportNetlist::generateNetlistCkt()
 {
     if (!circuit || circuit->GetCircuitElements().isEmpty()) {
@@ -79,6 +92,10 @@ QString ExportNetlist::generateNetlistCkt()
     return temp;
 }
 
+/// <summary>
+/// Создание текста для Scs файла.
+/// </summary>
+/// <returns>Текст для Scs файла.</returns>
 QString ExportNetlist::generateNetlistScs()
 {
     if (!circuit || circuit->GetCircuitElements().isEmpty()) {
@@ -110,6 +127,16 @@ QString ExportNetlist::generateNetlistScs()
     return temp;
 }
 
+/// <summary>
+/// Преобразование элементов в Cir.
+/// </summary>
+/// <param name="element">Элемент.</param>
+/// <param name="nodeCounter">Счётчик узлов.</param>
+/// <param name="rCount">Счётчик резисторов.</param>
+/// <param name="lCount">Счётчик катушек индуктивности.</param>
+/// <param name="cCount">Счётчик конденсаторов.</param>
+/// <param name="tlCount">Счётчик линий/шлейфов.</param>
+/// <returns></returns>
 QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount)
 {
     const mode elMode = element->GetMode();
@@ -189,6 +216,12 @@ QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter
     return line;
 }
 
+/// <summary>
+/// Преобразование элементов в Ckt.
+/// </summary>
+/// <param name="element">Элемент.</param>
+/// <param name="nodeCounter">Счётчик узлов.</param>
+/// <returns></returns>
 QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter)
 {
     const mode elMode = element->GetMode();
@@ -274,6 +307,17 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     return line;
 }
 
+/// <summary>
+/// Преобразование элементов в Scs.
+/// </summary>
+/// <param name="element">Элемент.</param>
+/// <param name="nodeCounter">Счётчик узлов.</param>
+/// <param name="rCount">Счётчик резисторов.</param>
+/// <param name="lCount">Счётчик катушек индуктивности.</param>
+/// <param name="cCount">Счётчик конденсаторов.</param>
+/// <param name="tlCount">Счётчик линий/шлейфов.</param>
+/// <param name="trCount">Счётчик трансформаторов.</param>
+/// <returns></returns>
 QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter, int& rCount, int& lCount, int& cCount, int& tlCount, int& trCount)
 {
     const mode elMode = element->GetMode();
@@ -350,6 +394,9 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
     return line;
 }
 
+/// <summary>
+/// Деструктор класса ExportNetlist.
+/// </summary>
 ExportNetlist::~ExportNetlist()
 {
     delete ui;

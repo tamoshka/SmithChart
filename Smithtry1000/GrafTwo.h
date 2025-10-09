@@ -9,6 +9,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class GrafTwoClass; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения k, mu, MAG, MSG.
+/// </summary>
 class GrafTwo : public QWidget
 {
 	Q_OBJECT

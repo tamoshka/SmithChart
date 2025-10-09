@@ -1,6 +1,11 @@
 ﻿#include "AmplitudeFrequency.h"
 const double Z0 = 50;
 
+/// <summary>
+/// Конструктор класса AmplitudeFrequency.
+/// </summary>
+/// <param name="parent"></param>
+/// <param name="circuitElements">Цепь.</param>
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
 	: QWidget(parent)
 	, ui(new Ui::AmplitudeFrequency())
@@ -11,17 +16,27 @@ AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuit
     connect(ui->SaveAmpFr, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
 }
 
-
+/// <summary>
+/// Сеттер gamma1.
+/// </summary>
+/// <param name="gamma1">gamma1.</param>
 void AmplitudeFrequency::SetGamma1(Complex gamma1)
 {
     this->gamma1 = gamma1;
 }
 
+/// <summary>
+/// Сеттер gamma2.
+/// </summary>
+/// <param name="gamma2">gamma2.</param>
 void AmplitudeFrequency::SetGamma2(Complex gamma2)
 {
     this->gamma2 = gamma2;
 }
 
+/// <summary>
+/// Вычисление gamma1 и gamma2.
+/// </summary>
 void AmplitudeFrequency::ReflectionCalculation()
 {
     Complex R1, R2;
@@ -32,16 +47,27 @@ void AmplitudeFrequency::ReflectionCalculation()
     SetGamma2((R2 - z0) / (R2 + z0));
 }
 
+/// <summary>
+/// Геттер gamma1.
+/// </summary>
+/// <returns>gamma1.</returns>
 Complex AmplitudeFrequency::GetGamma1()
 {
     return this->gamma1;
 }
 
+/// <summary>
+/// Геттер gamma2.
+/// </summary>
+/// <returns>gamma2.</returns>
 Complex AmplitudeFrequency::GetGamma2()
 {
     return this->gamma2;
 }
 
+/// <summary>
+/// Расчёт s-параметров.
+/// </summary>
 void AmplitudeFrequency::MatrixCalculation()
 {
     int k = 0;
@@ -49,7 +75,7 @@ void AmplitudeFrequency::MatrixCalculation()
     long double w;
     Complex A[2][2], A1[2][2];
     long double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
-    long double f = frequency * 1e6;
+    long double f = frequency;
     bool flag = false;
     for (long double freq = 1e8; freq <= 3e9; freq += (3e9 - 1e8) / 99)
     {
@@ -236,6 +262,12 @@ void AmplitudeFrequency::MatrixCalculation()
     SetPoint(Chas, Znach11, Znach21);
 }
 
+/// <summary>
+/// Построение графика АЧХ.
+/// </summary>
+/// <param name="x">Частота.</param>
+/// <param name="y">S11.</param>
+/// <param name="z">S21.</param>
 void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double z[])
 {
     ui->widget->clearGraphs();
@@ -305,6 +337,9 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
     ui->widget->axisRect()->setRangeZoomAxes(axises);
 }
 
+/// <summary>
+/// Сохранение изображения графика.
+/// </summary>
 void AmplitudeFrequency::SaveAmpFr()
 {
     QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
@@ -337,6 +372,9 @@ void AmplitudeFrequency::SaveAmpFr()
     }
 }
 
+/// <summary>
+/// Деструктор класса AmplitudeFrequency.
+/// </summary>
 AmplitudeFrequency::~AmplitudeFrequency()
 {
 

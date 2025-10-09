@@ -9,6 +9,9 @@
 #include "circuitElements.h"
 using namespace std;
 
+/// <summary>
+/// Класс визуализации ДВС.
+/// </summary>
 class RenderArea : public QWidget
 {
     Q_OBJECT
@@ -16,15 +19,6 @@ public:
     void setCursorPosOnCircle(const QPoint& pos);
 
     RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
-    bool flag[20] = { false };
-    int step_count = 0;
-
-
-    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-    QSize sizeHint() const Q_DECL_OVERRIDE;
-
-
-    enum Mode { Impedence, Admittance, Superimpose, Hide, Both };
 
 
 protected:
@@ -40,7 +34,6 @@ private:
     QPointF center;
     QColor mBackGroundColor;
     QColor mShapeColor;
-    Mode mMode;
     long double mScale;
     Point compute_real(long double t);
     Point compute_realParallel(long double t);

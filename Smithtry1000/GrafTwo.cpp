@@ -8,6 +8,11 @@
 #include <QString>
 #include "S2p.h"
 #include "ColourSetting.h"
+
+/// <summary>
+/// Конструктор класса GrafTwo.
+/// </summary>
+/// <param name="parent"></param>
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafTwoClass())
@@ -15,6 +20,10 @@ GrafTwo::GrafTwo(QWidget* parent)
 	ui->setupUi(this);
 }
 
+
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void GrafTwo::Load()
 {
 	extern QString fileName;
@@ -150,6 +159,9 @@ void GrafTwo::Load()
 	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
+/// <summary>
+/// Изменение цвета на виджете.
+/// </summary>
 void GrafTwo::updateGrafTwoColor()
 {
 	if (fileName != "")
@@ -159,6 +171,9 @@ void GrafTwo::updateGrafTwoColor()
 	}
 }
 
+/// <summary>
+/// Сохранение виджета в изображение.
+/// </summary>
 void GrafTwo::SaveGrafTwo()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
@@ -191,6 +206,10 @@ void GrafTwo::SaveGrafTwo()
 	}
 }
 
+/// <summary>
+/// Выбор подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void GrafTwo::highlightPoint(int index)
 {
 	if (index >= 0 && index < x.size())
@@ -206,6 +225,9 @@ void GrafTwo::highlightPoint(int index)
 	}
 }
 
+/// <summary>
+/// Деструктор класса GrafTwo.
+/// </summary>
 GrafTwo::~GrafTwo()
 {
 	delete ui;

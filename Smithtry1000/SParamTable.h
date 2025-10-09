@@ -7,6 +7,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class SParamTableClass; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс отображения таблиц S-параметров.
+/// </summary>
 class SParamTable : public QWidget
 {
 	Q_OBJECT

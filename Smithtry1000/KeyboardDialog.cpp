@@ -5,6 +5,10 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+/// <summary>
+/// Конструктор класса KeyboardDialog.
+/// </summary>
+/// <param name="parent"></param>
 KeyboardDialog::KeyboardDialog(QWidget* parent)
     : QDialog(parent)
 {
@@ -55,6 +59,9 @@ KeyboardDialog::KeyboardDialog(QWidget* parent)
     connect(okButton, &QPushButton::clicked, this, &KeyboardDialog::onAccept);
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void KeyboardDialog::onAccept()
 {
     QString tempFrequency = frequencyLine->text();
@@ -114,6 +121,9 @@ void KeyboardDialog::onAccept()
     }
 }
 
+/// <summary>
+/// Изменение выбранной radiobutton.
+/// </summary>
 void KeyboardDialog::onChanged()
 {
     QRadioButton* rButton = qobject_cast<QRadioButton*>(sender());

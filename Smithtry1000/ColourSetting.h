@@ -8,6 +8,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class ColourSettingClass; };
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс настройки цветов и толщины линий.
+/// </summary>
 class ColourSetting : public QWidget
 {
 	Q_OBJECT

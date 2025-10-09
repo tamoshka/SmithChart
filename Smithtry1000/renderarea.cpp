@@ -8,28 +8,26 @@
 #include <cmath>
 #include <QCursor>
 
-
+/// <summary>
+/// Конструктор класса RenderArea.
+/// </summary>
+/// <param name="parent">Родительский виджет (Smithtry1000).</param>
+/// <param name="newElements">Цепь.</param>
 RenderArea::RenderArea(QWidget* parent, CircuitElements* newElements) :
     QWidget(parent),
     mBackGroundColor(255, 255, 255),
-    mShapeColor(0, 0, 0),
-    mMode(Impedence)
+    mShapeColor(0, 0, 0)
 {
     m_cacheValid = false;
     m_scaleFactor = 2.0;
     circuitElements = newElements;
 }
 
-QSize RenderArea::minimumSizeHint() const
-{
-    return QSize(100, 100);
-}
-
-QSize RenderArea::sizeHint() const
-{
-    return QSize(400, 100);
-}
-
+/// <summary>
+/// Вычисление точки для линий действительной части сопротивления.
+/// </summary>
+/// <param name="t">Угол в радианах.</param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_real(long double t)
 {
     long double cos_t = cos(t);
@@ -43,6 +41,12 @@ Point RenderArea::compute_real(long double t)
     return tmp;
 
 }
+
+/// <summary>
+/// Вычисление точки для действительной части проводимости.
+/// </summary>
+/// <param name="t">Угол в радианах.</param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_realParallel(long double t)
 {
     long double cos_t = cos(t);
@@ -58,6 +62,11 @@ Point RenderArea::compute_realParallel(long double t)
 
 }
 
+/// <summary>
+/// Вычисление точки для линий мнимой части сопротивления.
+/// </summary>
+/// <param name="t"Угол в радианах.></param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_imaginary(long double t)
 {
     long double cos_t = cos(t);
@@ -71,6 +80,11 @@ Point RenderArea::compute_imaginary(long double t)
     return tmp;
 }
 
+/// <summary>
+/// Вычисление точки для линий мнимой части проводимости.
+/// </summary>
+/// <param name="t">Угол в радианах.</param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_imaginaryParallel(long double t)
 {
     long double cos_t = cos(t);
@@ -95,6 +109,12 @@ Point RenderArea::compute_imaginaryParallel(long double t)
     return tmp;
 }
 
+/// <summary>
+/// Вычисление точки для линий передач.
+/// </summary>
+/// <param name="t">Угол в радианах.</param>
+/// <param name="radius">Радиус окружности.</param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_line(long double t, long double radius)
 {
     long double cos_t = cos(t);
@@ -109,6 +129,12 @@ Point RenderArea::compute_line(long double t, long double radius)
     return tmp;
 }
 
+/// <summary>
+/// Вычисление точки для трансформатора и кругов Q.
+/// </summary>
+/// <param name="t">Угол в радианах.</param>
+/// <param name="radius">Радиус окружности.</param>
+/// <returns>Точка.</returns>
 Point RenderArea::compute_q(long double t, long double radius)
 {
     long double cos_t = cos(t);
@@ -122,6 +148,10 @@ Point RenderArea::compute_q(long double t, long double radius)
     return tmp;
 }
 
+/// <summary>
+/// Отрисовка статических объектов.
+/// </summary>
+/// <param name="painter"></param>
 void RenderArea::drawStaticObjects(QPainter& painter)
 {
     center = this->rect().center();
@@ -357,6 +387,10 @@ void RenderArea::drawStaticObjects(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка динамических объектов.
+/// </summary>
+/// <param name="painter"></param>
 void RenderArea::drawDynamicObject(QPainter& painter)
 {
     long double intervalLength = 2 * M_PI;
@@ -405,8 +439,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             }
             else
             {
-                long double x = morePoints[j-1].x * scale + this->rect().center().x();
-                long double y = morePoints[j-1].y * scale + this->rect().center().y();
+                long double x = circuitElements->morePoints[j-1].x * scale + this->rect().center().x();
+                long double y = circuitElements->morePoints[j-1].y * scale + this->rect().center().y();
                 QPointF point = QPointF(x, y);
                 painter.drawEllipse(point, 5, 5);
                 painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
@@ -1267,6 +1301,9 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Генерация кэша для отрисовки статических объектов.
+/// </summary>
 void RenderArea::generateCache()
 {
     QSize scaledSize = size() * m_scaleFactor;
@@ -1288,6 +1325,10 @@ void RenderArea::generateCache()
     m_cacheValid = true;
 }
 
+/// <summary>
+/// Перерисовка виджета.
+/// </summary>
+/// <param name="event"></param>
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
@@ -1310,6 +1351,10 @@ void RenderArea::paintEvent(QPaintEvent* event)
     drawDynamicObject(painter);
 }
 
+/// <summary>
+/// Устновка точки по позиции курсора.
+/// </summary>
+/// <param name="pos"></param>
 void RenderArea::setCursorPosOnCircle(const QPoint& pos)
 {
     cursorPos = pos;
