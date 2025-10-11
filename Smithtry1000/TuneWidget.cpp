@@ -472,7 +472,7 @@ void TuneWidget::ValueChanged(int value)
 				long double r1 = z.real();
 				long double r2 = r1 + circuitElements->GetCircuitElements()[j]->GetValue();
 				long double tempy;
-				r2 = r2 / 50;
+				r2 = r2 / SystemParameters::z0;
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(RealImpedance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -639,9 +639,9 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = z.imag();
-				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*frequency+r1;
+				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI* circuitElements->frequencyFirstPoint +r1;
 				long double step = 0.1;
-				r2 = r2 / 50;
+				r2 = r2 / SystemParameters::z0;
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -789,9 +789,9 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = z.imag();
-				long double r2 = r1-1/(circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI*frequency);
+				long double r2 = r1-1/(circuitElements->GetCircuitElements()[j]->GetValue()*2*M_PI* circuitElements->frequencyFirstPoint);
 				long double step = 0.1;
-				r2 = r2 / 50;
+				r2 = r2 / SystemParameters::z0;
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -942,7 +942,7 @@ void TuneWidget::ValueChanged(int value)
 				long double r1 = y.real();
 				long double r2 = 1000/circuitElements->GetCircuitElements()[j]->GetValue()+r1;
 				long double step = 0.1;
-				r2 = r2 / 20;
+				r2 = r2 / (1000/ SystemParameters::z0);
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(RealAdmitance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -1121,10 +1121,10 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = y.imag();
-				long double r2 = r1-(M_PI*500*100)/(circuitElements->GetCircuitElements()[j]->GetValue()*frequency*1e9/1e6);
+				long double r2 = r1-(M_PI*500*100)/(circuitElements->GetCircuitElements()[j]->GetValue()* circuitElements->frequencyFirstPoint *1e9/1e6);
 				r2 *= -1;
 				long double step = 0.1;
-				r2 = r2 / 20;
+				r2 = r2 / (1000/ SystemParameters::z0);
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -1260,10 +1260,10 @@ void TuneWidget::ValueChanged(int value)
 				long double x;
 				long double y2;
 				long double r1 = y.imag();
-				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI*frequency*1e12/1e6)/500;
+				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue()*M_PI* circuitElements->frequencyFirstPoint *1e12/1e6)/500;
 				r2 *= -1;
 				long double step = 0.1;
-				r2 = r2 / 20;
+				r2 = r2 / (1000/SystemParameters::z0);
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -1411,9 +1411,9 @@ void TuneWidget::ValueChanged(int value)
 				LinesElement* elem = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[j]);
 				long double z0 = elem->GetValue();
 				long double lambda = elem->GetLambda();
-				Complex g1 = (z - (long double)(50)) / (z + long double(50));
+				Complex g1 = (z - SystemParameters::z0) / (z + SystemParameters::z0);
 				Complex z3 = z0 * (z + Complex(0, z0)) / (z0 + Complex(0, 1) * z);
-				Complex g3 = (z3 - long double(50)) / (z3 + long double(50));
+				Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
 				long double center = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
 				long double R = abs(center - g1);
 				long double dx = x - center;
@@ -1577,7 +1577,7 @@ void TuneWidget::ValueChanged(int value)
 				long double r2 = r1 + tn;
 				r2 *= -1;
 				long double step = 0.1;
-				r2 = r2 / 20;
+				r2 = r2 / (1000/ SystemParameters::z0);
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -1748,7 +1748,7 @@ void TuneWidget::ValueChanged(int value)
 				long double r2 = r1 + tn;
 				r2 *= -1;
 				long double step = 0.1;
-				r2 = r2 / 20;
+				r2 = r2 / (1000/ SystemParameters::z0);
 				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
 				tuple<long double, long double> tuple2;
 				if (j != 0)
@@ -1910,7 +1910,7 @@ void TuneWidget::ValueChanged(int value)
 				long double t;
 				long double r1 = z.real();
 				long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(),2)*r1;
-				r2 = r2 / 50;
+				r2 = r2 / SystemParameters::z0;
 				long double q = z.imag() / z.real();
 				long double rIm = q * r2;
 				long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;

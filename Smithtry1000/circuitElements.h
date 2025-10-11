@@ -19,8 +19,10 @@ private:
 	static Element* jsonToElement(const QJsonObject& obj);
 public:
 	QList<Point> morePoints;
+	long double z0 = SystemParameters::z0;
 	QList<int> elementIndexes;
 	QList<int> pointIndexes;
+	QList<long double> frequencyList;
 	void AddCircuitElements(Element*);
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();

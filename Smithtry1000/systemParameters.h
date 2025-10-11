@@ -110,6 +110,9 @@ public:
 	static QList<Element*> tunedElements;
 	static double er;
 	static long double z0line;
+	static long double z0;
+	static long double prevz0;
+	static long double defaultFrequency;
 	static bool colorChanged;
 	static double alpha;
 	static double lambda;
@@ -120,6 +123,8 @@ public:
 	static QSet<double> QCircles;
 	//0 - Диаграмма, 1 - Цепь
 	static int saved;
+
+	static bool exc;
 
 	static void SaveToJSON();
 	static void deserializeFromJson();

@@ -1,5 +1,4 @@
 ﻿#include "AmplitudeFrequency.h"
-const double Z0 = 50;
 
 /// <summary>
 /// Конструктор класса AmplitudeFrequency.
@@ -35,19 +34,6 @@ void AmplitudeFrequency::SetGamma2(Complex gamma2)
 }
 
 /// <summary>
-/// Вычисление gamma1 и gamma2.
-/// </summary>
-void AmplitudeFrequency::ReflectionCalculation()
-{
-    Complex R1, R2;
-
-    R1 = circuitElements->GetCircuitElements()[0]->GetParameter()[Z];
-    R2 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z];
-    SetGamma1((R1 - z0) / (R1 + z0));
-    SetGamma2((R2 - z0) / (R2 + z0));
-}
-
-/// <summary>
 /// Геттер gamma1.
 /// </summary>
 /// <returns>gamma1.</returns>
@@ -75,7 +61,7 @@ void AmplitudeFrequency::MatrixCalculation()
     long double w;
     Complex A[2][2], A1[2][2];
     long double Chas[100], Znach11[100], Znach21[100], Znach22[100], Znach12[100];
-    long double f = frequency;
+    long double f = circuitElements->frequencyFirstPoint;
     bool flag = false;
     for (long double freq = 1e8; freq <= 3e9; freq += (3e9 - 1e8) / 99)
     {
@@ -217,6 +203,7 @@ void AmplitudeFrequency::MatrixCalculation()
                 A[1][1] = mem4;
             }
         }
+        Complex z0 = SystemParameters::z0;
         Complex dT = A[0][0] + A[0][1] / z0 + A[1][0] * z0 + A[1][1];
         Complex s11 = (A[0][0] + A[0][1] / z0 - A[1][0] * z0 - A[1][1]) / dT;
         Complex s12 = (long double)(2) * (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / dT;

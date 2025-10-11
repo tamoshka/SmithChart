@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QHBoxLayout>
+#include "circuitElements.h"
 
 class QLineEdit;
 class QPushButton;
@@ -16,13 +17,14 @@ class KeyboardDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit KeyboardDialog(QWidget* parent = nullptr);
+    explicit KeyboardDialog(QWidget* parent = nullptr, CircuitElements* circuit = nullptr);
 
 private slots:
     void onAccept();
     void onChanged();
 
 private:
+    CircuitElements* circuitElements;
     QLineEdit* frequencyLine;
     QLineEdit* Re;
     QLineEdit* Im;
@@ -38,6 +40,7 @@ private:
     QGroupBox* ReBox;
     QGroupBox* ImBox;
     QPushButton* okButton;
+    QComboBox* powerBox;
 };
 
 #endif // KeyboardDIALOG

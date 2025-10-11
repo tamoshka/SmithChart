@@ -24,6 +24,7 @@ signals:
 	void signalDVS();
 	void grafOneColor();
 	void grafTwoColor();
+	void allchangedsignal();
 
 private slots:
 	void S11Graf();

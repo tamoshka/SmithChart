@@ -71,8 +71,6 @@ struct Point
 
 extern QString fileName;
 extern mode Model;
-extern long double frequency;
-extern QList<long double> frequencyList;
 extern map<int, tuple<Point, bool>> allPoints;
 extern QList<double> qCircles;
 extern int point_index;

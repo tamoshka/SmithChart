@@ -1,5 +1,4 @@
 ﻿#include "KeyboardDialog.h"
-#include "systemParameters.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -9,9 +8,10 @@
 /// Конструктор класса KeyboardDialog.
 /// </summary>
 /// <param name="parent"></param>
-KeyboardDialog::KeyboardDialog(QWidget* parent)
+KeyboardDialog::KeyboardDialog(QWidget* parent, CircuitElements* circuit)
     : QDialog(parent)
 {
+    circuitElements = circuit;
     this->setWindowTitle("Data Point"); 
     this->setFixedSize(250, 400);
     okButton = new QPushButton("OK", this);
@@ -22,7 +22,8 @@ KeyboardDialog::KeyboardDialog(QWidget* parent)
     valuesBox = new QHBoxLayout(group);
     ReBox = new QGroupBox();
     ImBox = new QGroupBox();
-    frequencyLine = new QLineEdit(frequencyBox);
+    QHBoxLayout* tempfrequency = new QHBoxLayout(frequencyBox);
+    frequencyLine = new QLineEdit(this);
     valuesBox->addWidget(ReBox);
     valuesBox->addWidget(ImBox);
     Re = new QLineEdit(ReBox);
@@ -31,9 +32,32 @@ KeyboardDialog::KeyboardDialog(QWidget* parent)
     ImBox->setTitle("Im");
     frequencyBox->setTitle("frequency, MHz");
     Re->move(5, 20);
-    Im->move(5, 20);
-    frequencyLine->move(5, 20);
-    frequencyLine->setText("1000");
+    Im->move(5, 20); 
+    powerBox = new QComboBox(this);
+    powerBox->addItem("Hz");
+    powerBox->addItem("KHz");
+    powerBox->addItem("MHz");
+    powerBox->addItem("GHz");
+    powerBox->setCurrentIndex(0);
+    long double val = 1;
+    if (SystemParameters::defaultFrequency > 1e9)
+    {
+        val = 1e9;
+        powerBox->setCurrentIndex(3);
+    }
+    else if (SystemParameters::defaultFrequency > 1e6)
+    {
+        val = 1e6;
+        powerBox->setCurrentIndex(2);
+    }
+    else if (SystemParameters::defaultFrequency > 1e3)
+    {
+        val = 1e3;
+        powerBox->setCurrentIndex(1);
+    }
+    frequencyLine->setText(QString::number((double)(SystemParameters::defaultFrequency / val)));
+    tempfrequency->addWidget(frequencyLine);
+    tempfrequency->addWidget(powerBox);
     QVBoxLayout* temp = new QVBoxLayout(chartSystem);
     impedance = new QRadioButton("impedance", this);
     impedance->setChecked(true);
@@ -75,7 +99,8 @@ void KeyboardDialog::onAccept()
     double valueFrequency = frequencyLine->text().toFloat(&validateFrequency);
     if (!validateIm || !validateRe || !validateFrequency|| validateRe<0)
     {
-        reject();
+        SystemParameters::exc = true;
+        accept();
     }
     else
     {
@@ -84,7 +109,8 @@ void KeyboardDialog::onAccept()
             (reflectionCoefficient->isChecked() && polar->isChecked()&&(valueRe<0||valueRe>1)) ||
             (!reflectionCoefficient->isChecked()&&polar->isChecked()&&(abs(valueIm)>90||valueRe<0)))
         {
-            reject();
+            SystemParameters::exc = true;
+            accept();
         }
         else
         {
@@ -100,9 +126,22 @@ void KeyboardDialog::onAccept()
             {
                 SystemParameters::sys = ReflectionCoefficient;
             }
+            double power = 1;
+            if (powerBox->currentIndex() == 1)
+            {
+                power = 1000;
+            }
+            else if (powerBox->currentIndex() == 2)
+            {
+                power = 1000000;
+            }
+            else if (powerBox->currentIndex() == 3)
+            {
+                power = 1000000000;
+            }
             if (dpIndex == 0)
             {
-                frequency = valueFrequency;
+                SystemParameters::frequency = valueFrequency * power;
             }
             if (polar->isChecked())
             {
@@ -112,8 +151,8 @@ void KeyboardDialog::onAccept()
             {
                 SystemParameters::val = Cartesian;
             }
-            frequencyList.append(valueFrequency);
-            SystemParameters::frequency = valueFrequency;
+            circuitElements->frequencyList.append(valueFrequency*power);
+            SystemParameters::frequency = valueFrequency*power;
             SystemParameters::Re = valueRe;
             SystemParameters::Im = valueIm;
             accept();

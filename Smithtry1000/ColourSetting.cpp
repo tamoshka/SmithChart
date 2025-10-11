@@ -32,7 +32,50 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->ElementLinesColor, SystemParameters::ElementsColor);
 	setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColor);
 	setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColor);
-
+	ui->frequencyComboBox->addItem("Hz");
+	ui->frequencyComboBox->addItem("KHz");
+	ui->frequencyComboBox->addItem("MHz");
+	ui->frequencyComboBox->addItem("GHz");
+	long double val = 1;
+	ui->frequencyComboBox->setCurrentIndex(0);
+	if (SystemParameters::defaultFrequency > 1e9)
+	{
+		val = 1e9;
+		ui->frequencyComboBox->setCurrentIndex(3);
+	}
+	else if (SystemParameters::defaultFrequency > 1e6)
+	{
+		val = 1e6;
+		ui->frequencyComboBox->setCurrentIndex(2);
+	}
+	else if (SystemParameters::defaultFrequency > 1e3)
+	{
+		val = 1e3;
+		ui->frequencyComboBox->setCurrentIndex(1);
+	}
+	ui->frequencyLineEdit->setText(QString::number((double)(SystemParameters::defaultFrequency /val)));
+	ui->z0ComboBox->addItem("Ohm");
+	ui->z0ComboBox->addItem("KOhm");
+	ui->z0ComboBox->addItem("MOhm");
+	ui->z0ComboBox->addItem("GOhm");
+	ui->z0ComboBox->setCurrentIndex(0);
+	val = 1;
+	if (SystemParameters::z0 > 1e9)
+	{
+		val = 1e9;
+		ui->z0ComboBox->setCurrentIndex(3);
+	}
+	else if (SystemParameters::z0 > 1e6)
+	{
+		val = 1e6;
+		ui->z0ComboBox->setCurrentIndex(2);
+	}
+	if (SystemParameters::z0 > 1e3)
+	{
+		val = 1e3;
+		ui->z0ComboBox->setCurrentIndex(1);
+	}
+	ui->z0lineEdit->setText(QString::number((double)(SystemParameters::z0/val)));
 	sBoxIndex[ui->spinBox_5] = 0;
 	sBoxIndex[ui->spinBox_6] = 1;
 	sBoxIndex[ui->spinBox_7] = 2;
@@ -169,7 +212,75 @@ void ColourSetting::ButtonCancel()
 /// </summary>
 void ColourSetting::ButtonOK()
 {
-	this->close();
+	QString temp = ui->z0lineEdit->text();
+	bool validate = true;
+	bool allCorrect = true;
+	bool allChanged = false;
+	double value = ui->z0lineEdit->text().toFloat(&validate);
+	if (!validate || value <= 0)
+	{
+		allCorrect = false;
+	}
+	int temp3 = 1;
+	if (ui->z0ComboBox->currentIndex() == 1)
+	{
+		temp3 = 1000;
+	}
+	else if (ui->z0ComboBox->currentIndex() == 2)
+	{
+		temp3 = 1000000;
+	}
+	else if (ui->z0ComboBox->currentIndex() == 3)
+	{
+		temp3 = 1000000000;
+	}
+	value *= temp3;
+	if (allCorrect)
+	{
+		if (value != SystemParameters::z0)
+		{
+			allChanged = true;
+		}
+	}
+	QString temp2 = ui->frequencyLineEdit->text();
+	bool validate2 = true;
+	double value2 = ui->frequencyLineEdit->text().toFloat(&validate2);
+	if (!validate2 || value2 <= 0)
+	{
+		allCorrect = false;
+	}
+	temp3 = 1;
+	if (ui->frequencyComboBox->currentIndex() == 1)
+	{
+		temp3 = 1000;
+	}
+	else if (ui->frequencyComboBox->currentIndex() == 2)
+	{
+		temp3 = 1000000;
+	}
+	else if (ui->frequencyComboBox->currentIndex() == 3)
+	{
+		temp3 = 1000000000;
+	}
+	value2 *= temp3;
+	if (allCorrect)
+	{
+		SystemParameters::defaultFrequency = value2;
+		if (allChanged)
+		{
+			SystemParameters::prevz0 = SystemParameters::z0;
+			SystemParameters::z0 = value;
+			emit allchangedsignal();
+		}
+		this->close();
+	}
+	else
+	{
+		QMessageBox* bx = new QMessageBox();
+		bx->show();
+		bx->Information;
+		bx->setText(QStringLiteral(u"Значения для z0 и frequency должны быть положительными."));
+	}
 }
 
 /// <summary>
@@ -531,6 +642,10 @@ void ColourSetting::DefaultClicked()
 	SystemParameters::linesWidth = SystemParameters::linesWidthDefault;
 	SystemParameters::ampFrline = SystemParameters::ampFrlineDefault;
 	SystemParameters::sPlotline = SystemParameters::sPlotlineDefault;
+	ui->z0ComboBox->setCurrentIndex(0);
+	ui->frequencyComboBox->setCurrentIndex(2);
+	ui->z0lineEdit->setText("50");
+	ui->frequencyLineEdit->setText("500");
 	for (auto it = sBoxDVSIndex.begin(); it != sBoxDVSIndex.end(); ++it) {
 		it.key()->setValue(SystemParameters::linesWidth[it.value()]);
 	}
@@ -545,4 +660,5 @@ void ColourSetting::DefaultClicked()
 	emit grafTwoColor();
 	emit signalS12S21();
 	emit grafOneColor();
+	emit allchangedsignal();
 }

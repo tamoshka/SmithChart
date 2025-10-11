@@ -192,7 +192,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::magenta, 2));
-                QString s1 = QString::number(r * 50);
+                QString s1 = QString::number((double)(r*SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
                 painter.setPen(Qt::blue);
@@ -242,7 +242,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 painter.setPen(QPen(Qt::magenta, 2));
-                QString s1 = QString::number(r * 50);
+                QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), center.y(), s1);
                 painter.setPen(Qt::blue);
@@ -295,7 +295,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * 1000 / -50);
+                QString s1 = QString::number((double)(r * 1000/-SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
                 painter.setPen(Qt::red);
@@ -346,7 +346,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number(r * 1000 / 50);
+                QString s1 = QString::number((double)(r * 1000/SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
                 painter.setPen(Qt::red);

@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QPoint>
 #include <QEvent>
+#include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class SDiagram2; };
 QT_END_NAMESPACE

@@ -19,7 +19,6 @@ class AmplitudeFrequency : public QWidget
 
 private:
 	CircuitElements* circuitElements;
-	Complex z0 = 50;
 	Complex gamma1; // reflection coefficient
 	Complex gamma2; // reflection coefficient
 	void SetGamma1(Complex);

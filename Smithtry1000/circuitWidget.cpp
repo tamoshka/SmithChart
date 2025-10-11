@@ -164,7 +164,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    double val = (r2 - r1) / (2 * M_PI * frequency) * 1000000000;
+                    double val = (r2 - r1) / (2 * M_PI * circuitElements->frequencyFirstPoint) * 1000000000;
                     QString power;
                     if (val < 1)
                     {
@@ -191,7 +191,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = z.imag();
                     SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
-                    double val = 10 / ((r1 - r2) * (2 * M_PI * frequency)) * 100000000000;
+                    double val = 10 / ((r1 - r2) * (2 * M_PI * circuitElements->frequencyFirstPoint)) * 100000000000;
                     QString power;
                     if (val < 1)
                     {
@@ -226,7 +226,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    double val = M_PI / (r1 - r2) * 100 / frequency * 1e6 * 500;
+                    double val = M_PI / (r1 - r2) * 100 / circuitElements->frequencyFirstPoint * 1e6 * 500;
                     QString power;
                     if (val < 1)
                     {
@@ -253,7 +253,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double r1 = y.imag();
                     SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
-                    double val = (r2 - r1) / M_PI * 500 / frequency * 1000000;
+                    double val = (r2 - r1) / M_PI * 500 / circuitElements->frequencyFirstPoint * 1000000;
                     QString power;
                     if (val < 1)
                     {

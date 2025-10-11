@@ -81,7 +81,8 @@ void LinesDialog::onAccept()
     }
     else
     {
-        reject();
+        SystemParameters::exc = true;
+        accept();
     }
 }
 

@@ -83,10 +83,13 @@ bool SystemParameters::resistorLinear = false;
 QList<Element*> SystemParameters::tunedElements = {};
 double SystemParameters::er = 1;
 long double SystemParameters::z0line = 50;
+long double SystemParameters::z0 = 50;
+long double SystemParameters::prevz0 = 50;
 double SystemParameters::alpha = 0;
 double SystemParameters::lambda = 0.25;
 bool SystemParameters::sizeChanged = false;
-long double SystemParameters::frequency = 500;
+long double SystemParameters::frequency = 500000000;
+long double SystemParameters::defaultFrequency = 500000000;
 long double SystemParameters::Re = 50;
 long double SystemParameters::Im = 0;
 systemMode SystemParameters::sys = Impedance;
@@ -98,6 +101,8 @@ long double SystemParameters::impedanceImagR = 0;
 long double SystemParameters::admitanceImagR = 0;
 long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
+
+bool SystemParameters::exc = false;
 
 /// <summary>
 /// Расчёт действительной части сопротивления.
@@ -141,7 +146,7 @@ void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
     {
         impedanceRealR = abs((cos(t1) - x) / (x - 1));
     }
-    impedanceRealR *= 50;
+    impedanceRealR *= SystemParameters::z0;
 }
 
 /// <summary>
@@ -183,7 +188,7 @@ void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
     {
         admitanceRealR = abs((cos(t1) - x) / (x + 1));
     }
-    admitanceRealR *= 20;
+    admitanceRealR *= 1000/ SystemParameters::z0;
 }
 
 /// <summary>
@@ -235,7 +240,7 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
         {
             impedanceImagR = abs(impedanceImagR) * (-1);
         }
-        impedanceImagR *= 50;
+        impedanceImagR *= SystemParameters::z0;
     }
 }
 
@@ -277,7 +282,7 @@ void SystemParameters::rAdmitanceImagCalculation(long double x, long double y)
         {
             admitanceImagR *= -1;
         }
-        admitanceImagR *= -20;
+        admitanceImagR *= 1000/-SystemParameters::z0;
     }
     
 }
@@ -542,6 +547,9 @@ void SystemParameters::SaveToJSON()
         ampFrlineArray.append(line);
     }
     json["ampFrline"] = ampFrlineArray;
+
+    json["z0"] = (double)SystemParameters::z0;
+    json["defaultFrequency"] = (double)SystemParameters::defaultFrequency;
     QJsonDocument doc(json);
     QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
@@ -662,6 +670,15 @@ void SystemParameters::deserializeFromJson()
             }
         }
 
+        if (json.contains("z0"))
+        {
+            SystemParameters::z0 = json["z0"].toDouble();
+        }
+
+        if (json.contains("defaultFrequency"))
+        {
+            SystemParameters::defaultFrequency = json["defaultFrequency"].toDouble();
+        }
     }
     catch (...) {
         qDebug() << "Ошибка при десериализации параметров";

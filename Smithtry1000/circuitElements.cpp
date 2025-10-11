@@ -63,6 +63,8 @@ QJsonObject CircuitElements::toJson() const
     json["y"] = complexToJson(y);
     json["g"] = complexToJson(g);
 
+    json["z0"] = (double)z0;
+
     json["realFirstPoint"] = (double)realFirstPoint;
     json["imagFirstPoint"] = (double)imagFirstPoint;
     json["frequencyFirstPoint"] = (double)frequencyFirstPoint;
@@ -114,6 +116,13 @@ QJsonObject CircuitElements::toJson() const
     }
     json["elementIndexes"] = elementIndexesObj;
 
+    QJsonArray frequenciesObj;
+    for (const long double val : frequencyList)
+    {
+        frequenciesObj.append((double)val);
+    }
+    json["frequencyList"] = frequenciesObj;
+
     return json;
 }
 
@@ -140,6 +149,8 @@ bool CircuitElements::fromJson(const QJsonObject& json)
             imagFirstPoint = json["imagFirstPoint"].toDouble();
         if (json.contains("frequencyFirstPoint"))
             frequencyFirstPoint = json["frequencyFirstPoint"].toDouble();
+        if (json.contains("z0"))
+            z0 = json["z0"].toDouble();
 
         // Десериализация Point
         if (json.contains("firstPoint") && json["firstPoint"].isObject()) {
@@ -204,6 +215,15 @@ bool CircuitElements::fromJson(const QJsonObject& json)
             for (const auto& value : pointIndexesObj)
             {
                 pointIndexes.append(value.toInt());
+            }
+        }
+
+        if (json.contains("frequencyList") && json["frequencyList"].isArray())
+        {
+            QJsonArray frequencyListObj = json["frequencyList"].toArray();
+            for (const auto& value : frequencyListObj)
+            {
+                frequencyList.append(value.toDouble());
             }
         }
 

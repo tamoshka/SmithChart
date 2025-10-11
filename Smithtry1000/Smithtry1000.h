@@ -41,6 +41,7 @@ public slots:
     void getS12S21signal();
     void getsignalDVS();
     void getCirclesSignal();
+    void getallchangedsignal();
 
 signals:
     void left();

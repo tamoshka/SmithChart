@@ -47,7 +47,8 @@ void VerticalLinesDialog::onAccept()
     double valueEr = ErField->text().toFloat(&validateEr);
     if (!validateZ0 || !validateEr)
     {
-        reject();
+        SystemParameters::exc = true;
+        accept();
     }
     else
     {
