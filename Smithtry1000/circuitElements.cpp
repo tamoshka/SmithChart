@@ -123,6 +123,20 @@ QJsonObject CircuitElements::toJson() const
     }
     json["frequencyList"] = frequenciesObj;
 
+    QJsonArray qCirclesObj;
+    for (const double val : QCircles)
+    {
+        qCirclesObj.append(val);
+    }
+    json["QCircles"] = qCirclesObj;
+
+    QJsonArray VSWRCirclesObj;
+    for (const double val : VSWRCircles)
+    {
+        VSWRCirclesObj.append(val);
+    }
+    json["VSWRCircles"] = VSWRCirclesObj;
+
     return json;
 }
 
@@ -224,6 +238,24 @@ bool CircuitElements::fromJson(const QJsonObject& json)
             for (const auto& value : frequencyListObj)
             {
                 frequencyList.append(value.toDouble());
+            }
+        }
+
+        if (json.contains("QCircles") && json["QCircles"].isArray())
+        {
+            QJsonArray qCirclesObj = json["QCircles"].toArray();
+            for (const auto& value : qCirclesObj)
+            {
+                QCircles.insert(value.toDouble());
+            }
+        }
+
+        if (json.contains("VSWRCircles") && json["VSWRCircles"].isArray())
+        {
+            QJsonArray VSWRCirclesObj = json["VSWRCircles"].toArray();
+            for (const auto& value : VSWRCirclesObj)
+            {
+                VSWRCircles.insert(value.toDouble());
             }
         }
 

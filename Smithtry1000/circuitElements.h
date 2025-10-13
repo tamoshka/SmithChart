@@ -19,6 +19,8 @@ private:
 	static Element* jsonToElement(const QJsonObject& obj);
 public:
 	QList<Point> morePoints;
+	QSet<double> VSWRCircles;
+	QSet<double> QCircles;
 	long double z0 = SystemParameters::z0;
 	QList<int> elementIndexes;
 	QList<int> pointIndexes;

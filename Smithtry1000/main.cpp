@@ -8,7 +8,6 @@ map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
 int allpointindex = 0;
 map<int, tuple<Point, long double, long double, mode>> points;
-QList<double> qCircles;
 int dpIndex = 0;
 double scale = 200;
 QList<QSvgWidget*> svgWidgets;

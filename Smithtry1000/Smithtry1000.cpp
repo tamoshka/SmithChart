@@ -96,6 +96,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QObject::connect(sParameters->set, &ColourSetting::allchangedsignal, this, &Smithtry1000::getallchangedsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
+    QObject::connect(this, &Smithtry1000::left, circlesWidget, &CirclesWidget::Load);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
@@ -312,12 +313,13 @@ void Smithtry1000::Save()
 /// </summary>
 void Smithtry1000::Load()
 {
-    if (index == 0)
+    if (index == 0 && circuitElements->QCircles.size()==0&&circuitElements->VSWRCircles.size()==0)
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open project"), "", tr("JSON Files (*.json)"));
         try
         {
             circuitElements->loadFromFile(fileName);
+            emit left();
             dpIndex = 1;
             index = circuitElements->GetCircuitElements().size()+1;
             long double Re = circuitElements->z.real();

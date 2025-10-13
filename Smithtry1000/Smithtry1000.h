@@ -45,6 +45,7 @@ public slots:
 
 signals:
     void left();
+    void load();
 
 private slots:
     void onButtonClicked();
@@ -81,7 +82,7 @@ private:
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
-    CirclesWidget* circlesWidget = new CirclesWidget(nullptr);
+    CirclesWidget* circlesWidget = new CirclesWidget(nullptr, circuitElements);
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();

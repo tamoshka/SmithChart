@@ -5,10 +5,11 @@
 /// Конструктор класса CirclesWidget.
 /// </summary>
 /// <param name="parent"></param>
-CirclesWidget::CirclesWidget(QWidget *parent)
+CirclesWidget::CirclesWidget(QWidget *parent, CircuitElements* circuit)
 	: QWidget(parent)
 	, ui(new Ui::CirclesWidget())
 {
+	circuitElements = circuit;
 	ui->setupUi(this);
 	this->setFixedSize(600, 600);
 	checkBoxVSWRIndex[ui->checkBox10VSWR] = 10;
@@ -61,6 +62,22 @@ CirclesWidget::CirclesWidget(QWidget *parent)
 	connect(ui->ClearAllOtherButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedQ);
 }
 
+void CirclesWidget::Load()
+{
+	QSetIterator<double> k(circuitElements->VSWRCircles);
+	while (k.hasNext())
+	{
+		double vswr = k.next();
+		addVSWR(vswr);
+	}
+	QSetIterator<double> n(circuitElements->QCircles);
+	while (n.hasNext())
+	{
+		double q = n.next();
+		addQ(q);
+	}
+}
+
 /// <summary>
 /// Очистка всех кругов VSWR, введённых вручную.
 /// </summary>
@@ -69,7 +86,7 @@ void CirclesWidget::clearAllOthersClickedVSWR()
 	for (auto item : ui->listWidgetVSWR->findItems("*", Qt::MatchWildcard))
 	{
 		double valueVswr = item->text().toDouble();
-		SystemParameters::VSWRCircles.remove(valueVswr);
+		circuitElements->VSWRCircles.remove(valueVswr);
 		ui->listWidgetVSWR->takeItem(ui->listWidgetVSWR->row(item));
 	}
 	emit circle();
@@ -83,7 +100,7 @@ void CirclesWidget::clearAllOthersClickedQ()
 	for (auto item : ui->listWidgetQ->findItems("*", Qt::MatchWildcard))
 	{
 		double valueQ = item->text().toDouble();
-		SystemParameters::QCircles.remove(valueQ);
+		circuitElements->QCircles.remove(valueQ);
 		ui->listWidgetQ->takeItem(ui->listWidgetQ->row(item));
 	}
 	emit circle();
@@ -97,7 +114,7 @@ void CirclesWidget::deleteVSWRClicked()
 	for (auto item : ui->listWidgetVSWR->selectedItems())
 	{
 		double valueVswr = item->text().toDouble();
-		SystemParameters::VSWRCircles.remove(valueVswr);
+		circuitElements->VSWRCircles.remove(valueVswr);
 		ui->listWidgetVSWR->takeItem(ui->listWidgetVSWR->row(item));
 	}
 	emit circle();
@@ -111,7 +128,7 @@ void CirclesWidget::deleteQClicked()
 	for (auto item : ui->listWidgetQ->selectedItems())
 	{
 		double valueQ = item->text().toDouble();
-		SystemParameters::QCircles.remove(valueQ);
+		circuitElements->QCircles.remove(valueQ);
 		ui->listWidgetQ->takeItem(ui->listWidgetQ->row(item));
 	}
 	emit circle();
@@ -125,9 +142,9 @@ void CirclesWidget::insertVSWRClicked()
 	QString tempVswr = ui->FieldVSWR->text();
 	bool validateVswr = true;
 	double valueVswr = ui->FieldVSWR->text().toFloat(&validateVswr);
-    if (validateVswr&&valueVswr>=1&&!SystemParameters::VSWRCircles.contains(valueVswr))
+    if (validateVswr&&valueVswr>=1&&!circuitElements->VSWRCircles.contains(valueVswr))
 	{
-		SystemParameters::VSWRCircles.insert(valueVswr);
+		circuitElements->VSWRCircles.insert(valueVswr);
 		if (valueVswr == 10 || valueVswr == 5 || valueVswr == 3 || valueVswr == 2 || valueVswr == 1.5 || valueVswr == 1.2)
 		{
 			reverseCheckBoxVSWRIndex[valueVswr]->setChecked(true);
@@ -141,6 +158,32 @@ void CirclesWidget::insertVSWRClicked()
 	ui->FieldVSWR->setText("");
 }
 
+void CirclesWidget::addVSWR(double val)
+{
+	circuitElements->VSWRCircles.insert(val);
+	if (val == 10 || val == 5 || val == 3 || val == 2 || val == 1.5 || val == 1.2)
+	{
+		reverseCheckBoxVSWRIndex[val]->setChecked(true);
+	}
+	else
+	{
+		ui->listWidgetVSWR->addItem(QString::number(val));
+	}
+}
+
+void CirclesWidget::addQ(double val)
+{
+	circuitElements->QCircles.insert(val);
+	if (val == 10 || val == 5 || val == 2 || val == 1 || val == 0.5 || val == 0.2)
+	{
+		reverseCheckBoxQIndex[val]->setChecked(true);
+	}
+	else
+	{
+		ui->listWidgetQ->addItem(QString::number(val));
+	}
+}
+
 /// <summary>
 /// Вставка нового Q круга.
 /// </summary>
@@ -149,9 +192,9 @@ void CirclesWidget::insertQClicked()
 	QString tempQ = ui->FieldQ->text();
 	bool validateQ = true;
 	double valueQ = ui->FieldQ->text().toFloat(&validateQ);
-	if (validateQ && valueQ > 0 && !SystemParameters::QCircles.contains(valueQ))
+	if (validateQ && valueQ > 0 && !circuitElements->QCircles.contains(valueQ))
 	{
-		SystemParameters::QCircles.insert(valueQ);
+		circuitElements->QCircles.insert(valueQ);
 		if (valueQ == 10 || valueQ == 5 || valueQ == 2 || valueQ == 1 || valueQ == 0.5 || valueQ == 0.2)
 		{
 			reverseCheckBoxQIndex[valueQ]->setChecked(true);
@@ -198,11 +241,11 @@ void CirclesWidget::checkboxCheckedVSWR(int state)
 	QCheckBox* checkBox = qobject_cast<QCheckBox*>(sender());
 	if (state == Qt::Checked)
 	{
-		SystemParameters::VSWRCircles.insert(checkBoxVSWRIndex[checkBox]);
+		circuitElements->VSWRCircles.insert(checkBoxVSWRIndex[checkBox]);
 	}
 	if (state == Qt::Unchecked)
 	{
-		int valueindex = SystemParameters::VSWRCircles.remove(checkBoxVSWRIndex[checkBox]);
+		int valueindex = circuitElements->VSWRCircles.remove(checkBoxVSWRIndex[checkBox]);
 	}
 	emit circle();
 }
@@ -216,11 +259,11 @@ void CirclesWidget::checkboxCheckedQ(int state)
 	QCheckBox* checkBox = qobject_cast<QCheckBox*>(sender());
 	if (state == Qt::Checked)
 	{
-		SystemParameters::QCircles.insert(checkBoxQIndex[checkBox]);
+		circuitElements->QCircles.insert(checkBoxQIndex[checkBox]);
 	}
 	if (state == Qt::Unchecked)
 	{
-		int valueindex = SystemParameters::QCircles.remove(checkBoxQIndex[checkBox]);
+		int valueindex = circuitElements->QCircles.remove(checkBoxQIndex[checkBox]);
 	}
 	emit circle();
 }
@@ -232,39 +275,39 @@ void CirclesWidget::selectAllClickedVSWR()
 {
 	ui->checkBox10VSWR->setChecked(true);
 	qreal value10 = 10;
-	if (!SystemParameters::VSWRCircles.contains(value10))
+	if (!circuitElements->VSWRCircles.contains(value10))
 	{
-		SystemParameters::VSWRCircles.insert(value10);
+		circuitElements->VSWRCircles.insert(value10);
 	}
 	ui->checkBox5VSWR->setChecked(true);
 	qreal value5 = 5;
-	if (!SystemParameters::VSWRCircles.contains(value5))
+	if (!circuitElements->VSWRCircles.contains(value5))
 	{
-		SystemParameters::VSWRCircles.insert(value5);
+		circuitElements->VSWRCircles.insert(value5);
 	}
 	ui->checkBox3VSWR->setChecked(true);
 	qreal value3 = 3;
-	if (!SystemParameters::VSWRCircles.contains(value3))
+	if (!circuitElements->VSWRCircles.contains(value3))
 	{
-		SystemParameters::VSWRCircles.insert(value3);
+		circuitElements->VSWRCircles.insert(value3);
 	}
 	ui->checkBox2VSWR->setChecked(true);
 	qreal value2 = 2;
-	if (!SystemParameters::VSWRCircles.contains(value2))
+	if (!circuitElements->VSWRCircles.contains(value2))
 	{
-		SystemParameters::VSWRCircles.insert(value2);
+		circuitElements->VSWRCircles.insert(value2);
 	}
 	ui->checkBox1point5VSWR->setChecked(true);
 	qreal value1point5 = 1.5;
-	if (!SystemParameters::VSWRCircles.contains(value1point5))
+	if (!circuitElements->VSWRCircles.contains(value1point5))
 	{
-		SystemParameters::VSWRCircles.insert(value1point5);
+		circuitElements->VSWRCircles.insert(value1point5);
 	}
 	ui->checkBox1point2VSWR->setChecked(true);
 	qreal value1point2 = 1.2;
-	if (!SystemParameters::VSWRCircles.contains(value1point2))
+	if (!circuitElements->VSWRCircles.contains(value1point2))
 	{
-		SystemParameters::VSWRCircles.insert(value1point2);
+		circuitElements->VSWRCircles.insert(value1point2);
 	}
 	emit circle();
 }
@@ -276,39 +319,39 @@ void CirclesWidget::selectAllClickedQ()
 {
 	ui->checkBox10Q->setChecked(true);
 	qreal value10 = 10;
-	if (!SystemParameters::QCircles.contains(value10))
+	if (!circuitElements->QCircles.contains(value10))
 	{
-		SystemParameters::QCircles.insert(value10);
+		circuitElements->QCircles.insert(value10);
 	}
 	ui->checkBox5Q->setChecked(true);
 	qreal value5 = 5;
-	if (!SystemParameters::QCircles.contains(value5))
+	if (!circuitElements->QCircles.contains(value5))
 	{
-		SystemParameters::QCircles.insert(value5);
+		circuitElements->QCircles.insert(value5);
 	}
 	ui->checkBox2Q->setChecked(true);
 	qreal value2 = 2;
-	if (!SystemParameters::QCircles.contains(value2))
+	if (!circuitElements->QCircles.contains(value2))
 	{
-		SystemParameters::QCircles.insert(value2);
+		circuitElements->QCircles.insert(value2);
 	}
 	ui->checkBox1Q->setChecked(true);
 	qreal value1 = 1;
-	if (!SystemParameters::QCircles.contains(value1))
+	if (!circuitElements->QCircles.contains(value1))
 	{
-		SystemParameters::QCircles.insert(value1);
+		circuitElements->QCircles.insert(value1);
 	}
 	ui->checkBox0point5Q->setChecked(true);
 	qreal value0point5 = 0.5;
-	if (!SystemParameters::QCircles.contains(value0point5))
+	if (!circuitElements->QCircles.contains(value0point5))
 	{
-		SystemParameters::QCircles.insert(value0point5);
+		circuitElements->QCircles.insert(value0point5);
 	}
 	ui->checkBox0point2Q->setChecked(true);
 	qreal value0point2 = 0.2;
-	if (!SystemParameters::QCircles.contains(value0point2))
+	if (!circuitElements->QCircles.contains(value0point2))
 	{
-		SystemParameters::QCircles.insert(value0point2);
+		circuitElements->QCircles.insert(value0point2);
 	}
 	emit circle();
 }
@@ -320,39 +363,39 @@ void CirclesWidget::clearAllDefinedClickedVSWR()
 {
 	ui->checkBox10VSWR->setChecked(false);
 	qreal value10 = 10;
-	if (SystemParameters::VSWRCircles.contains(value10))
+	if (circuitElements->VSWRCircles.contains(value10))
 	{
-		SystemParameters::VSWRCircles.remove(value10);
+		circuitElements->VSWRCircles.remove(value10);
 	}
 	ui->checkBox5VSWR->setChecked(false);
 	qreal value5 = 5;
-	if (SystemParameters::VSWRCircles.contains(value5))
+	if (circuitElements->VSWRCircles.contains(value5))
 	{
-		SystemParameters::VSWRCircles.remove(value5);
+		circuitElements->VSWRCircles.remove(value5);
 	}
 	ui->checkBox3VSWR->setChecked(false);
 	qreal value3 = 3;
-	if (SystemParameters::VSWRCircles.contains(value3))
+	if (circuitElements->VSWRCircles.contains(value3))
 	{
-		SystemParameters::VSWRCircles.remove(value3);
+		circuitElements->VSWRCircles.remove(value3);
 	}
 	ui->checkBox2VSWR->setChecked(false);
 	qreal value2 = 2;
-	if (SystemParameters::VSWRCircles.contains(value2))
+	if (circuitElements->VSWRCircles.contains(value2))
 	{
-		SystemParameters::VSWRCircles.remove(value2);
+		circuitElements->VSWRCircles.remove(value2);
 	}
 	ui->checkBox1point5VSWR->setChecked(false);
 	qreal value1point5 = 1.5;
-	if (SystemParameters::VSWRCircles.contains(value1point5))
+	if (circuitElements->VSWRCircles.contains(value1point5))
 	{
-		SystemParameters::VSWRCircles.remove(value1point5);
+		circuitElements->VSWRCircles.remove(value1point5);
 	}
 	ui->checkBox1point2VSWR->setChecked(false);
 	qreal value1point2 = 1.2;
-	if (SystemParameters::VSWRCircles.contains(value1point2))
+	if (circuitElements->VSWRCircles.contains(value1point2))
 	{
-		SystemParameters::VSWRCircles.remove(value1point2);
+		circuitElements->VSWRCircles.remove(value1point2);
 	}
 	emit circle();
 }
@@ -364,39 +407,39 @@ void CirclesWidget::clearAllDefinedClickedQ()
 {
 	ui->checkBox10Q->setChecked(false);
 	qreal value10 = 10;
-	if (SystemParameters::QCircles.contains(value10))
+	if (circuitElements->QCircles.contains(value10))
 	{
-		SystemParameters::QCircles.remove(value10);
+		circuitElements->QCircles.remove(value10);
 	}
 	ui->checkBox5Q->setChecked(false);
 	qreal value5 = 5;
-	if (SystemParameters::QCircles.contains(value5))
+	if (circuitElements->QCircles.contains(value5))
 	{
-		SystemParameters::QCircles.remove(value5);
+		circuitElements->QCircles.remove(value5);
 	}
 	ui->checkBox2Q->setChecked(false);
 	qreal value2 = 2;
-	if (SystemParameters::QCircles.contains(value2))
+	if (circuitElements->QCircles.contains(value2))
 	{
-		SystemParameters::QCircles.remove(value2);
+		circuitElements->QCircles.remove(value2);
 	}
 	ui->checkBox1Q->setChecked(false);
 	qreal value1 = 1;
-	if (SystemParameters::QCircles.contains(value1))
+	if (circuitElements->QCircles.contains(value1))
 	{
-		SystemParameters::QCircles.remove(value1);
+		circuitElements->QCircles.remove(value1);
 	}
 	ui->checkBox0point5Q->setChecked(false);
 	qreal value0point5 = 0.5;
-	if (SystemParameters::QCircles.contains(value0point5))
+	if (circuitElements->QCircles.contains(value0point5))
 	{
-		SystemParameters::QCircles.remove(value0point5);
+		circuitElements->QCircles.remove(value0point5);
 	}
 	ui->checkBox0point2Q->setChecked(false);
 	qreal value0point2 = 0.2;
-	if (SystemParameters::QCircles.contains(value0point2))
+	if (circuitElements->QCircles.contains(value0point2))
 	{
-		SystemParameters::QCircles.remove(value0point2);
+		circuitElements->QCircles.remove(value0point2);
 	}
 	emit circle();
 }

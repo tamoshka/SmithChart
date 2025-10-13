@@ -14,7 +14,7 @@ class CirclesWidget : public QWidget
 	Q_OBJECT
 
 public:
-	CirclesWidget(QWidget *parent = nullptr);
+	CirclesWidget(QWidget* parent = nullptr, CircuitElements* circuit = nullptr);
 	~CirclesWidget();
 
 signals:
@@ -36,10 +36,16 @@ private slots:
 	void clearAllDefinedClickedQ();
 	void checkboxCheckedQ(int state);
 
+public slots:
+	void Load();
+
 private:
+	CircuitElements* circuitElements;
 	Ui::CirclesWidget *ui;
 	QMap<QCheckBox*, qreal> checkBoxVSWRIndex;
 	QMap<qreal, QCheckBox*> reverseCheckBoxVSWRIndex;
 	QMap<QCheckBox*, qreal> checkBoxQIndex;
 	QMap<qreal, QCheckBox*> reverseCheckBoxQIndex;
+	void addVSWR(double);
+	void addQ(double);
 };

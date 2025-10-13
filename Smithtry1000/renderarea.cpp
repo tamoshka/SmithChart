@@ -1274,7 +1274,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             }
         }
     }
-    QSetIterator<double> k(SystemParameters::VSWRCircles);
+    QSetIterator<double> k(circuitElements->VSWRCircles);
     while (k.hasNext())
     {
         double vswr = k.next();
@@ -1286,7 +1286,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         painter.setFont(QFont("Arial", 8));
         painter.drawText(center.x(), -radius * scale + center.y(), s1);
     }
-    QSetIterator<double> l(SystemParameters::QCircles);
+    QSetIterator<double> l(circuitElements->QCircles);
     while (l.hasNext())
     {
         double q = l.next();
