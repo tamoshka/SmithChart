@@ -89,6 +89,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->CopyButton, &QPushButton::clicked, this, &Smithtry1000::Copy);
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
+    connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
@@ -107,6 +108,218 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
+}
+
+void Smithtry1000::AWR_buttonClicked()
+{
+    AWRInterface awr = AWRInterface(circuitElements);
+
+    if (!awr.Initialize()) {
+        qDebug() << "Failed to initialize AWR interface";
+    }
+
+    qDebug() << "Creating project...";
+    if (!awr.CreateProject(L"SmithChartMatch")) {
+        qDebug() << "Failed to create project";
+    }
+
+    qDebug() << "Adding schematic...";
+    if (!awr.AddSchematic(L"MatchingCircuit")) {
+        qDebug() << "Failed to add schematic";
+    }
+    const wchar_t* portNames[] = { L"PORT", L"ELEM:PORT", L"Port", L"P" };
+    const wchar_t* capNames[] = { L"CAP", L"ELEM:CAP", L"Capacitor", L"C" };
+    const wchar_t* indNames[] = { L"IND", L"ELEM:IND", L"Inductor", L"L" };
+    bool portAdded = false;
+    // Добавляем порт источника
+    qDebug() << "\nAdding source port...";
+    int x = 1000;
+    if (awr.AddElement(L"PORT", x, 800, 0))
+    {
+        awr.SetElementParameter(L"P", L"2");
+        double real = circuitElements->z.real();
+        double imag = circuitElements->z.imag();
+        wchar_t impedance[64];
+        swprintf(impedance, 64, L"%.2f+%.2fj", real, imag);
+        awr.SetElementParameter(L"Z", impedance);
+    }
+    bool prevPar = false;
+    for (auto const& val : circuitElements->GetCircuitElements())
+    {
+        if (val->GetMode() == CapacitorParallel || val->GetMode() == InductionParallel || val->GetMode() == ResistorParallel)
+        {
+            const wchar_t* type;
+            const wchar_t* cotype;
+            double value;
+            bool ground = true;
+            if (val->GetMode() == CapacitorParallel)
+            {
+                type = L"CAP";
+                cotype = L"C";
+                value = val->GetValue() * 1e12;
+            }
+            else if (val->GetMode() == InductionParallel)
+            {
+                type = L"IND";
+                cotype = L"L";
+                value = val->GetValue() * 1e9;
+            }
+            else if (val->GetMode() == ResistorParallel)
+            {
+                type = L"RES";
+                cotype = L"R";
+                value = val->GetValue();
+            }
+            if (prevPar == true)
+            {
+                x += 500;
+            }
+            if (awr.AddElement(type, x, 800, 270))
+            {
+                wchar_t valuestr[64];
+                swprintf(valuestr , 64, L"%.2f", value);
+                awr.SetElementParameter(cotype, valuestr);
+            }
+            if (awr.AddElement(L"GND", x, 1800, 0))
+            {
+            }
+            if (prevPar == true)
+            {
+                awr.AddWire(x, 800, x - 500, 800);
+            }
+            prevPar = true;
+        }
+        else if (val->GetMode() == CapacitorShunt || val->GetMode() == InductionShunt || val->GetMode() == ResistorShunt)
+        {
+            const wchar_t* type;
+            const wchar_t* cotype;
+            double value;
+            if (val->GetMode() == CapacitorShunt)
+            {
+                type = L"CAP";
+                cotype = L"C";
+                value = val->GetValue() * 1e12;
+            }
+            else if (val->GetMode() == InductionShunt)
+            {
+                type = L"IND";
+                cotype = L"L";
+                value = val->GetValue() * 1e9;
+            }
+            else if (val->GetMode() == ResistorShunt)
+            {
+                type = L"RES";
+                cotype = L"R";
+                value = val->GetValue();
+            }
+            if (awr.AddElement(type, x, 800, 0))
+            {
+                wchar_t valuestr[64];
+                swprintf(valuestr, 64, L"%.2f", value);
+                awr.SetElementParameter(cotype, valuestr);
+            }
+            x += 1000;
+            prevPar = false;
+        }
+        else if (val->GetMode()==OSLine||val->GetMode()==SSLine||val->GetMode()==Line)
+        {
+            const wchar_t* type;
+            double value;
+            double valuez0;
+            double valueEeff;
+            double valueFreq;
+            double angle = 270;
+            if (val->GetMode() == OSLine)
+            {
+                type = L"TLOCP";
+            }
+            else if (val->GetMode()==SSLine)
+            {
+                type = L"TLSCP";
+            }
+            else
+            {
+                angle = 0;
+                type = L"TLINP";
+            }
+            VerticalLinesElement* temp = dynamic_cast<VerticalLinesElement*>(val);
+            value = temp->GetElectricalLength();
+            valuez0 = temp->GetValue();
+            valueEeff = pow(temp->GetElectricalLength() / temp->GetMechanicalLength(),2);
+            valueFreq = circuitElements->frequencyFirstPoint/1e9;
+            wchar_t valuestr[64];
+            swprintf(valuestr, 64, L"%.2f", value);
+            wchar_t valuez0str[64];
+            swprintf(valuez0str, 64, L"%.2f", valuez0);
+            wchar_t valueeeffstr[64];
+            swprintf(valueeeffstr, 64, L"%.2f", valueEeff);
+            wchar_t valuefreqstr[64];
+            swprintf(valuefreqstr, 64, L"%.2f", valueFreq);
+            if (prevPar == true)
+            {
+                x += 1000;
+            }
+            if (awr.AddElement(type, x, 800, angle))
+            {
+                awr.SetElementParameter(L"L", valuestr);
+                awr.SetElementParameter(L"Z0", valuez0str);
+                awr.SetElementParameter(L"Eeff", valueeeffstr);
+                awr.SetElementParameter(L"F0", valuefreqstr);
+            }
+            if (val->GetMode() == Line)
+            {
+                x += 1000;
+                prevPar = false;
+            }
+            else
+            {
+                if (prevPar == true)
+                {
+                    awr.AddWire(x, 800, x - 1000, 800);
+                }
+                prevPar = true;
+            }
+        }
+        else if (val->GetMode() == Transform)
+        {
+            double value = val->GetValue();
+            wchar_t valuestr[64];
+            swprintf(valuestr, 64, L"%.2f", value);
+            if (awr.AddElement(L"XFMR", x, 800, 0))
+            {
+                awr.SetElementParameter(L"N", valuestr);
+            }
+            if (awr.AddElement(L"GND", x, 1000, 0))
+            {
+            }
+
+            if (awr.AddElement(L"GND", x+1000, 1000, 0))
+            {
+            }
+            x += 1500;
+            awr.AddWire(x, 800, x - 500, 800);
+            prevPar = false;
+        }
+    }
+
+    if (awr.AddElement(L"PORT", x, 800, 180))
+    {
+        awr.SetElementParameter(L"P", L"1");
+        double real = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size()-1]->GetParameter()[Z].real();
+        double imag = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag();
+        wchar_t impedance[64];
+        swprintf(impedance, 64, L"%.2f+%.2fj", real, imag);
+        awr.SetElementParameter(L"Z", impedance);
+    }
+
+    awr.SetFrequencySweep(1e8, 3e9, 100);
+
+    awr.SetSweepType(true);
+    // Сохраняем проект
+    qDebug() << "Saving project...";
+    if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
+        qDebug() << "Project saved successfully!";
+    }
 }
 
 void Smithtry1000::getallchangedsignal()

@@ -1,0 +1,54 @@
+#pragma once
+
+#include <windows.h>
+#include "circuitElements.h"
+#include <comdef.h>
+#include <atlbase.h>
+#include <string>
+#include <vector>
+#include <stdexcept>
+
+class AWRInterface {
+public:
+    AWRInterface(CircuitElements* circuit);
+    ~AWRInterface();
+
+    bool Initialize();
+    void Cleanup();
+
+    bool CreateProject(const std::wstring& projectName);
+    bool SetFrequencySweep(double startFreq, double stopFreq, int numPoints);
+    bool SetSingleFrequency(double frequency);
+    bool SetSweepType(bool isLinear);
+    bool AddSchematic(const std::wstring& schematicName);
+    bool AddElement(const std::wstring& elementType, double x, double y, double angle);
+    bool AddWire(double x1, double y1, double x2, double y2);
+    bool SetElementParameter(const wchar_t* paramName, const wchar_t* value);
+    bool SaveProject(const std::wstring& filePath);
+
+private:
+    CircuitElements* circuitElements;
+    IDispatch* m_pAWRApp;
+    IDispatch* m_pProject;
+    IDispatch* m_pSchematic;
+    IDispatch* m_pLastElement;
+
+    bool m_bInitialized;
+
+    // Вспомогательные функции для работы с COM
+    HRESULT InvokeMethod(IDispatch* pDisp, LPCOLESTR methodName,
+        VARIANT* pResult, WORD wFlags,
+        DISPPARAMS* pParams = nullptr);
+
+    HRESULT GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult);
+    HRESULT SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue);
+};
+
+// Структура для описания элемента схемы
+struct CircuitElement {
+    std::wstring type;      // "RES", "CAP", "IND", "TLIN"
+    std::wstring value;     // "50", "10pF", "5nH"
+    double x;
+    double y;
+    std::wstring paramName; // "R", "C", "L"
+};

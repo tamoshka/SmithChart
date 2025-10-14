@@ -22,6 +22,7 @@
 #include "KeyboardDialog.h"
 #include "CirclesWidget.h"
 #include "SaveDialog.h"
+#include "awr_interface.h"
 
 /// <summary>
 /// Класс работы с курсором, являющийся также главным хабом и окном приложения.
@@ -76,6 +77,7 @@ private slots:
     void Copy();
     void Save();
     void Load();
+    void AWR_buttonClicked();
 
 private:
     SParameters* sParameters;
