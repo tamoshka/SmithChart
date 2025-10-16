@@ -21,7 +21,7 @@ CircuitElements::~CircuitElements()
 /// <param name="element">Элемент.</param>
 void CircuitElements::AddCircuitElements(Element* element)
 {
-	this->circuitElements.append(element);
+	this->circuitElements.append(new Element(*element));
 }
 
 /// <summary>

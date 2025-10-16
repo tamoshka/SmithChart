@@ -27,7 +27,7 @@ private:
 public slots:
 	void SaveAmpFr();
 public:
-	void ReflectionCalculation();
+	void Clear();
 	Complex GetGamma1();
 	Complex GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());

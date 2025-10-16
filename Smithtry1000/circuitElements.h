@@ -43,4 +43,65 @@ public:
 	bool loadFromFile(const QString& filePath);
 	bool saveToFile(const QString& filePath) const;
 	~CircuitElements();
+    CircuitElements(const CircuitElements& other) {
+        // ГЛУБОКОЕ копирование - создаем новые объекты Element
+        for (Element* elem : other.circuitElements) {
+            if (elem != nullptr) {
+                circuitElements.append(new Element(*elem)); // Копируем объект, а не указатель
+            }
+            else {
+                circuitElements.append(nullptr);
+            }
+        }
+        // Копируем остальные поля
+        morePoints = other.morePoints;
+        VSWRCircles = other.VSWRCircles;
+        QCircles = other.QCircles;
+        z0 = other.z0;
+        elementIndexes = other.elementIndexes;
+        pointIndexes = other.pointIndexes;
+        frequencyList = other.frequencyList;
+        z = other.z;
+        y = other.y;
+        g = other.g;
+        realFirstPoint = other.realFirstPoint;
+        imagFirstPoint = other.imagFirstPoint;
+        frequencyFirstPoint = other.frequencyFirstPoint;
+        firstPoint = other.firstPoint;
+        chart = other.chart;
+    }
+    CircuitElements& operator=(const CircuitElements& other) {
+        if (this != &other) {
+            // Очистка текущих данных
+            for (Element* elem : circuitElements) {
+                delete elem;
+            }
+            circuitElements.clear();
+
+            // Глубокое копирование
+            for (Element* elem : other.circuitElements) {
+                if (elem != nullptr) {
+                    circuitElements.append(new Element(*elem));
+                }
+            }
+
+            // Копирование остальных полей
+            morePoints = other.morePoints;
+            VSWRCircles = other.VSWRCircles;
+            QCircles = other.QCircles;
+            z0 = other.z0;
+            elementIndexes = other.elementIndexes;
+            pointIndexes = other.pointIndexes;
+            frequencyList = other.frequencyList;
+            z = other.z;
+            y = other.y;
+            g = other.g;
+            realFirstPoint = other.realFirstPoint;
+            imagFirstPoint = other.imagFirstPoint;
+            frequencyFirstPoint = other.frequencyFirstPoint;
+            firstPoint = other.firstPoint;
+            chart = other.chart;
+        }
+        return *this;
+    }
 };

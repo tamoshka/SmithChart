@@ -77,7 +77,6 @@ extern int dpIndex;
 extern int allpointindex;
 extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
-extern map<int, tuple<Point, long double, long double, mode>> points;
 extern chartMode cMode;
 extern parameterMode pMode;
 extern long double lastPointX;

@@ -27,6 +27,27 @@ public:
 	Point GetPoint();
 	map<parameterMode, Complex> GetParameter();
 	Element(mode, long double, long double, Point, map<chartMode, tuple<long double, long double>>, map<parameterMode, Complex>);
+	Element& operator=(const Element& other) {
+		if (this != &other) {
+			point = other.point;
+			frequency = other.frequency;
+			chartParameters = other.chartParameters;
+			parameters = other.parameters;
+			elementMode = other.elementMode;
+			value = other.value;
+		}
+		return *this;
+	} 
+	Element(const Element& other)
+		: point(other.point),
+		frequency(other.frequency),
+		chartParameters(other.chartParameters),
+		parameters(other.parameters),
+		elementMode(other.elementMode),
+		value(other.value)
+	{
+		// Все поля копируются автоматически, так как они имеют правильные конструкторы копирования
+	}
 	virtual ~Element();
 	virtual QJsonObject toJson() const;
 	virtual ElementType getElementType() const { return ElementType::BaseElement; }
