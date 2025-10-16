@@ -861,7 +861,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
                 x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
             }
-            if (abs(y <= 0.001))
+            if (abs(y) <= 0.001)
             {
                 long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
                 long double x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;

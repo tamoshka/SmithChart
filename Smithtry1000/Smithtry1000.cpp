@@ -114,8 +114,6 @@ void Smithtry1000::AWR_buttonClicked()
 {
     if (pointsX.size() > 1)
     {
-        AWRInterface awr = AWRInterface(circuitElements);
-
         if (!awr.Initialize()) {
             qDebug() << "Failed to initialize AWR interface";
         }
@@ -125,25 +123,55 @@ void Smithtry1000::AWR_buttonClicked()
             qDebug() << "Failed to create project";
         }
 
-        qDebug() << "Adding schematic...";
-        if (!awr.AddSchematic(L"MatchingCircuit")) {
-            qDebug() << "Failed to add schematic";
-        }
-        const wchar_t* portNames[] = { L"PORT", L"ELEM:PORT", L"Port", L"P" };
-        const wchar_t* capNames[] = { L"CAP", L"ELEM:CAP", L"Capacitor", L"C" };
-        const wchar_t* indNames[] = { L"IND", L"ELEM:IND", L"Inductor", L"L" };
-        bool portAdded = false;
-        // Добавляем порт источника
-        qDebug() << "\nAdding source port...";
         int x = 1000;
-        if (awr.AddElement(L"PORT", x, 800, 0))
+        if (awr.m_portSchematic==nullptr)
         {
-            awr.SetElementParameter(L"P", L"2");
+            if (!awr.AddPortSchematic(L"ZL", false)) {
+                qDebug() << "Failed to add schematic";
+            }
+        }
+        else
+        {
+            awr.ClearAllPortElements(false);
+        }
+        qDebug() << "\nAdding source port...";
+        if (awr.AddPortElement(L"PORT", 1000, 800, 180, false))
+        {
+            awr.SetElementParameter(L"P", L"1");
+            awr.SetElementParameter(L"Z", L"50");
+        }
+        if (awr.AddPortElement(L"IMPED", 1000, 800, 270, false))
+        {
             double real = circuitElements->z.real();
             double imag = circuitElements->z.imag();
-            wchar_t impedance[64];
-            swprintf(impedance, 64, L"%.2f+%.2fj", real, imag);
-            awr.SetElementParameter(L"Z", impedance);
+            wchar_t realstr[64];
+            swprintf(realstr, 64, L"%.2f", real);
+            wchar_t imagstr[64];
+            swprintf(imagstr, 64, L"%.2f", imag);
+            awr.SetElementParameter(L"R", realstr);
+            awr.SetElementParameter(L"X", imagstr);
+        }
+        if (awr.AddPortElement(L"GND", 1000, 1800, 0, false))
+        {
+
+        }
+        qDebug() << "Adding schematic...";
+        if (awr.m_pSchematic==nullptr)
+        {
+            if (!awr.AddSchematic(L"MatchingCircuit")) {
+                qDebug() << "Failed to add schematic";
+            }
+        }
+        else
+        {
+            awr.ClearAllElements();
+            awr.ClearAllWires();
+        }
+        if (awr.AddElement(L"PORT_TN", x, 800, 0))
+        {
+            awr.SetElementParameter(L"P", L"2");
+            awr.SetElementParameter(L"NET", L"\"ZL\"");
+            awr.SetElementParameter(L"NP", L"1");
         }
         bool prevPar = false;
         for (auto const& val : circuitElements->GetCircuitElements())
@@ -248,7 +276,7 @@ void Smithtry1000::AWR_buttonClicked()
                 value = temp->GetElectricalLength();
                 valuez0 = temp->GetValue();
                 valueEeff = pow(temp->GetElectricalLength() / temp->GetMechanicalLength(), 2);
-                valueFreq = circuitElements->frequencyFirstPoint / 1e9;
+                valueFreq = circuitElements->frequencyFirstPoint / 1e6;
                 wchar_t valuestr[64];
                 swprintf(valuestr, 64, L"%.2f", value);
                 wchar_t valuez0str[64];
@@ -304,16 +332,43 @@ void Smithtry1000::AWR_buttonClicked()
             }
 
         }
-
-        if (awr.AddElement(L"PORT", x, 800, 180))
+        if (awr.AddElement(L"PORT_TN", x, 800, 180))
         {
             awr.SetElementParameter(L"P", L"1");
-            double real = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real();
-            double imag = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag();
-            wchar_t impedance[64];
-            swprintf(impedance, 64, L"%.2f+%.2fj", real, imag);
-            awr.SetElementParameter(L"Z", impedance);
+            awr.SetElementParameter(L"NET", L"\"ZS\"");
+            awr.SetElementParameter(L"NP", L"1");
         }
+        if (awr.m_port2Schematic==nullptr)
+        {
+            if (!awr.AddPortSchematic(L"ZS", true)) {
+                qDebug() << "Failed to add schematic";
+            }
+        }
+        else
+        {
+            awr.ClearAllPortElements(true);
+        }
+        if (awr.AddPortElement(L"PORT", 1000, 800, 0, true))
+        {
+            awr.SetElementParameter(L"P", L"1");
+            awr.SetElementParameter(L"Z", L"50");
+        }
+        if (awr.AddPortElement(L"IMPED", 1000, 800, 270, true))
+        {
+            double real = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real();
+            double imag = -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag();
+            wchar_t realstr[64];
+            swprintf(realstr, 64, L"%.2f", real);
+            wchar_t imagstr[64];
+            swprintf(imagstr, 64, L"%.2f", imag);
+            awr.SetElementParameter(L"R", realstr);
+            awr.SetElementParameter(L"X", imagstr);
+        }
+        if (awr.AddPortElement(L"GND", 1000, 1800, 0, true))
+        {
+
+        }
+        
 
         awr.SetFrequencySweep(1e8, 3e9, 100);
 

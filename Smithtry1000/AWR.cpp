@@ -7,6 +7,8 @@ AWRInterface::AWRInterface(CircuitElements* circuit)
     , m_pSchematic(nullptr)
     , m_pLastElement(nullptr)
     , m_bInitialized(false) 
+    , m_portSchematic(nullptr)
+    , m_port2Schematic(nullptr)
 {
     circuitElements = circuit;
 }
@@ -202,6 +204,199 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
     return false;
 }
 
+bool AWRInterface::ClearAllElements()
+{
+    if (!m_pSchematic) return false;
+
+    HRESULT hr;
+    DISPID dispid;
+
+    // Получаем коллекцию Elements
+    OLECHAR* propElements = L"Elements";
+    hr = m_pSchematic->GetIDsOfNames(IID_NULL, &propElements, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+    if (FAILED(hr)) return false;
+
+    DISPPARAMS noParams = { NULL, NULL, 0, 0 };
+    VARIANT varElements;
+    VariantInit(&varElements);
+
+    hr = m_pSchematic->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+        DISPATCH_PROPERTYGET, &noParams,
+        &varElements, NULL, NULL);
+    if (FAILED(hr) || varElements.vt != VT_DISPATCH) {
+        VariantClear(&varElements);
+        return false;
+    }
+
+    IDispatch* pElements = varElements.pdispVal;
+
+    // Вызываем метод Clear() или RemoveAll()
+    OLECHAR* methodClear = L"Clear";
+    hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+
+    if (FAILED(hr)) {
+        // Если Clear не найден, пробуем RemoveAll
+        methodClear = L"RemoveAll";
+        hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
+            LOCALE_USER_DEFAULT, &dispid);
+    }
+
+    if (SUCCEEDED(hr)) {
+        VARIANT varResult;
+        VariantInit(&varResult);
+
+        hr = pElements->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_METHOD, &noParams,
+            &varResult, NULL, NULL);
+
+        VariantClear(&varResult);
+    }
+
+    pElements->Release();
+    VariantClear(&varElements);
+
+    return SUCCEEDED(hr);
+}
+
+bool AWRInterface::ClearAllPortElements(bool end)
+{
+    if (end)
+    {
+        if (!m_port2Schematic) return false;
+    }
+    else
+    {
+        if (!m_portSchematic) return false;
+    }
+    HRESULT hr;
+    DISPID dispid;
+    OLECHAR* propElements = L"Elements";
+    if (end)
+    {
+        hr = m_port2Schematic->GetIDsOfNames(IID_NULL, &propElements, 1,
+            LOCALE_USER_DEFAULT, &dispid);
+    }
+    else
+    {
+        hr = m_portSchematic->GetIDsOfNames(IID_NULL, &propElements, 1,
+            LOCALE_USER_DEFAULT, &dispid);
+    }
+
+   
+   
+    if (FAILED(hr)) return false;
+
+    DISPPARAMS noParams = { NULL, NULL, 0, 0 };
+    VARIANT varElements;
+    VariantInit(&varElements);
+
+    if (end)
+    {
+        hr = m_port2Schematic->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_PROPERTYGET, &noParams,
+            &varElements, NULL, NULL);
+    }
+    else
+    {
+        hr = m_portSchematic->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_PROPERTYGET, &noParams,
+            &varElements, NULL, NULL);
+    }
+    
+    if (FAILED(hr) || varElements.vt != VT_DISPATCH) {
+        VariantClear(&varElements);
+        return false;
+    }
+
+    IDispatch* pElements = varElements.pdispVal;
+
+    // Вызываем метод Clear() или RemoveAll()
+    OLECHAR* methodClear = L"Clear";
+    hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+
+    if (FAILED(hr)) {
+        // Если Clear не найден, пробуем RemoveAll
+        methodClear = L"RemoveAll";
+        hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
+            LOCALE_USER_DEFAULT, &dispid);
+    }
+
+    if (SUCCEEDED(hr)) {
+        VARIANT varResult;
+        VariantInit(&varResult);
+
+        hr = pElements->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_METHOD, &noParams,
+            &varResult, NULL, NULL);
+
+        VariantClear(&varResult);
+    }
+
+    pElements->Release();
+    VariantClear(&varElements);
+
+    return SUCCEEDED(hr);
+}
+
+// Метод для удаления всех проводов
+bool AWRInterface::ClearAllWires()
+{
+    if (!m_pSchematic) return false;
+
+    HRESULT hr;
+    DISPID dispid;
+
+    // Получаем коллекцию Wires
+    OLECHAR* propWires = L"Wires";
+    hr = m_pSchematic->GetIDsOfNames(IID_NULL, &propWires, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+    if (FAILED(hr)) return false;
+
+    DISPPARAMS noParams = { NULL, NULL, 0, 0 };
+    VARIANT varWires;
+    VariantInit(&varWires);
+
+    hr = m_pSchematic->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+        DISPATCH_PROPERTYGET, &noParams,
+        &varWires, NULL, NULL);
+    if (FAILED(hr) || varWires.vt != VT_DISPATCH) {
+        VariantClear(&varWires);
+        return false;
+    }
+
+    IDispatch* pWires = varWires.pdispVal;
+
+    // Вызываем Clear()
+    OLECHAR* methodClear = L"Clear";
+    hr = pWires->GetIDsOfNames(IID_NULL, &methodClear, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+
+    if (FAILED(hr)) {
+        methodClear = L"RemoveAll";
+        hr = pWires->GetIDsOfNames(IID_NULL, &methodClear, 1,
+            LOCALE_USER_DEFAULT, &dispid);
+    }
+
+    if (SUCCEEDED(hr)) {
+        VARIANT varResult;
+        VariantInit(&varResult);
+
+        hr = pWires->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_METHOD, &noParams,
+            &varResult, NULL, NULL);
+
+        VariantClear(&varResult);
+    }
+
+    pWires->Release();
+    VariantClear(&varWires);
+
+    return SUCCEEDED(hr);
+}
+
 bool AWRInterface::AddSchematic(const std::wstring& schematicName)
 {
     if (!m_pProject) return false;
@@ -234,6 +429,51 @@ bool AWRInterface::AddSchematic(const std::wstring& schematicName)
 
     if (SUCCEEDED(hr)) {
         m_pSchematic = result.pdispVal;
+        return true;
+    }
+
+    return false;
+}
+
+bool AWRInterface::AddPortSchematic(const std::wstring& schematicName, bool end)
+{
+    if (!m_pProject) return false;
+
+    // Получаем коллекцию Schematics
+    VARIANT schematics;
+    VariantInit(&schematics);
+
+    HRESULT hr = GetProperty(m_pProject, L"Schematics", &schematics);
+    if (FAILED(hr)) return false;
+
+    // Добавляем новую схему
+    VARIANT result;
+    VariantInit(&result);
+
+    DISPPARAMS params;
+    VARIANT args[1];
+    args[0].vt = VT_BSTR;
+    args[0].bstrVal = SysAllocString(schematicName.c_str());
+
+    params.rgvarg = args;
+    params.cArgs = 1;
+    params.rgdispidNamedArgs = nullptr;
+    params.cNamedArgs = 0;
+
+    hr = InvokeMethod(schematics.pdispVal, L"Add", &result, DISPATCH_METHOD, &params);
+
+    SysFreeString(args[0].bstrVal);
+    schematics.pdispVal->Release();
+
+    if (SUCCEEDED(hr)) {
+        if (end)
+        {
+            m_port2Schematic = result.pdispVal;
+        }
+        else
+        {
+            m_portSchematic = result.pdispVal;
+        }
         return true;
     }
 
@@ -299,6 +539,107 @@ bool AWRInterface::AddElement(const std::wstring& elementType, double x, double 
 
     if (FAILED(hr)) {
         qDebug() << "Failed to add element: 0x"<< hr;
+        elements.pdispVal->Release();
+        return false;
+    }
+
+    if (result.vt != VT_DISPATCH || result.pdispVal == nullptr) {
+        qDebug() << "Element not returned (VT=" << result.vt << ")";
+        elements.pdispVal->Release();
+        return false;
+    }
+
+    if (m_pLastElement) m_pLastElement->Release();
+    m_pLastElement = result.pdispVal;
+    elements.pdispVal->Release();
+
+    qDebug() << "Element " << elementType
+        << " added successfully at (" << x << ", " << y << ")";
+    return true;
+}
+
+bool AWRInterface::AddPortElement(const std::wstring& elementType, double x, double y, double angle, bool end)
+{
+    if (end)
+    {
+        if (!m_port2Schematic) return false;
+    }
+    else
+    {
+        if (!m_portSchematic) return false;
+    }
+
+    // Получаем коллекцию Elements
+    VARIANT elements;
+    VariantInit(&elements);
+    HRESULT hr;
+    if (end)
+    {
+        hr = GetProperty(m_port2Schematic, L"Elements", &elements);
+    }
+    else
+    {
+        hr = GetProperty(m_portSchematic, L"Elements", &elements);
+    }
+    
+    if (FAILED(hr) || elements.vt != VT_DISPATCH) {
+        qDebug() << "Failed to get Elements collection: 0x" << hr;
+
+        if (end)
+        {
+            hr = GetProperty(m_port2Schematic, L"Schematic_Elements", &elements);
+        }
+        else
+        {
+            hr = GetProperty(m_portSchematic, L"Schematic_Elements", &elements);
+        }
+        // Пробуем альтернативные имена
+        hr = GetProperty(m_portSchematic, L"Schematic_Elements", &elements);
+        if (FAILED(hr)) {
+            qDebug() << "Also tried Schematic_Elements, failed";
+            return false;
+        }
+    }
+
+    qDebug() << L"Adding element of type: " << elementType;
+
+    // Метод Add принимает 4 параметра: Type, X, Y, Rotation
+    // Add(Type As String, X As Long, Y As Long, Rotation As Long) As Element
+    VARIANT result;
+    VariantInit(&result);
+
+    DISPPARAMS params;
+    VARIANT args[4];
+
+    // Параметры идут в обратном порядке!
+    // args[3] = Type (string)
+    // args[2] = X (long)
+    // args[1] = Y (long) 
+    // args[0] = Rotation (long)
+
+    args[3].vt = VT_BSTR;
+    args[3].bstrVal = SysAllocString(elementType.c_str());
+
+    args[2].vt = VT_I4;
+    args[2].lVal = static_cast<long>(x);
+
+    args[1].vt = VT_I4;
+    args[1].lVal = static_cast<long>(y);
+
+    args[0].vt = VT_I4;
+    args[0].lVal = static_cast<long>(angle);  // rotation angle in degrees
+
+    params.rgvarg = args;
+    params.cArgs = 4;
+    params.rgdispidNamedArgs = nullptr;
+    params.cNamedArgs = 0;
+
+    hr = InvokeMethod(elements.pdispVal, L"Add", &result, DISPATCH_METHOD, &params);
+
+    SysFreeString(args[3].bstrVal);
+
+    if (FAILED(hr)) {
+        qDebug() << "Failed to add element: 0x" << hr;
         elements.pdispVal->Release();
         return false;
     }
