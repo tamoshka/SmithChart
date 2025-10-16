@@ -8,6 +8,8 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_definitions(-D_WIN32_DCOM)
+
 # Поиск Qt компонентов (совместимо с Conan)
 find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
@@ -25,7 +27,9 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Все исходные файлы проекта
-set(PROJECT_SOURCES
+    set(PROJECT_SOURCES
+    awr_interface.h
+    AWR.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h
@@ -135,6 +139,9 @@ else()
         Qt5::Widgets
         Qt5::Svg
         Qt5::PrintSupport
+        ole32
+        oleaut32
+        uuid
     )
 endif()
 
@@ -169,4 +176,8 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E echo "Qt DLLs should be in PATH or copied manually from ${QT_DLL_DIR}"
         VERBATIM
     )
+endif()
+
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /EHsc)
 endif()

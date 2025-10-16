@@ -99,7 +99,6 @@ long double SystemParameters::impedanceImagR = 0;
 long double SystemParameters::admitanceImagR = 0;
 long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
-
 bool SystemParameters::exc = false;
 
 /// <summary>

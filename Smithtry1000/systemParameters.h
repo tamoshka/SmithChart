@@ -119,6 +119,7 @@ public:
 	static bool sizeChanged;
 	static systemMode sys;
 	static valueMode val;
+	static int portNumbers;
 	//0 - Диаграмма, 1 - Цепь
 	static int saved;
 
