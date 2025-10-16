@@ -76,11 +76,13 @@ private slots:
     void Copy();
     void Save();
     void Load();
+    void Redo();
 
 private:
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
+    CircuitElements tempCircuit;
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
     CirclesWidget* circlesWidget = new CirclesWidget(nullptr, circuitElements);
     void ImaginaryImpedance();
@@ -104,7 +106,9 @@ private:
     long double step;
     long double r;  //   
     long double intervalLength = 2 * M_PI;
+    bool firstDeleted = true;
     QPoint getPointOnCircle(int, int);
+    QTimer* timer;
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;

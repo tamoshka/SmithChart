@@ -324,6 +324,12 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
     ui->widget->axisRect()->setRangeZoomAxes(axises);
 }
 
+void AmplitudeFrequency::Clear()
+{
+    ui->widget->clearGraphs();
+    ui->widget->replot();
+}
+
 /// <summary>
 /// Сохранение изображения графика.
 /// </summary>
