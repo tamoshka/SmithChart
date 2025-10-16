@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include <windows.h>
 #include "circuitElements.h"
@@ -58,4 +58,4 @@ struct CircuitElement {
     double x;
     double y;
     std::wstring paramName; // "R", "C", "L"
-};
+};*/

@@ -78,10 +78,10 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    void AWR_buttonClicked();
+    ///void AWR_buttonClicked();
 
 private:
-    AWRInterface awr = AWRInterface(circuitElements);
+    ///AWRInterface awr = AWRInterface(circuitElements);
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);
