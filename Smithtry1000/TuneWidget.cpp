@@ -571,6 +571,10 @@ void TuneWidget::ValueChanged(int value)
 					{
 						r3 = (cos(t1) - x) / (x - 1);
 					}
+					else
+					{
+						r3 = 1e9;
+					}
 					max_step++;
 					if (max_step == 500)
 					{
@@ -731,7 +735,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 < 0)
 					{
@@ -881,7 +885,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 < 0)
 					{
@@ -1054,6 +1058,10 @@ void TuneWidget::ValueChanged(int value)
 					{
 						r3 = abs((cos(t1) - x) / (x + 1));
 					}
+					else
+					{
+						r3 = 1e9;
+					}
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1206,7 +1214,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 > 0)
 					{
@@ -1345,7 +1353,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 > 0)
 					{
@@ -1661,7 +1669,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 > 0)
 					{
@@ -1832,7 +1840,7 @@ void TuneWidget::ValueChanged(int value)
 					}
 					else
 					{
-						r3 = (1 + sin(t1)) / y2;
+						r3 = 1e9;
 					}
 					if (y2 > 0)
 					{

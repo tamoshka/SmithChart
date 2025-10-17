@@ -640,7 +640,7 @@ void Smithtry1000::Redo()
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             QString name;
-            bool mood;
+            bool mood = true;
             switch (circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size()-1]->GetMode())
             {
             case ResistorShunt:
@@ -1948,6 +1948,10 @@ void Smithtry1000::VerticalLines()
     {
         r = (cos(t) - x) / (x + 1);
     }
+    else
+    {
+        r = 1e9;
+    }
     tmin = -M_PI;
     tmax = M_PI;
     trackingEnabled = !trackingEnabled;
@@ -2300,13 +2304,13 @@ void Smithtry1000::onButtonClicked()
             long double dy = y;
             long double sin_t = dy;
             long double cos_t = dx;
-            if (y < 1e-6 && y >= 0)
+            if (abs(y) < 1e-6 && abs(y) >= 0)
             {
                 if (y == 0 && x == 1)
                 {
                     t = 0;
                 }
-                else if (x == 1)
+                else if (x == 1&&y<0)
                 {
                     t = 2 * M_PI;
                 }
@@ -2334,6 +2338,10 @@ void Smithtry1000::onButtonClicked()
             if (x - 1 != 0)
             {
                 r = (cos(t) - x) / (x - 1);
+            }
+            else
+            {
+                r = 1e9;
             }
             QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
@@ -3029,6 +3037,10 @@ void Smithtry1000::ImaginaryImpedance()
         {
             r = (cos(t) - x) / (x - 1);
         }
+        else
+        {
+            r = 1e9;
+        }
         switch (Model)
         {
         case InductionShunt:
@@ -3221,6 +3233,10 @@ void Smithtry1000::ImaginaryAdmitance()
         if (x + 1 != 0)
         {
             r = (cos(t) - x) / (x + 1);
+        }
+        else
+        {
+            r = 1e9;
         }
         switch (Model)
         {

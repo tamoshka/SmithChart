@@ -107,7 +107,7 @@ private:
     long double tmin;
     long double tmax;
     long double step;
-    long double r;  //   
+    long double r;   
     long double intervalLength = 2 * M_PI;
     bool firstDeleted = true;
     QPoint getPointOnCircle(int, int);

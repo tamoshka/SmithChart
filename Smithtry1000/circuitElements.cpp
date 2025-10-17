@@ -21,7 +21,20 @@ CircuitElements::~CircuitElements()
 /// <param name="element">Элемент.</param>
 void CircuitElements::AddCircuitElements(Element* element)
 {
-	this->circuitElements.append(new Element(*element));
+    if (element->GetMode() == OSLine || element->GetMode() == SSLine)
+    {
+        VerticalLinesElement* temp = dynamic_cast<VerticalLinesElement*>(element);
+        this->circuitElements.append(new VerticalLinesElement(*temp));
+    }
+    else if (element->GetMode() == Line)
+    {
+        LinesElement* temp = dynamic_cast<LinesElement*>(element);
+        this->circuitElements.append(new LinesElement(*temp));
+    }
+    else
+    {
+        this->circuitElements.append(new Element(*element));
+    }
 }
 
 /// <summary>

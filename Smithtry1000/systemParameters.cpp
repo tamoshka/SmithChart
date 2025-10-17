@@ -143,6 +143,10 @@ void SystemParameters::rImpedanceRealCalculation(long double x, long double y)
     {
         impedanceRealR = abs((cos(t1) - x) / (x - 1));
     }
+    else
+    {
+        impedanceRealR = 1e9;
+    }
     impedanceRealR *= SystemParameters::z0;
 }
 
@@ -181,9 +185,13 @@ void SystemParameters::rAdmitanceRealCalculation(long double x, long double y)
     {
         t1 = M_PI - abs(t1);
     }
-    if (x - 1 != 0)
+    if (x + 1 != 0)
     {
         admitanceRealR = abs((cos(t1) - x) / (x + 1));
+    }
+    else
+    {
+        admitanceRealR = 1e9;
     }
     admitanceRealR *= 1000/ SystemParameters::z0;
 }
@@ -353,6 +361,10 @@ Complex SystemParameters::impedanceRealChartParameters(long double x, long doubl
     {
         r1 = (cos(t1) - x) / (x - 1);
     }
+    else
+    {
+        r1 = 1e9;
+    }
     return Complex(r1, t1);
 }
 
@@ -392,9 +404,13 @@ Complex SystemParameters::admitanceRealChartParameters(long double x, long doubl
     {
         t1 = M_PI - abs(t1);
     }
-    if (x - 1 != 0)
+    if (x + 1 != 0)
     {
         r1 = abs((cos(t1) - x) / (x + 1));
+    }
+    else
+    {
+        r1 = 1e9;
     }
     return Complex(r1, t1);
 }
