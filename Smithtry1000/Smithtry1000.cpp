@@ -1256,7 +1256,7 @@ void Smithtry1000::onTransform_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2;
+            t = M_PI * 3 / 2-0.02;
         }
         else
         {
@@ -2308,11 +2308,11 @@ void Smithtry1000::onButtonClicked()
             {
                 if (y == 0 && x == 1)
                 {
-                    t = 0;
+                    t = 0+ 0.02;
                 }
                 else if (x == 1&&y<0)
                 {
-                    t = 2 * M_PI;
+                    t = 2 * M_PI- 0.02;
                 }
                 else
                 {
@@ -2540,7 +2540,7 @@ void Smithtry1000::onResistor_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2;
+            t = M_PI * 3 / 2- 1 / 1e9;
         }
         else
         {
@@ -2570,14 +2570,16 @@ void Smithtry1000::onResistor_buttonClicked()
             if (y < 0)
             {
                 r = fabs(r);
-                tmin = t;
-                tmax = M_PI * 3 / 2;
+                tmin = t+ 1 / 1e9;
+                t = tmin;
+                tmax = M_PI * 3 / 2- 1 / 1e9;
             }
             else
             {
                 r = fabs(r) * (-1);
-                tmax = t;
-                tmin = M_PI * 3 / 2;
+                tmax = t- 1 / 1e9;
+                t = tmax;
+                tmin = M_PI * 3 / 2- 1 / 1e9;
             }
         }
         trackingEnabled = !trackingEnabled;
@@ -2750,7 +2752,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2;
+            t = M_PI * 3 / 2- 1 / 1e9;
         }
         else
         {
@@ -2772,13 +2774,15 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             if (y > 0)
             {
                 r *= -1;
-                tmin = t;
-                tmax = M_PI / 2;
+                tmin = t+ 1 / 1e9;
+                t = tmin;
+                tmax = M_PI / 2-1/1e9;
             }
             else
             {
-                tmax = t;
-                tmin = -M_PI / 2;
+                tmax = t- 1 / 1e92;
+                t = tmax;
+                tmin = -M_PI / 2+ 1 / 1e9;
             }
         }
         trackingEnabled = !trackingEnabled;
@@ -3045,14 +3049,16 @@ void Smithtry1000::ImaginaryImpedance()
         {
         case InductionShunt:
         {
-            tmin = t;
-            tmax = 2 * M_PI;
+            tmin = t+ 0.02;
+            t = tmin;
+            tmax = 2 * M_PI- 0.02;
             break;
         }
         case CapacitorShunt:
         {
-            tmin = 0.001;
-            tmax = t;
+            tmin = 0.02;
+            tmax = t- 0.02;
+            t = tmax;
             break;
         }
         }
@@ -3242,14 +3248,16 @@ void Smithtry1000::ImaginaryAdmitance()
         {
         case InductionParallel:
         {
-            tmin = t;
-            tmax = M_PI;
+            tmin = t+0.02;
+            t = tmin;
+            tmax = M_PI- 0.02;
             break;
         }
         case CapacitorParallel:
         {
-            tmin = -M_PI;
-            tmax = t;
+            tmin = -M_PI+ 0.02;
+            tmax = t+ 0.02;
+            t = tmax;
             break;
         }
         }
@@ -3551,14 +3559,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         else if (t >= tmax)
         {
-            step = 0.01;
+            step = 0.02;
             t = tmax;
             t -= step;
         }
         else if (t <= tmin)
         {
             t = tmin;
-            step = 0.01;
+            step = 0.02;
             t += step;
         }
 
@@ -3690,14 +3698,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         }
         else if (t >= tmax)
         {
-            step = 0.01;
+            step = 0.02;
             t = tmax;
             t -= step;
         }
         else if (t <= tmin)
         {
             t = tmin;
-            step = 0.01;
+            step = 0.02;
             t += step;
         }
 
@@ -3841,14 +3849,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             }
             else if (t >= tmax)
             {
-                step = 0.01;
+                step = 1 / 1e9;
                 t = tmax;
                 t -= step;
             }
             else if (t <= tmin)
             {
                 t = tmin;
-                step = 0.01;
+                step = 1 / 1e9;
                 t += step;
             }
             long double cos_t = cos(t);
