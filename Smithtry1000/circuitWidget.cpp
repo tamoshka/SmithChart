@@ -471,7 +471,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 {
                     if (tuneElements->GetCircuitElements().length() == 0)
                     {
-                        tuneElements->AddCircuitElements(circuitElements->GetCircuitElements()[n-2]);
+                        tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n-2]);
                         emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n - 2]);
                         tuned.append(n);
                     }
@@ -488,7 +488,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                         }
                         if (flag == false)
                         {
-                            tuneElements->AddCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
+                            tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
                             emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n-2]);
                             tuned.append(n);
                         }

@@ -26,6 +26,7 @@ public:
 	QList<int> pointIndexes;
 	QList<long double> frequencyList;
 	void AddCircuitElements(Element*);
+    void AppendCircuitElements(Element*);
 	QList<Element*> GetCircuitElements();
 	void DeleteCircuitElements();
 	void Remove(int);

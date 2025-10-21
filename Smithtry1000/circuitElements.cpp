@@ -37,6 +37,11 @@ void CircuitElements::AddCircuitElements(Element* element)
     }
 }
 
+void CircuitElements::AppendCircuitElements(Element* element)
+{
+    this->circuitElements.append(element);
+}
+
 /// <summary>
 /// Удаление последнего элемента из цепи.
 /// </summary>

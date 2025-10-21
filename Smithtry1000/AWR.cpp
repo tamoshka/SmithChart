@@ -1091,4 +1091,5 @@ HRESULT AWRInterface::SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT*
 
     return pDisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
         DISPATCH_PROPERTYPUT, &params, nullptr, nullptr, nullptr);
-}*/
+}
+*/

@@ -56,7 +56,7 @@ void TuneWidget::closeEvent(QCloseEvent *event)
 void TuneWidget::GetSignal(Element* elem, QString path)
 {
 	SystemParameters::tuneBlock = true;
-	tuned->AddCircuitElements(elem);
+	tuned->AppendCircuitElements(elem);
 	QString name;
 	long long n = 1;
 	QGroupBox* box = new QGroupBox(mainWidget);
