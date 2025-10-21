@@ -3921,7 +3921,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             step += step * abs(dx);
             if (dx > 0 && lastPointX < 1)
             {
-                if (lastPointX + step > 1)
+                if (lastPointX + step > circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x)
                 {
                     x = 1 - step;
                 }
