@@ -36,7 +36,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     ui->pointTable->setRowCount(1);
     ui->pointTable->setColumnWidth(0, 40);
     ui->pointTable->setColumnWidth(1, 35);
-    ui->pointTable->setColumnWidth(2, 100);
+    ui->pointTable->setColumnWidth(2, 150);
     ui->pointTable->setColumnWidth(3, 70);
     ui->pointTable->setColumnWidth(4, 85);
     ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -405,7 +405,6 @@ void Smithtry1000::AWR_buttonClicked()
         awr.SetFrequencySweep(1e8, 3e9, 100);
 
         awr.SetSweepType(true);
-        // Сохраняем проект
         qDebug() << "Saving project...";
         if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
             qDebug() << "Project saved successfully!";
@@ -418,8 +417,8 @@ void Smithtry1000::AWR_buttonClicked()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}
-*/
+}*/
+
 /// <summary>
 /// Получение сигнала об изменении всего (при изменении опорного сопротивления).
 /// </summary>
@@ -5090,6 +5089,7 @@ void Smithtry1000::getsignal()
 void Smithtry1000::onMenuToolsCliked()
 {
     sParameters->set->show();
+    amplitudeFrequence->activateWindow();
 }
 
 /// <summary>

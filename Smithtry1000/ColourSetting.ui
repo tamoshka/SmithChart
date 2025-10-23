@@ -205,7 +205,7 @@
           <string>Q-Circles</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_9">
+        <widget class="QPushButton" name="QCirclesColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -218,7 +218,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_26">
+        <widget class="QSpinBox" name="QCirclesSpinBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -318,7 +318,7 @@
           <number>10</number>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_29">
+        <widget class="QSpinBox" name="VSWRSpinBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -376,7 +376,7 @@
           <string>VSWR-circles</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_13">
+        <widget class="QPushButton" name="VSWRCirclesColor">
          <property name="geometry">
           <rect>
            <x>120</x>

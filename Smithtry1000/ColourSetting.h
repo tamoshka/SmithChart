@@ -50,6 +50,8 @@ private slots:
 	void RefYColor();
 	void RefZColor();
 	void VerticalHorizontalChanged();
+	void QCirclesColor();
+	void VSWRColor();
 
 	//По sBoxIndex
 	void LineCircleS12S21(int line);

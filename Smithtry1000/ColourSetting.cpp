@@ -32,6 +32,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	setButtonColor(ui->ElementLinesColor, SystemParameters::ElementsColor);
 	setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColor);
 	setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColor);
+	setButtonColor(ui->QCirclesColor, SystemParameters::QCirclesColor);
+	setButtonColor(ui->VSWRCirclesColor, SystemParameters::VSWRColor);
 	ui->frequencyComboBox->addItem("Hz");
 	ui->frequencyComboBox->addItem("KHz");
 	ui->frequencyComboBox->addItem("MHz");
@@ -94,6 +96,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	sBoxDVSIndex[ui->spinBox_47] = 5;
 	sBoxDVSIndex[ui->spinBox_43] = 7;
 	sBoxDVSIndex[ui->spinBox_44] = 8;
+	sBoxDVSIndex[ui->VSWRSpinBox] = 9;
+	sBoxDVSIndex[ui->QCirclesSpinBox] = 10;
 
 
 	sBoxAmpFrIndex[ui->spinBox_24] = 0;
@@ -138,6 +142,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->ElementLinesColor, &QPushButton::clicked, this, &ColourSetting::ElementLinesColor);
 	connect(ui->RefYColor, &QPushButton::clicked, this, &ColourSetting::RefYColor);
 	connect(ui->RefZColor, &QPushButton::clicked, this, &ColourSetting::RefZColor);
+	connect(ui->QCirclesColor, &QPushButton::clicked, this, &ColourSetting::QCirclesColor);
+	connect(ui->VSWRCirclesColor, &QPushButton::clicked, this, &ColourSetting::VSWRColor);
 	connect(ui->spinBox_5, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineCircleS12S21);
 	connect(ui->spinBox_6, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineCircleS12S21);
 	connect(ui->spinBox_7, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::LineGrafTwo);
@@ -155,6 +161,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->spinBox_44, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
 	connect(ui->spinBox_46, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
 	connect(ui->spinBox_47, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->VSWRSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
+	connect(ui->QCirclesSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::DVSLine);
 
 	connect(ui->spinBox_23, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
 	connect(ui->spinBox_24, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
@@ -548,6 +556,28 @@ void ColourSetting::RefZColor()
 	}
 }
 
+void ColourSetting::QCirclesColor()
+{
+	QColor newColor = QColorDialog::getColor(SystemParameters::QCirclesColor, this);
+	if (newColor.isValid())
+	{
+		SystemParameters::QCirclesColor = newColor;
+		setButtonColor(ui->QCirclesColor, SystemParameters::QCirclesColor);
+		emit signalDVS();
+	}
+}
+
+void ColourSetting::VSWRColor()
+{
+	QColor newColor = QColorDialog::getColor(SystemParameters::VSWRColor, this);
+	if (newColor.isValid())
+	{
+		SystemParameters::VSWRColor = newColor;
+		setButtonColor(ui->VSWRCirclesColor, SystemParameters::VSWRColor);
+		emit signalDVS();
+	}
+}
+
 /// <summary>
 /// Настройка толщин линий S12 м S21.
 /// </summary>
@@ -647,6 +677,8 @@ void ColourSetting::DefaultClicked()
 	setButtonColor(ui->ElementLinesColor, SystemParameters::ElementsColorDefault);
 	setButtonColor(ui->RefZColor, SystemParameters::MainImpedanceColorDefault);
 	setButtonColor(ui->RefYColor, SystemParameters::MainAdmitanceColorDefault);
+	setButtonColor(ui->QCirclesColor, SystemParameters::QCirclesColorDefault);
+	setButtonColor(ui->VSWRCirclesColor, SystemParameters::VSWRColorDefault);
 	SystemParameters::s11GrafColor = SystemParameters::s11GrafColorDefault;
 	SystemParameters::s22GrafColor = SystemParameters::s22GrafColorDefault;
 	SystemParameters::magGrafColor = SystemParameters::magGrafColorDefault;
@@ -666,6 +698,8 @@ void ColourSetting::DefaultClicked()
 	SystemParameters::ElementsColor = SystemParameters::ElementsColorDefault;
 	SystemParameters::MainImpedanceColor = SystemParameters::MainImpedanceColorDefault;
 	SystemParameters::MainAdmitanceColor = SystemParameters::MainAdmitanceColorDefault;
+	SystemParameters::QCirclesColor = SystemParameters::QCirclesColorDefault;
+	SystemParameters::VSWRColor = SystemParameters::VSWRColorDefault;
 	SystemParameters::linesWidth = SystemParameters::linesWidthDefault;
 	SystemParameters::ampFrline = SystemParameters::ampFrlineDefault;
 	SystemParameters::sPlotline = SystemParameters::sPlotlineDefault;

@@ -31,12 +31,12 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
     if (!SystemParameters::rotate)
     {
         this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
-        this->setFixedHeight(400);
+        this->setFixedHeight(200);
     }
     else
     {
         this->setFixedWidth(200);
-        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 400);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 200);
     }
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
@@ -140,7 +140,7 @@ void CircuitWidget::Reverse()
     if (vertical)
     {
         this->setFixedWidth(200);
-        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 400);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 200);
         int i = 0;
         for (auto var : svgWidgets)
         {
@@ -206,7 +206,7 @@ void CircuitWidget::Reverse()
     else
     {
         this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40+200);
-        this->setFixedHeight(400);
+        this->setFixedHeight(200);
         int i = 0;
         for (auto var : svgWidgets)
         {
