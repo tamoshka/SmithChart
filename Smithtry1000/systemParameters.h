@@ -113,6 +113,7 @@ public:
 	static long double z0;
 	static long double prevz0;
 	static long double defaultFrequency;
+	static bool rotate;
 	static bool colorChanged;
 	static double alpha;
 	static double lambda;

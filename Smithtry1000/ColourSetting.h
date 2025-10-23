@@ -25,6 +25,7 @@ signals:
 	void grafOneColor();
 	void grafTwoColor();
 	void allchangedsignal();
+	void rev();
 
 private slots:
 	void S11Graf();
@@ -48,6 +49,7 @@ private slots:
 	void ElementLinesColor();
 	void RefYColor();
 	void RefZColor();
+	void VerticalHorizontalChanged();
 
 	//По sBoxIndex
 	void LineCircleS12S21(int line);

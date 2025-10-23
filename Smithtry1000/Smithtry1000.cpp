@@ -36,7 +36,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     ui->pointTable->setRowCount(1);
     ui->pointTable->setColumnWidth(0, 40);
     ui->pointTable->setColumnWidth(1, 35);
-    ui->pointTable->setColumnWidth(2, 150);
+    ui->pointTable->setColumnWidth(2, 100);
     ui->pointTable->setColumnWidth(3, 70);
     ui->pointTable->setColumnWidth(4, 85);
     ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -46,22 +46,39 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     ui->pointTable->setItem(0, 3, new QTableWidgetItem("Q"));
     ui->pointTable->setItem(0, 4, new QTableWidgetItem("Frequency"));
     ui->rTable->setRowCount(4);
-    ui->rTable->setColumnCount(2);
-    ui->rTable->setColumnWidth(1, 200);
+    ui->rTable->setColumnCount(4);
+    ui->rTable->setColumnWidth(1, 100);
+    ui->rTable->setColumnWidth(0, 30);
+    ui->rTable->setColumnWidth(2, 100);
+    ui->rTable->setColumnWidth(3, 100);
     ui->rTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->rTable->setItem(1, 0, new QTableWidgetItem("Z"));
-    ui->rTable->setItem(2, 0, new QTableWidgetItem("Y"));
-    ui->rTable->setItem(3, 0, new QTableWidgetItem("G"));
+    ui->rTable->setItem(0, 0, new QTableWidgetItem("Z"));
+    ui->rTable->setItem(1, 0, new QTableWidgetItem("Y"));
+    ui->rTable->setItem(2, 0, new QTableWidgetItem("G"));
+    ui->rTable->setItem(3, 0, new QTableWidgetItem("Z0"));
+    ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)SystemParameters::z0)));
+    ui->rTable->setItem(0, 2, new QTableWidgetItem("VSWR"));
+    ui->rTable->setItem(1, 2, new QTableWidgetItem("Q"));
+    ui->rTable->setItem(2, 2, new QTableWidgetItem("Return Loss"));
+    ui->rTable->setItem(3, 2, new QTableWidgetItem("Freq"));
     tmin = 0;
     tmax = 2 * M_PI;
-    auxiliaryWidget->setMinimumWidth(2000);
+    auxiliaryWidget->setMinimumWidth(200);
     auxiliaryWidget->setMinimumHeight(400);
     ui->scrollArea->setWidget(auxiliaryWidget);
     ui->scrollArea->setWidgetResizable(true);
     ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    auxiliaryWidget->addSvg(QString(":/Images/load.svg"), 40, 39);
-    auxiliaryWidget->addSvg(QString(":/Images/source.svg"), 80, 39);
+    if (!SystemParameters::rotate)
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/load.svg"), 40, 39);
+        auxiliaryWidget->addSvg(QString(":/Images/source.svg"), 80, 39);
+    }
+    else
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/rev_load.svg"), 39, 40);
+        auxiliaryWidget->addSvg(QString(":/Images/rev_source.svg"), 39, 80);
+    }
     connect(ui->MouseButton, &QPushButton::clicked, this, &Smithtry1000::onButtonClicked);
     connect(ui->Capacitor_button, &QPushButton::clicked, this, &Smithtry1000::onCapacitor_buttonClicked);
     connect(ui->GraphButton, &QPushButton::clicked, this, &Smithtry1000::onGraph_buttonClicked);
@@ -100,6 +117,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
     QObject::connect(this, &Smithtry1000::left, circlesWidget, &CirclesWidget::Load);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
+    QObject::connect(sParameters->set, &ColourSetting::rev, this, &Smithtry1000::Reverse);
+    QObject::connect(this, &Smithtry1000::reverse, auxiliaryWidget, &CircuitWidget::Reverse);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
     ui->scrollAreaDiagram->setWidget(renderArea);
@@ -111,10 +130,15 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     timer->start(10);  // Частое обновление для плавности
 }
 
-/// <summary>
+void Smithtry1000::Reverse()
+{
+    emit reverse();
+}
+
+/*/// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
-/*void Smithtry1000::AWR_buttonClicked()
+void Smithtry1000::AWR_buttonClicked()
 {
     if (index > 1)
     {
@@ -184,6 +208,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
             {
                 const wchar_t* type;
                 const wchar_t* cotype;
+                wchar_t valuestr[64];
                 double value;
                 bool ground = true;
                 if (val->GetMode() == CapacitorParallel)
@@ -191,18 +216,21 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
                     type = L"CAP";
                     cotype = L"C";
                     value = val->GetValue() * 1e12;
+                    swprintf(valuestr, 64, L"%.2fpF", value);
                 }
                 else if (val->GetMode() == InductionParallel)
                 {
                     type = L"IND";
                     cotype = L"L";
                     value = val->GetValue() * 1e9;
+                    swprintf(valuestr, 64, L"%.2fnH", value);
                 }
                 else if (val->GetMode() == ResistorParallel)
                 {
                     type = L"RES";
                     cotype = L"R";
                     value = val->GetValue();
+                    swprintf(valuestr, 64, L"%.2f", value);
                 }
                 if (prevPar == true)
                 {
@@ -210,8 +238,6 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
                 }
                 if (awr.AddElement(type, x, 800, 270))
                 {
-                    wchar_t valuestr[64];
-                    swprintf(valuestr, 64, L"%.2f", value);
                     awr.SetElementParameter(cotype, valuestr);
                 }
                 if (awr.AddElement(L"GND", x, 1800, 0))
@@ -228,28 +254,30 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
                 const wchar_t* type;
                 const wchar_t* cotype;
                 double value;
+                wchar_t valuestr[64];
                 if (val->GetMode() == CapacitorShunt)
                 {
                     type = L"CAP";
                     cotype = L"C";
                     value = val->GetValue() * 1e12;
+                    swprintf(valuestr, 64, L"%.2fpF", value);
                 }
                 else if (val->GetMode() == InductionShunt)
                 {
                     type = L"IND";
                     cotype = L"L";
                     value = val->GetValue() * 1e9;
+                    swprintf(valuestr, 64, L"%.2fnH", value);
                 }
                 else if (val->GetMode() == ResistorShunt)
                 {
                     type = L"RES";
                     cotype = L"R";
                     value = val->GetValue();
+                    swprintf(valuestr, 64, L"%.2f", value);
                 }
                 if (awr.AddElement(type, x, 800, 0))
                 {
-                    wchar_t valuestr[64];
-                    swprintf(valuestr, 64, L"%.2f", value);
                     awr.SetElementParameter(cotype, valuestr);
                 }
                 x += 1000;
@@ -282,14 +310,14 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
                 valueEeff = pow(temp->GetElectricalLength() / temp->GetMechanicalLength(), 2);
                 valueFreq = circuitElements->frequencyFirstPoint / 1e6;
                 wchar_t valuestr[64];
-                swprintf(valuestr, 64, L"%.2f", value);
+                swprintf(valuestr, 64, L"%.2fmm", value);
                 wchar_t valuez0str[64];
                 swprintf(valuez0str, 64, L"%.2f", valuez0);
                 wchar_t valueeeffstr[64];
                 swprintf(valueeeffstr, 64, L"%.2f", valueEeff);
                 wchar_t valuefreqstr[64];
-                swprintf(valuefreqstr, 64, L"%.2f", valueFreq);
-                if (prevPar == true)
+                swprintf(valuefreqstr, 64, L"%.2fMHz", valueFreq);
+                if (prevPar == true && val->GetMode()!=Line)
                 {
                     x += 1000;
                 }
@@ -390,14 +418,15 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}*/
-
+}
+*/
 /// <summary>
 /// Получение сигнала об изменении всего (при изменении опорного сопротивления).
 /// </summary>
 void Smithtry1000::getallchangedsignal()
 {
     SystemParameters::sizeChanged = true;
+    ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)SystemParameters::z0)));
     if (index > 0)
     {
         long double Re = circuitElements->z.real();
@@ -641,14 +670,14 @@ void Smithtry1000::Redo()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             QString name;
@@ -725,7 +754,15 @@ void Smithtry1000::Redo()
             {
                 val = 39;
             }
-            auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (circuitElements->GetCircuitElements().size() - 1 + 3) * 40, val);
+            if (SystemParameters::rotate)
+            {
+                QString rev = "rev_";
+                auxiliaryWidget->addSvg(QString(":/Images/" + rev + name + ".svg"), val+40, (circuitElements->GetCircuitElements().size() - 1 + 2) * 40);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (circuitElements->GetCircuitElements().size() - 1 + 3) * 40, val);
+            }
             Point point;
             point.x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
             point.y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
@@ -741,7 +778,7 @@ void Smithtry1000::Redo()
             circuitElements->frequencyList.append(tempCircuit.frequencyList[circuitElements->frequencyList.size()]);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 0, new QTableWidgetItem("NO"));
+            ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
             ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(circuitElements->morePoints.size() + 1)));
             SystemParameters::rImpedanceRealCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
             SystemParameters::rImpedanceImagCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
@@ -750,16 +787,16 @@ void Smithtry1000::Redo()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
-            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[circuitElements->frequencyList.size()-1])));
             Point point;
             point.x = circuitElements->morePoints[circuitElements->morePoints.size() - 1].x;
             point.y = circuitElements->morePoints[circuitElements->morePoints.size() - 1].y;
@@ -771,6 +808,7 @@ void Smithtry1000::Redo()
             circuitElements->chart = tempCircuit.chart;
             circuitElements->firstPoint = tempCircuit.firstPoint;
             circuitElements->frequencyFirstPoint = tempCircuit.frequencyFirstPoint;
+            ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             circuitElements->z = tempCircuit.z;
             circuitElements->y = tempCircuit.y;
             circuitElements->g = tempCircuit.g;
@@ -788,14 +826,14 @@ void Smithtry1000::Redo()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             pointsX.append(circuitElements->firstPoint.x);
@@ -831,7 +869,7 @@ void Smithtry1000::Load()
         {
             circuitElements->loadFromFile(fileName);
             emit left();
-            dpIndex = 1;
+            dpIndex = circuitElements->morePoints.size() + 1;
             index = circuitElements->GetCircuitElements().size()+1;
             long double Re = circuitElements->z.real();
             long double Im = -circuitElements->z.imag();
@@ -851,6 +889,7 @@ void Smithtry1000::Load()
             }
             if (x != circuitElements->firstPoint.x || y != circuitElements->firstPoint.y)
             {
+                ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
                 Point point;
                 point.x = x;
                 point.y = y;
@@ -969,14 +1008,14 @@ void Smithtry1000::Load()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             QString name;
@@ -999,14 +1038,14 @@ void Smithtry1000::Load()
                         {
                             temp2 = " - j";
                         }
-                        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+                        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                         if (SystemParameters::impedanceRealR == 0)
                         {
                             ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                         }
                         else
                         {
-                            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                         }
                         ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
                         allPoints[i + 1] = make_tuple(circuitElements->GetCircuitElements()[j]->GetPoint(), true);
@@ -1083,7 +1122,15 @@ void Smithtry1000::Load()
                         {
                             val = 20;
                         }
-                        auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (j + 3) * 40, val);
+                        if (SystemParameters::rotate)
+                        {
+                            QString rev = "rev_";
+                            auxiliaryWidget->addSvg(QString(":/Images/" + rev + name + ".svg"), val+40, (j + 2) * 40);
+                        }
+                        else
+                        {
+                            auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (j + 3) * 40, val);
+                        }
                         pointsX.append(circuitElements->GetCircuitElements()[j]->GetPoint().x);
                         pointsY.append(circuitElements->GetCircuitElements()[j]->GetPoint().y);
                         j++;
@@ -1101,14 +1148,14 @@ void Smithtry1000::Load()
                         {
                             temp2 = " - j";
                         }
-                        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+                        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                         if (SystemParameters::impedanceRealR == 0)
                         {
                             ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                         }
                         else
                         {
-                            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                         }
                         ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[k + 1])));
                         allPoints[i + 1] = make_tuple(circuitElements->morePoints[k], false);
@@ -1128,14 +1175,14 @@ void Smithtry1000::Load()
                     {
                         temp2 = " - j";
                     }
-                    ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR * 100) / 100)));
+                    ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                     if (SystemParameters::impedanceRealR == 0)
                     {
                         ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                     }
                     else
                     {
-                        ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                        ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                     }
                     ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[k+1])));
                     allPoints[i + 1] = make_tuple(circuitElements->morePoints[k], false);
@@ -1233,7 +1280,14 @@ void Smithtry1000::onTransform_buttonClicked()
         QPoint centerLocal = renderArea->rect().center();
         QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
         Complex zl, yl;
-        auxiliaryWidget->addSvg(QString(":/Images/vertical_transform_circuit.svg"), (index + 2) * 40, 39);
+        if (!SystemParameters::rotate)
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/vertical_transform_circuit.svg"), (index + 2) * 40, 39);
+        }
+        else
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_transform_circuit.svg"), 79, (index + 1) * 40);
+        }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor);
         long double x;
@@ -1354,14 +1408,14 @@ void Smithtry1000::onTransform_buttonClicked()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
             circuitElements->elementIndexes.append(allpointindex);
@@ -1413,7 +1467,14 @@ void Smithtry1000::onLine_buttonClicked()
             QPoint centerLocal = renderArea->rect().center();
             QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
             Complex zl, yl;
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 20);
+            if (!SystemParameters::rotate)
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 20);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_line_circuit.svg"), 60, (index + 1) * 40);
+            }
             QCursor::setPos(centerGlobal);
             this->setCursor(Qt::BlankCursor); // скрываем системный курсор
             long double x;
@@ -1553,14 +1614,14 @@ void Smithtry1000::onLine_buttonClicked()
                 {
                     temp2 = " - j";
                 }
-                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                 if (SystemParameters::impedanceRealR == 0)
                 {
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                 }
                 else
                 {
-                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
                 circuitElements->elementIndexes.append(allpointindex);
@@ -1763,6 +1824,7 @@ void Smithtry1000::onKeyboard_buttonClicked()
         renderArea->setCursorPosOnCircle(temp);
         if (index == 0)
         {
+            ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)SystemParameters::frequency)));
             if (y >= 0 && y < 0.0001)
             {
                 y = 0.0001;
@@ -1826,14 +1888,14 @@ void Smithtry1000::onKeyboard_buttonClicked()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceImagR / (double)SystemParameters::impedanceRealR)));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)frequency)));
             index++;
@@ -1855,14 +1917,14 @@ void Smithtry1000::onKeyboard_buttonClicked()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
-            if (SystemParameters::impedanceRealR == 0||abs(SystemParameters::impedanceRealR)<1e-5)
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
+            if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[circuitElements->frequencyList.size() - 1])));
             Point point;
@@ -1905,12 +1967,26 @@ void Smithtry1000::VerticalLines()
     {
     case OSLine:
     {
-        auxiliaryWidget->addSvg(QString(":/Images/os_circuit.svg"), (index + 2) * 40, 39);
+        if (!SystemParameters::rotate)
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/os_circuit.svg"), (index + 2) * 40, 39);
+        }
+        else
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/rev_os_circuit.svg"), 79, (index + 1) * 40);
+        }
         break;
     }
     case SSLine:
     {
-        auxiliaryWidget->addSvg(QString(":/Images/ss_circuit.svg"), (index + 2) * 40, 39);
+        if (!SystemParameters::rotate)
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/ss_circuit.svg"), (index + 2) * 40, 39);
+        }
+        else
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/rev_ss_circuit.svg"), 79, (index + 1) * 40);
+        }
         break;
     }
     }
@@ -2062,14 +2138,14 @@ void Smithtry1000::VerticalLines()
         {
             temp2 = " - j";
         }
-        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::impedanceRealR == 0)
         {
             ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
         }
         else
         {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
         }
         ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
         circuitElements->elementIndexes.append(allpointindex);
@@ -2120,8 +2196,8 @@ void Smithtry1000::TableUpdate()
                     }
                     double number = SystemParameters::tunedElements[j]->GetParameter()[Z].real();
                     double number2 = SystemParameters::tunedElements[j]->GetParameter()[Z].imag();
-                    ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(number)
-                        + temp2 + QString::number(number2)));
+                    ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(round(number*100)/100)
+                        + temp2 + QString::number(round(abs(number2)*100)/100)));
                     if (SystemParameters::impedanceRealR == 0)
                     {
                         ui->pointTable->setItem(i, 3, new QTableWidgetItem("0"));
@@ -2130,7 +2206,7 @@ void Smithtry1000::TableUpdate()
                     {
                         double number3 = abs(SystemParameters::tunedElements[j]->GetParameter()[Z].imag() 
                             /SystemParameters::tunedElements[j]->GetParameter()[Z].real());
-                        ui->pointTable->setItem(i, 3, new QTableWidgetItem(QString::number(number3)));
+                        ui->pointTable->setItem(i, 3, new QTableWidgetItem(QString::number(round(number3*100)/100)));
                     }
                 }
                 id++;
@@ -2161,54 +2237,64 @@ Smithtry1000::~Smithtry1000()
 /// </summary>
 void Smithtry1000::onExportNetlist_buttonClicked()
 {
-    ExportNetlist exporter = ExportNetlist(nullptr, circuitElements);
+    if (circuitElements->GetCircuitElements().size() > 0)
+    {
+        ExportNetlist exporter = ExportNetlist(nullptr, circuitElements);
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-        "Save CIR Netlist",
-        "",
-        "CIR Files (*.cir);;CKT Files (*.ckt);;SCS Files(*.scs)"
-    );
+        QString fileName = QFileDialog::getSaveFileName(this,
+            "Save CIR Netlist",
+            "",
+            "CIR Files (*.cir);;CKT Files (*.ckt);;SCS Files(*.scs)"
+        );
 
-    if (!fileName.isEmpty()) {
-        string str = fileName.toUtf8().constData();
-        size_t pos = str.find_last_of('.');
-        string extension = str.substr(pos + 1);
-        if (extension == "cir")
-        {
-            QString netlist = exporter.generateNetlistCir();
-            QFile file(fileName);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream stream(&file);
-                stream << netlist;
-                file.close();
-                QMessageBox::information(this, "Success", "CIR netlist exported!");
+        if (!fileName.isEmpty()) {
+            string str = fileName.toUtf8().constData();
+            size_t pos = str.find_last_of('.');
+            string extension = str.substr(pos + 1);
+            if (extension == "cir")
+            {
+                QString netlist = exporter.generateNetlistCir();
+                QFile file(fileName);
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    QTextStream stream(&file);
+                    stream << netlist;
+                    file.close();
+                    QMessageBox::information(this, "Success", "CIR netlist exported!");
+                }
+            }
+            else if (extension == "ckt")
+            {
+                QString netlist = exporter.generateNetlistCkt();
+                QFile file(fileName);
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    QTextStream stream(&file);
+                    stream << netlist;
+                    file.close();
+                    QMessageBox::information(this, "Success", "CKT netlist exported!");
+                }
+            }
+            else if (extension == "scs")
+            {
+                QString netlist = exporter.generateNetlistScs();
+                QFile file(fileName);
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    QTextStream stream(&file);
+                    stream << netlist;
+                    file.close();
+                    QMessageBox::information(this, "Success", "SCS netlist exported!");
+                }
+            }
+            else {
+                QMessageBox::warning(this, "Error", "Cannot write file");
             }
         }
-        else if (extension == "ckt")
-        {
-            QString netlist = exporter.generateNetlistCkt();
-            QFile file(fileName);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream stream(&file);
-                stream << netlist;
-                file.close();
-                QMessageBox::information(this, "Success", "CKT netlist exported!");
-            }
-        }
-        else if (extension == "scs")
-        {
-            QString netlist = exporter.generateNetlistScs();
-            QFile file(fileName);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream stream(&file);
-                stream << netlist;
-                file.close();
-                QMessageBox::information(this, "Success", "SCS netlist exported!");
-            }
-        }
-        else {
-            QMessageBox::warning(this, "Error", "Cannot write file");
-        }
+    }
+    else
+    {
+        QMessageBox* bx = new QMessageBox();
+        bx->show();
+        bx->Information;
+        bx->setText(QStringLiteral(u"Добавьте элемент в цепь."));
     }
 }
 
@@ -2359,6 +2445,7 @@ void Smithtry1000::onButtonClicked()
             renderArea->setCursorPosOnCircle(temp);
             if (index == 0)
             {
+                ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)SystemParameters::frequency)));
                 pointsX.append(x);
                 pointsY.append(y);
                 lastPointX = x;
@@ -2414,14 +2501,14 @@ void Smithtry1000::onButtonClicked()
                 {
                     temp2 = " - j";
                 }
-                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                 if (SystemParameters::impedanceRealR == 0)
                 {
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                 }
                 else
                 {
-                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceImagR / (double)SystemParameters::impedanceRealR)));
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
                 index++;
@@ -2443,14 +2530,14 @@ void Smithtry1000::onButtonClicked()
                 {
                     temp2 = " - j";
                 }
-                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
                 if (SystemParameters::impedanceRealR == 0)
                 {
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
                 }
                 else
                 {
-                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[circuitElements->frequencyList.size() - 1])));
                 Point point;
@@ -2512,7 +2599,14 @@ void Smithtry1000::onResistor_buttonClicked()
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (index > 0)
     {
-        auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
+        if (!SystemParameters::rotate)
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
+        }
+        else
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_r.svg"), 60, (index + 1) * 40);
+        }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         long double cos_t;
@@ -2651,14 +2745,14 @@ void Smithtry1000::onResistor_buttonClicked()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR*100)/100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR*100)/100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
             circuitElements->elementIndexes.append(allpointindex);
@@ -2724,7 +2818,14 @@ void Smithtry1000::onResistorParallel_buttonClicked()
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     if (index > 0)
     {
-        auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (index + 2) * 40, 39);
+        if (!SystemParameters::rotate)
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (index + 2) * 40, 39);
+        }
+        else
+        {
+            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_r_circuit.svg"), 79, (index + 1) * 40);
+        }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
         long double cos_t;
@@ -2854,14 +2955,14 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)round(SystemParameters::impedanceRealR*100)/100) + temp2 + QString::number((double)round(SystemParameters::impedanceImagR*100)/100)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
             circuitElements->elementIndexes.append(allpointindex);
@@ -2924,6 +3025,7 @@ void Smithtry1000::onDelete_buttonClicked()
         {
             if (allpointindex == 1)
             {
+                ui->rTable->setItem(3, 3, new QTableWidgetItem(""));
                 dpIndex--;
                 this->circuitElements->imagFirstPoint = -9999;
                 this->circuitElements->realFirstPoint = -9999;
@@ -2999,12 +3101,26 @@ void Smithtry1000::ImaginaryImpedance()
         {
         case InductionShunt:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
+            if (!SystemParameters::rotate)
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_i.svg"), 60, (index + 1) * 40);
+            }
             break;
         }
         case CapacitorShunt:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_c.svg"), (index + 2) * 40, 20);
+            if (!SystemParameters::rotate)
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_c.svg"), (index + 2) * 40, 20);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_c.svg"), 60, (index + 1) * 40);
+            }
             break;
         }
         }
@@ -3143,14 +3259,14 @@ void Smithtry1000::ImaginaryImpedance()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
             circuitElements->elementIndexes.append(allpointindex);
@@ -3201,12 +3317,26 @@ void Smithtry1000::ImaginaryAdmitance()
         {
         case InductionParallel:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/vertical_i_circuit.svg"), (index + 2) * 40, 39);
+            if (!SystemParameters::rotate)
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/vertical_i_circuit.svg"), (index + 2) * 40, 39);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_i_circuit.svg"), 79, (index + 1) * 40);
+            }
             break;
         }
         case CapacitorParallel:
         {
-            auxiliaryWidget->addSvg(QString(":/Images/vertical_c_circuit.svg"), (index + 2) * 40, 39);
+            if (!SystemParameters::rotate)
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/vertical_c_circuit.svg"), (index + 2) * 40, 39);
+            }
+            else
+            {
+                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_c_circuit.svg"), 79, (index + 1) * 40);
+            }
             break;
         }
         }
@@ -3342,14 +3472,14 @@ void Smithtry1000::ImaginaryAdmitance()
             {
                 temp2 = " - j";
             }
-            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp2 + QString::number((double)SystemParameters::impedanceImagR)));
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR*100)/100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR)*100)/100)));
             if (SystemParameters::impedanceRealR == 0)
             {
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
             }
             else
             {
-                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR))));
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR)*100)/100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
             circuitElements->elementIndexes.append(allpointindex);
@@ -3418,7 +3548,7 @@ void Smithtry1000::onTimeout()
             {
                 temp = "-j";
             }
-            ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+            ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
             if (SystemParameters::admitanceImagR < 0)
             {
                 temp = "-j";
@@ -3427,25 +3557,39 @@ void Smithtry1000::onTimeout()
             {
                 temp = "+j";
             }
-            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-            if (x >= 0)
+            ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+            if (x > 0)
             {
-                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+                ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
             }
-            else if (y <= 0)
+            else if (y < 0)
             {
-                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+                ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
             }
             else
             {
-                ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+                ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
             }
+            if (SystemParameters::impedanceRealR == 0)
+            {
+                ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+            }
+            double r = sqrt(pow(x, 2) + pow(y, 2));
+            ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((- 1 - r) / (r-1))*100)/100)+":1"));
+            ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20*log10(r)*100)/100)));
         }
         else
         {
+            ui->rTable->setItem(0, 1, new QTableWidgetItem(""));
             ui->rTable->setItem(1, 1, new QTableWidgetItem(""));
             ui->rTable->setItem(2, 1, new QTableWidgetItem(""));
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(""));
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(""));
+            ui->rTable->setItem(0, 3, new QTableWidgetItem(""));
+            ui->rTable->setItem(2, 3, new QTableWidgetItem(""));
         }
     }
     if (!trackingEnabled) return;
@@ -3605,7 +3749,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -3614,19 +3758,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -3745,7 +3900,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -3754,19 +3909,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -3904,7 +4070,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -3913,19 +4079,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         lastPointX = x;
         lastPointY = y;
         x = x * scale + renderArea->rect().center().x();
@@ -4063,7 +4240,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -4072,19 +4249,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -4205,7 +4393,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -4214,19 +4402,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -4347,7 +4546,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -4356,19 +4555,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -4503,7 +4713,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -4512,19 +4722,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
-        if (x >= 0)
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
+        if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1) * 100) / 100)));
         }
-        else if (y <= 0)
+        else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt((double)pow(x, 2) + (double)pow(y, 2))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2))) * 100) / 100) + " / " + QString::number(round((-180 - (double)atan(y / x) * 180 / M_PI) * 100) / 100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 
@@ -4710,7 +4931,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "-j";
         }
-        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)SystemParameters::impedanceRealR) + temp + QString::number((double)SystemParameters::impedanceImagR)));
+        ui->rTable->setItem(0, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::impedanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::impedanceImagR) * 100) / 100)));
         if (SystemParameters::admitanceImagR < 0)
         {
             temp = "-j";
@@ -4719,19 +4940,30 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             temp = "+j";
         }
-        ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number((double)SystemParameters::admitanceRealR) + temp + QString::number((double)SystemParameters::admitanceImagR)));
+        ui->rTable->setItem(1, 1, new QTableWidgetItem(QString::number((double)round(abs(SystemParameters::admitanceRealR) * 100) / 100) + temp + QString::number((double)round(abs(SystemParameters::admitanceImagR) * 100) / 100)));
         if (x > 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt(sqrt((double)pow(x, 2) + (double)pow(y, 2)))) + " / " + QString::number((double)atan(y / x) * 180 / M_PI * -1)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2)))*100)/100) + " / " + QString::number(round(((double)atan(y / x) * 180 / M_PI * -1)*100)/100)));
         }
         else if (y < 0)
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt(sqrt((double)pow(x, 2) + (double)pow(y, 2)))) + " / " + QString::number(180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2)))*100)/100) + " / " + QString::number(round((180 - (double)atan(y / x) * 180 / M_PI)*100)/100)));
         }
         else
         {
-            ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number(sqrt(sqrt((double)pow(x, 2) + (double)pow(y, 2)))) + " / " + QString::number(-180 - (double)atan(y / x) * 180 / M_PI)));
+            ui->rTable->setItem(2, 1, new QTableWidgetItem(QString::number(round((sqrt((double)pow(x, 2) + (double)pow(y, 2)))*100)/100) + " / " + QString::number(round(( - 180 - (double)atan(y / x) * 180 / M_PI)*100)/100)));
         }
+        if (SystemParameters::impedanceRealR == 0)
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem("0"));
+        }
+        else
+        {
+            ui->rTable->setItem(1, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+        }
+        double rtemp = sqrt(pow(x, 2) + pow(y, 2));
+        ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
+        ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
         x = x * scale + renderArea->rect().center().x();
         y = y * scale + renderArea->rect().center().y();
 

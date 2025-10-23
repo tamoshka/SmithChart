@@ -28,11 +28,20 @@ CircuitWidget::~CircuitWidget()
 /// <param name="y">Y.</param>
 void CircuitWidget::addSvg(QString path, int x, int y) {
     QSvgWidget* svgWidget = new QSvgWidget(this);
-
+    if (!SystemParameters::rotate)
+    {
+        this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
+        this->setFixedHeight(400);
+    }
+    else
+    {
+        this->setFixedWidth(200);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 400);
+    }
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
     {
-        paths.append(path);
+        paths.pop_back();
         svgWidgets[svgWidgets.size() - 1]->hide();
         QSvgWidget* widget = svgWidgets.takeLast();
         widget->deleteLater();
@@ -41,18 +50,177 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
 
         svgWidgets.append(svgWidget);
         QSvgWidget* load = new QSvgWidget(this);
+        if (!SystemParameters::rotate)
+        {
 
-        load->load(QString(":/Images/source.svg"));
-        load->setGeometry(x, 39, 40, 40);
+            load->load(QString(":/Images/source.svg"));
+            load->setGeometry(x, 39, 40, 40);
+        }
+        else
+        {
+
+            load->load(QString(":/Images/rev_source.svg"));
+            load->setGeometry(39, y+40, 40, 40);
+        }
         load->show();
         svgWidgets.append(load);
+        QString tempPath=path;
+        if (path == ":/Images/rev_horizontal_c.svg")
+        {
+            tempPath = ":/Images/horizontal_c.svg";
+        }
+        else if (path == ":/Images/rev_horizontal_i.svg")
+        {
+            tempPath = ":/Images/horizontal_i.svg";
+        }
+        else if (path == ":/Images/rev_horizontal_r.svg")
+        {
+            tempPath = ":/Images/horizontal_r.svg";
+        }
+        else if (path == ":/Images/rev_horizontal_line_circuit.svg")
+        {
+            tempPath = ":/Images/horizontal_line_circuit.svg";
+        }
+        else if (path == ":/Images/rev_load.svg")
+        {
+            tempPath = ":/Images/load.svg";
+        }
+        else if (path == ":/Images/rev_os_circuit.svg")
+        {
+            tempPath = ":/Images/os_circuit.svg";
+        }
+        else if (path == ":/Images/rev_source.svg")
+        {
+            tempPath = ":/Images/source.svg";
+        }
+        else if (path == ":/Images/rev_ss_circuit.svg")
+        {
+            tempPath = ":/Images/ss_circuit.svg";
+        }
+        else if (path == ":/Images/rev_vertical_c_circuit.svg")
+        {
+            tempPath = ":/Images/vertical_c_circuit.svg";
+        }
+        else if (path == ":/Images/rev_vertical_i_circuit.svg")
+        {
+            tempPath = ":/Images/vertical_i_circuit.svg";
+        }
+        else if (path == ":/Images/rev_vertical_r_circuit.svg")
+        {
+            tempPath = ":/Images/vertical_r_circuit.svg";
+        }
+        else if (path == ":/Images/rev_vertical_transform_circuit.svg")
+        {
+            tempPath = ":/Images/vertical_transform_circuit.svg";
+        }
+        paths.append(tempPath);
+        paths.append(":/Images/source.svg");
     }
     else
     {
+        QString tempPath = path;
+        if (path == ":/Images/rev_source.svg")
+        {
+            tempPath = ":/Images/source.svg";
+        }
+        if (path == ":/Images/rev_load.svg")
+        {
+            tempPath = ":/Images/load.svg";
+        }
+        paths.append(tempPath);
         svgWidget->setGeometry(x, y, 40, 40);
         svgWidget->show();
         svgWidgets.append(svgWidget);
     }
+}
+
+void CircuitWidget::Reverse()
+{
+    bool vertical=SystemParameters::rotate;
+    if (vertical)
+    {
+        this->setFixedWidth(200);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 400);
+        int i = 0;
+        for (auto var : svgWidgets)
+        {
+            int dif=39;
+            QString newpath;
+            if (paths[i] == ":/Images/horizontal_c.svg")
+            {
+                newpath = ":/Images/rev_horizontal_c.svg";
+                dif = 20;
+            }
+            else if (paths[i] == ":/Images/horizontal_i.svg")
+            {
+                newpath = ":/Images/rev_horizontal_i.svg";
+                dif = 20;
+            }
+            else if (paths[i] == ":/Images/horizontal_r.svg")
+            {
+                newpath = ":/Images/rev_horizontal_r.svg";
+                dif = 20;
+            }
+            else if (paths[i] == ":/Images/horizontal_line_circuit.svg")
+            {
+                newpath = ":/Images/rev_horizontal_line_circuit.svg";
+                dif = 20;
+            }
+            else if (paths[i] == ":/Images/load.svg")
+            {
+                newpath = ":/Images/rev_load.svg";
+            }
+            else if (paths[i] == ":/Images/os_circuit.svg")
+            {
+                newpath = ":/Images/rev_os_circuit.svg";
+            }
+            else if (paths[i] == ":/Images/source.svg")
+            {
+                newpath = ":/Images/rev_source.svg";
+            }
+            else if (paths[i] == ":/Images/ss_circuit.svg")
+            {
+                newpath = ":/Images/rev_ss_circuit.svg";
+            }
+            else if (paths[i] == ":/Images/vertical_c_circuit.svg")
+            {
+                newpath = ":/Images/rev_vertical_c_circuit.svg";
+            }
+            else if (paths[i] == ":/Images/vertical_i_circuit.svg")
+            {
+                newpath = ":/Images/rev_vertical_i_circuit.svg";
+            }
+            else if (paths[i] == ":/Images/vertical_r_circuit.svg")
+            {
+                newpath = ":/Images/rev_vertical_r_circuit.svg";
+            }
+            else if (paths[i] == ":/Images/vertical_transform_circuit.svg")
+            {
+                newpath = ":/Images/rev_vertical_transform_circuit.svg";
+            }
+            var->load(newpath);
+            var->setGeometry(dif, 40 + 40 * i, 40, 40);
+            i++;
+        }
+    }
+    else
+    {
+        this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40+200);
+        this->setFixedHeight(400);
+        int i = 0;
+        for (auto var : svgWidgets)
+        {
+            int dif = 39;
+            if (paths[i] == ":/Images/horizontal_c.svg" || paths[i] == ":/Images/horizontal_i.svg" || paths[i] == ":/Images/horizontal_r.svg" || paths[i] == ":/Images/horizontal_line_circuit.svg")
+            {
+                dif = 20;
+            }
+            var->load(paths[i]);
+            var->setGeometry(40+40*i, dif, 40, 40);
+            i++;
+        }
+    }
+    update();
 }
 
 /// <summary>
@@ -94,15 +262,23 @@ void CircuitWidget::RemoveAll()
 /// Удаление последнего SVG.
 /// </summary>
 void CircuitWidget::removeLastSvg() {
-    paths.pop_back();
     if (!svgWidgets.isEmpty() && svgWidgets.size()>2) {
+        paths.takeAt(paths.size()-2);
+        this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
         int deletedIndex = svgWidgets.size() - 2;
         QSvgWidget* deleted = svgWidgets[deletedIndex];
         deleted->hide();
         svgWidgets.removeAt(svgWidgets.size() - 2);
         int index = svgWidgets.size() - 1;
         QSvgWidget* temp = svgWidgets[index];
-        temp->setGeometry((index + 1) * 40, 39, 40, 40);
+        if (!SystemParameters::rotate)
+        {
+            temp->setGeometry((index + 1) * 40, 39, 40, 40);
+        }
+        else
+        {
+            temp->setGeometry(39, (index + 1) * 40, 40, 40);
+        }
         temp->show();
     }
 }
@@ -128,8 +304,15 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
     {
         QString s2 = QString::number((double)round(this->circuitElements->realFirstPoint*10)/10) + "  + j" + QString::number((double)round(this->circuitElements->imagFirstPoint*10)/10);
         painter.save();
-        painter.translate(40 + 20, 90);
-        painter.rotate(90);
+        if (!SystemParameters::rotate)
+        {
+            painter.translate(60, 90);
+            painter.rotate(90);
+        }
+        else
+        {
+            painter.translate(90, 60);
+        }
         painter.setFont(QFont("Arial", 8));
         painter.drawText(0, 0, s2);
         painter.restore();
@@ -363,12 +546,23 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             }
         }
         painter.save();
-        painter.translate((index + 1) * 40 + 20, 90);
-        painter.rotate(90);
-        painter.setFont(QFont("Arial", 8));
-        painter.drawText(0, 0, s1);
-        painter.translate(0, +15);
-        painter.drawText(0, 0, s3);
+        if (!SystemParameters::rotate)
+        {
+            painter.translate((index + 1) * 40 + 20, 90);
+            painter.rotate(90);
+            painter.setFont(QFont("Arial", 8));
+            painter.drawText(0, 0, s1);
+            painter.translate(0, +15);
+            painter.drawText(0, 0, s3);
+        }
+        else
+        {
+            painter.translate(90, (index + 1) * 40 + 20);
+            painter.setFont(QFont("Arial", 8));
+            painter.drawText(0, 0, s1);
+            painter.translate(0, 15);
+            painter.drawText(0, 0, s3);
+        }
         s3 = "";
         painter.restore();
         for (int i = 0; i < temp.size(); i++)
@@ -438,12 +632,23 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
             }
             painter.save();
-            painter.translate((i + 2) * 40 + 20, 90);
-            painter.rotate(90);
-            painter.setFont(QFont("Arial", 8));
-            painter.drawText(0, 0, s1);
-            painter.translate(0, +15);
-            painter.drawText(0, 0, s3);
+            if (!SystemParameters::rotate)
+            {
+                painter.translate((i+2) * 40 + 20, 90);
+                painter.rotate(90);
+                painter.setFont(QFont("Arial", 8));
+                painter.drawText(0, 0, s1);
+                painter.translate(0, +15);
+                painter.drawText(0, 0, s3);
+            }
+            else
+            {
+                painter.translate(90, (i+2) * 40 + 20);
+                painter.setFont(QFont("Arial", 8));
+                painter.drawText(0, 0, s1);
+                painter.translate(0, 15);
+                painter.drawText(0, 0, s3);
+            }
             s3 = "";
             painter.restore();
         }
@@ -453,45 +658,64 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             int count = circuitElements->GetCircuitElements().length();
             QPoint centerLocal = this->rect().center();
             QPoint centerGlobal = this->mapToGlobal(centerLocal);
-            int start = (int)centerGlobal.x()-920;
-            int end = (int)(centerGlobal.x()-920 + 40 * (count));
-            QPoint pos = QCursor::pos();
-            if (pos.x() >= start && pos.x() < end)
+            QPoint first, second, third, fourth;
+            int n;
+            if (!SystemParameters::rotate)
             {
-                int n = (int)((pos.x() - (centerGlobal.x()-1000)) / 40);
-                QPoint first = QPoint(n * 40, 20);
-                QPoint second = QPoint((n + 1) * 40, 20);
-                QPoint third = QPoint((n + 1) * 40, 80);
-                QPoint fourth = QPoint(n * 40, 80);
-                painter.drawLine(first, second);
-                painter.drawLine(second, third);
-                painter.drawLine(third, fourth);
-                painter.drawLine(fourth, first);
-                if (left)
+                int start = (int)centerGlobal.x() - this->width() / 2 + 80;
+                int end = (int)(centerGlobal.x() - this->width() / 2 + 80 + 40 * (count));
+                QPoint pos = QCursor::pos();
+                if (pos.x() >= start && pos.x() < end)
                 {
-                    if (tuneElements->GetCircuitElements().length() == 0)
+                    n = (int)((pos.x() - (centerGlobal.x() - this->width() / 2)) / 40);
+                    first = QPoint(n * 40, 20);
+                    second = QPoint((n + 1) * 40, 20);
+                    third = QPoint((n + 1) * 40, 80);
+                    fourth = QPoint(n * 40, 80);
+                }
+            }
+            else
+            {
+                int start = (int)centerGlobal.y() - this->height() / 2 + 80;
+                int end = (int)(centerGlobal.y() - this->height() / 2 + 80 + 40 * (count));
+                QPoint pos = QCursor::pos();
+                if (pos.y() >= start && pos.y() < end)
+                {
+                    n = (int)((pos.y() - (centerGlobal.y() - this->height() / 2)) / 40);
+                    first = QPoint(20, n*40);
+                    second = QPoint(20, (n + 1) * 40);
+                    third = QPoint(80, (n + 1) * 40);
+                    fourth = QPoint(80, n*40);
+                }
+            }
+            painter.drawLine(first, second);
+            painter.drawLine(second, third);
+            painter.drawLine(third, fourth);
+            painter.drawLine(fourth, first);
+            if (left)
+            {
+                if (tuneElements->GetCircuitElements().length() == 0)
+                {
+                    tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
+                    emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n-1]);
+                    tuned.append(n);
+                }
+                else
+                {
+                    bool flag = false;
+                    for (auto& var : tuneElements->GetCircuitElements())
                     {
-                        tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n-2]);
-                        emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n - 2]);
-                        tuned.append(n);
+                        if (var == circuitElements->GetCircuitElements()[n - 2])
+                        {
+                            flag = true;
+                            break;
+                        }
                     }
-                    else
+                    if (flag == false)
                     {
-                        bool flag = false;
-                        for (auto& var : tuneElements->GetCircuitElements())
-                        {
-                            if (var == circuitElements->GetCircuitElements()[n - 2])
-                            {
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (flag == false)
-                        {
-                            tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
-                            emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n-2]);
-                            tuned.append(n);
-                        }
+                        tuneElements->AppendCircuitElements(circuitElements->GetCircuitElements()[n - 2]);
+                        emit clicked(circuitElements->GetCircuitElements()[n - 2], paths[n-1]);
+                        tuned.append(n);
                     }
                 }
             }
@@ -499,10 +723,21 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         for (auto& var : tuned)
         {
             painter.setPen(QPen(Qt::blue, 2));
-            QPoint first = QPoint(var * 40, 20);
-            QPoint second = QPoint((var + 1) * 40, 20);
-            QPoint third = QPoint((var + 1) * 40, 80);
-            QPoint fourth = QPoint(var * 40, 80);
+            QPoint first, second, third, fourth;
+            if (!SystemParameters::rotate)
+            {
+                first = QPoint(var * 40, 20);
+                second = QPoint((var + 1) * 40, 20);
+                third = QPoint((var + 1) * 40, 80);
+                fourth = QPoint(var * 40, 80);
+            }
+            else
+            {
+                first = QPoint(20, var * 40);
+                second = QPoint(20, (var + 1) * 40);
+                third = QPoint(80, (var + 1) * 40);
+                fourth = QPoint(80, var * 40);
+            }
             painter.drawLine(first, second);
             painter.drawLine(second, third);
             painter.drawLine(third, fourth);

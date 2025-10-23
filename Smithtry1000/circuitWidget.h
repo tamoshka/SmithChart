@@ -32,6 +32,7 @@ public slots:
     void getLeft();
     void RemoveElement(Element*);
     void RemoveAll();
+    void Reverse();
 
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;

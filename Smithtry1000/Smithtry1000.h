@@ -43,10 +43,12 @@ public slots:
     void getsignalDVS();
     void getCirclesSignal();
     void getallchangedsignal();
+    void Reverse();
 
 signals:
     void left();
     void load();
+    void reverse();
 
 private slots:
     void onButtonClicked();

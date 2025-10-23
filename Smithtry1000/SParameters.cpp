@@ -87,4 +87,5 @@ void SParameters::Close()
 	d4->close();
 	stable1->close();
 	stable2->close();
+	set->close();
 }

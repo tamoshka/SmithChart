@@ -100,6 +100,7 @@ long double SystemParameters::admitanceImagR = 0;
 long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
 bool SystemParameters::exc = false;
+bool SystemParameters::rotate = false;
 
 /// <summary>
 /// Расчёт действительной части сопротивления.
@@ -562,6 +563,7 @@ void SystemParameters::SaveToJSON()
     json["ampFrline"] = ampFrlineArray;
 
     json["z0"] = (double)SystemParameters::z0;
+    json["rotate"] = SystemParameters::rotate;
     json["defaultFrequency"] = (double)SystemParameters::defaultFrequency;
     QJsonDocument doc(json);
     QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -691,6 +693,11 @@ void SystemParameters::deserializeFromJson()
         if (json.contains("defaultFrequency"))
         {
             SystemParameters::defaultFrequency = json["defaultFrequency"].toDouble();
+        }
+
+        if (json.contains("rotate"))
+        {
+            SystemParameters::rotate = json["rotate"].toBool();
         }
     }
     catch (...) {

@@ -182,7 +182,7 @@ QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter
     {
         LinesElement* elem = dynamic_cast<LinesElement*>(element);
         line = QString("T%1 %2 0 %3 0 Z0=%4 F=%5GHZ NL=%6 ").arg(tlCount++).arg(nodeCounter).arg(nodeCounter + 1)
-            .arg(value).arg((double)elem->GetFrequency() / 1000).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+            .arg(value).arg((double)elem->GetFrequency() / 1e9).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
         nodeCounter++;
         break;
     }
@@ -190,14 +190,14 @@ QString ExportNetlist::generateElementLineCir(Element* element, int& nodeCounter
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
         line = QString("T%1 %2 0 100 0 Z0=%3 F=%4GHZ NL=%5").arg(tlCount++).arg(nodeCounter)
-            .arg(value).arg((double)elem->GetFrequency() / 1000).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+            .arg(value).arg((double)elem->GetFrequency() / 1e9).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
         break;
     }
     case SSLine:
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
         line = QString("T%1 %2 0 0 0 Z0=%3 F=%4GHZ NL=%5").arg(tlCount++).arg(nodeCounter)
-            .arg(value).arg((double)elem->GetFrequency() / 1000).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+            .arg(value).arg((double)elem->GetFrequency() / 1e9).arg((double)(elem->GetLambda() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
         break;
     }
     case Transform:
@@ -272,7 +272,7 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     {
         LinesElement* elem = dynamic_cast<LinesElement*>(element);
         line = QString("TLINP %1 %2 z=%3 L=%4 K=%5 F=%6").arg(nodeCounter).arg(nodeCounter + 1).arg(value).arg((double)elem->GetElectricalLength())
-            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1000);
+            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1e9);
         nodeCounter++;
         break;
     }
@@ -281,7 +281,7 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
         line = QString("TLINP %1 100 z=%2 L=%3 K=%4 F=%5").arg(nodeCounter).arg(value).arg((double)elem->GetElectricalLength())
-            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1000);
+            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1e9);
         break;
     }
     //КЗ
@@ -289,7 +289,7 @@ QString ExportNetlist::generateElementLineCkt(Element* element, int& nodeCounter
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
         line = QString("TLINP %1 0 z=%2 L=%3 K=%4 F=%5").arg(nodeCounter).arg(value).arg((double)elem->GetElectricalLength())
-            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1000);
+            .arg((double)pow(elem->GetElectricalLength() / elem->GetMechanicalLength(), 2)).arg((double)elem->GetFrequency() / 1e9);
         break;
     }
     case Transform:
@@ -362,20 +362,20 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
     case Line:
     {
         LinesElement* elem = dynamic_cast<LinesElement*>(element);
-        line = QString("TL%1 %2 0 %3 0 tline z0=%4 len=%5e-3 f=0").arg(tlCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+        line = QString("TL%1 %2 0 %3 0 tline z0=%4 len=%5e-3 f=%6").arg(tlCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency() / 1e9);
         nodeCounter++;
         break;
     }
     case OSLine:
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
-        line = QString("TL%1 %2 0 100 0 tline z0=%3 len=%4e-3 f=0").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+        line = QString("TL%1 %2 0 100 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency() / 1e9);
         break;
     }
     case SSLine:
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
-        line = QString("TL%1 %2 0 0 0 tline z0=%3 len=%4e-3 f=0").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength()));
+        line = QString("TL%1 %2 0 0 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency()/1e9);
         break;
     }
     case Transform:

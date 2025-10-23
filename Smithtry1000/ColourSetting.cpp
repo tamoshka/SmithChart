@@ -98,7 +98,14 @@ ColourSetting::ColourSetting(QWidget *parent)
 
 	sBoxAmpFrIndex[ui->spinBox_24] = 0;
 	sBoxAmpFrIndex[ui->spinBox_23] = 1;
-
+	if (SystemParameters::rotate)
+	{
+		ui->verticalRadioButton->setChecked(true);
+	}
+	else
+	{
+		ui->horizontalRadioButton->setChecked(true);
+	}
 	for (auto it = sBoxDVSIndex.begin(); it != sBoxDVSIndex.end(); ++it) {
 		it.key()->setValue(SystemParameters::linesWidth[it.value()]);
 	}
@@ -108,6 +115,8 @@ ColourSetting::ColourSetting(QWidget *parent)
 	for (auto it = sBoxAmpFrIndex.begin(); it != sBoxAmpFrIndex.end(); ++it) {
 		it.key()->setValue(SystemParameters::ampFrline[it.value()]);
 	}
+	connect(ui->horizontalRadioButton, &QRadioButton::clicked, this, &ColourSetting::VerticalHorizontalChanged);
+	connect(ui->verticalRadioButton, &QRadioButton::clicked, this, &ColourSetting::VerticalHorizontalChanged);
 	connect(ui->S11Graf, &QPushButton::clicked, this, &ColourSetting::S11Graf);
 	connect(ui->S22Graf, &QPushButton::clicked, this, &ColourSetting::S22Graf);
 	connect(ui->MAGGraf, &QPushButton::clicked, this, &ColourSetting::MAGGraf);
@@ -150,6 +159,24 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(ui->spinBox_23, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
 	connect(ui->spinBox_24, QOverload<int>::of(&QSpinBox::valueChanged), this, &ColourSetting::AmpFrLine);
 	connect(ui->DefaultButton, &QPushButton::clicked, this, &ColourSetting::DefaultClicked);
+}
+
+/// <summary>
+/// Изменение выбранной radiobutton.
+/// </summary>
+void ColourSetting::VerticalHorizontalChanged()
+{
+	QRadioButton* rButton = qobject_cast<QRadioButton*>(sender());
+	if (rButton == ui->horizontalRadioButton)
+	{
+		SystemParameters::rotate = false;
+		emit rev();
+	}
+	else if (rButton == ui->verticalRadioButton)
+	{
+		SystemParameters::rotate = true;
+		emit rev();
+	}
 }
 
 /// <summary>
@@ -642,6 +669,8 @@ void ColourSetting::DefaultClicked()
 	SystemParameters::linesWidth = SystemParameters::linesWidthDefault;
 	SystemParameters::ampFrline = SystemParameters::ampFrlineDefault;
 	SystemParameters::sPlotline = SystemParameters::sPlotlineDefault;
+	SystemParameters::rotate = false;
+	ui->horizontalRadioButton->setChecked(true);
 	ui->z0ComboBox->setCurrentIndex(0);
 	ui->frequencyComboBox->setCurrentIndex(2);
 	ui->z0lineEdit->setText("50");

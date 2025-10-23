@@ -1052,7 +1052,7 @@
          <property name="title">
           <string> Schematic orientation</string>
          </property>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="verticalRadioButton">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -1065,7 +1065,7 @@
            <string>Vertical</string>
           </property>
          </widget>
-         <widget class="QRadioButton" name="radioButton_3">
+         <widget class="QRadioButton" name="horizontalRadioButton">
           <property name="geometry">
            <rect>
             <x>130</x>

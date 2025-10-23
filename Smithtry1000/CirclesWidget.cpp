@@ -64,6 +64,8 @@ CirclesWidget::CirclesWidget(QWidget *parent, CircuitElements* circuit)
 
 void CirclesWidget::Load()
 {
+	clearAllOthersClickedVSWR();
+	clearAllOthersClickedQ();
 	QSetIterator<double> k(circuitElements->VSWRCircles);
 	while (k.hasNext())
 	{

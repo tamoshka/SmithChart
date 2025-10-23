@@ -12,6 +12,7 @@ SaveDialog::SaveDialog(QWidget *parent)
 {
 	ui->setupUi(this);
 	this->setFixedSize(250, 150);
+	ui->DiagramRadioButton->setChecked(true);
 	connect(ui->SaveButton, &QPushButton::clicked, this, &SaveDialog::Save);
 	connect(ui->CancelButton, &QPushButton::clicked, this, &SaveDialog::Cancel);
 }

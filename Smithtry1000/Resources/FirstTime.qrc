@@ -30,5 +30,17 @@
         <file>Circles.png</file>
         <file>vertical_transform.svg</file>
         <file>vertical_transform_circuit.svg</file>
+        <file>rev_horizontal_c.svg</file>
+        <file>rev_horizontal_i.svg</file>
+        <file>rev_horizontal_line_circuit.svg</file>
+        <file>rev_horizontal_r.svg</file>
+        <file>rev_load.svg</file>
+        <file>rev_os_circuit.svg</file>
+        <file>rev_source.svg</file>
+        <file>rev_ss_circuit.svg</file>
+        <file>rev_vertical_c_circuit.svg</file>
+        <file>rev_vertical_i_circuit.svg</file>
+        <file>rev_vertical_r_circuit.svg</file>
+        <file>rev_vertical_transform_circuit.svg</file>
     </qresource>
 </RCC>
