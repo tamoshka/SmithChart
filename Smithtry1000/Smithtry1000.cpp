@@ -119,6 +119,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
     QObject::connect(sParameters->set, &ColourSetting::rev, this, &Smithtry1000::Reverse);
     QObject::connect(this, &Smithtry1000::reverse, auxiliaryWidget, &CircuitWidget::Reverse);
+    QObject::connect(auxiliaryWidget, &CircuitWidget::Edit, this, &Smithtry1000::GetEditSignal);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
     ui->scrollAreaDiagram->setWidget(renderArea);
@@ -128,6 +129,12 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Smithtry1000::onTimeout);
     timer->start(10);  // Частое обновление для плавности
+}
+
+void Smithtry1000::GetEditSignal(Element* elem)
+{
+    edit = new EditWidget(nullptr, circuitElements, elem);
+    edit->show();
 }
 
 void Smithtry1000::Reverse()
@@ -419,6 +426,7 @@ void Smithtry1000::AWR_buttonClicked()
     }
 }*/
 
+
 /// <summary>
 /// Получение сигнала об изменении всего (при изменении опорного сопротивления).
 /// </summary>
@@ -588,7 +596,7 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
     this->sParameters->Close();
     SystemParameters::SaveToJSON();
     this->circlesWidget->close();
-
+    edit->close();
 }
 
 /// <summary>
@@ -3001,7 +3009,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 /// </summary>
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if (allpointindex > 0 && !SystemParameters::tuneBlock)
+    if (allpointindex > 0 && !SystemParameters::tuneBlock && !SystemParameters::edit)
     {
         if (firstDeleted)
         {
@@ -3519,7 +3527,7 @@ void Smithtry1000::onTimeout()
 {
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (SystemParameters::tuned)
+    if (SystemParameters::tuned || SystemParameters::edited)
     {
         renderArea->update();
         auxiliaryWidget->update();
@@ -3527,7 +3535,14 @@ void Smithtry1000::onTimeout()
         {
             TableUpdate();
         }
-        SystemParameters::tuned = false;
+        if (SystemParameters::tuned)
+        {
+            SystemParameters::tuned = false;
+        }
+        else
+        {
+            SystemParameters::edited = false;
+        }
     }
     if (Model == AddPoint || Model == Default)
     {

@@ -34,6 +34,12 @@ int main(int argc, char *argv[])
 	}
     QApplication a(argc, argv);
 
+	QTranslator qtTranslator;
+	qtTranslator.load("qt_ru", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	a.installTranslator(&qtTranslator);
+
+	QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
+
 	GrafOne g1;
 	GrafTwo g2;
 	SDiagram1 d1(SDiagram1::S12);

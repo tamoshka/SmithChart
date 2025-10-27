@@ -39,6 +39,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     ElementFactory.cpp
     Element.h
     Element.cpp
+    EditWidget.ui
+    EditWidget.h
+    EditWidget.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h

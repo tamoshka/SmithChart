@@ -106,6 +106,8 @@ public:
 	static bool tune;
 	static bool tuned;
 	static bool tuneBlock;
+	static bool edit;
+	static bool edited;
 	static bool resistorLinear;
 	static QList<Element*> tunedElements;
 	static double er;

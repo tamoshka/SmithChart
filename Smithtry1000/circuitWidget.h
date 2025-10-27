@@ -27,6 +27,7 @@ private:
     bool left;
 signals:
     void clicked(Element* tuned, QString path);
+    void Edit(Element* edit);
 
 public slots:
     void getLeft();
@@ -38,4 +39,5 @@ protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 };

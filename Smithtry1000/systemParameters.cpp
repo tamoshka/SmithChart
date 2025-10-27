@@ -78,6 +78,8 @@ bool SystemParameters::circuitHover = false;
 bool SystemParameters::tune = false;
 bool SystemParameters::tuned = false;
 bool SystemParameters::tuneBlock = false;
+bool SystemParameters::edit = false;
+bool SystemParameters::edited = false;
 bool SystemParameters::colorChanged = false;
 bool SystemParameters::resistorLinear = false;
 QList<Element*> SystemParameters::tunedElements = {};
@@ -211,6 +213,14 @@ void SystemParameters::rImpedanceImagCalculation(long double x, long double y)
     {
         double denominator = (1 - x) * (1 - x) + y * y;
         impedanceImagR = 2 * y / denominator;
+        if (y < 0)
+        {
+            impedanceImagR = abs(impedanceImagR);
+        }
+        else if (y>0)
+        {
+            impedanceImagR = abs(impedanceImagR) * -1;
+        }
     }
     else
     {

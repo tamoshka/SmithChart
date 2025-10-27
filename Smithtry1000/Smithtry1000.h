@@ -23,6 +23,7 @@
 #include "CirclesWidget.h"
 #include "SaveDialog.h"
 #include "awr_interface.h"
+#include "EditWidget.h"
 
 /// <summary>
 /// Класс работы с курсором, являющийся также главным хабом и окном приложения.
@@ -44,6 +45,7 @@ public slots:
     void getCirclesSignal();
     void getallchangedsignal();
     void Reverse();
+    void GetEditSignal(Element* element);
 
 signals:
     void left();
@@ -84,6 +86,7 @@ private slots:
 
 private:
     ///AWRInterface awr = AWRInterface(circuitElements);
+    EditWidget* edit;
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
     RenderArea* renderArea = new RenderArea(this, circuitElements);

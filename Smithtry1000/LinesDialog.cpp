@@ -68,9 +68,9 @@ void LinesDialog::onAccept()
         validateAlpha = false;
     }
     double valueLambda = LambdaField->text().toFloat(&validateLambda);
-    if (validateZ0 && validateEr && ((validateAlpha && validateLambda)||(!validateAlpha)))
+    if (validateZ0 && valueZ0>0 && validateEr && valueEr>0 && ((validateAlpha && validateLambda)||(!validateAlpha)))
     {
-        if (validateAlpha)
+        if (validateAlpha && valueAlpha>0)
         {
             SystemParameters::alpha = valueAlpha;
             SystemParameters::lambda = valueLambda;

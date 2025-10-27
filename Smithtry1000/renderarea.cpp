@@ -872,6 +872,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 pixel.setY(y2* scale + center.y());
                 painter.drawLine(iPixel, pixel);
             }
+            
             else
             {
                 long double q = zl.imag() / zl.real();
@@ -904,9 +905,6 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                     t1 = -M_PI - t1;
                 }
                 Complex z = circuitElements->GetCircuitElements()[ll]->GetParameter()[Z];
-                q = z.imag() / z.real();
-                ycenter = -1 / q;
-                R = sqrt(1 + 1 / pow(q, 2));
 
                 dx = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
                 dy = circuitElements->GetCircuitElements()[ll]->GetPoint().y + ycenter;

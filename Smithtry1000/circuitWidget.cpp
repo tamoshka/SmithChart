@@ -31,12 +31,12 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
     if (!SystemParameters::rotate)
     {
         this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
-        this->setFixedHeight(200);
+        this->setFixedHeight(300);
     }
     else
     {
         this->setFixedWidth(200);
-        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 200);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 300);
     }
     svgWidget->load(QString(path));
     if (svgWidgets.size() >= 2)
@@ -140,7 +140,7 @@ void CircuitWidget::Reverse()
     if (vertical)
     {
         this->setFixedWidth(200);
-        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 200);
+        this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 300);
         int i = 0;
         for (auto var : svgWidgets)
         {
@@ -206,7 +206,7 @@ void CircuitWidget::Reverse()
     else
     {
         this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40+200);
-        this->setFixedHeight(200);
+        this->setFixedHeight(300);
         int i = 0;
         for (auto var : svgWidgets)
         {
@@ -264,7 +264,14 @@ void CircuitWidget::RemoveAll()
 void CircuitWidget::removeLastSvg() {
     if (!svgWidgets.isEmpty() && svgWidgets.size()>2) {
         paths.takeAt(paths.size()-2);
-        this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
+        if (SystemParameters::rotate)
+        {
+            this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 300);
+        }
+        else
+        {
+            this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
+        }
         int deletedIndex = svgWidgets.size() - 2;
         QSvgWidget* deleted = svgWidgets[deletedIndex];
         deleted->hide();
@@ -360,10 +367,12 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     }
                     else if (val < 1000000)
                     {
+                        val /= 1e3;
                         power = " uH";
                     }
                     else
                     {
+                        val /= 1e6;
                         power = " mH";
                     }
                     s1 = QString::number((double)round(val*10)/10) + power;
@@ -387,10 +396,12 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     }
                     else if (val < 1000000)
                     {
+                        val /= 1e3;
                         power = " nF";
                     }
                     else
                     {
+                        val /= 1e6;
                         power = " uF";
                     }
                     s1 = QString::number((double)round(val * 10) / 10) + power;
@@ -422,10 +433,12 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     }
                     else if (val < 1000000)
                     {
+                        val /= 1e3;
                         power = " uH";
                     }
                     else
                     {
+                        val /= 1e6;
                         power = " mH";
                     }
                     s1 = QString::number((double)round(val * 10) / 10) + power;
@@ -449,10 +462,12 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     }
                     else if (val < 1000000)
                     {
+                        val /= 1e3;
                         power = " nF";
                     }
                     else
                     {
+                        val /= 1e6;
                         power = " uF";
                     }
                     s1 = QString::number((double)round(val * 10) / 10) + power;
@@ -577,14 +592,56 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case InductionShunt:
                 {
-                    s1 = QString::number(round(temps1 * 10*1e9) / 10);
-                    s1 = s1 + " nH";
+                    QString power;
+                    temps1 *= 1e9;
+                    if (temps1 < 1)
+                    {
+                        temps1 *= 1000;
+                        power = " pH";
+                    }
+                    else if (temps1 < 1000)
+                    {
+                        power = " nH";
+                    }
+                    else if (temps1 < 1000000)
+                    {
+                        temps1 /= 1e3;
+                        power = " uH";
+                    }
+                    else
+                    {
+                        temps1 /= 1e6;
+                        power = " mH";
+                    }
+                    s1 = QString::number(round(temps1 * 10) / 10);
+                    s1 = s1 + power;
                     break;
                 }
                 case CapacitorShunt:
                 {
-                    s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
-                    s1 = s1 + " pF";
+                    QString power;
+                    temps1 *= 1e12;
+                    if (temps1 < 1)
+                    {
+                        temps1 *= 1000;
+                        power = " fF";
+                    }
+                    else if (temps1 < 1000)
+                    {
+                        power = " pF";
+                    }
+                    else if (temps1 < 1000000)
+                    {
+                        temps1 /= 1e3;
+                        power = " nF";
+                    }
+                    else
+                    {
+                        temps1 /= 1e6;
+                        power = " uF";
+                    }
+                    s1 = QString::number(round(temps1 * 10) / 10);
+                    s1 = s1 + power;
                     break;
                 }
                 case ResistorParallel:
@@ -594,14 +651,56 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 }
                 case InductionParallel:
                 {
-                    s1 = QString::number(round(temps1 * 10 * 1e9) / 10);
-                    s1 = s1 + " nH";
+                    QString power;
+                    temps1 *= 1e9;
+                    if (temps1 < 1)
+                    {
+                        temps1 *= 1000;
+                        power = " pH";
+                    }
+                    else if (temps1 < 1000)
+                    {
+                        power = " nH";
+                    }
+                    else if (temps1 < 1000000)
+                    {
+                        temps1 /= 1e3;
+                        power = " uH";
+                    }
+                    else
+                    {
+                        temps1 /= 1e6;
+                        power = " mH";
+                    }
+                    s1 = QString::number(round(temps1 * 10) / 10);
+                    s1 = s1 + power;
                     break;
                 }
                 case CapacitorParallel:
                 {
-                    s1 = QString::number(round(temps1 * 10 * 1e12) / 10);
-                    s1 = s1 + " pF";
+                    QString power;
+                    temps1 *= 1e12;
+                    if (temps1 < 1)
+                    {
+                        temps1 *= 1000;
+                        power = " fF";
+                    }
+                    else if (temps1 < 1000)
+                    {
+                        power = " pF";
+                    }
+                    else if (temps1 < 1000000)
+                    {
+                        temps1 /= 1e3;
+                        power = " nF";
+                    }
+                    else
+                    {
+                        temps1 /= 1e6;
+                        power = " uF";
+                    }
+                    s1 = QString::number(round(temps1 * 10) / 10);
+                    s1 = s1 + power;
                     break;
                 }
                 case Line:
@@ -659,7 +758,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             QPoint centerLocal = this->rect().center();
             QPoint centerGlobal = this->mapToGlobal(centerLocal);
             QPoint first, second, third, fourth;
-            int n;
+            int n = -9999;;
             if (!SystemParameters::rotate)
             {
                 int start = (int)centerGlobal.x() - this->width() / 2 + 80;
@@ -692,7 +791,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             painter.drawLine(second, third);
             painter.drawLine(third, fourth);
             painter.drawLine(fourth, first);
-            if (left)
+            if (left&&n!=-9999)
             {
                 if (tuneElements->GetCircuitElements().length() == 0)
                 {
@@ -774,4 +873,32 @@ void CircuitWidget::getLeft()
 {
     left = true;
     update();
+}
+
+void CircuitWidget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    if (!SystemParameters::tune && !SystemParameters::edit)
+    {
+        if (event->button() == Qt::LeftButton)
+        {
+            QPoint clickPos = event->pos();
+
+            // Проверяем все SVG виджеты
+            for (int i = 0; i < svgWidgets.size(); ++i)
+            {
+                QSvgWidget* svgWidget = svgWidgets.at(i);
+
+                // Проверяем, попал ли клик в область SVG виджета
+                if (svgWidget->geometry().contains(clickPos)&&i!=0&&i!=svgWidgets.size()-1)
+                {
+                    SystemParameters::edit = true;
+                    emit Edit(circuitElements->GetCircuitElements()[i-1]);
+                    event->accept();
+                    return;
+                }
+            }
+        }
+
+        QWidget::mouseDoubleClickEvent(event);
+    }
 }
