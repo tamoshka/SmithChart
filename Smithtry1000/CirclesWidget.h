@@ -3,7 +3,9 @@
 #include <QWidget>
 #include "renderarea.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class CirclesWidget; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

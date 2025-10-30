@@ -8,7 +8,9 @@
 #include <QEvent>
 #include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class S12ParamClass; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

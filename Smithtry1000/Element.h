@@ -54,5 +54,6 @@ public:
 	}
 	virtual ~Element();
 	virtual QJsonObject toJson() const;
+	virtual QJsonObject toCircuitJson(int&, int&, bool&, bool&, bool&);
 	virtual ElementType getElementType() const { return ElementType::BaseElement; }
 };

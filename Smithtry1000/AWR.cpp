@@ -1,4 +1,4 @@
-/*#include "awr_interface.h"
+#include "awr_interface.h"
 #include <iostream>
 
 AWRInterface::AWRInterface(CircuitElements* circuit)
@@ -923,11 +923,9 @@ bool AWRInterface::SetSweepType(bool isLinear)
     return SUCCEEDED(hr);
 }
 
-
-bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* value)
+bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wchar_t* value)
 {
     if (!m_pLastElement || !paramName || !value) return false;
-
     HRESULT hr;
     VARIANT varResult;
     DISPID dispid;
@@ -961,7 +959,6 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
         return false;
     }
 
-    // Подготавливаем аргумент - имя параметра
     VARIANT varParamName;
     VariantInit(&varParamName);
     varParamName.vt = VT_BSTR;
@@ -991,7 +988,41 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
 
     IDispatch* pParam = varParam.pdispVal;
 
-    // 3. Устанавливаем значение через ValueAsString
+    // 3. Пробуем установить через Expression (это правильный способ!)
+    OLECHAR* propExpression = L"Expression";
+    hr = pParam->GetIDsOfNames(IID_NULL, &propExpression, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+
+    if (SUCCEEDED(hr)) {
+        // Expression принимает строку с единицами
+        VARIANT varValue;
+        VariantInit(&varValue);
+        varValue.vt = VT_BSTR;
+        varValue.bstrVal = SysAllocString(value);
+
+        DISPID dispidNamed = DISPID_PROPERTYPUT;
+        DISPPARAMS valueParams;
+        valueParams.rgvarg = &varValue;
+        valueParams.cArgs = 1;
+        valueParams.rgdispidNamedArgs = &dispidNamed;
+        valueParams.cNamedArgs = 1;
+
+        VARIANT varSetResult;
+        VariantInit(&varSetResult);
+
+        hr = pParam->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+            DISPATCH_PROPERTYPUT, &valueParams,
+            &varSetResult, NULL, NULL);
+
+        pParam->Release();
+        VariantClear(&varParam);
+        VariantClear(&varValue);
+        VariantClear(&varSetResult);
+
+        return SUCCEEDED(hr);
+    }
+
+    // 4. Если Expression не сработало, пробуем ValueAsString
     OLECHAR* propValueAsString = L"ValueAsString";
     hr = pParam->GetIDsOfNames(IID_NULL, &propValueAsString, 1,
         LOCALE_USER_DEFAULT, &dispid);
@@ -1001,19 +1032,17 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
         return false;
     }
 
-    // Подготавливаем значение
     VARIANT varValue;
     VariantInit(&varValue);
     varValue.vt = VT_BSTR;
     varValue.bstrVal = SysAllocString(value);
 
-    // Для PROPERTYPUT нужен именованный аргумент DISPID_PROPERTYPUT
     DISPID dispidNamed = DISPID_PROPERTYPUT;
     DISPPARAMS valueParams;
     valueParams.rgvarg = &varValue;
     valueParams.cArgs = 1;
-    valueParams.rgdispidNamedArgs = &dispidNamed;  // ВАЖНО!
-    valueParams.cNamedArgs = 1;                     // ВАЖНО!
+    valueParams.rgdispidNamedArgs = &dispidNamed;
+    valueParams.cNamedArgs = 1;
 
     VARIANT varSetResult;
     VariantInit(&varSetResult);
@@ -1022,7 +1051,6 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
         DISPATCH_PROPERTYPUT, &valueParams,
         &varSetResult, NULL, NULL);
 
-    // Очистка
     pParam->Release();
     VariantClear(&varParam);
     VariantClear(&varValue);
@@ -1030,6 +1058,205 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
 
     return SUCCEEDED(hr);
 }
+
+
+bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* value)
+{
+    if (!m_pLastElement || !paramName || !value) return false;
+    HRESULT hr;
+    VARIANT varResult;
+    DISPID dispid;
+
+    // 1. Получаем коллекцию Parameters
+    OLECHAR* propParameters = L"Parameters";
+    hr = m_pLastElement->GetIDsOfNames(IID_NULL, &propParameters, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+    if (FAILED(hr)) return false;
+
+    DISPPARAMS noParams = { NULL, NULL, 0, 0 };
+    VariantInit(&varResult);
+
+    hr = m_pLastElement->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+        DISPATCH_PROPERTYGET, &noParams,
+        &varResult, NULL, NULL);
+    if (FAILED(hr) || varResult.vt != VT_DISPATCH) {
+        VariantClear(&varResult);
+        return false;
+    }
+
+    IDispatch* pParameters = varResult.pdispVal;
+
+    // 2. Получаем конкретный параметр по имени через Item
+    OLECHAR* methodItem = L"Item";
+    hr = pParameters->GetIDsOfNames(IID_NULL, &methodItem, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+    if (FAILED(hr)) {
+        pParameters->Release();
+        VariantClear(&varResult);
+        return false;
+    }
+
+    VARIANT varParamName;
+    VariantInit(&varParamName);
+    varParamName.vt = VT_BSTR;
+    varParamName.bstrVal = SysAllocString(paramName);
+
+    DISPPARAMS itemParams;
+    itemParams.rgvarg = &varParamName;
+    itemParams.cArgs = 1;
+    itemParams.rgdispidNamedArgs = NULL;
+    itemParams.cNamedArgs = 0;
+
+    VARIANT varParam;
+    VariantInit(&varParam);
+
+    hr = pParameters->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+        DISPATCH_PROPERTYGET, &itemParams,
+        &varParam, NULL, NULL);
+
+    pParameters->Release();
+    VariantClear(&varParamName);
+    VariantClear(&varResult);
+
+    if (FAILED(hr) || varParam.vt != VT_DISPATCH) {
+        VariantClear(&varParam);
+        return false;
+    }
+
+    IDispatch* pParam = varParam.pdispVal;
+
+    // 3. Парсим значение и единицы
+    double numValue;
+    std::wstring units;
+    if (!ParseValueAndUnits(value, numValue, units)) {
+        pParam->Release();
+        VariantClear(&varParam);
+        return false;
+    }
+
+    // 4. Конвертируем в базовые единицы СИ
+    double siValue = ConvertToSI(numValue, units.c_str());
+
+    // 5. Устанавливаем через ValueAsDouble
+    OLECHAR* propValueAsDouble = L"ValueAsDouble";
+    hr = pParam->GetIDsOfNames(IID_NULL, &propValueAsDouble, 1,
+        LOCALE_USER_DEFAULT, &dispid);
+    if (FAILED(hr)) {
+        pParam->Release();
+        VariantClear(&varParam);
+        return false;
+    }
+
+    VARIANT varValue;
+    VariantInit(&varValue);
+    varValue.vt = VT_R8;
+    varValue.dblVal = siValue;
+
+    DISPID dispidNamed = DISPID_PROPERTYPUT;
+    DISPPARAMS valueParams;
+    valueParams.rgvarg = &varValue;
+    valueParams.cArgs = 1;
+    valueParams.rgdispidNamedArgs = &dispidNamed;
+    valueParams.cNamedArgs = 1;
+
+    VARIANT varSetResult;
+    VariantInit(&varSetResult);
+
+    hr = pParam->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
+        DISPATCH_PROPERTYPUT, &valueParams,
+        &varSetResult, NULL, NULL);
+
+    pParam->Release();
+    VariantClear(&varParam);
+    VariantClear(&varValue);
+    VariantClear(&varSetResult);
+
+    return SUCCEEDED(hr);
+}
+
+bool AWRInterface::ParseValueAndUnits(const wchar_t* str, double& value, std::wstring& units)
+{
+    if (!str) return false;
+
+    std::wstring input(str);
+
+    // Убираем пробелы
+    input.erase(std::remove(input.begin(), input.end(), L' '), input.end());
+
+    // Находим позицию, где начинаются буквы (единицы)
+    size_t unitPos = input.length();
+    for (size_t i = 0; i < input.length(); i++) {
+        wchar_t c = input[i];
+        // Если это буква (не цифра, не точка, не минус, не плюс, не e/E)
+        if (!iswdigit(c) && c != L'.' && c != L'-' && c != L'+' &&
+            c != L'e' && c != L'E') {
+            unitPos = i;
+            break;
+        }
+    }
+
+    // Разделяем на число и единицы
+    std::wstring numStr = input.substr(0, unitPos);
+    units = input.substr(unitPos);
+
+    // Преобразуем число
+    try {
+        value = std::stod(numStr);
+    }
+    catch (...) {
+        return false;
+    }
+
+    return true;
+}
+
+// Конвертация в СИ
+double AWRInterface::ConvertToSI(double value, const wchar_t* unit)
+{
+    std::wstring u(unit);
+
+    // Приводим к нижнему регистру для сравнения
+    std::transform(u.begin(), u.end(), u.begin(), ::towlower);
+
+    // Ёмкость (в Фарады)
+    if (u == L"pf") return value * 1e-12;
+    if (u == L"nf") return value * 1e-9;
+    if (u == L"uf" || u == L"µf") return value * 1e-6;
+    if (u == L"ff") return value * 1e-15;
+    if (u == L"mf") return value * 1e-3;
+    if (u == L"f") return value;
+
+    // Индуктивность (в Генри)
+    if (u == L"nh") return value * 1e-9;
+    if (u == L"uh" || u == L"µh") return value * 1e-6;
+    if (u == L"ph") return value * 1e-12;
+    if (u == L"mh") return value * 1e-3;
+    if (u == L"h") return value;
+
+    // Частота (в Герцы)
+    if (u == L"ghz") return value * 1e9;
+    if (u == L"mhz") return value * 1e6;
+    if (u == L"khz") return value * 1e3;
+    if (u == L"hz") return value;
+
+    // Сопротивление (в Омы)
+    if (u == L"k" || u == L"kohm") return value * 1e3;
+    if (u == L"m" || u == L"mohm") return value * 1e6;
+    if (u == L"ohm" || u == L"Ω") return value;
+
+    // Длина (в метры)
+    if (u == L"mm") return value * 1e-3;
+    if (u == L"cm") return value * 1e-2;
+    if (u == L"um" || u == L"µm") return value * 1e-6;
+    if (u == L"nm") return value * 1e-9;
+    if (u == L"mil") return value * 25.4e-6;  // 1 mil = 0.0254 mm
+    if (u == L"in") return value * 0.0254;     // 1 дюйм = 25.4 мм
+    if (u == L"m") return value;
+
+    // Если единицы не распознаны, возвращаем как есть
+    return value;
+}
+
 
 bool AWRInterface::SaveProject(const std::wstring& filePath) {
     if (!m_pProject) return false;
@@ -1091,4 +1318,4 @@ HRESULT AWRInterface::SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT*
 
     return pDisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
         DISPATCH_PROPERTYPUT, &params, nullptr, nullptr, nullptr);
-}*/
+}

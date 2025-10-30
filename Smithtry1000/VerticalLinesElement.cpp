@@ -112,3 +112,86 @@ QJsonObject VerticalLinesElement::toJson() const
 
 	return json;
 }
+
+QJsonObject VerticalLinesElement::toCircuitJson(int& node, int& nodeMax, bool& prevTransform, bool& prevParallel, bool& prevOSSS)
+{
+    QJsonObject json;
+    json["library"] = "Basic";
+    QString modelName;
+    int rotation = 90;
+    QList<int> pinArray;
+    QString paramName;
+    double paramValue;
+    QString paramFactor;
+    QString secondParamName;
+    double secondParamValue;
+    QString secondParamFactor;
+    switch (GetMode())
+    {
+        case OSLine:
+        {
+            modelName = "MLOC";
+            if (prevParallel && !prevTransform)
+            {
+                pinArray.append(nodeMax + 1);
+                node = nodeMax + 1;
+                nodeMax++;
+            }
+            else
+            {
+                pinArray.append(node);
+            }
+            paramName = "R";
+            paramFactor = "";
+            ///paramValue = this->value;
+            break;
+        }
+        case SSLine:
+        {
+            modelName = "MLSC";
+            if (prevParallel && !prevTransform)
+            {
+                pinArray.append(nodeMax+1);
+                node = nodeMax + 1;
+                nodeMax++;
+            }
+            else
+            {
+                pinArray.append(node);
+            }
+            paramName = "R";
+            paramFactor = "";
+           ///paramValue = this->value;
+            
+            break;
+        }  
+    }
+    prevTransform = false;
+    prevParallel = true;
+    prevOSSS = true;
+    json["model"] = modelName;
+    QJsonObject rotate;
+    rotate["rotation"] = rotation;
+    json["placement"] = rotate;
+    int i = 1;
+
+    QJsonArray pins;
+    for (auto var : pinArray)
+    {
+        QJsonObject pin;
+        QString pinNumber = "P" + QString::number(i);
+        pin[pinNumber] = var;
+        pins.append(pin);
+        i++;
+    }
+    json["pins"] = pins;
+    QJsonArray jsonParameters;
+    QJsonObject firstParameters;
+    firstParameters["name"] = paramName;
+    firstParameters["value"] = paramValue;
+    firstParameters["factor"] = paramFactor;
+    jsonParameters.append(firstParameters);
+    json["parameters"] = jsonParameters;
+
+    return json;
+}

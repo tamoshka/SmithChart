@@ -5,7 +5,9 @@
 #include <qsvgwidget.h>
 #include "circuitElements.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class TuneWidget; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

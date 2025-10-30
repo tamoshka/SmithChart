@@ -2,7 +2,9 @@
 #include "circuitElements.h"
 #include <QWidget>
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class EditWidget; };
+#endif
 QT_END_NAMESPACE
 
 class EditWidget : public QWidget

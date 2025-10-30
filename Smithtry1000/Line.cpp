@@ -53,3 +53,54 @@ LinesElement::LinesElement(mode mode, long double value, long double frequency, 
 
     return json;
 }
+
+ QJsonObject LinesElement::toCircuitJson(int& node, int& nodeMax, bool& prevTransform, bool& prevParallel, bool& prevOSSS)
+ {
+     QJsonObject json;
+     json["library"] = "Basic";
+     QString modelName;
+     int rotation = 0;
+     QList<int> pinArray;
+     QString paramName;
+     double paramValue;
+     QString paramFactor;
+     QString secondParamName;
+     double secondParamValue;
+     QString secondParamFactor;
+     modelName = "MLIN";
+     pinArray.append(node);
+     pinArray.append(nodeMax + 1);
+     node = nodeMax + 1;
+     nodeMax++;
+     paramName = "R";
+     paramFactor = "";
+     ///paramValue = this->value;
+     prevTransform = false;
+     prevParallel = false;
+     prevOSSS = false;
+     json["model"] = modelName;
+     QJsonObject rotate;
+     rotate["rotation"] = rotation;
+     json["placement"] = rotate;
+     int i = 1;
+
+     QJsonArray pins;
+     for (auto var : pinArray)
+     {
+         QJsonObject pin;
+         QString pinNumber = "P" + QString::number(i);
+         pin[pinNumber] = var;
+         pins.append(pin);
+         i++;
+     }
+     json["pins"] = pins;
+     QJsonArray jsonParameters;
+     QJsonObject firstParameters;
+     firstParameters["name"] = paramName;
+     firstParameters["value"] = paramValue;
+     firstParameters["factor"] = paramFactor;
+     jsonParameters.append(firstParameters);
+     json["parameters"] = jsonParameters;
+
+     return json;
+ }

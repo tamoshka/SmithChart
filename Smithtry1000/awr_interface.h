@@ -1,4 +1,4 @@
-/*#pragma once
+#pragma once
 
 #include <windows.h>
 #include "circuitElements.h"
@@ -29,6 +29,7 @@ public:
     bool AddElement(const std::wstring& elementType, double x, double y, double angle);
     bool AddWire(double x1, double y1, double x2, double y2);
     bool SetElementParameter(const wchar_t* paramName, const wchar_t* value);
+    bool SetStringElementParameter(const wchar_t* paramName, const wchar_t* value);
     bool SaveProject(const std::wstring& filePath);
     IDispatch* m_pAWRApp;
     IDispatch* m_pProject;
@@ -39,6 +40,8 @@ public:
 
 private:
     CircuitElements* circuitElements;
+    bool ParseValueAndUnits(const wchar_t* str, double& value, std::wstring& units);
+    double ConvertToSI(double value, const wchar_t* unit);
 
     bool m_bInitialized;
 
@@ -58,4 +61,4 @@ struct CircuitElement {
     double x;
     double y;
     std::wstring paramName; // "R", "C", "L"
-};*/
+};

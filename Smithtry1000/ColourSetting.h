@@ -5,7 +5,9 @@
 #include "circuitElements.h"
 #include <map>
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class ColourSettingClass; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

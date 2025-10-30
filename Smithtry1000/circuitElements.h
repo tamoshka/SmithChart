@@ -3,6 +3,7 @@
 #include "ElementFactory.h"
 #include "systemParameters.h"
 
+
 /// <summary>
 /// Класс хранения цепи.
 /// </summary>
@@ -15,6 +16,8 @@ private:
 	static Complex jsonToComplex(const QJsonObject& obj);
 
 	static QJsonObject elementToJson(const Element* element);
+
+    static QJsonObject elementToCircuitJson(Element* element, int& node, int& nodeMax, bool& prevTransform, bool& prevParallel, bool&);
 
 	static Element* jsonToElement(const QJsonObject& obj);
 public:
@@ -40,9 +43,11 @@ public:
 	Point firstPoint;
 	map<chartMode, tuple<long double, long double>> chart;
 	QJsonObject toJson() const;
+    QJsonObject toCircuitJson() const;
 	bool fromJson(const QJsonObject& json);
 	bool loadFromFile(const QString& filePath);
 	bool saveToFile(const QString& filePath) const;
+    bool saveToJSON(const QString& filePath) const;
 	~CircuitElements();
     CircuitElements(const CircuitElements& other) {
         // ГЛУБОКОЕ копирование - создаем новые объекты Element

@@ -28,8 +28,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Все исходные файлы проекта
     set(PROJECT_SOURCES
-    #awr_interface.h
-    #AWR.cpp
+    awr_interface.h
+    AWR.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h

@@ -4,7 +4,9 @@
 #include <QWidget>
 #include "ui_SParamTable.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class SParamTableClass; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

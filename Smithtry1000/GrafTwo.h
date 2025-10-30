@@ -6,7 +6,9 @@
 #include <QVector>
 #include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class GrafTwoClass; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

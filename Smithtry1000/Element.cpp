@@ -175,3 +175,212 @@ QJsonObject Element::toJson() const
 
     return json;
 }
+
+QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform, bool &prevParallel, bool &prevOSSS)
+{
+    QJsonObject json;
+    json["library"] = "Basic";
+    QString modelName;
+    int rotation=0;
+    QList<int> pinArray;
+    QString paramName;
+    double paramValue;
+    QString paramFactor;
+    switch (this->elementMode)
+    {
+        case ResistorShunt:
+        {
+            modelName = "R";
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+            node = nodeMax + 1;
+            nodeMax++;
+            paramName = "R";
+            paramFactor = "";
+            paramValue = this->value;
+            prevTransform = false;
+            prevParallel = false;
+            break;
+        }
+        case ResistorParallel:
+        {
+            modelName = "R";
+            rotation = 90;
+            if (prevTransform)
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax);
+                nodeMax--;
+            }
+            else if (prevParallel)
+            {
+                pinArray.append(nodeMax + 1);
+                pinArray.append(nodeMax + 2);
+                node = nodeMax + 1;
+                nodeMax++;
+            }
+            else
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax + 1);
+            }
+            paramName = "R";
+            paramFactor = "";
+            paramValue = this->value;
+            nodeMax++;
+            prevTransform = false;
+            prevParallel = true;
+            break;
+        }
+        case CapacitorShunt:
+        {
+            modelName = "C";
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+            paramName = "C";
+            paramFactor = "p";
+            paramValue = this->value*1e12;
+            node = nodeMax + 1;
+            nodeMax++;
+            prevTransform = false;
+            prevParallel = false;
+            break;
+        }
+        case CapacitorParallel:
+        {
+            modelName = "C";
+            rotation = 90;
+            if (prevTransform)
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax);
+                nodeMax--;
+            }
+            else if (prevParallel)
+            {
+                pinArray.append(nodeMax + 1);
+                pinArray.append(nodeMax + 2);
+                node = nodeMax + 1;
+                nodeMax++;
+            }
+            else
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax + 1);
+            }
+            paramName = "C";
+            paramFactor = "p";
+            paramValue = this->value * 1e12;
+            nodeMax++;
+            prevTransform = false;
+            prevParallel = true;
+            break;
+        }
+        case InductionShunt:
+        {
+            modelName = "L";
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+            paramName = "L";
+            paramFactor = "n";
+            paramValue = this->value * 1e9;
+            node = nodeMax + 1;
+            nodeMax++;
+            prevTransform = false;
+            prevParallel = false;
+            break;
+        }
+        case InductionParallel:
+        {
+            modelName = "L";
+            rotation = 90;
+            if (prevTransform)
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax);
+                nodeMax--;
+            }
+            else if (prevParallel)
+            {
+                pinArray.append(nodeMax + 1);
+                pinArray.append(nodeMax + 2);
+                node = nodeMax + 1;
+                nodeMax++;
+            }
+            else
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax + 1);
+            }
+            paramName = "L";
+            paramFactor = "n";
+            paramValue = this->value * 1e9;
+            nodeMax++;
+            prevTransform = false;
+            prevParallel = true;
+            break;
+        }
+        case Transform:
+        {
+            modelName = "TF";
+            if (prevParallel && !prevOSSS)
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax+1);
+                pinArray.append(nodeMax);
+                pinArray.append(nodeMax + 2);
+                node = nodeMax + 1;
+                nodeMax += 2;
+            }
+            else
+            {
+                pinArray.append(node);
+                pinArray.append(nodeMax + 1);
+                pinArray.append(nodeMax + 2);
+                pinArray.append(nodeMax + 3);
+                node = nodeMax + 1;
+                nodeMax += 3;
+            }
+            paramName = "T";
+            paramFactor = "";
+            paramValue = this->value;
+            prevTransform = true;
+            prevParallel = true;
+            break;
+        }
+    }
+    prevOSSS = false;
+    json["model"] = modelName;
+    QJsonObject rotate;
+    rotate["rotation"] = rotation;
+    json["placement"] = rotate;
+    int i = 1;
+
+    QJsonArray pins;
+    for (auto var : pinArray)
+    {
+        QJsonObject pin;
+        QString pinNumber = "P" + QString::number(i);
+        pin[pinNumber] = var;
+        pins.append(pin);
+        i++;
+    }
+    json["pins"] = pins;
+    QJsonArray jsonParameters;
+    QJsonObject firstParameters;
+    firstParameters["name"] = paramName;
+    firstParameters["value"] = paramValue;
+    firstParameters["factor"] = paramFactor;
+    jsonParameters.append(firstParameters);
+    if (this->elementMode == InductionShunt || this->elementMode == InductionParallel)
+    {
+        QJsonObject secondParameters;
+        secondParameters["name"] = "R";
+        secondParameters["value"] = 1.0;
+        secondParameters["factor"] = "";
+        jsonParameters.append(secondParameters);
+    }
+    json["parameters"] = jsonParameters;
+
+    return json;
+}

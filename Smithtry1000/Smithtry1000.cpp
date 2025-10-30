@@ -107,7 +107,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
     connect(ui->StepForwardButton, &QPushButton::clicked, this, &Smithtry1000::Redo);
-    ///connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
+    connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
+    connect(ui->CADButton, &QPushButton::clicked, this, &Smithtry1000::CAD_export);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
     QObject::connect(sParameters->set, &ColourSetting::signalDVS, this, &Smithtry1000::getsignalDVS);
@@ -142,7 +143,7 @@ void Smithtry1000::Reverse()
     emit reverse();
 }
 
-/*/// <summary>
+// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
 void Smithtry1000::AWR_buttonClicked()
@@ -205,7 +206,7 @@ void Smithtry1000::AWR_buttonClicked()
         if (awr.AddElement(L"PORT_TN", x, 800, 0))
         {
             awr.SetElementParameter(L"P", L"2");
-            awr.SetElementParameter(L"NET", L"\"ZL\"");
+            awr.SetStringElementParameter(L"NET", L"\"ZL\"");
             awr.SetElementParameter(L"NP", L"1");
         }
         bool prevPar = false;
@@ -352,6 +353,11 @@ void Smithtry1000::AWR_buttonClicked()
             else if (val->GetMode() == Transform)
             {
                 double value = val->GetValue();
+                if (prevPar == true)
+                {
+                    x += 1000;
+                    awr.AddWire(x, 800, x - 1000, 800);
+                }
                 wchar_t valuestr[64];
                 swprintf(valuestr, 64, L"%.2f", value);
                 if (awr.AddElement(L"XFMR", x, 800, 0))
@@ -374,7 +380,7 @@ void Smithtry1000::AWR_buttonClicked()
         if (awr.AddElement(L"PORT_TN", x, 800, 180))
         {
             awr.SetElementParameter(L"P", L"1");
-            awr.SetElementParameter(L"NET", L"\"ZS\"");
+            awr.SetStringElementParameter(L"NET", L"\"ZS\"");
             awr.SetElementParameter(L"NP", L"1");
         }
         if (awr.m_port2Schematic==nullptr)
@@ -424,7 +430,7 @@ void Smithtry1000::AWR_buttonClicked()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}*/
+}
 
 
 /// <summary>
@@ -596,7 +602,10 @@ void Smithtry1000::closeEvent(QCloseEvent* event)
     this->sParameters->Close();
     SystemParameters::SaveToJSON();
     this->circlesWidget->close();
-    edit->close();
+    if (SystemParameters::edit)
+    {
+        edit->close();
+    }
 }
 
 /// <summary>
@@ -627,6 +636,29 @@ void Smithtry1000::Save()
         try
         {
             circuitElements->saveToFile(fileName);
+        }
+        catch (exception e)
+        {
+
+        }
+    }
+    else
+    {
+        QMessageBox* bx = new QMessageBox();
+        bx->show();
+        bx->Information;
+        bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
+    }
+}
+
+void Smithtry1000::CAD_export()
+{
+    if (index > 1)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
+        try
+        {
+            circuitElements->saveToJSON(fileName);
         }
         catch (exception e)
         {

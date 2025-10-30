@@ -2,7 +2,9 @@
 
 #include <QDialog>
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class SaveDialog; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

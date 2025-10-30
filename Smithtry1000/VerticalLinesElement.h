@@ -30,5 +30,6 @@ public:
 	}
 	virtual ElementType getElementType() const override { return ElementType::VerticalLines; }
 	virtual QJsonObject toJson() const override;
+	virtual QJsonObject toCircuitJson(int&, int&, bool&, bool&, bool&) override;
 	static VerticalLinesElement* createFromJson(const QJsonObject& json);
 };

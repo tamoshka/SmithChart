@@ -7,7 +7,9 @@
 #include "ColourSetting.h"
 #include "ui_AmplitudeFrequency.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class AmplitudeFrequency; };
+#endif
 QT_END_NAMESPACE
 
 /// <summary>

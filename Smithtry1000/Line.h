@@ -21,5 +21,6 @@ public:
 	}
 	virtual ElementType getElementType() const override { return ElementType::Lines; }
 	virtual QJsonObject toJson() const override;
+	virtual QJsonObject toCircuitJson(int&, int&, bool&, bool&, bool&) override;
 	static LinesElement* createFromJson(const QJsonObject& json);
 };
