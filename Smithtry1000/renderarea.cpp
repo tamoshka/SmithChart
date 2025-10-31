@@ -496,7 +496,6 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorShunt)
         {
             tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
-            r = get<0>(tuple1);
             long double t2 = get<1>(tuple1);
             tuple<long double, long double> tuple2;
             long double x, y;
@@ -515,8 +514,9 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
                 y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
             }
+            r = get<0>(tuple2);
             long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y2) <= 0.0001)
+            if (abs(y) <= 0.0001)
             {
                 long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
@@ -526,6 +526,37 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 pixel.setX(x2* scale + center.x());
                 pixel.setY(y2 * scale + center.y());
                 painter.drawLine(iPixel, pixel);
+            }
+            else if (abs(y2)<=0.0001)
+            {
+                long double tmin, tmax;
+                if (y<0)
+                {
+                    step = abs(M_PI * 3 / 2 - t) / 100;
+                    tmax = M_PI * 3 / 2;
+                    tmin = t;
+                }
+                else
+                {
+                    step = abs(M_PI * 3 / 2 - t) / 100;
+                    tmax = t;
+                    tmin = M_PI * 3 / 2;
+                }
+                iPoint = compute_imaginary(tmin);
+                iPixel.setX(iPoint.x * scale + this->rect().center().x());
+                iPixel.setY(-iPoint.y * scale + this->rect().center().y());
+                for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+                    Point point = compute_imaginary(tmin);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(-point.y * scale + center.y());
+                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                    {
+                        painter.drawLine(iPixel, pixel);
+                    }
+                    iPixel = pixel;
+                }
             }
             else
             {
@@ -618,7 +649,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 y = circuitElements->GetCircuitElements()[ll-1]->GetPoint().y;
             }
             long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y2) <= 0.0001)
+            if (abs(y) <= 0.0001)
             {
                 long double x2;
                 x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
@@ -628,6 +659,39 @@ void RenderArea::drawDynamicObject(QPainter& painter)
                 pixel.setX(x2 * scale + center.x());
                 pixel.setY(y2 * scale + center.y());
                 painter.drawLine(iPixel, pixel);
+            }
+            else if (abs(y2) <= 0.0001)
+            {
+                r = get<0>(tuple2);
+                long double tmin, tmax;
+                if (y > 0)
+                {
+                    tmax = M_PI * 3 / 2;
+                    tmin = t;
+                    step = abs(M_PI * 3 / 2 - t) / 100;
+                }
+                else
+                {
+
+                    step = abs(-M_PI/2 - t) / 100;
+                    tmax = t;
+                    tmin = -M_PI / 2;
+                }
+                iPoint = compute_imaginaryParallel(tmin);
+                iPixel.setX(iPoint.x * scale + this->rect().center().x());
+                iPixel.setY(iPoint.y * scale + this->rect().center().y());
+                for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+                    Point point = compute_imaginaryParallel(tmin);
+                    QPointF pixel;
+                    pixel.setX(point.x * scale + center.x());
+                    pixel.setY(point.y * scale + center.y());
+                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
+                    {
+                        painter.drawLine(iPixel, pixel);
+                    }
+                    iPixel = pixel;
+                }
             }
             else
             {
