@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include <windows.h>
 #include "circuitElements.h"
@@ -53,12 +53,4 @@ private:
     HRESULT GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult);
     HRESULT SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue);
 };
-
-// Структура для описания элемента схемы
-struct CircuitElement {
-    std::wstring type;      // "RES", "CAP", "IND", "TLIN"
-    std::wstring value;     // "50", "10pF", "5nH"
-    double x;
-    double y;
-    std::wstring paramName; // "R", "C", "L"
-};
+*/

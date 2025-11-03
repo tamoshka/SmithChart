@@ -107,7 +107,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
     connect(ui->StepForwardButton, &QPushButton::clicked, this, &Smithtry1000::Redo);
-    connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
+   /// connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
     connect(ui->CADButton, &QPushButton::clicked, this, &Smithtry1000::CAD_export);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
@@ -143,7 +143,8 @@ void Smithtry1000::Reverse()
     emit reverse();
 }
 
-// <summary>
+/*
+/// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
 void Smithtry1000::AWR_buttonClicked()
@@ -430,7 +431,7 @@ void Smithtry1000::AWR_buttonClicked()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}
+}*/
 
 
 /// <summary>
