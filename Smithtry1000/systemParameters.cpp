@@ -613,7 +613,7 @@ void SystemParameters::deserializeFromJson()
     if (error.error != QJsonParseError::NoError) {
         qDebug() << "Ошибка парсинга JSON:" << error.errorString();
     }
-    QJsonObject& json = doc.object();
+    QJsonObject json = doc.object();
     try {
         // Десериализация цветов
         if (json.contains("colors") && json["colors"].isObject()) {

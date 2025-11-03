@@ -1,6 +1,6 @@
 #pragma once
 #include <QList>
-#include <QtSvg>
+#include <QtSvgWidgets>
 #include <QPointF>
 #include <tuple>
 #include <QMap>

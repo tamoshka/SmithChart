@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <qpainterpath.h>
-#include <QtSvg>
 #include "general.h"
 #include <QWidget>
 #include <QScrollArea>
@@ -37,7 +36,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
-    void enterEvent(QEvent* event) override;
+    void enterEvent(QEnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 };

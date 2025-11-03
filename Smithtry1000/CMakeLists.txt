@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-D_WIN32_DCOM)
 
 # Поиск Qt компонентов (совместимо с Conan)
-find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets SvgWidgets PrintSupport)
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
 # Иначе настраиваем вручную
 if(COMMAND qt_standard_project_setup)
@@ -129,19 +129,19 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Линковка Qt библиотек (в конце файла, где у вас target_link_libraries)
 if(USING_CONAN)
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::Svg
-        Qt5::PrintSupport
+        Qt::Core
+        Qt::Gui
+        Qt::Widgets
+        Qt::SvgWidgets
+        Qt::PrintSupport
     )
 else()
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::Svg
-        Qt5::PrintSupport
+        Qt::Core
+        Qt::Gui
+        Qt::Widgets
+        Qt::SvgWidgets
+        Qt::PrintSupport
         ole32
         oleaut32
         uuid
