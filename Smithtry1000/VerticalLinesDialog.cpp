@@ -1,10 +1,14 @@
-#include "VerticalLinesDialog.h"
+﻿#include "VerticalLinesDialog.h"
 #include "systemParameters.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+/// <summary>
+/// Конструктор класса VerticalLinesDialog.
+/// </summary>
+/// <param name="parent"></param>
 VerticalLinesDialog::VerticalLinesDialog(QWidget* parent)
     : QDialog(parent)
 {
@@ -30,6 +34,9 @@ VerticalLinesDialog::VerticalLinesDialog(QWidget* parent)
     connect(okButton, &QPushButton::clicked, this, &VerticalLinesDialog::onAccept);
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void VerticalLinesDialog::onAccept()
 {
     QString tempZ0 = Z0Field->text();
@@ -38,14 +45,15 @@ void VerticalLinesDialog::onAccept()
     bool validateEr = true;
     double valueZ0 = Z0Field->text().toFloat(&validateZ0);
     double valueEr = ErField->text().toFloat(&validateEr);
-    if (!validateZ0 || !validateEr)
+    if (!validateZ0 || !validateEr || valueZ0<=0 || valueEr<=0)
     {
-        reject();
+        SystemParameters::exc = true;
+        accept();
     }
     else
     {
         SystemParameters::z0line = valueZ0;
         SystemParameters::er = valueEr;
         accept();
-    } // ������� ����
+    }
 }

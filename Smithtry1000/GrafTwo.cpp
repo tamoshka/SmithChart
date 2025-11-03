@@ -1,8 +1,18 @@
-﻿#include "GrafTwo.h"
+#include "GrafTwo.h"
+#include <QMessageBox>
+#include <QtMath>
+#include <QThread>
+#include <cmath>
+#include <exception>
+#include "ui_GrafTwo.h"
 #include <QString>
 #include "S2p.h"
-#include "qvalueaxis.h"
 #include "ColourSetting.h"
+
+/// <summary>
+/// Конструктор класса GrafTwo.
+/// </summary>
+/// <param name="parent"></param>
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafTwoClass())
@@ -10,22 +20,26 @@ GrafTwo::GrafTwo(QWidget* parent)
 	ui->setupUi(this);
 }
 
+
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void GrafTwo::Load()
 {
 	extern QString fileName;
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-
+	connect(ui->SaveGrafTwo, &QPushButton::clicked, this, &GrafTwo::SaveGrafTwo);
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 	ui->widget->clearGraphs();
-	x = QVector<double>(s.f.begin(), s.f.end());
-	y1 = QVector<double>(s.Mg.begin(), s.Mg.end());
-	y2 = QVector<double>(s.Ms.begin(), s.Ms.end());
-	y3 = QVector<double>(s.Mk.begin(), s.Mk.end());
-	y4 = QVector<double>(s.Mu.begin(), s.Mu.end());
+	x = QVector<double>::fromStdVector(s.f);
+	y1 = QVector<double>::fromStdVector(s.Mg);
+	y2 = QVector<double>::fromStdVector(s.Ms);
+	y3 = QVector<double>::fromStdVector(s.Mk);
+	y4 = QVector<double>::fromStdVector(s.Mu);
 
 	double m1, m2, m3, m4;
 	xBegin = 0;
@@ -81,22 +95,26 @@ void GrafTwo::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
-	QPen pen1(SystemParameters::magGrafColor);
+	QPen pen1(SystemParameters::magGrafColor, SystemParameters::sPlotline[2]);
+	QPen penGid(SystemParameters::gridGrafTwoColor, SystemParameters::sPlotline[8], Qt::DotLine);
+	ui->widget->xAxis->grid()->setPen(penGid);
+	ui->widget->yAxis->grid()->setPen(penGid);
+	ui->widget->yAxis2->grid()->setPen(penGid);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
-	QPen pen2(SystemParameters::msgGrafColor);
+	QPen pen2(SystemParameters::msgGrafColor,SystemParameters::sPlotline[3]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");
 	ui->widget->graph(1)->addData(x, y2);
-	QPen pen3(SystemParameters::kGrafColor);
+	QPen pen3(SystemParameters::kGrafColor, SystemParameters::sPlotline[4]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(2)->setPen(pen3);
 	ui->widget->graph(2)->setName("K");
 	ui->widget->graph(2)->addData(x, y3);
-	QPen pen4(SystemParameters::muGrafColor);
+	QPen pen4(SystemParameters::muGrafColor, SystemParameters::sPlotline[5]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(3)->setPen(pen4);
 	ui->widget->graph(3)->setName("μ");
@@ -120,10 +138,10 @@ void GrafTwo::Load()
 	GraphK->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
 	GraphK->removeFromLegend();
 
-	Graphμ = ui->widget->addGraph();
-	Graphμ->setLineStyle(QCPGraph::lsNone);
-	Graphμ->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
-	Graphμ->removeFromLegend();
+	Graphu = ui->widget->addGraph();
+	Graphu->setLineStyle(QCPGraph::lsNone);
+	Graphu->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssSquare, Qt::black, 5));
+	Graphu->removeFromLegend();
 
 	GraphMAG = ui->widget->addGraph();
 	GraphMAG->setLineStyle(QCPGraph::lsNone);
@@ -138,49 +156,60 @@ void GrafTwo::Load()
 	GraphMAG->setValueAxis(ui->widget->yAxis);
 	GraphMSG->setValueAxis(ui->widget->yAxis);
 	GraphK->setValueAxis(ui->widget->yAxis2);
-	Graphμ->setValueAxis(ui->widget->yAxis2);
+	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
-void GrafTwo::updateMAGColor(const QColor& color)
+/// <summary>
+/// Изменение цвета на виджете.
+/// </summary>
+void GrafTwo::updateGrafTwoColor()
 {
-	if (ui->widget->graphCount() > 0) 
+	if (fileName != "")
 	{
-		QPen pen(color);
-		ui->widget->graph(0)->setPen(pen);
-		ui->widget->replot();
+		this->Load();
+		this->update();
 	}
 }
 
-void GrafTwo::updateMSGColor(const QColor& color)
+/// <summary>
+/// Сохранение виджета в изображение.
+/// </summary>
+void GrafTwo::SaveGrafTwo()
 {
-	if (ui->widget->graphCount() > 1) 
+	QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+	if (!fileName.isEmpty())
 	{
-		QPen pen(color);
-		ui->widget->graph(1)->setPen(pen);
-		ui->widget->replot();
+		bool success = false;
+
+		if (fileName.endsWith(".png", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+		}
+		else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
+		{
+			success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+		}
+		else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePdf(fileName);
+		}
+
+		if (success)
+		{
+			QMessageBox::information(this, "Success", QString("The graph is saved to a file:\n%1").arg(fileName));
+		}
+		else
+		{
+			QMessageBox::warning(this, "Error", "Couldn't save graph!");
+		}
 	}
 }
 
-void GrafTwo::updateKColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 2) 
-	{
-		QPen pen(color);
-		ui->widget->graph(2)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
-void GrafTwo::updateMuColor(const QColor& color)
-{
-	if (ui->widget->graphCount() > 3) 
-	{
-		QPen pen(color);
-		ui->widget->graph(3)->setPen(pen);
-		ui->widget->replot();
-	}
-}
-
+/// <summary>
+/// Выбор подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void GrafTwo::highlightPoint(int index)
 {
 	if (index >= 0 && index < x.size())
@@ -190,12 +219,15 @@ void GrafTwo::highlightPoint(int index)
 		GraphMAG->setData(highlightX, QVector<double>{y1[index]});
 		GraphMSG->setData(highlightX, QVector<double>{y2[index]});
 		GraphK->setData(highlightX, QVector<double>{y3[index]});
-		Graphμ->setData(highlightX, QVector<double>{y4[index]});
+		Graphu->setData(highlightX, QVector<double>{y4[index]});
 
 		ui->widget->replot();
 	}
 }
 
+/// <summary>
+/// Деструктор класса GrafTwo.
+/// </summary>
 GrafTwo::~GrafTwo()
 {
 	delete ui;

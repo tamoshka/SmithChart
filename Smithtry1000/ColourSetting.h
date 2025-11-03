@@ -1,12 +1,18 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include "ui_ColourSetting.h"
-#include "renderarea.h"
+#include "circuitElements.h"
+#include <map>
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class ColourSettingClass; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс настройки цветов и толщины линий.
+/// </summary>
 class ColourSetting : public QWidget
 {
 	Q_OBJECT
@@ -14,30 +20,14 @@ class ColourSetting : public QWidget
 public:
 	ColourSetting(QWidget *parent = nullptr);
 	~ColourSetting();
-
-	QColor getS11Color() const { return s11GrafColor;}
-	QColor getS22Color() const { return s22GrafColor;}
-	QColor getMAGColor() const { return magGrafColor;}
-	QColor getMSGColor() const { return msgGrafColor;}
-	QColor getKColor() const { return kGrafColor; }
-	QColor getMuColor() const { return muGrafColor;}
-	QColor getAmpS11Color() const { return ampS11Color; }
-	QColor getAmpS21Color() const { return ampS21Color; }
-	QColor getCirclS12Color() const { return circleS12; }
-	QColor getCirclS21Color() const { return circleS21; }
-	QColor getImpedanceColor() const { return ImpedanceColor; }
-	QColor getAdmitanceColor() const { return AdmitanceColor; }
-
 signals:
-	void s11ColorChanged(const QColor& color);
-	void s22ColorChanged(const QColor& color);
-	void magColorChanged(const QColor& color);
-	void msgColorChanged(const QColor& color);
-	void kColorChanged(const QColor& color);
-	void muColorChanged(const QColor& color);
 	void signal();
 	void signalS12S21();
 	void signalDVS();
+	void grafOneColor();
+	void grafTwoColor();
+	void allchangedsignal();
+	void rev();
 
 private slots:
 	void S11Graf();
@@ -52,21 +42,33 @@ private slots:
 	void CircleS21();
 	void ColourImpedance();
 	void ColourAdmitance();
+	void ButtonCancel();
+	void ButtonOK();
+	void GridGrafOneColor();
+	void GridGrafTwoColor();
+	void DatapointCirclesColor();
+	void TempLinesColor();
+	void ElementLinesColor();
+	void RefYColor();
+	void RefZColor();
+	void VerticalHorizontalChanged();
+	void QCirclesColor();
+	void VSWRColor();
+
+	//По sBoxIndex
+	void LineCircleS12S21(int line);
+	void LineGrafOne(int line);
+	void LineGrafTwo(int line);
+	void DVSLine(float line);
+	void AmpFrLine(int line);
+
+	void DefaultClicked();
 
 private:
 	Ui::ColourSettingClass *ui;
-	QColor s11GrafColor;
-	QColor s22GrafColor;
-	QColor magGrafColor;
-	QColor msgGrafColor;
-	QColor kGrafColor;
-	QColor muGrafColor;
-	QColor ampS11Color;
-	QColor ampS21Color;
-	QColor circleS12;
-	QColor circleS21;
-	QColor ImpedanceColor;
-	QColor AdmitanceColor;
 	void setButtonColor(QPushButton* button, const QColor& color);
+	QMap<QSpinBox*, int> sBoxIndex;
+	QMap<QSpinBox*, int> sBoxDVSIndex;
+	QMap<QSpinBox*, int> sBoxAmpFrIndex;
 };
 

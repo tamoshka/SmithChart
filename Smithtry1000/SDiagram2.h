@@ -7,11 +7,17 @@
 #include <QColor>
 #include <QVector>
 #include <QPoint>
-#include "QEvent.h"
+#include <QEvent>
+#include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class SDiagram2; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения S11 и S22 кругов.
+/// </summary>
 class SDiagram2 : public QWidget
 {
 	Q_OBJECT
@@ -51,6 +57,6 @@ private:
 	float scale = 200;
 	float scaleFactor;
 
-	//������ ����� (S11,S22)
+	//Тип параметра (S11,S22)
 	ParameterType currentType;
 };

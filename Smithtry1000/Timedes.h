@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef TYPEDEFS_H
 #define TYPEDEFS_H
 
@@ -7,7 +7,7 @@
 using namespace std;
 typedef complex<double> complex_t;
 
-// Contains the S-parameter matrix and the frequency range
+// Хранение S-параметров.
 typedef  struct {
     vector<vector<vector<complex_t> > > S;
     vector<double> f;

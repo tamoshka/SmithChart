@@ -1,19 +1,30 @@
 #pragma once
 #include <QList>
-#include <QtSvgWidgets>
+#include <QtSvg>
 #include <QPointF>
 #include <tuple>
-#include <QMap>>
+#include <QMap>
 #include <list>
 #include <vector>
 #include <complex>
 #include <cmath>
 #include <map>
+#include <QSet>
 using namespace std;
 
-using Complex = complex<double>;
+// Макрос для замены index на point_index
+#define index point_index
 
-extern enum mode
+using Complex = complex<long double>;
+
+enum ElementType
+{
+    BaseElement = 0,
+    VerticalLines = 1,
+    Lines = 2
+};
+
+enum mode
 {
     CapacitorParallel,
     CapacitorShunt,
@@ -24,42 +35,61 @@ extern enum mode
     Line,
     OSLine,
     SSLine,
+    Transform,
     AddPoint,
     Default
 }; 
-extern enum chartMode
+enum chartMode
 {
     RealImpedance,
     RealAdmitance,
     ImagImpedance,
     ImagAdmitance
 };
-extern enum parameterMode
+enum parameterMode
 {
     Z,
     Y,
     G
 };
-extern struct Point
+enum systemMode
 {
-    double x;
-    double y;
+    Impedance,
+    Admittance,
+    ReflectionCoefficient
 };
+enum valueMode
+{
+    Polar,
+    Cartesian
+};
+struct Point
+{
+    long double x;
+    long double y;
+};
+
 extern QString fileName;
 extern mode Model;
-extern double frequency;
-extern QList<double> frequencyList;
-extern QList<Point> morePoints;
 extern map<int, tuple<Point, bool>> allPoints;
-extern QList<double> qCircles;
-extern int index;
+extern int point_index;
 extern int dpIndex;
-extern double impedanceRealR;
-extern double impedanceImagR;
-extern double admitanceRealR;
-extern double admitanceImagR;
-extern double lastPointX;
-extern double lastPointY;
+extern int allpointindex;
 extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
-extern map<int, tuple<Point, double, double, mode>> points;
+extern chartMode cMode;
+extern parameterMode pMode;
+extern long double lastPointX;
+extern long double lastPointY;
+extern long double rRadius;
+extern long double rCenterX;
+extern long double rCenterY;
+extern long double iRadius;
+extern long double iCenterX;
+extern long double iCenterY;
+extern long double gRadius;
+extern long double gCenterX;
+extern long double gCenterY;
+extern long double bRadius;
+extern long double bCenterX;
+extern long double bCenterY;

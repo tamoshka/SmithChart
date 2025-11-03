@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include "circuitElements.h"
@@ -7,28 +7,34 @@
 #include "ColourSetting.h"
 #include "ui_AmplitudeFrequency.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class AmplitudeFrequency; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс расчёта и отображения АЧХ.
+/// </summary>
 class AmplitudeFrequency : public QWidget
 {
 	Q_OBJECT
 
 private:
 	CircuitElements* circuitElements;
-	double z0 = 50;
 	Complex gamma1; // reflection coefficient
 	Complex gamma2; // reflection coefficient
 	void SetGamma1(Complex);
 	void SetGamma2(Complex);
-	QVector<double> freqs;
+	QVector<long double> freqs;
+public slots:
+	void SaveAmpFr();
 public:
-	void ReflectionCalculation();
+	void Clear();
 	Complex GetGamma1();
 	Complex GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
-	void SetPoint(double[], double[], double[]);
+	void SetPoint(long double[], long double[], long double[]);
 	~AmplitudeFrequency();
 	Ui::AmplitudeFrequency *ui;
 };

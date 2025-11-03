@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cctype>
 #include <fstream>
 #include <string>
@@ -16,26 +16,38 @@ int strcasecmp(const char* first, const char* second)
     return lstrcmpiA(first, second);
 }
 #else
-#include <strings.h>    // ��� strcasecmp � Linux
-#include <cmath>        // ��� M_PI � �������������� �������
+#include <strings.h>    // для strcasecmp в Linux
+#include <cmath>        // для M_PI и математических функций
 #include <cstdlib>
 #endif
 
-// ���������, ��� M_PI ���������
+// Убедиться, что M_PI определен
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
+typedef unsigned char byte;
 using namespace std;
+
+/// <summary>
+/// Конструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::TouchstoneFile()
 {
     setlocale(LC_NUMERIC, "C");
 }
 
+/// <summary>
+/// Деструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::~TouchstoneFile()
 {
 }
 
+/// <summary>
+/// Загрузка S-параметров из S1P и S2P файлов.
+/// </summary>
+/// <param name="filename">Путь к файлу.</param>
+/// <returns>S-параметры.</returns>
 spar_t TouchstoneFile::Load2P(const char* filename)
 {
     ifstream File;

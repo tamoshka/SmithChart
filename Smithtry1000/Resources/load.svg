@@ -12,4 +12,11 @@
   <!-- Линия снизу -->
   <line x1="15" y1="39.5" x2="25" y2="39.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
   <line x1="20" y1="32.12" x2="20" y2="40" stroke="#000" stroke-width="1.5"/>
+
+  <text x="30" y="18.5" transform="rotate(90, 30, 18.5)" font-family="Verdana" font-size="10" fill="black">
+    Z
+  </text>
+  <text x="29" y="25.5" transform="rotate(90, 29, 25.5)" font-family="Verdana" font-size="6" fill="black">
+    L
+  </text>
 </svg>

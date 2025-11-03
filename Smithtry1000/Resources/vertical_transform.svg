@@ -1,0 +1,44 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+
+  <line x1="0" y1="1" x2="10" y2="1" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="40" y1="1" x2="30" y2="1" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+
+  <line x1="0" y1="39.5" x2="40" y2="39.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+
+
+  <line x1="10" y1="0" x2="10" y2="6" stroke="#000" stroke-width="1.5"/>
+  <line x1="30" y1="0" x2="30" y2="6" stroke="#000" stroke-width="1.5"/>
+
+  <line x1="10" y1="34" x2="10" y2="40" stroke="#000" stroke-width="1.5"/>
+  <line x1="30" y1="34" x2="30" y2="40" stroke="#000" stroke-width="1.5"/>
+
+  <line x1="20" y1="4" x2="20" y2="34" stroke="#000" stroke-width="1.5"/>
+
+  <!-- Вертикальные линии -->
+  <!-- Эллипсы -->
+  <path d="M 10 6
+	   C 16 7, 16 12, 10 13" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 10 13
+	   C 16 14, 16 19, 10 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 10 20
+	   C 16 21, 16 26, 10 27" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 10 27
+	   C 16 28, 16 33, 10 34" stroke="#000" stroke-width="1.5" fill="none"/>
+
+  <path d="M 30 6
+	   C 24 7, 24 12, 30 13" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 30 13
+	   C 24 14, 24 19, 30 20" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 30 20
+	   C 24 21, 24 26, 30 27" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 30 27
+	   C 24 28, 24 33, 30 34" stroke="#000" stroke-width="1.5" fill="none"/>
+
+  <text x="2" y="25.5" font-family="Verdana" font-size="10" fill="black">
+    n
+  </text>
+  <text x="30" y="25.5" font-family="Verdana" font-size="10" fill="black">
+    1
+  </text>
+
+</svg>

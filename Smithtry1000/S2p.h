@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _TOUCHSTONE_FILE_H_
 #define _TOUCHSTONE_FILE_H_
 
@@ -9,6 +9,9 @@ using namespace std;
 typedef enum { GHz, MHz, KHz, Hz }FUnit;
 typedef enum { DB, MA, RI }SFormat;
 
+/// <summary>
+/// Класс для получения S-параметров.
+/// </summary>
 class TouchstoneFile
 {
 public:
