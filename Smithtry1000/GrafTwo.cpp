@@ -42,12 +42,11 @@ void GrafTwo::Load()
 	y4 = QVector<double>::fromStdVector(s.Mu);
 
 	double m1, m2, m3, m4;
-	xBegin = 0;
-	xEnd = s.f[s.f.size() - 1];
 	m1 = y1[0];
 	m2 = y2[0];
 	m3 = y3[0];
 	m4 = y4[0];
+	double yBegin, yEnd;
 	for (int j = 0; j < s.Mg.size() - 1; j++)
 	{
 		if (y1[j + 1] > m1)
@@ -75,7 +74,7 @@ void GrafTwo::Load()
 	}
 
 
-	ui->widget->xAxis->setRange(xBegin, xEnd);
+	ui->widget->xAxis->setRange(0, s.f[s.f.size() - 1]);
 	ui->widget->xAxis->setLabel("f[Hz]");
 	ui->widget->yAxis->setRange(yBegin, yEnd);
 	ui->widget->yAxis->setLabel("[dB]");

@@ -32,10 +32,7 @@ void GrafOne::Load()
 	y1 = QVector<double>::fromStdVector(s.S11);
 	y2 = QVector<double>::fromStdVector(s.S22);
 	double m1, m2;
-	hX = s.f[s.f.size() - 1] / 4;
-
-	xBegin = 0;
-	xEnd = s.f[s.f.size() - 1];
+	double yBegin, yEnd;
 	m1 = y1[0];
 	m2 = y2[0];
 	for (int j = 0; j < s.S11.size() - 1; j++)
@@ -54,46 +51,24 @@ void GrafOne::Load()
 	}
 	if (extension == "S1P" || extension == "s1p")
 	{
-		hY = m1 / 5;
 		yBegin = m1 * 1.25;
 		yEnd = 0;
 	}
 	else if (m2 < m1)
 	{
-		hY = m2 / 5;
 		yBegin = m2 * 1.25;
 		yEnd = 0;
 	}
 	else
 	{
-		hY = m1 / 5;
 		yBegin = m1 * 1.25;
 		yEnd = 0;
 	}
 
-	ui->widget->xAxis->setRange(xBegin, xEnd);
+	ui->widget->xAxis->setRange(0, s.f[s.f.size() - 1]);
 	ui->widget->xAxis->setLabel("f[Hz]");
 	ui->widget->yAxis->setRange(yBegin, yEnd);
 	ui->widget->yAxis->setLabel("[dB]");
-
-	for (xBegin; xBegin <= xEnd; xBegin += hX)
-	{
-		if (xBegin <= xEnd)
-		{
-			x;
-			y1;
-		}
-	}
-
-	for (yEnd; yEnd <= yBegin; yEnd += yBegin / 5)
-	{
-		hY + hY;
-		if (hY == yEnd)
-		{
-			x;
-			y2;
-		}
-	}
 
 	ui->widget->legend->setVisible(true);
 	if (extension == "S1P" || extension == "s1p")

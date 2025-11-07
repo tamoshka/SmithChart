@@ -36,7 +36,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     ui->pointTable->setRowCount(1);
     ui->pointTable->setColumnWidth(0, 40);
     ui->pointTable->setColumnWidth(1, 35);
-    ui->pointTable->setColumnWidth(2, 150);
+    ui->pointTable->setColumnWidth(2, 130);
     ui->pointTable->setColumnWidth(3, 70);
     ui->pointTable->setColumnWidth(4, 85);
     ui->pointTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -91,8 +91,8 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->PlusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
     connect(ui->MinusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
     connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
-    //connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
-    //connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
+    ///connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
+    ///connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
     connect(ui->Line_button, &QPushButton::clicked, this, &Smithtry1000::onLine_buttonClicked);
@@ -107,7 +107,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
     connect(ui->StepForwardButton, &QPushButton::clicked, this, &Smithtry1000::Redo);
-   /// connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
+    connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
     connect(ui->CADButton, &QPushButton::clicked, this, &Smithtry1000::CAD_export);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
@@ -116,7 +116,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QObject::connect(sParameters->set, &ColourSetting::allchangedsignal, this, &Smithtry1000::getallchangedsignal);
     QObject::connect(tuneWidget, &TuneWidget::remove, auxiliaryWidget, &CircuitWidget::RemoveElement);
     QObject::connect(tuneWidget, &TuneWidget::removeAll, auxiliaryWidget, &CircuitWidget::RemoveAll);
-    QObject::connect(this, &Smithtry1000::left, circlesWidget, &CirclesWidget::Load);
+    QObject::connect(this, &Smithtry1000::load, circlesWidget, &CirclesWidget::Load);
     QObject::connect(auxiliaryWidget, &CircuitWidget::clicked, tuneWidget, &TuneWidget::GetSignal);
     QObject::connect(sParameters->set, &ColourSetting::rev, this, &Smithtry1000::Reverse);
     QObject::connect(this, &Smithtry1000::reverse, auxiliaryWidget, &CircuitWidget::Reverse);
@@ -143,7 +143,6 @@ void Smithtry1000::Reverse()
     emit reverse();
 }
 
-/*
 /// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
@@ -416,9 +415,8 @@ void Smithtry1000::AWR_buttonClicked()
         }
         
 
-        awr.SetFrequencySweep(1e8, 3e9, 100);
+        awr.SetFrequencySweep(1e8, 3e9, 1e8);
 
-        awr.SetSweepType(true);
         qDebug() << "Saving project...";
         if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
             qDebug() << "Project saved successfully!";
@@ -431,7 +429,7 @@ void Smithtry1000::AWR_buttonClicked()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}*/
+}
 
 
 /// <summary>
@@ -908,7 +906,7 @@ void Smithtry1000::Load()
         try
         {
             circuitElements->loadFromFile(fileName);
-            emit left();
+            emit load();
             dpIndex = circuitElements->morePoints.size() + 1;
             index = circuitElements->GetCircuitElements().size()+1;
             long double Re = circuitElements->z.real();
@@ -2409,6 +2407,7 @@ void Smithtry1000::onButtonClicked()
         leftClicked = false;
         rightClicked = false;
         QPoint point = QCursor::pos();
+        double tempPointX, tempPointY;
         while (!leftClicked && !rightClicked)
         {
             QCoreApplication::processEvents();
@@ -3661,6 +3660,7 @@ void Smithtry1000::onTimeout()
         QPoint posOnCircle = getPointOnCircle(dx, dy);
         if (Model == Transform)
         {
+            double tempX=0, tempY=0;
             if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(scale, 2))
             {
                 QCursor::setPos(tempX, tempY);

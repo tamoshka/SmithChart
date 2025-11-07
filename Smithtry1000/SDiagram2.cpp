@@ -15,16 +15,14 @@
 /// <param name="parent"></param>
 SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     : QWidget(parent),
-    mBackGroundColor(255, 255, 255),
-    mShapeColor(0, 0, 0),
     currentType(type)
 {
     setFixedSize(600, 600);
     setMinimumSize(450, 450);
     setMaximumSize(900, 900);
     m_cacheValid = false;
-    m_scaleFactor = 2.0;
-    scaleFactor = qMin(this->width(), this->height()) / 450.0f;
+    scaleFactorX = this->width() / 450.0f;
+    scaleFactorY = this->height() / 450.0f;
 }
 
 /// <summary>
@@ -136,14 +134,14 @@ QPointF SDiagram2::compute_imaginary(float t)
 /// <param name="painter"></param>
 void SDiagram2::drawStaticObjects(QPainter& painter)
 {
-    scale = defaultScale * scaleFactor;
+    scale = defaultScale * min(scaleFactorX, scaleFactorY);
     center = this->rect().center();
-    painter.setBrush(mBackGroundColor);
-    painter.setPen(QPen((mShapeColor, 20)));
+    painter.setBrush(SystemParameters::BackgroundColor);
+    painter.setPen(QPen((QColor(0, 0, 0), 20)));
     painter.drawRect(this->rect());
     painter.drawLine(QPointF(center.x(), -1000 + center.y()), QPointF(center.x(), 1000 + center.y()));
     painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
-    painter.setPen(mShapeColor);
+    painter.setPen(QColor(0, 0, 0));
     painter.setPen(Qt::blue);
     float intervalLength = 2 * M_PI;
     int stepCount = 2000;
@@ -365,14 +363,14 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
 /// </summary>
 void SDiagram2::generateCache()
 {
-    QSize scaledSize = size() * m_scaleFactor;
+    QSize scaledSize = size() * 2;
     QImage image(scaledSize, QImage::Format_ARGB32_Premultiplied);
     image.fill(Qt::transparent);
     QPainter cachePainter(&image);
     cachePainter.setRenderHint(QPainter::Antialiasing, true);
     cachePainter.setRenderHint(QPainter::TextAntialiasing, true);
     cachePainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-    cachePainter.scale(m_scaleFactor, m_scaleFactor);
+    cachePainter.scale(2, 2);
     drawStaticObjects(cachePainter);
     m_cache = QPixmap::fromImage(image.scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     m_cacheValid = true;
@@ -389,7 +387,8 @@ void SDiagram2::paintEvent(QPaintEvent* event)
     size_t last_dot = extension.find_last_of('.');
     extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
 
-    scaleFactor = qMin(this->width(), this->height()) / 450.0f;
+    scaleFactorX = this->width() / 450.0f;
+    scaleFactorY = this->height() / 450.0f;
     TouchstoneFile t;
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
@@ -417,24 +416,24 @@ void SDiagram2::paintEvent(QPaintEvent* event)
     QRectF widgetRect = this->rect();
     QPointF center = widgetRect.center();
 
-    float maxCircleRadius = 200 * scaleFactor;
+    float maxCircleRadius = 200 * min(scaleFactorX, scaleFactorY);
     QVector<float> radii = { 50, 100, 150, 200 };
     QFont font = painter.font();
-    font.setPointSize(8 * scaleFactor);
+    font.setPointSize(8 * min(scaleFactorX, scaleFactorY));
     painter.setFont(font);
 
-    float pointScale = 3.0f * scaleFactor;
-    float lineWidth = 2.0f * scaleFactor;
+    float pointScale = 3.0f * min(scaleFactorX, scaleFactorY);
+    float lineWidth = 2.0f * min(scaleFactorX, scaleFactorY);
 
     painter.setPen(QPen(Qt::red, lineWidth));
     for (int i = 0; i < x.size(); i++) 
     {
-        QPointF point = center + QPointF(x[i] * 200 * scaleFactor, y[i] * 200 * scaleFactor);
+        QPointF point = center + QPointF(x[i] * 200 * scaleFactorX, y[i] * 200 * scaleFactorY);
         painter.drawEllipse(point, pointScale, pointScale);
 
         if (i > 0) 
         {
-            QPointF prevPoint = center + QPointF(x[i - 1] * 200 * scaleFactor, y[i - 1] * 200 * scaleFactor);
+            QPointF prevPoint = center + QPointF(x[i - 1] * 200 * scaleFactorX, y[i - 1] * 200 * scaleFactorY);
             painter.setPen(QPen(Qt::black, lineWidth));
             painter.drawLine(prevPoint, point);
             painter.setPen(QPen(Qt::red, lineWidth));
@@ -443,11 +442,11 @@ void SDiagram2::paintEvent(QPaintEvent* event)
 
     if (highlightedPoint >= 0 && highlightedPoint < x.size()) 
     {
-        QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactor,
-            y[highlightedPoint] * 200 * scaleFactor);
+        QPointF highlightPoint = center + QPointF(x[highlightedPoint] * 200 * scaleFactorX,
+            y[highlightedPoint] * 200 * scaleFactorY);
         painter.setPen(QPen(Qt::black, lineWidth));
         painter.setBrush(Qt::black);
-        painter.drawEllipse(highlightPoint, 3 * scaleFactor, 3 * scaleFactor);
+        painter.drawEllipse(highlightPoint, 3 * scaleFactorX, 3 * scaleFactorY);
 
         complex_t sPoint = sParam[highlightedPoint];
         double magnitude = abs(sPoint);
@@ -458,7 +457,7 @@ void SDiagram2::paintEvent(QPaintEvent* event)
             .arg(sPoint.real(), 0, 'f', 3)
             .arg(sPoint.imag(), 0, 'f', 2);
 
-        QPointF textPos = highlightPoint + QPointF(10 * scaleFactor, -10 * scaleFactor);
+        QPointF textPos = highlightPoint + QPointF(10 * scaleFactorX, -10 * scaleFactorY);
         painter.drawText(textPos, highlightLabel);
     }
 }

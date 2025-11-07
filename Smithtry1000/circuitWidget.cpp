@@ -842,8 +842,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
             painter.drawLine(third, fourth);
             painter.drawLine(fourth, first);
         }
-        left = false;
     }
+    left = false;
 }
 
 /// <summary>

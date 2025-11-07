@@ -13,7 +13,7 @@ FrequencyDialog::FrequencyDialog(QWidget* parent, CircuitElements* circuit)
     : QDialog(parent)
 {
     circuitElements = circuit;
-    this->setWindowTitle("Frequency, MHz");
+    this->setWindowTitle("Frequency");
     this->setFixedSize(300, 150);
     inputField = new QLineEdit(this);
 

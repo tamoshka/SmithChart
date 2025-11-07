@@ -1,4 +1,4 @@
-/*#pragma once
+#pragma once
 
 #include <windows.h>
 #include "circuitElements.h"
@@ -10,7 +10,7 @@
 
 class AWRInterface {
 public:
-    AWRInterface(CircuitElements* circuit);
+    AWRInterface();
     ~AWRInterface();
 
     bool Initialize();
@@ -20,9 +20,7 @@ public:
     bool ClearAllElements();
     bool ClearAllPortElements(bool);
     bool ClearAllWires();
-    bool SetFrequencySweep(double startFreq, double stopFreq, int numPoints);
-    bool SetSingleFrequency(double frequency);
-    bool SetSweepType(bool isLinear);
+    bool SetFrequencySweep(double startFreq, double stopFreq, double numPoints);
     bool AddSchematic(const std::wstring& schematicName);
     bool AddPortSchematic(const std::wstring& schematicName, bool);
     bool AddPortElement(const std::wstring& elementType, double x, double y, double angle, bool);
@@ -39,7 +37,6 @@ public:
     IDispatch* m_pLastElement;
 
 private:
-    CircuitElements* circuitElements;
     bool ParseValueAndUnits(const wchar_t* str, double& value, std::wstring& units);
     double ConvertToSI(double value, const wchar_t* unit);
 
@@ -53,4 +50,3 @@ private:
     HRESULT GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult);
     HRESULT SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue);
 };
-*/

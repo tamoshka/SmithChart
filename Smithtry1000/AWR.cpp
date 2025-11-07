@@ -1,7 +1,7 @@
-#/*include "awr_interface.h"
+#include "awr_interface.h"
 #include <iostream>
 
-AWRInterface::AWRInterface(CircuitElements* circuit)
+AWRInterface::AWRInterface()
     : m_pAWRApp(nullptr)
     , m_pProject(nullptr)
     , m_pSchematic(nullptr)
@@ -10,7 +10,6 @@ AWRInterface::AWRInterface(CircuitElements* circuit)
     , m_portSchematic(nullptr)
     , m_port2Schematic(nullptr)
 {
-    circuitElements = circuit;
 }
 
 AWRInterface::~AWRInterface() {
@@ -737,7 +736,7 @@ bool AWRInterface::AddWire(double x1, double y1, double x2, double y2)
     return SUCCEEDED(hr);
 }
 
-bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, int numPoints)
+bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double numPoints)
 {
     if (!m_pProject) return false;
 
@@ -852,75 +851,6 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, int numP
     VariantClear(&varFreqs);
 
     return true;
-}
-
-// Альтернативный метод - установка одной рабочей частоты
-bool AWRInterface::SetSingleFrequency(double frequency)
-{
-    // Устанавливаем узкий диапазон вокруг одной частоты
-    return SetFrequencySweep(frequency, frequency, 1);
-}
-
-// Метод для установки типа развёртки (линейная/логарифмическая)
-bool AWRInterface::SetSweepType(bool isLinear)
-{
-    if (!m_pProject) return false;
-
-    HRESULT hr;
-    DISPID dispid;
-
-    OLECHAR* propFrequencies = L"Frequencies";
-    hr = m_pProject->GetIDsOfNames(IID_NULL, &propFrequencies, 1,
-        LOCALE_USER_DEFAULT, &dispid);
-    if (FAILED(hr)) return false;
-
-    DISPPARAMS noParams = { NULL, NULL, 0, 0 };
-    VARIANT varFreqs;
-    VariantInit(&varFreqs);
-
-    hr = m_pProject->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
-        DISPATCH_PROPERTYGET, &noParams,
-        &varFreqs, NULL, NULL);
-    if (FAILED(hr)) {
-        VariantClear(&varFreqs);
-        return false;
-    }
-
-    IDispatch* pFrequencies = varFreqs.pdispVal;
-
-    // Устанавливаем тип развёртки (SweepType)
-    // 0 = Linear, 1 = Log, 2 = Single
-    OLECHAR* propSweepType = L"SweepType";
-    hr = pFrequencies->GetIDsOfNames(IID_NULL, &propSweepType, 1,
-        LOCALE_USER_DEFAULT, &dispid);
-    if (SUCCEEDED(hr)) {
-        VARIANT varType;
-        VariantInit(&varType);
-        varType.vt = VT_I4;
-        varType.lVal = isLinear ? 0 : 1;  // 0=Linear, 1=Log
-
-        DISPID dispidNamed = DISPID_PROPERTYPUT;
-        DISPPARAMS typeParams;
-        typeParams.rgvarg = &varType;
-        typeParams.cArgs = 1;
-        typeParams.rgdispidNamedArgs = &dispidNamed;
-        typeParams.cNamedArgs = 1;
-
-        VARIANT varResult;
-        VariantInit(&varResult);
-
-        hr = pFrequencies->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
-            DISPATCH_PROPERTYPUT, &typeParams,
-            &varResult, NULL, NULL);
-
-        VariantClear(&varType);
-        VariantClear(&varResult);
-    }
-
-    pFrequencies->Release();
-    VariantClear(&varFreqs);
-
-    return SUCCEEDED(hr);
 }
 
 bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wchar_t* value)
@@ -1318,4 +1248,4 @@ HRESULT AWRInterface::SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT*
 
     return pDisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
         DISPATCH_PROPERTYPUT, &params, nullptr, nullptr, nullptr);
-}*/
+}

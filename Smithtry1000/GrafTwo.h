@@ -29,7 +29,6 @@ public slots:
 	void SaveGrafTwo();
 private:
 	Ui::GrafTwoClass* ui;
-	double xBegin, xEnd, yBegin, yEnd, yBeginTwo, yEndTwo;
 	QVector<double> x, y1, y2, y3, y4;
 private:
 	QCPGraph* GraphK = nullptr;

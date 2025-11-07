@@ -83,7 +83,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox">
+        <widget class="QSpinBox" name="ColorImpedanceBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -134,7 +134,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_2">
+        <widget class="QSpinBox" name="ColorAdmitanceBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -163,7 +163,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_25">
+        <widget class="QSpinBox" name="DataPointsBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -260,7 +260,7 @@
           <string>Stability-circles</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_10">
+        <widget class="QPushButton" name="StabilityColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -273,7 +273,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_27">
+        <widget class="QSpinBox" name="GainBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -289,7 +289,7 @@
           <number>10</number>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_11">
+        <widget class="QPushButton" name="GainColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -302,7 +302,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_28">
+        <widget class="QSpinBox" name="StabilityBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -334,7 +334,7 @@
           <number>10</number>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_12">
+        <widget class="QPushButton" name="SweepLinesColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -347,7 +347,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_30">
+        <widget class="QSpinBox" name="SweepLinesBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -389,7 +389,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_31">
+        <widget class="QSpinBox" name="NoiseBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -418,7 +418,7 @@
           <string>|Г|=1-circle</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_14">
+        <widget class="QPushButton" name="NoiseColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -431,7 +431,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_32">
+        <widget class="QSpinBox" name="MainCircleBox">
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -460,7 +460,7 @@
           <string>Noise-circles</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_15">
+        <widget class="QPushButton" name="MainCircleColor">
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -512,7 +512,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_43">
+        <widget class="QSpinBox" name="RefZBox">
          <property name="geometry">
           <rect>
            <x>400</x>
@@ -557,7 +557,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_44">
+        <widget class="QSpinBox" name="RefYBox">
          <property name="geometry">
           <rect>
            <x>400</x>
@@ -576,7 +576,7 @@
           <number>3</number>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_45">
+        <widget class="QSpinBox" name="DataPointsLinesBox">
          <property name="geometry">
           <rect>
            <x>400</x>
@@ -595,7 +595,7 @@
           <number>2</number>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_27">
+        <widget class="QPushButton" name="DataPointsLinesColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -647,7 +647,7 @@
           <string>Temp lines</string>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_46">
+        <widget class="QSpinBox" name="TempBox">
          <property name="geometry">
           <rect>
            <x>400</x>
@@ -666,7 +666,7 @@
           <number>2</number>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_47">
+        <widget class="QSpinBox" name="ElementBox">
          <property name="geometry">
           <rect>
            <x>400</x>
@@ -685,7 +685,7 @@
           <number>2</number>
          </property>
         </widget>
-        <widget class="QPushButton" name="pushButton_29">
+        <widget class="QPushButton" name="SweepCirclesColor">
          <property name="geometry">
           <rect>
            <x>360</x>
@@ -698,7 +698,7 @@
           <string/>
          </property>
         </widget>
-        <widget class="QSpinBox" name="spinBox_48">
+        <widget class="QSpinBox" name="SweepCirclesBox">
          <property name="geometry">
           <rect>
            <x>400</x>

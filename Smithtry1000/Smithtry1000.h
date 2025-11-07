@@ -82,11 +82,11 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    ///void AWR_buttonClicked();
+    void AWR_buttonClicked();
     void CAD_export();
 
 private:
-   /// AWRInterface awr = AWRInterface(circuitElements);
+    AWRInterface awr = AWRInterface();
     EditWidget* edit;
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
@@ -103,10 +103,6 @@ private:
     bool leftClicked;
     bool rightClicked;
     bool tableChanged=false;
-    long double tempPointX;
-    long double tempPointY;
-    long double tempX=0;
-    long double tempY=0;
     QList<long double> pointsX;
     QList<long double> pointsY;
     long double t;

@@ -29,7 +29,6 @@ public slots:
 	void SaveGrafOne();
 private:
 	Ui::GrafOneClass* ui;
-	double xBegin, xEnd, yBegin, yEnd, hY, hX;
 	QVector<double> x, y1, y2;
 private:
 	QCPGraph* GraphS11 = nullptr;

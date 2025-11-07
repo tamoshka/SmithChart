@@ -16,42 +16,6 @@ AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuit
 }
 
 /// <summary>
-/// Сеттер gamma1.
-/// </summary>
-/// <param name="gamma1">gamma1.</param>
-void AmplitudeFrequency::SetGamma1(Complex gamma1)
-{
-    this->gamma1 = gamma1;
-}
-
-/// <summary>
-/// Сеттер gamma2.
-/// </summary>
-/// <param name="gamma2">gamma2.</param>
-void AmplitudeFrequency::SetGamma2(Complex gamma2)
-{
-    this->gamma2 = gamma2;
-}
-
-/// <summary>
-/// Геттер gamma1.
-/// </summary>
-/// <returns>gamma1.</returns>
-Complex AmplitudeFrequency::GetGamma1()
-{
-    return this->gamma1;
-}
-
-/// <summary>
-/// Геттер gamma2.
-/// </summary>
-/// <returns>gamma2.</returns>
-Complex AmplitudeFrequency::GetGamma2()
-{
-    return this->gamma2;
-}
-
-/// <summary>
 /// Расчёт s-параметров.
 /// </summary>
 void AmplitudeFrequency::MatrixCalculation()
@@ -223,8 +187,8 @@ void AmplitudeFrequency::MatrixCalculation()
         }
         else
         {
-            SetGamma1((R1 - z0) / (R1 + z0));
-            SetGamma2((R2 - z0) / (R2 + z0));
+            Complex gamma1=(R1 - z0) / (R1 + z0);
+            Complex gamma2=(R2 - z0) / (R2 + z0);
             Complex sopr1(gamma1.real(), -gamma1.imag());
             Complex sopr2(gamma2.real(), -gamma2.imag());
             long double g1 = abs(gamma1);

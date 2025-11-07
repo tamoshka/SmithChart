@@ -30,30 +30,18 @@ signals:
 	void rev();
 
 private slots:
-	void S11Graf();
-	void S22Graf();
-	void MAGGraf();
-	void MSGGraf();
-	void KGraf();
-	void MuGraf();
-	void AmpFrS11();
-	void AmpFrS21();
-	void CircleS12();
-	void CircleS21();
-	void ColourImpedance();
-	void ColourAdmitance();
 	void ButtonCancel();
 	void ButtonOK();
-	void GridGrafOneColor();
-	void GridGrafTwoColor();
-	void DatapointCirclesColor();
-	void TempLinesColor();
-	void ElementLinesColor();
-	void RefYColor();
-	void RefZColor();
+
+	void DVSColor();
+
+	void AmpFrColor();
+
+	void CircleS12S21Color();
+	void GrafOneColor();
+	void GrafTwoColor();
+
 	void VerticalHorizontalChanged();
-	void QCirclesColor();
-	void VSWRColor();
 
 	//По sBoxIndex
 	void LineCircleS12S21(int line);
@@ -70,5 +58,8 @@ private:
 	QMap<QSpinBox*, int> sBoxIndex;
 	QMap<QSpinBox*, int> sBoxDVSIndex;
 	QMap<QSpinBox*, int> sBoxAmpFrIndex;
+	QMap<QPushButton*, QColor*> DVScolors;
+	QMap<QPushButton*, QColor*> AmpFrcolors;
+	QMap<QPushButton*, QColor*> colors;
 };
 

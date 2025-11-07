@@ -32,9 +32,6 @@ private:
     CircuitElements* circuitElements = new CircuitElements();
     long double r;
     QPointF center;
-    QColor mBackGroundColor;
-    QColor mShapeColor;
-    long double mScale;
     Point compute_real(long double t);
     Point compute_realParallel(long double t);
     Point compute_imaginary(long double t);
@@ -46,7 +43,6 @@ private:
     bool m_cacheValid;
     void drawStaticObjects(QPainter&);
     void drawDynamicObject(QPainter&);
-    qreal m_scaleFactor;
     void generateCache();
     long double defaultScale = 200;
 

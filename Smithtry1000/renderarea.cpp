@@ -14,12 +14,9 @@
 /// <param name="parent">Родительский виджет (Smithtry1000).</param>
 /// <param name="newElements">Цепь.</param>
 RenderArea::RenderArea(QWidget* parent, CircuitElements* newElements) :
-    QWidget(parent),
-    mBackGroundColor(255, 255, 255),
-    mShapeColor(0, 0, 0)
+    QWidget(parent)
 {
     m_cacheValid = false;
-    m_scaleFactor = 2.0;
     circuitElements = newElements;
 }
 
@@ -156,11 +153,11 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 {
     center = this->rect().center();
     painter.setBrush(SystemParameters::BackgroundColor);
-    painter.setPen(QPen((mShapeColor, 20)));
+    painter.setPen(QPen((QColor(0, 0, 0), 20)));
     painter.drawRect(this->rect());
     painter.drawLine(QPointF(center.x(), -1000 + center.y()), QPointF(center.x(), 1000 + center.y()));
     painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
-    painter.setPen(mShapeColor);
+    painter.setPen(QColor(0, 0, 0));
     painter.setPen(SystemParameters::ImpedanceColor);
     long double intervalLength = 2 * M_PI;
     int stepCount = 2000;
@@ -1439,7 +1436,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 /// </summary>
 void RenderArea::generateCache()
 {
-    QSize scaledSize = size() * m_scaleFactor;
+    QSize scaledSize = size() * 2;
     QImage image(scaledSize, QImage::Format_ARGB32_Premultiplied);
     image.fill(Qt::transparent);
 
@@ -1448,7 +1445,7 @@ void RenderArea::generateCache()
     cachePainter.setRenderHint(QPainter::TextAntialiasing, true);
     cachePainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    cachePainter.scale(m_scaleFactor, m_scaleFactor);
+    cachePainter.scale(2, 2);
     drawStaticObjects(cachePainter);
 
     m_cache = QPixmap::fromImage(

@@ -21,17 +21,11 @@ class AmplitudeFrequency : public QWidget
 
 private:
 	CircuitElements* circuitElements;
-	Complex gamma1; // reflection coefficient
-	Complex gamma2; // reflection coefficient
-	void SetGamma1(Complex);
-	void SetGamma2(Complex);
 	QVector<long double> freqs;
 public slots:
 	void SaveAmpFr();
 public:
 	void Clear();
-	Complex GetGamma1();
-	Complex GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
 	void SetPoint(long double[], long double[], long double[]);

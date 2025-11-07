@@ -26,7 +26,6 @@ private:
 	GrafOne* grafOne;
 	GrafTwo* grafTwo;
 
-
 	SParamTable* stable1;
 	SParamTable* stable2;
 };
