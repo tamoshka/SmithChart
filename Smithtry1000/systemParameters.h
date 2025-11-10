@@ -92,8 +92,8 @@ public:
 	static long double Im;
 	static long double Re;
 	static QList<Point> morePoints;
-	static long double SystemParameters::lastPointX;
-	static long double SystemParameters::lastPointY;
+	static long double lastPointX;
+	static long double lastPointY;
 	static QList<QSvgWidget*> svgWidgets;
 	static long double impedanceRealR;
 	static long double impedanceImagR;
