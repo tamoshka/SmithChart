@@ -325,11 +325,11 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.restore();
         QString s1;
         QString s3="";
-        if (Model != AddPoint && Model != Default)
+        if (SystemParameters::Model != AddPoint && SystemParameters::Model != Default)
         {
             Complex z;
             Complex y;
-            if (index != 1)
+            if (SystemParameters::index != 1)
             {
                 z = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size()-1]->GetParameter().at(Z);
                 y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter().at(Y);
@@ -339,12 +339,12 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 z = circuitElements->z;
                 y = circuitElements->y;
             }
-            switch (Model)
+            switch (SystemParameters::Model)
             {
                 case ResistorShunt:
                 {
                     double r1 = z.real();
-                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::impedanceRealR;
                     s1 = QString::number(round((r2 - r1)*10)/10);
                     break;
@@ -352,7 +352,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case InductionShunt:
                 {
                     double r1 = z.imag();
-                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
                     double val = (r2 - r1) / (2 * M_PI * circuitElements->frequencyFirstPoint) * 1000000000;
                     QString power;
@@ -381,7 +381,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case CapacitorShunt:
                 {
                     double r1 = z.imag();
-                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::impedanceImagR;
                     double val = 10 / ((r1 - r2) * (2 * M_PI * circuitElements->frequencyFirstPoint)) * 100000000000;
                     QString power;
@@ -410,7 +410,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case ResistorParallel:
                 {
                     double r1 = y.real();
-                    SystemParameters::rAdmitanceRealCalculation(lastPointX, lastPointY);
+                    SystemParameters::rAdmitanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::admitanceRealR;
                     s1 = QString::number(round(1000 / (r2 - r1)*10)/10);
                     break;
@@ -418,7 +418,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case InductionParallel:
                 {
                     double r1 = y.imag();
-                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
                     double val = M_PI / (r1 - r2) * 100 / circuitElements->frequencyFirstPoint * 1e6 * 500;
                     QString power;
@@ -447,7 +447,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 case CapacitorParallel:
                 {
                     double r1 = y.imag();
-                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double r2 = SystemParameters::admitanceImagR;
                     double val = (r2 - r1) / M_PI * 500 / circuitElements->frequencyFirstPoint * 1000000;
                     QString power;
@@ -477,8 +477,8 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                 {
                     double RL = z.real();
                     double XL = z.imag();
-                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-                    SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                    SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double R = SystemParameters::impedanceRealR;
                     double X = SystemParameters::impedanceImagR;
                     double RR = R - RL;
@@ -515,7 +515,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double lambda;
                     double o;
                     double l;
-                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     o = atan((SystemParameters::admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line);
                     if (o < 0)
                     {
@@ -534,7 +534,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double lambda;
                     double o;
                     double l;
-                    SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                    SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     o = -atan(1 / ((SystemParameters::admitanceImagR - y.imag()) / 1000 * SystemParameters::z0line));
                     if (o < 0)
                     {
@@ -553,7 +553,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
                     double lambda;
                     double o;
                     double l;
-                    SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+                    SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                     double n = sqrt(SystemParameters::impedanceRealR / z.real());
                     s1 = "1:" + QString::number(n);
                     break;
@@ -563,7 +563,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         painter.save();
         if (!SystemParameters::rotate)
         {
-            painter.translate((index + 1) * 40 + 20, 90);
+            painter.translate((SystemParameters::index + 1) * 40 + 20, 90);
             painter.rotate(90);
             painter.setFont(QFont("Arial", 8));
             painter.drawText(0, 0, s1);
@@ -572,7 +572,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
         }
         else
         {
-            painter.translate(90, (index + 1) * 40 + 20);
+            painter.translate(90, (SystemParameters::index + 1) * 40 + 20);
             painter.setFont(QFont("Arial", 8));
             painter.drawText(0, 0, s1);
             painter.translate(0, 15);

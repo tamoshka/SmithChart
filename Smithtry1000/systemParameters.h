@@ -92,11 +92,8 @@ public:
 	static long double Im;
 	static long double Re;
 	static QList<Point> morePoints;
-	static int index;
-	static int dpIndex;
-	static long double lastPointX;
-	static long double lastPointY;
-	static long double scale;
+	static long double SystemParameters::lastPointX;
+	static long double SystemParameters::lastPointY;
 	static QList<QSvgWidget*> svgWidgets;
 	static long double impedanceRealR;
 	static long double impedanceImagR;
@@ -122,10 +119,15 @@ public:
 	static bool sizeChanged;
 	static systemMode sys;
 	static valueMode val;
+	static long double scale;
 	//0 - Диаграмма, 1 - Цепь
 	static int saved;
 
 	static bool exc;
+
+	static int index;
+	static int dpIndex;
+	static int allpointindex;
 
 	static void SaveToJSON();
 	static void deserializeFromJson();

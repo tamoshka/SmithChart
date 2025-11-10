@@ -139,7 +139,7 @@ void KeyboardDialog::onAccept()
             {
                 power = 1000000000;
             }
-            if (dpIndex == 0)
+            if (SystemParameters::dpIndex == 0)
             {
                 SystemParameters::frequency = valueFrequency * power;
             }

@@ -12,9 +12,6 @@
 #include <QSet>
 using namespace std;
 
-// Макрос для замены index на point_index
-#define index point_index
-
 using Complex = complex<long double>;
 
 enum ElementType
@@ -70,26 +67,5 @@ struct Point
 };
 
 extern QString fileName;
-extern mode Model;
 extern map<int, tuple<Point, bool>> allPoints;
-extern int point_index;
-extern int dpIndex;
-extern int allpointindex;
-extern double scale;
 extern QList<QSvgWidget*> svgWidgets;
-extern chartMode cMode;
-extern parameterMode pMode;
-extern long double lastPointX;
-extern long double lastPointY;
-extern long double rRadius;
-extern long double rCenterX;
-extern long double rCenterY;
-extern long double iRadius;
-extern long double iCenterX;
-extern long double iCenterY;
-extern long double gRadius;
-extern long double gCenterX;
-extern long double gCenterY;
-extern long double bRadius;
-extern long double bCenterX;
-extern long double bCenterY;

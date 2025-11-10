@@ -14,9 +14,6 @@
 #include <cmath>
 #include <exception>
 
-
-mode Model;
-
 /// <summary>
 /// Конструктор класса Smithtry1000.
 /// </summary>
@@ -29,7 +26,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
 {
     ui->setupUi(this);
     this->sParameters = sParameters1;
-    Model = Default;
+    SystemParameters::Model = Default;
     this->resize(1600, 920);
     this->setMinimumSize(1630, 920);
     ui->pointTable->setColumnCount(5);
@@ -91,7 +88,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->PlusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
     connect(ui->MinusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
     connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
-    ///connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
+    connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     ///connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
@@ -148,7 +145,7 @@ void Smithtry1000::Reverse()
 /// </summary>
 void Smithtry1000::AWR_buttonClicked()
 {
-    if (index > 1)
+    if (SystemParameters::index > 1)
     {
         if (!awr.Initialize()) {
             qDebug() << "Failed to initialize AWR interface";
@@ -439,7 +436,7 @@ void Smithtry1000::getallchangedsignal()
 {
     SystemParameters::sizeChanged = true;
     ui->rTable->setItem(3, 1, new QTableWidgetItem(QString::number((double)SystemParameters::z0)));
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         long double Re = circuitElements->z.real();
         long double Im = -circuitElements->z.imag();
@@ -562,20 +559,20 @@ void Smithtry1000::getallchangedsignal()
             circuitElements->morePoints[j].x = x;
             circuitElements->morePoints[j].y = y;
         }
-        if (index > 1)
+        if (SystemParameters::index > 1)
         {
             amplitudeFrequence->MatrixCalculation();
             amplitudeFrequence->update();
         }
-        if (index == 1)
+        if (SystemParameters::index == 1)
         {
-            lastPointX = circuitElements->firstPoint.x;
-            lastPointY = circuitElements->firstPoint.y;
+            SystemParameters::lastPointX = circuitElements->firstPoint.x;
+            SystemParameters::lastPointY = circuitElements->firstPoint.y;
         }
         else
         {
-            lastPointX = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
-            lastPointY = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+            SystemParameters::lastPointX = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+            SystemParameters::lastPointY = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
         }
     }
     if (fileName != "")
@@ -629,7 +626,7 @@ void Smithtry1000::getCirclesSignal()
 /// </summary>
 void Smithtry1000::Save()
 {
-    if (index > 1)
+    if (SystemParameters::index > 1)
     {
         QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
         try
@@ -652,7 +649,7 @@ void Smithtry1000::Save()
 
 void Smithtry1000::CAD_export()
 {
-    if (index > 1)
+    if (SystemParameters::index > 1)
     {
         QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
         try
@@ -694,13 +691,13 @@ void Smithtry1000::Redo()
     {
         timer->stop();
         firstDeleted = true;
-        if (tempCircuit.elementIndexes.contains(allpointindex))
+        if (tempCircuit.elementIndexes.contains(SystemParameters::allpointindex))
         {
             circuitElements->AddCircuitElements(tempCircuit.GetCircuitElements()[circuitElements->GetCircuitElements().size()]);
             circuitElements->elementIndexes.append(tempCircuit.elementIndexes[circuitElements->elementIndexes.size()]);
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
             SystemParameters::rImpedanceRealCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
             SystemParameters::rImpedanceImagCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
             QString temp2 = " + j";
@@ -804,12 +801,12 @@ void Smithtry1000::Redo()
             Point point;
             point.x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
             point.y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
-            allPoints[allpointindex] = make_tuple(point, true);
+            allPoints[SystemParameters::allpointindex] = make_tuple(point, true);
             pointsX.append(point.x);
             pointsY.append(point.y);
-            index++;
+            SystemParameters::index++;
         }
-        else if (tempCircuit.pointIndexes.contains(allpointindex))
+        else if (tempCircuit.pointIndexes.contains(SystemParameters::allpointindex))
         {
             circuitElements->morePoints.append(tempCircuit.morePoints[circuitElements->morePoints.size()]);
             circuitElements->pointIndexes.append(tempCircuit.pointIndexes[circuitElements->pointIndexes.size()]);
@@ -838,8 +835,8 @@ void Smithtry1000::Redo()
             Point point;
             point.x = circuitElements->morePoints[circuitElements->morePoints.size() - 1].x;
             point.y = circuitElements->morePoints[circuitElements->morePoints.size() - 1].y;
-            allPoints[allpointindex] = make_tuple(point, false);
-            dpIndex++;
+            allPoints[SystemParameters::allpointindex] = make_tuple(point, false);
+            SystemParameters::dpIndex++;
         }
         else
         {
@@ -876,12 +873,12 @@ void Smithtry1000::Redo()
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
             pointsX.append(circuitElements->firstPoint.x);
             pointsY.append(circuitElements->firstPoint.y);
-            allPoints[allpointindex] = make_tuple(circuitElements->firstPoint, false);
-            index++;
-            dpIndex++;
+            allPoints[SystemParameters::allpointindex] = make_tuple(circuitElements->firstPoint, false);
+            SystemParameters::index++;
+            SystemParameters::dpIndex++;
         }
-        allpointindex++;
-        if (index > 1)
+        SystemParameters::allpointindex++;
+        if (SystemParameters::index > 1)
         {
             amplitudeFrequence->MatrixCalculation();
             if (!amplitudeFrequence->isHidden())
@@ -900,15 +897,15 @@ void Smithtry1000::Redo()
 /// </summary>
 void Smithtry1000::Load()
 {
-    if (index == 0 && circuitElements->QCircles.size()==0&&circuitElements->VSWRCircles.size()==0)
+    if (SystemParameters::index == 0 && circuitElements->QCircles.size()==0&&circuitElements->VSWRCircles.size()==0)
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open project"), "", tr("JSON Files (*.json)"));
         try
         {
             circuitElements->loadFromFile(fileName);
             emit load();
-            dpIndex = circuitElements->morePoints.size() + 1;
-            index = circuitElements->GetCircuitElements().size()+1;
+            SystemParameters::dpIndex = circuitElements->morePoints.size() + 1;
+            SystemParameters::index = circuitElements->GetCircuitElements().size()+1;
             long double Re = circuitElements->z.real();
             long double Im = -circuitElements->z.imag();
             long double x;
@@ -1227,7 +1224,7 @@ void Smithtry1000::Load()
                     k++;
                 }
             }
-            allpointindex = index + circuitElements->morePoints.size();
+            SystemParameters::allpointindex = SystemParameters::index + circuitElements->morePoints.size();
             renderArea->update();
             auxiliaryWidget->update();
             firstDeleted = true;
@@ -1305,13 +1302,13 @@ void Smithtry1000::onTransform_buttonClicked()
     {
         y0 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
     }
-    else if (index > 0)
+    else if (SystemParameters::index > 0)
     {
         y0 = circuitElements->firstPoint.y;
     }
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
-        Model = mode::Transform;
+        SystemParameters::Model = mode::Transform;
         auxiliaryWidget->update();
         leftClicked = false;
         rightClicked = false;
@@ -1320,11 +1317,11 @@ void Smithtry1000::onTransform_buttonClicked()
         Complex zl, yl;
         if (!SystemParameters::rotate)
         {
-            auxiliaryWidget->addSvg(QString(":/Images/vertical_transform_circuit.svg"), (index + 2) * 40, 39);
+            auxiliaryWidget->addSvg(QString(":/Images/vertical_transform_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
         }
         else
         {
-            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_transform_circuit.svg"), 79, (index + 1) * 40);
+            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_transform_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor);
@@ -1397,14 +1394,14 @@ void Smithtry1000::onTransform_buttonClicked()
         {
             SystemParameters::rAdmitanceImagCalculation(x, y);
             long double r1 = SystemParameters::admitanceImagR;
-            SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+            SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             long double r2 = SystemParameters::admitanceImagR;
             Point point;
-            point.x = lastPointX;
-            point.y = lastPointY;
-            allPoints[index + dpIndex - 1] = make_tuple(point, true);
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            point.x = SystemParameters::lastPointX;
+            point.y = SystemParameters::lastPointY;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
@@ -1423,24 +1420,24 @@ void Smithtry1000::onTransform_buttonClicked()
             }
             parameter[G] = g;
             map<chartMode, tuple<long double, long double>> chart;
-            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
             chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             long double n = sqrt(z.real() / zl.real());
             this->circuitElements->AddCircuitElements(new Element(Transform, n, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+            pointsX.append(SystemParameters::lastPointX);
+            pointsY.append(SystemParameters::lastPointY);
+            QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
-            SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-            SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+            SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             QString temp2 = " + j";
             if (SystemParameters::impedanceImagR < 0)
             {
@@ -1456,9 +1453,9 @@ void Smithtry1000::onTransform_buttonClicked()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-            circuitElements->elementIndexes.append(allpointindex);
-            index++;
-            allpointindex++;
+            circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::index++;
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             tempCircuit=*circuitElements;
             firstDeleted = true;
@@ -1470,14 +1467,14 @@ void Smithtry1000::onTransform_buttonClicked()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
         SystemParameters::resistorLinear = false;
         this->unsetCursor(); // возвращаем курсор
-        Model = Default;
+        SystemParameters::Model = Default;
     }
     else
     {
@@ -1493,12 +1490,12 @@ void Smithtry1000::onTransform_buttonClicked()
 /// </summary>
 void Smithtry1000::onLine_buttonClicked()
 {
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         LinesDialog dialog(this);
         if (dialog.exec() == QDialog::Accepted&&!SystemParameters::exc)
         {
-            Model = mode::Line;
+            SystemParameters::Model = mode::Line;
             auxiliaryWidget->update();
             leftClicked = false;
             rightClicked = false;
@@ -1507,11 +1504,11 @@ void Smithtry1000::onLine_buttonClicked()
             Complex zl, yl;
             if (!SystemParameters::rotate)
             {
-                auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (index + 2) * 40, 20);
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_line_circuit.svg"), (SystemParameters::index + 2) * 40, 20);
             }
             else
             {
-                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_line_circuit.svg"), 60, (index + 1) * 40);
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_line_circuit.svg"), 60, (SystemParameters::index + 1) * 40);
             }
             QCursor::setPos(centerGlobal);
             this->setCursor(Qt::BlankCursor); // скрываем системный курсор
@@ -1574,14 +1571,14 @@ void Smithtry1000::onLine_buttonClicked()
             {
                 SystemParameters::rAdmitanceImagCalculation(x, y);
                 long double r1 = SystemParameters::admitanceImagR;
-                SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+                SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                 long double r2 = SystemParameters::admitanceImagR;
                 Point point;
-                point.x = lastPointX;
-                point.y = lastPointY;
-                allPoints[index + dpIndex - 1] = make_tuple(point, true);
-                Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-                Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+                point.x = SystemParameters::lastPointX;
+                point.y = SystemParameters::lastPointY;
+                allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+                Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                 map<parameterMode, Complex> parameter;
                 parameter[Z] = z;
                 parameter[Y] = y2;
@@ -1600,10 +1597,10 @@ void Smithtry1000::onLine_buttonClicked()
                 }
                 parameter[G] = g;
                 map<chartMode, tuple<long double, long double>> chart;
-                Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-                Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-                Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-                Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+                Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
                 chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
                 chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
                 chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
@@ -1639,14 +1636,14 @@ void Smithtry1000::onLine_buttonClicked()
                 LinesElement* temp3 = new LinesElement(Line, SystemParameters::z0line, this->circuitElements->frequencyFirstPoint, point, chart, parameter,
                     L * 1000, L * 1000 / sqrt(SystemParameters::er), Theta, Lambda, SystemParameters::alpha);
                 this->circuitElements->AddCircuitElements(temp3);
-                pointsX.append(lastPointX);
-                pointsY.append(lastPointY);
-                QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+                pointsX.append(SystemParameters::lastPointX);
+                pointsY.append(SystemParameters::lastPointY);
+                QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
                 int row = ui->pointTable->rowCount();
                 ui->pointTable->insertRow(row);
-                ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
-                SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-                SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+                SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                 QString temp2 = " + j";
                 if (SystemParameters::impedanceImagR < 0)
                 {
@@ -1662,9 +1659,9 @@ void Smithtry1000::onLine_buttonClicked()
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-                circuitElements->elementIndexes.append(allpointindex);
-                index++;
-                allpointindex++;
+                circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+                SystemParameters::index++;
+                SystemParameters::allpointindex++;
                 renderArea->setCursorPosOnCircle(temp);
                 tempCircuit=*circuitElements;
                 firstDeleted = true;
@@ -1676,13 +1673,13 @@ void Smithtry1000::onLine_buttonClicked()
             }
             if (rightClicked)
             {
-                QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+                QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
                 renderArea->setCursorPosOnCircle(temp);
                 auxiliaryWidget->removeLastSvg();
                 auxiliaryWidget->update();
             }
             this->unsetCursor(); // возвращаем курсор
-            Model = Default;
+            SystemParameters::Model = Default;
         }
         else if (SystemParameters::exc)
         {
@@ -1707,12 +1704,12 @@ void Smithtry1000::onLine_buttonClicked()
 /// </summary>
 void Smithtry1000::onOSLine_buttonClicked()
 {
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         VerticalLinesDialog dialog(this);
         if (dialog.exec() == QDialog::Accepted&&!SystemParameters::exc)
         {
-            Model = mode::OSLine;
+            SystemParameters::Model = mode::OSLine;
             VerticalLines();
         }
         else if (SystemParameters::exc)
@@ -1738,12 +1735,12 @@ void Smithtry1000::onOSLine_buttonClicked()
 /// </summary>
 void Smithtry1000::onSSLine_buttonClicked()
 {
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         VerticalLinesDialog dialog(this);
         if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
         {
-            Model = mode::SSLine;
+            SystemParameters::Model = mode::SSLine;
             VerticalLines();
         }
         else if (SystemParameters::exc)
@@ -1858,9 +1855,9 @@ void Smithtry1000::onKeyboard_buttonClicked()
             }
         }
         y *= -1;
-        QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
+        QPoint temp = QPoint(x * SystemParameters::scale + renderArea->rect().center().x(), y * SystemParameters::scale + renderArea->rect().center().y());
         renderArea->setCursorPosOnCircle(temp);
-        if (index == 0)
+        if (SystemParameters::index == 0)
         {
             ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)SystemParameters::frequency)));
             if (y >= 0 && y < 0.0001)
@@ -1873,8 +1870,8 @@ void Smithtry1000::onKeyboard_buttonClicked()
             }
             pointsX.append(x);
             pointsY.append(y);
-            lastPointX = x;
-            lastPointY = y;
+            SystemParameters::lastPointX = x;
+            SystemParameters::lastPointY = y;
             Point point = Point();
             point.x = x;
             point.y = y;
@@ -1886,8 +1883,8 @@ void Smithtry1000::onKeyboard_buttonClicked()
             SystemParameters::rImpedanceImagCalculation(x, y);
             long double r2 = SystemParameters::impedanceImagR;
             circuitElements->imagFirstPoint = r2;
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             circuitElements->z = z;
             circuitElements->y = y2;
             Complex g;
@@ -1936,9 +1933,9 @@ void Smithtry1000::onKeyboard_buttonClicked()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)frequency)));
-            index++;
-            dpIndex++; 
-            allpointindex++;
+            SystemParameters::index++;
+            SystemParameters::dpIndex++; 
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->update();
         }
@@ -1947,7 +1944,7 @@ void Smithtry1000::onKeyboard_buttonClicked()
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
             ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex + index)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(SystemParameters::dpIndex + SystemParameters::index)));
             SystemParameters::rImpedanceRealCalculation(x, y);
             SystemParameters::rImpedanceImagCalculation(x, y);
             QString temp2 = " + j";
@@ -1968,10 +1965,10 @@ void Smithtry1000::onKeyboard_buttonClicked()
             Point point;
             point.x = x;
             point.y = y;
-            allPoints[index + dpIndex - 1] = make_tuple(point, false);
-            circuitElements->pointIndexes.append(allpointindex);
-            dpIndex++;
-            allpointindex++;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, false);
+            circuitElements->pointIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::dpIndex++;
+            SystemParameters::allpointindex++;
             circuitElements->morePoints.append(point);
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->update();
@@ -2001,17 +1998,17 @@ void Smithtry1000::VerticalLines()
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
     Complex zl, yl;
-    switch (Model)
+    switch (SystemParameters::Model)
     {
     case OSLine:
     {
         if (!SystemParameters::rotate)
         {
-            auxiliaryWidget->addSvg(QString(":/Images/os_circuit.svg"), (index + 2) * 40, 39);
+            auxiliaryWidget->addSvg(QString(":/Images/os_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
         }
         else
         {
-            auxiliaryWidget->addSvg(QString(":/Images/rev_os_circuit.svg"), 79, (index + 1) * 40);
+            auxiliaryWidget->addSvg(QString(":/Images/rev_os_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
         }
         break;
     }
@@ -2019,11 +2016,11 @@ void Smithtry1000::VerticalLines()
     {
         if (!SystemParameters::rotate)
         {
-            auxiliaryWidget->addSvg(QString(":/Images/ss_circuit.svg"), (index + 2) * 40, 39);
+            auxiliaryWidget->addSvg(QString(":/Images/ss_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
         }
         else
         {
-            auxiliaryWidget->addSvg(QString(":/Images/rev_ss_circuit.svg"), 79, (index + 1) * 40);
+            auxiliaryWidget->addSvg(QString(":/Images/rev_ss_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
         }
         break;
     }
@@ -2089,14 +2086,14 @@ void Smithtry1000::VerticalLines()
     {
         SystemParameters::rAdmitanceImagCalculation(x, y);
         long double r1 = SystemParameters::admitanceImagR;
-        SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+        SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
         long double r2 = SystemParameters::admitanceImagR;
         Point point;
-        point.x = lastPointX;
-        point.y = lastPointY;
-        allPoints[index + dpIndex - 1] = make_tuple(point, true);
-        Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-        Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+        point.x = SystemParameters::lastPointX;
+        point.y = SystemParameters::lastPointY;
+        allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+        Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+        Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
         map<parameterMode, Complex> parameter;
         parameter[Z] = z;
         parameter[Y] = y2;
@@ -2115,15 +2112,15 @@ void Smithtry1000::VerticalLines()
         }
         parameter[G] = g;
         map<chartMode, tuple<long double, long double>> chart;
-        Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-        Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-        Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-        Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+        Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+        Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+        Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+        Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
         chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
         chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
         chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
         chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-        switch (Model)
+        switch (SystemParameters::Model)
         {
         case OSLine:
         {
@@ -2163,14 +2160,14 @@ void Smithtry1000::VerticalLines()
             break;
         }
         }
-        pointsX.append(lastPointX);
-        pointsY.append(lastPointY);
-        QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+        pointsX.append(SystemParameters::lastPointX);
+        pointsY.append(SystemParameters::lastPointY);
+        QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
         int row = ui->pointTable->rowCount();
         ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
-        SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-        SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+        ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+        SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+        SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
         QString temp2 = " + j";
         if (SystemParameters::impedanceImagR < 0)
         {
@@ -2186,9 +2183,9 @@ void Smithtry1000::VerticalLines()
             ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
         }
         ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-        circuitElements->elementIndexes.append(allpointindex);
-        index++;
-        allpointindex++;
+        circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+        SystemParameters::index++;
+        SystemParameters::allpointindex++;
         renderArea->setCursorPosOnCircle(temp);
         tempCircuit=*circuitElements;
         firstDeleted = true;
@@ -2200,13 +2197,13 @@ void Smithtry1000::VerticalLines()
     }
     if (rightClicked)
     {
-        QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+        QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
         renderArea->setCursorPosOnCircle(temp);
         auxiliaryWidget->removeLastSvg();
         auxiliaryWidget->update();
     }
     this->unsetCursor(); // возвращаем курсор
-    Model = Default;
+    SystemParameters::Model = Default;
 }
 
 /// <summary>
@@ -2385,7 +2382,7 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
     else if (event->button() == Qt::RightButton)
     {
         rightClicked = true;
-        if (Model == Default)
+        if (SystemParameters::Model == Default)
         {
             onDelete_buttonClicked();
         }
@@ -2400,10 +2397,10 @@ void Smithtry1000::onButtonClicked()
     FrequencyDialog dialog(this, circuitElements);
     if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
     {
-        Model = mode::AddPoint;
+        SystemParameters::Model = AddPoint;
         QPoint centerLocal = renderArea->rect().center();
         QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-        QCursor::setPos(lastPointX * scale + centerGlobal.x(), lastPointY * scale + centerGlobal.y());
+        QCursor::setPos(SystemParameters::lastPointX * SystemParameters::scale + centerGlobal.x(), SystemParameters::lastPointY * SystemParameters::scale + centerGlobal.y());
         leftClicked = false;
         rightClicked = false;
         QPoint point = QCursor::pos();
@@ -2412,7 +2409,7 @@ void Smithtry1000::onButtonClicked()
         {
             QCoreApplication::processEvents();
             point = QCursor::pos();
-            if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(scale, 2))
+            if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(SystemParameters::scale, 2))
             {
                 QCursor::setPos(tempPointX, tempPointY);
                 point.setX(tempPointX);
@@ -2425,8 +2422,8 @@ void Smithtry1000::onButtonClicked()
         {
             long double x = point.x();
             long double y = point.y();
-            x = (x - centerGlobal.x()) / scale;
-            y = (y - centerGlobal.y()) / scale;
+            x = (x - centerGlobal.x()) / SystemParameters::scale;
+            y = (y - centerGlobal.y()) / SystemParameters::scale;
             if (y >= 0 && y < 0.0001)
             {
                 y = 0.0001;
@@ -2480,15 +2477,15 @@ void Smithtry1000::onButtonClicked()
             {
                 r = 1e9;
             }
-            QPoint temp = QPoint(x * scale + renderArea->rect().center().x(), y * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(x * SystemParameters::scale + renderArea->rect().center().x(), y * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
-            if (index == 0)
+            if (SystemParameters::index == 0)
             {
                 ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)SystemParameters::frequency)));
                 pointsX.append(x);
                 pointsY.append(y);
-                lastPointX = x;
-                lastPointY = y;
+                SystemParameters::lastPointX = x;
+                SystemParameters::lastPointY = y;
                 Point point = Point();
                 point.x = x;
                 point.y = y;
@@ -2500,8 +2497,8 @@ void Smithtry1000::onButtonClicked()
                 SystemParameters::rImpedanceImagCalculation(x, y);
                 long double r2 = SystemParameters::impedanceImagR;
                 circuitElements->imagFirstPoint = r2;
-                Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-                Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+                Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+                Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
                 circuitElements->z = z;
                 circuitElements->y = y2;
                 Complex g;
@@ -2550,9 +2547,9 @@ void Smithtry1000::onButtonClicked()
                     ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
                 }
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-                index++;
-                dpIndex++;
-                allpointindex++;
+                SystemParameters::index++;
+                SystemParameters::dpIndex++;
+                SystemParameters::allpointindex++;
                 renderArea->setCursorPosOnCircle(temp);
                 auxiliaryWidget->update();
             }
@@ -2561,7 +2558,7 @@ void Smithtry1000::onButtonClicked()
                 int row = ui->pointTable->rowCount();
                 ui->pointTable->insertRow(row);
                 ui->pointTable->setItem(row, 0, new QTableWidgetItem("No"));
-                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(dpIndex + index)));
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(SystemParameters::dpIndex + SystemParameters::index)));
                 SystemParameters::rImpedanceRealCalculation(x, y);
                 SystemParameters::rImpedanceImagCalculation(x, y);
                 QString temp2 = " + j";
@@ -2582,10 +2579,10 @@ void Smithtry1000::onButtonClicked()
                 Point point;
                 point.x = x;
                 point.y = y;
-                allPoints[index + dpIndex - 1] = make_tuple(point, false);
-                circuitElements->pointIndexes.append(allpointindex);
-                dpIndex++;
-                allpointindex++;
+                allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, false);
+                circuitElements->pointIndexes.append(SystemParameters::allpointindex);
+                SystemParameters::dpIndex++;
+                SystemParameters::allpointindex++;
                 circuitElements->morePoints.append(point);
                 renderArea->setCursorPosOnCircle(temp);
             }
@@ -2593,7 +2590,7 @@ void Smithtry1000::onButtonClicked()
             tempCircuit=*circuitElements;
             firstDeleted = true;
         }
-        Model = Default;
+        SystemParameters::Model = Default;
     }
     else if (SystemParameters::exc)
     {
@@ -2610,7 +2607,7 @@ void Smithtry1000::onButtonClicked()
 /// </summary>
 void Smithtry1000::onInduction_buttonClicked()
 {
-    Model = mode::InductionShunt;
+    SystemParameters::Model = InductionShunt;
     ImaginaryImpedance();
 }
 
@@ -2619,7 +2616,7 @@ void Smithtry1000::onInduction_buttonClicked()
 /// </summary>
 void Smithtry1000::onCapacitor_buttonClicked()
 {
-    Model = mode::CapacitorShunt;
+    SystemParameters::Model = CapacitorShunt;
     ImaginaryImpedance();
 }
 
@@ -2628,7 +2625,7 @@ void Smithtry1000::onCapacitor_buttonClicked()
 /// </summary>
 void Smithtry1000::onResistor_buttonClicked()
 {
-    Model = mode::ResistorShunt;
+    SystemParameters::Model = ResistorShunt;
 
 
     auxiliaryWidget->update();
@@ -2636,15 +2633,15 @@ void Smithtry1000::onResistor_buttonClicked()
     rightClicked = false;
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         if (!SystemParameters::rotate)
         {
-            auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (index + 2) * 40, 20);
+            auxiliaryWidget->addSvg(QString(":/Images/horizontal_r.svg"), (SystemParameters::index + 2) * 40, 20);
         }
         else
         {
-            auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_r.svg"), 60, (index + 1) * 40);
+            auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_r.svg"), 60, (SystemParameters::index + 1) * 40);
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
@@ -2736,14 +2733,14 @@ void Smithtry1000::onResistor_buttonClicked()
         {
             SystemParameters::rImpedanceRealCalculation(x, y);
             long double r1 = SystemParameters::impedanceRealR;
-            SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
+            SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             long double r2 = SystemParameters::impedanceRealR;
             Point point;
-            point.x = lastPointX;
-            point.y = lastPointY;
-            allPoints[index + dpIndex - 1] = make_tuple(point, true);
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            point.x = SystemParameters::lastPointX;
+            point.y = SystemParameters::lastPointY;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
@@ -2762,21 +2759,21 @@ void Smithtry1000::onResistor_buttonClicked()
             }
             parameter[G] = g;
             map<chartMode, tuple<long double, long double>> chart;
-            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
             chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             this->circuitElements->AddCircuitElements(new Element(ResistorShunt, r2 - r1, this->circuitElements->frequencyFirstPoint, point, chart, parameter));
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+            pointsX.append(SystemParameters::lastPointX);
+            pointsY.append(SystemParameters::lastPointY);
+            QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
             SystemParameters::rImpedanceRealCalculation(point.x, point.y);
             SystemParameters::rImpedanceImagCalculation(point.x, point.y);
             QString temp2 = " + j";
@@ -2794,9 +2791,9 @@ void Smithtry1000::onResistor_buttonClicked()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-            circuitElements->elementIndexes.append(allpointindex);
-            index++;
-            allpointindex++;
+            circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::index++;
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             tempCircuit=*circuitElements;
             firstDeleted = true;
@@ -2808,13 +2805,13 @@ void Smithtry1000::onResistor_buttonClicked()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
         SystemParameters::resistorLinear = false;
-        Model = Default;
+        SystemParameters::Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
     else
@@ -2831,7 +2828,7 @@ void Smithtry1000::onResistor_buttonClicked()
 /// </summary>
 void Smithtry1000::onInductionParallel_buttonClicked()
 {
-    Model = mode::InductionParallel;
+    SystemParameters::Model = InductionParallel;
     ImaginaryAdmitance();
 }
 
@@ -2840,7 +2837,7 @@ void Smithtry1000::onInductionParallel_buttonClicked()
 /// </summary>
 void Smithtry1000::onCapacitorParallel_buttonClicked()
 {
-    Model = mode::CapacitorParallel;
+    SystemParameters::Model = CapacitorParallel;
     ImaginaryAdmitance();
 }
 
@@ -2849,21 +2846,21 @@ void Smithtry1000::onCapacitorParallel_buttonClicked()
 /// </summary>
 void Smithtry1000::onResistorParallel_buttonClicked()
 {
-    Model = mode::ResistorParallel;
+    SystemParameters::Model = ResistorParallel;
     auxiliaryWidget->update();
     leftClicked = false;
     rightClicked = false;
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
         if (!SystemParameters::rotate)
         {
-            auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (index + 2) * 40, 39);
+            auxiliaryWidget->addSvg(QString(":/Images/vertical_r_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
         }
         else
         {
-            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_r_circuit.svg"), 79, (index + 1) * 40);
+            auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_r_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
         }
         QCursor::setPos(centerGlobal);
         this->setCursor(Qt::BlankCursor); // скрываем системный курсор
@@ -2946,14 +2943,14 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         {
             SystemParameters::rAdmitanceRealCalculation(x, y);
             long double r1 = SystemParameters::admitanceRealR;
-            SystemParameters::rAdmitanceRealCalculation(lastPointX, lastPointY);
+            SystemParameters::rAdmitanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             long double r2 = SystemParameters::admitanceRealR;
             Point point;
-            point.x = lastPointX;
-            point.y = lastPointY;
-            allPoints[index + dpIndex - 1] = make_tuple(point, true);
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            point.x = SystemParameters::lastPointX;
+            point.y = SystemParameters::lastPointY;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
@@ -2972,21 +2969,21 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             }
             parameter[G] = g;
             map<chartMode, tuple<long double, long double>> chart;
-            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
             chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
             this->circuitElements->AddCircuitElements(new Element(ResistorParallel, 1000 / (r2 - r1), this->circuitElements->frequencyFirstPoint, point, chart, parameter));
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+            pointsX.append(SystemParameters::lastPointX);
+            pointsY.append(SystemParameters::lastPointY);
+            QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
             SystemParameters::rImpedanceRealCalculation(point.x, point.y);
             SystemParameters::rImpedanceImagCalculation(point.x, point.y);
             QString temp2 = " + j";
@@ -3004,9 +3001,9 @@ void Smithtry1000::onResistorParallel_buttonClicked()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-            circuitElements->elementIndexes.append(allpointindex);
-            index++;
-            allpointindex++;
+            circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::index++;
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             tempCircuit=*circuitElements;
             firstDeleted = true;
@@ -3018,13 +3015,13 @@ void Smithtry1000::onResistorParallel_buttonClicked()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
         }
         SystemParameters::resistorLinear = false;
-        Model = Default;
+        SystemParameters::Model = Default;
         this->unsetCursor(); // возвращаем курсор
     }
     else
@@ -3041,14 +3038,14 @@ void Smithtry1000::onResistorParallel_buttonClicked()
 /// </summary>
 void Smithtry1000::onDelete_buttonClicked()
 {
-    if (allpointindex > 0 && !SystemParameters::tuneBlock && !SystemParameters::edit)
+    if (SystemParameters::allpointindex > 0 && !SystemParameters::tuneBlock && !SystemParameters::edit)
     {
         if (firstDeleted)
         {
             tempCircuit = CircuitElements(*circuitElements);
             firstDeleted = false;
         }
-        if (get<1>(allPoints[allpointindex-1]))
+        if (get<1>(allPoints[SystemParameters::allpointindex-1]))
         {
             auxiliaryWidget->removeLastSvg();
             renderArea->update();
@@ -3057,15 +3054,15 @@ void Smithtry1000::onDelete_buttonClicked()
             pointsX.pop_back();
             pointsY.pop_back();
             this->circuitElements->elementIndexes.pop_back();
-            index--;
-            allpointindex--;
+            SystemParameters::index--;
+            SystemParameters::allpointindex--;
         }
         else
         {
-            if (allpointindex == 1)
+            if (SystemParameters::allpointindex == 1)
             {
                 ui->rTable->setItem(3, 3, new QTableWidgetItem(""));
-                dpIndex--;
+                SystemParameters::dpIndex--;
                 this->circuitElements->imagFirstPoint = -9999;
                 this->circuitElements->realFirstPoint = -9999;
                 this->circuitElements->frequencyFirstPoint = -9999;
@@ -3076,15 +3073,15 @@ void Smithtry1000::onDelete_buttonClicked()
                 this->circuitElements->frequencyList.pop_back();
                 pointsX.pop_back();
                 pointsY.pop_back();
-                index--;
-                allpointindex--;
+                SystemParameters::index--;
+                SystemParameters::allpointindex--;
             }
             else
             {
                 circuitElements->morePoints.pop_back();
                 this->circuitElements->pointIndexes.pop_back();
-                dpIndex--;
-                allpointindex--;
+                SystemParameters::dpIndex--;
+                SystemParameters::allpointindex--;
                 this->circuitElements->frequencyList.pop_back();
             }
         }
@@ -3092,7 +3089,7 @@ void Smithtry1000::onDelete_buttonClicked()
         allPoints.erase(allPoints.size() - 1);
         renderArea->update();
         auxiliaryWidget->update();
-        if (index > 1)
+        if (SystemParameters::index > 1)
         {
             amplitudeFrequence->MatrixCalculation();
         }
@@ -3107,7 +3104,7 @@ void Smithtry1000::onDelete_buttonClicked()
     }
     else
     {
-        if (allpointindex == 0)
+        if (SystemParameters::allpointindex == 0)
         {
             QMessageBox* bx = new QMessageBox();
             bx->show();
@@ -3134,19 +3131,19 @@ void Smithtry1000::ImaginaryImpedance()
     rightClicked = false;
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
-        switch (Model)
+        switch (SystemParameters::Model)
         {
         case InductionShunt:
         {
             if (!SystemParameters::rotate)
             {
-                auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (index + 2) * 40, 20);
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_i.svg"), (SystemParameters::index + 2) * 40, 20);
             }
             else
             {
-                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_i.svg"), 60, (index + 1) * 40);
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_i.svg"), 60, (SystemParameters::index + 1) * 40);
             }
             break;
         }
@@ -3154,11 +3151,11 @@ void Smithtry1000::ImaginaryImpedance()
         {
             if (!SystemParameters::rotate)
             {
-                auxiliaryWidget->addSvg(QString(":/Images/horizontal_c.svg"), (index + 2) * 40, 20);
+                auxiliaryWidget->addSvg(QString(":/Images/horizontal_c.svg"), (SystemParameters::index + 2) * 40, 20);
             }
             else
             {
-                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_c.svg"), 60, (index + 1) * 40);
+                auxiliaryWidget->addSvg(QString(":/Images/rev_horizontal_c.svg"), 60, (SystemParameters::index + 1) * 40);
             }
             break;
         }
@@ -3212,7 +3209,7 @@ void Smithtry1000::ImaginaryImpedance()
         {
             r = 1e9;
         }
-        switch (Model)
+        switch (SystemParameters::Model)
         {
         case InductionShunt:
         {
@@ -3238,14 +3235,14 @@ void Smithtry1000::ImaginaryImpedance()
         {
             SystemParameters::rImpedanceImagCalculation(x, y);
             long double r1 = SystemParameters::impedanceImagR;
-            SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+            SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             long double r2 = SystemParameters::impedanceImagR;
             Point point;
-            point.x = lastPointX;
-            point.y = lastPointY;
-            allPoints[index + dpIndex - 1] = make_tuple(point, true);
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            point.x = SystemParameters::lastPointX;
+            point.y = SystemParameters::lastPointY;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
             parameter[Y] = y2;
@@ -3264,15 +3261,15 @@ void Smithtry1000::ImaginaryImpedance()
             }
             parameter[G] = g;
             map<chartMode, tuple<long double, long double>> chart;
-            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
             chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-            switch (Model)
+            switch (SystemParameters::Model)
             {
             case InductionShunt:
             {
@@ -3285,14 +3282,14 @@ void Smithtry1000::ImaginaryImpedance()
                 break;
             }
             }
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+            pointsX.append(SystemParameters::lastPointX);
+            pointsY.append(SystemParameters::lastPointY);
+            QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
-            SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-            SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+            SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             QString temp2 = " + j";
             if (SystemParameters::impedanceImagR < 0)
             {
@@ -3308,9 +3305,9 @@ void Smithtry1000::ImaginaryImpedance()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-            circuitElements->elementIndexes.append(allpointindex);
-            index++;
-            allpointindex++;
+            circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::index++;
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             tempCircuit=*circuitElements;
             firstDeleted = true;
@@ -3322,7 +3319,7 @@ void Smithtry1000::ImaginaryImpedance()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
 
             auxiliaryWidget->removeLastSvg();
@@ -3337,7 +3334,7 @@ void Smithtry1000::ImaginaryImpedance()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте стартовую точку."));
     }
-    Model = Default;
+    SystemParameters::Model = Default;
 }
 
 /// <summary>
@@ -3350,19 +3347,19 @@ void Smithtry1000::ImaginaryAdmitance()
     rightClicked = false;
     QPoint centerLocal = renderArea->rect().center();
     QPoint centerGlobal = renderArea->mapToGlobal(centerLocal);
-    if (index > 0)
+    if (SystemParameters::index > 0)
     {
-        switch (Model)
+        switch (SystemParameters::Model)
         {
         case InductionParallel:
         {
             if (!SystemParameters::rotate)
             {
-                auxiliaryWidget->addSvg(QString(":/Images/vertical_i_circuit.svg"), (index + 2) * 40, 39);
+                auxiliaryWidget->addSvg(QString(":/Images/vertical_i_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
             }
             else
             {
-                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_i_circuit.svg"), 79, (index + 1) * 40);
+                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_i_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
             }
             break;
         }
@@ -3370,11 +3367,11 @@ void Smithtry1000::ImaginaryAdmitance()
         {
             if (!SystemParameters::rotate)
             {
-                auxiliaryWidget->addSvg(QString(":/Images/vertical_c_circuit.svg"), (index + 2) * 40, 39);
+                auxiliaryWidget->addSvg(QString(":/Images/vertical_c_circuit.svg"), (SystemParameters::index + 2) * 40, 39);
             }
             else
             {
-                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_c_circuit.svg"), 79, (index + 1) * 40);
+                auxiliaryWidget->addSvg(QString(":/Images/rev_vertical_c_circuit.svg"), 79, (SystemParameters::index + 1) * 40);
             }
             break;
         }
@@ -3425,7 +3422,7 @@ void Smithtry1000::ImaginaryAdmitance()
         {
             r = 1e9;
         }
-        switch (Model)
+        switch (SystemParameters::Model)
         {
         case InductionParallel:
         {
@@ -3451,14 +3448,14 @@ void Smithtry1000::ImaginaryAdmitance()
         {
             SystemParameters::rAdmitanceImagCalculation(x, y);
             long double r1 = SystemParameters::admitanceImagR;
-            SystemParameters::rAdmitanceImagCalculation(lastPointX, lastPointY);
+            SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             long double r2 = SystemParameters::admitanceImagR;
             Point point;
-            point.x = lastPointX;
-            point.y = lastPointY;
-            allPoints[index + dpIndex - 1] = make_tuple(point, true);
-            Complex z = SystemParameters::zCalculation(lastPointX, lastPointY);
-            Complex y2 = SystemParameters::yCalculation(lastPointX, lastPointY);
+            point.x = SystemParameters::lastPointX;
+            point.y = SystemParameters::lastPointY;
+            allPoints[SystemParameters::index + SystemParameters::dpIndex - 1] = make_tuple(point, true);
+            Complex z = SystemParameters::zCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex y2 = SystemParameters::yCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             Complex g;
             map<parameterMode, Complex> parameter;
             parameter[Z] = z;
@@ -3477,15 +3474,15 @@ void Smithtry1000::ImaginaryAdmitance()
             }
             parameter[G] = g;
             map<chartMode, tuple<long double, long double>> chart;
-            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(lastPointX, lastPointY);
-            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(lastPointX, lastPointY);
-            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(lastPointX, lastPointY);
+            Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(SystemParameters::lastPointX, SystemParameters::lastPointY);
             chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
             chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
             chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
             chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-            switch (Model)
+            switch (SystemParameters::Model)
             {
             case InductionParallel:
             {
@@ -3498,14 +3495,14 @@ void Smithtry1000::ImaginaryAdmitance()
                 break;
             }
             }
-            pointsX.append(lastPointX);
-            pointsY.append(lastPointY);
-            QPoint temp = QPoint(lastPointX * scale + renderArea->rect().center().x(), lastPointY * scale + renderArea->rect().center().y());
+            pointsX.append(SystemParameters::lastPointX);
+            pointsY.append(SystemParameters::lastPointY);
+            QPoint temp = QPoint(SystemParameters::lastPointX * SystemParameters::scale + renderArea->rect().center().x(), SystemParameters::lastPointY * SystemParameters::scale + renderArea->rect().center().y());
             int row = ui->pointTable->rowCount();
             ui->pointTable->insertRow(row);
-            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(index + dpIndex)));
-            SystemParameters::rImpedanceRealCalculation(lastPointX, lastPointY);
-            SystemParameters::rImpedanceImagCalculation(lastPointX, lastPointY);
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+            SystemParameters::rImpedanceRealCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
+            SystemParameters::rImpedanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
             QString temp2 = " + j";
             if (SystemParameters::impedanceImagR < 0)
             {
@@ -3521,9 +3518,9 @@ void Smithtry1000::ImaginaryAdmitance()
                 ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR)*100)/100)));
             }
             ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)this->circuitElements->frequencyFirstPoint)));
-            circuitElements->elementIndexes.append(allpointindex);
-            index++;
-            allpointindex++;
+            circuitElements->elementIndexes.append(SystemParameters::allpointindex);
+            SystemParameters::index++;
+            SystemParameters::allpointindex++;
             renderArea->setCursorPosOnCircle(temp);
             tempCircuit=*circuitElements;
             firstDeleted = true;
@@ -3535,7 +3532,7 @@ void Smithtry1000::ImaginaryAdmitance()
         }
         if (rightClicked)
         {
-            QPoint temp = QPoint(pointsX.back() * scale + renderArea->rect().center().x(), pointsY.back() * scale + renderArea->rect().center().y());
+            QPoint temp = QPoint(pointsX.back() * SystemParameters::scale + renderArea->rect().center().x(), pointsY.back() * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
             auxiliaryWidget->removeLastSvg();
             auxiliaryWidget->update();
@@ -3549,7 +3546,7 @@ void Smithtry1000::ImaginaryAdmitance()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте стартовую точку."));
     }
-    Model = Default;
+    SystemParameters::Model = Default;
 }
 
 /// <summary>
@@ -3576,13 +3573,13 @@ void Smithtry1000::onTimeout()
             SystemParameters::edited = false;
         }
     }
-    if (Model == AddPoint || Model == Default)
+    if (SystemParameters::Model == AddPoint || SystemParameters::Model == Default)
     {
         QPoint temp = QCursor::pos();
         long double x = temp.x();
         long double y = temp.y();
-        x = (x - centerGlobal.x()) / scale;
-        y = (y - centerGlobal.y()) / scale;
+        x = (x - centerGlobal.x()) / SystemParameters::scale;
+        y = (y - centerGlobal.y()) / SystemParameters::scale;
         if (pow(x, 2) + pow(y, 2) <= 1)
         {
             SystemParameters::rImpedanceRealCalculation(x, y);
@@ -3658,10 +3655,10 @@ void Smithtry1000::onTimeout()
     {
         // Вычисляем точку на окружности и ставим туда курсор
         QPoint posOnCircle = getPointOnCircle(dx, dy);
-        if (Model == Transform)
+        if (SystemParameters::Model == Transform)
         {
             double tempX=0, tempY=0;
-            if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(scale, 2))
+            if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(SystemParameters::scale, 2))
             {
                 QCursor::setPos(tempX, tempY);
                 posOnCircle.setX(tempX);
@@ -3685,7 +3682,7 @@ void Smithtry1000::onTimeout()
 /// <returns>Точка на диаграмме.</returns>
 QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 {
-    if (Model == mode::InductionShunt || Model == mode::CapacitorShunt)
+    if (SystemParameters::Model == mode::InductionShunt || SystemParameters::Model == mode::CapacitorShunt)
     {
         t = t;
         long double x, y;
@@ -3785,8 +3782,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = -0.0001;
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -3829,13 +3826,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
+    else if (SystemParameters::Model == mode::InductionParallel || SystemParameters::Model == mode::CapacitorParallel)
     {
         t = t;
         long double x, y;
@@ -3936,8 +3933,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = -0.0001;
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -3980,13 +3977,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == mode::ResistorShunt)
+    else if (SystemParameters::Model == mode::ResistorShunt)
     {
         long double x, y;
         x = 0;
@@ -4004,31 +4001,31 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             step = abs(r) / 1000;
             step += step * abs(dx);
-            if (dx > 0 && lastPointX <= 1)
+            if (dx > 0 && SystemParameters::lastPointX <= 1)
             {
-                if (lastPointX + step >= 1)
+                if (SystemParameters::lastPointX + step >= 1)
                 {
                     x = 1-step;
                 }
                 else
                 {
-                    x = lastPointX + step;
+                    x = SystemParameters::lastPointX + step;
                 }
             }
-            else if (dx<0 && lastPointX>=xmin)
+            else if (dx<0 && SystemParameters::lastPointX>=xmin)
             {
-                if (lastPointX - step <= xmin)
+                if (SystemParameters::lastPointX - step <= xmin)
                 {
                     x = xmin +step;
                 }
                 else
                 {
-                    x = lastPointX - step;
+                    x = SystemParameters::lastPointX - step;
                 }
             }
             else if (dx == 0)
             {
-                x = lastPointX;
+                x = SystemParameters::lastPointX;
             }
         }
         else
@@ -4053,14 +4050,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             step += step * dif;
             x = 0;
             y = 0;
-            if (lastPointY > 0)
+            if (SystemParameters::lastPointY > 0)
             {
                 dx *= -1;
             }
             if (dx == 0 && dy == 0)
             {
             }
-            else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy > 0 && lastPointY >= 0) || (flag == true && dy > 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
+            else if ((dx < 0 && abs(SystemParameters::lastPointY) <= abs(SystemParameters::lastPointX - 1) && flag == false) || (flag == true && dy > 0 && SystemParameters::lastPointY >= 0) || (flag == true && dy > 0 && SystemParameters::lastPointY <= 0) || (dx > 0 && abs(SystemParameters::lastPointY) >= abs(SystemParameters::lastPointX - 1) && flag == false))
             {
                 if (t - step <= tmin)
                 {
@@ -4071,7 +4068,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                     t -= step;
                 }
             }
-            else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX - 1) && flag == false) || (flag == true && dy < 0 && lastPointY <= 0) || (flag == true && dy < 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX - 1) && flag == false))
+            else if ((dx > 0 && abs(SystemParameters::lastPointY) <= abs(SystemParameters::lastPointX - 1) && flag == false) || (flag == true && dy < 0 && SystemParameters::lastPointY <= 0) || (flag == true && dy < 0 && SystemParameters::lastPointY >= 0) || (dx < 0 && abs(SystemParameters::lastPointY) >= abs(SystemParameters::lastPointX - 1) && flag == false))
             {
                 if (t + step >= tmax)
                 {
@@ -4150,15 +4147,15 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        lastPointX = x;
-        lastPointY = y;
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == mode::ResistorParallel)
+    else if (SystemParameters::Model == mode::ResistorParallel)
     {
         long double x, y;
         if (SystemParameters::resistorLinear)
@@ -4176,31 +4173,31 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             {
                 xmax = circuitElements->firstPoint.x;
             }
-            if (dx > 0 && lastPointX <= xmax)
+            if (dx > 0 && SystemParameters::lastPointX <= xmax)
             {
-                if (lastPointX + step > xmax)
+                if (SystemParameters::lastPointX + step > xmax)
                 {
                     x = xmax - step;
                 }
                 else
                 {
-                    x = lastPointX + step;
+                    x = SystemParameters::lastPointX + step;
                 }
             }
-            else if (dx<0 && lastPointX>=-1)
+            else if (dx<0 && SystemParameters::lastPointX>=-1)
             {
-                if (lastPointX - step < -1)
+                if (SystemParameters::lastPointX - step < -1)
                 {
                     x = -1 + step;
                 }
                 else
                 {
-                    x = lastPointX - step;
+                    x = SystemParameters::lastPointX - step;
                 }
             }
             else if (dx == 0)
             {
-                x = lastPointX;
+                x = SystemParameters::lastPointX;
             }
         }
         else
@@ -4225,14 +4222,14 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             step += step * dif;
             x = 0;
             y = 0;
-            if (lastPointY > 0)
+            if (SystemParameters::lastPointY > 0)
             {
                 dx *= -1;
             }
             if (dx == 0 && dy == 0)
             {
             }
-            else if ((dx < 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy < 0 && lastPointY >= 0) || (flag == true && dy < 0 && lastPointY <= 0) || (dx > 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
+            else if ((dx < 0 && abs(SystemParameters::lastPointY) <= abs(SystemParameters::lastPointX + 1) && flag == false) || (flag == true && dy < 0 && SystemParameters::lastPointY >= 0) || (flag == true && dy < 0 && SystemParameters::lastPointY <= 0) || (dx > 0 && abs(SystemParameters::lastPointY) >= abs(SystemParameters::lastPointX + 1) && flag == false))
             {
                 if (t - step <= tmin)
                 {
@@ -4243,7 +4240,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                     t -= step;
                 }
             }
-            else if ((dx > 0 && abs(lastPointY) <= abs(lastPointX + 1) && flag == false) || (flag == true && dy > 0 && lastPointY <= 0) || (flag == true && dy > 0 && lastPointY >= 0) || (dx < 0 && abs(lastPointY) >= abs(lastPointX + 1) && flag == false))
+            else if ((dx > 0 && abs(SystemParameters::lastPointY) <= abs(SystemParameters::lastPointX + 1) && flag == false) || (flag == true && dy > 0 && SystemParameters::lastPointY <= 0) || (flag == true && dy > 0 && SystemParameters::lastPointY >= 0) || (dx < 0 && abs(SystemParameters::lastPointY) >= abs(SystemParameters::lastPointX + 1) && flag == false))
             {
                 if (t + step >= tmax)
                 {
@@ -4256,7 +4253,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
             }
             long double cos_t = cos(t);
             long double sin_t = sin(t);
-            if (lastPointY < 0)
+            if (SystemParameters::lastPointY < 0)
             {
                 x = (cos_t - abs(r)) / r;
                 y = (1 / r) + (1 / r) * sin_t;
@@ -4276,8 +4273,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                 y = -0.0001;
             }
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -4320,13 +4317,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == mode::OSLine)
+    else if (SystemParameters::Model == mode::OSLine)
     {
         t = t;
         long double x, y;
@@ -4429,8 +4426,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = -0.0001;
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -4473,13 +4470,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == mode::SSLine)
+    else if (SystemParameters::Model == mode::SSLine)
     {
         t = t;
         long double x, y;
@@ -4582,8 +4579,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = -0.0001;
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -4626,13 +4623,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == Line)
+    else if (SystemParameters::Model == Line)
     {
         t = t;
         long double x, y;
@@ -4749,8 +4746,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             y = -0.0001;
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -4793,13 +4790,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
-    else if (Model == Transform)
+    else if (SystemParameters::Model == Transform)
     {
         long double tprev = t;
         t = t;
@@ -4824,31 +4821,31 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         {
             step = abs(r) / 1000;
             step += step * abs(dx);
-            if (dx > 0 && lastPointX <= 1)
+            if (dx > 0 && SystemParameters::lastPointX <= 1)
             {
-                if (lastPointX + step >= 1)
+                if (SystemParameters::lastPointX + step >= 1)
                 {
                     x = 1 - step;
                 }
                 else
                 {
-                    x = lastPointX + step;
+                    x = SystemParameters::lastPointX + step;
                 }
             }
-            else if (dx<0 && lastPointX>=-1)
+            else if (dx<0 && SystemParameters::lastPointX>=-1)
             {
-                if (lastPointX - step <= -1)
+                if (SystemParameters::lastPointX - step <= -1)
                 {
                     x = -1 + step;
                 }
                 else
                 {
-                    x = lastPointX - step;
+                    x = SystemParameters::lastPointX - step;
                 }
             }
             else if (dx == 0)
             {
-                x = lastPointX;
+                x = SystemParameters::lastPointX;
             }
             y = 0;
         }
@@ -4967,8 +4964,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
                 }
             }
         }
-        lastPointX = x;
-        lastPointY = y;
+        SystemParameters::lastPointX = x;
+        SystemParameters::lastPointY = y;
         SystemParameters::rImpedanceRealCalculation(x, y);
         SystemParameters::rAdmitanceRealCalculation(x, y);
         SystemParameters::rImpedanceImagCalculation(x, y);
@@ -5011,8 +5008,8 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         double rtemp = sqrt(pow(x, 2) + pow(y, 2));
         ui->rTable->setItem(0, 3, new QTableWidgetItem(QString::number(round(((-1 - rtemp) / (rtemp - 1))*100)/100) + ":1"));
         ui->rTable->setItem(2, 3, new QTableWidgetItem(QString::number(round(-20 * log10(rtemp) * 100) / 100)));
-        x = x * scale + renderArea->rect().center().x();
-        y = y * scale + renderArea->rect().center().y();
+        x = x * SystemParameters::scale + renderArea->rect().center().x();
+        y = y * SystemParameters::scale + renderArea->rect().center().y();
 
         auxiliaryWidget->update();
         return QPoint(x, y);
@@ -5024,16 +5021,16 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
 /// </summary>
 void Smithtry1000::onPlusSize_buttonClicked()
 {
-    if (scale < 2000)
+    if (SystemParameters::scale < 2000)
     {
-        scale += 100;
+        SystemParameters::scale += 100;
         renderArea->update();
         int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
         int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
-        renderArea->setFixedWidth(1200 + (scale - 200) * 2);
-        renderArea->setFixedHeight(800 + (scale - 200) * 2);
-        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (scale / (scale - 100)));
-        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale - 100)));
+        renderArea->setFixedWidth(1200 + (SystemParameters::scale - 200) * 2);
+        renderArea->setFixedHeight(800 + (SystemParameters::scale - 200) * 2);
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale - 100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale - 100)));
     }
     else
     {
@@ -5049,16 +5046,16 @@ void Smithtry1000::onPlusSize_buttonClicked()
 /// </summary>
 void Smithtry1000::onMinusSize_buttonClicked()
 {
-    if (scale > 100)
+    if (SystemParameters::scale > 100)
     {
-        scale -= 100;
+        SystemParameters::scale -= 100;
         int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
         int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
-        renderArea->setFixedWidth(1200 + (scale - 200) * 2);
-        renderArea->setFixedHeight(800 + (scale - 200) * 2);
+        renderArea->setFixedWidth(1200 + (SystemParameters::scale - 200) * 2);
+        renderArea->setFixedHeight(800 + (SystemParameters::scale - 200) * 2);
         renderArea->update();
-        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (scale / (scale + 100)));
-        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale + 100)));
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale + 100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale + 100)));
     }
     else
     {
@@ -5074,7 +5071,7 @@ void Smithtry1000::onMinusSize_buttonClicked()
 /// </summary>
 void Smithtry1000::onDefaultSize_buttonClicked()
 {
-    scale = 200;
+    SystemParameters::scale = 200;
     renderArea->update();
     renderArea->setFixedWidth(1200);
     renderArea->setFixedHeight(800);
@@ -5085,7 +5082,7 @@ void Smithtry1000::onDefaultSize_buttonClicked()
 /// </summary>
 void Smithtry1000::onGraph_buttonClicked()
 {
-    if (index > 1)
+    if (SystemParameters::index > 1)
     {
         amplitudeFrequence->MatrixCalculation();
 
@@ -5124,7 +5121,7 @@ void Smithtry1000::onS22_buttonClicked()
 /// </summary>
 void Smithtry1000::getsignal()
 {
-    if (index > 1)
+    if (SystemParameters::index > 1)
     {
         amplitudeFrequence->MatrixCalculation();
         amplitudeFrequence->update();
@@ -5177,12 +5174,12 @@ void Smithtry1000::resizeEvent(QResizeEvent* event)
         long double coef1 = (long double)event->size().width() / (long double)event->oldSize().width();
         long double coef2 = (long double)event->size().height() / (long double)event->oldSize().height();
         long double coef = coef1 * coef2;
-        scale = scale * coef;
+        SystemParameters::scale = SystemParameters::scale * coef;
         int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
         int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
-        renderArea->setFixedWidth(1200 + (scale - 200) * 2);
-        renderArea->setFixedHeight(800 + (scale - 200) * 2);
-        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (scale / (scale - 100)));
-        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (scale / (scale - 100)));
+        renderArea->setFixedWidth(1200 + (SystemParameters::scale - 200) * 2);
+        renderArea->setFixedHeight(800 + (SystemParameters::scale - 200) * 2);
+        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale - 100)));
+        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale - 100)));
     }
 }

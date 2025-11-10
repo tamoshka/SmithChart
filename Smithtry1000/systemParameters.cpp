@@ -103,7 +103,13 @@ long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
 bool SystemParameters::exc = false;
 bool SystemParameters::rotate = false;
-
+mode SystemParameters::Model = Default;
+long double SystemParameters::scale=200;
+long double SystemParameters::lastPointX = 0;
+long double SystemParameters::lastPointY = 0;
+int SystemParameters::index = 0;
+int SystemParameters::allpointindex = 0;
+int SystemParameters::dpIndex = 0;
 /// <summary>
 /// Расчёт действительной части сопротивления.
 /// </summary>

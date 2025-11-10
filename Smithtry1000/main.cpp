@@ -9,12 +9,9 @@ int point_index = 0;
 int allpointindex = 0;
 map<int, tuple<Point, long double, long double, mode>> points;
 int dpIndex = 0;
-double scale = 200;
 QList<QSvgWidget*> svgWidgets;
 long double frequency = 500;
 QList<long double> frequencyList;
-long double lastPointX = 0;
-long double lastPointY = 0;
 
 QString fileName = "";
 
