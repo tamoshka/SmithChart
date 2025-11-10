@@ -6,9 +6,14 @@
 #include <QVector>
 #include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class GrafTwoClass; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения k, mu, MAG, MSG.
+/// </summary>
 class GrafTwo : public QWidget
 {
 	Q_OBJECT
@@ -21,10 +26,9 @@ public:
 public slots:
 	void highlightPoint(int index);
 	void updateGrafTwoColor();
-
+	void SaveGrafTwo();
 private:
 	Ui::GrafTwoClass* ui;
-	double xBegin, xEnd, yBegin, yEnd, yBeginTwo, yEndTwo;
 	QVector<double> x, y1, y2, y3, y4;
 private:
 	QCPGraph* GraphK = nullptr;

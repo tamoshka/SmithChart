@@ -9,6 +9,9 @@
 #include "circuitElements.h"
 using namespace std;
 
+/// <summary>
+/// Класс визуализации ДВС.
+/// </summary>
 class RenderArea : public QWidget
 {
     Q_OBJECT
@@ -16,15 +19,6 @@ public:
     void setCursorPosOnCircle(const QPoint& pos);
 
     RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
-    bool flag[20] = { false };
-    int step_count = 0;
-
-
-    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-    QSize sizeHint() const Q_DECL_OVERRIDE;
-
-
-    enum Mode { Impedence, Admittance, Superimpose, Hide, Both };
 
 
 protected:
@@ -36,25 +30,21 @@ public slots:
 
 private:
     CircuitElements* circuitElements = new CircuitElements();
-    double r;
+    long double r;
     QPointF center;
-    QColor mBackGroundColor;
-    QColor mShapeColor;
-    Mode mMode;
-    double mScale;
-    Point compute_real(double t);
-    Point compute_realParallel(double t);
-    Point compute_imaginary(double t);
-    Point compute_imaginaryParallel(double t);
-    Point compute_line(double t, double radius);
+    Point compute_real(long double t);
+    Point compute_realParallel(long double t);
+    Point compute_imaginary(long double t);
+    Point compute_imaginaryParallel(long double t);
+    Point compute_line(long double t, long double radius);
+    Point compute_q(long double t, long double radius);
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;
     void drawStaticObjects(QPainter&);
     void drawDynamicObject(QPainter&);
-    qreal m_scaleFactor;
     void generateCache();
-    double defaultScale = 200;
+    long double defaultScale = 200;
 
 
 

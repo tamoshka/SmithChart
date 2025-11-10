@@ -3,6 +3,11 @@
 #include <QString>
 #include <qtablewidget.h>
 
+/// <summary>
+/// Конструктор класса SParamTable.
+/// </summary>
+/// <param name="type">Тип, STable1/STable2.</param>
+/// <param name="parent"></param>
 SParamTable::SParamTable(TableType type, QWidget* parent)
     : QWidget(parent),
     currentType(type)
@@ -11,6 +16,9 @@ SParamTable::SParamTable(TableType type, QWidget* parent)
     ui->setupUi(this);
 }
 
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void SParamTable::Load()
 {
     extern QString fileName;
@@ -115,6 +123,9 @@ void SParamTable::Load()
     });
 }
 
+/// <summary>
+/// Деструктор класса SParamTable.
+/// </summary>
 SParamTable::~SParamTable()
 {
     delete ui;

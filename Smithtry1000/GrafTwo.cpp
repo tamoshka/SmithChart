@@ -8,6 +8,11 @@
 #include <QString>
 #include "S2p.h"
 #include "ColourSetting.h"
+
+/// <summary>
+/// Конструктор класса GrafTwo.
+/// </summary>
+/// <param name="parent"></param>
 GrafTwo::GrafTwo(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafTwoClass())
@@ -15,13 +20,17 @@ GrafTwo::GrafTwo(QWidget* parent)
 	ui->setupUi(this);
 }
 
+
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void GrafTwo::Load()
 {
 	extern QString fileName;
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-
+	connect(ui->SaveGrafTwo, &QPushButton::clicked, this, &GrafTwo::SaveGrafTwo);
 	TouchstoneFile t;
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
@@ -33,12 +42,11 @@ void GrafTwo::Load()
 	y4 = QVector<double>::fromStdVector(s.Mu);
 
 	double m1, m2, m3, m4;
-	xBegin = 0;
-	xEnd = s.f[s.f.size() - 1];
 	m1 = y1[0];
 	m2 = y2[0];
 	m3 = y3[0];
 	m4 = y4[0];
+	double yBegin, yEnd;
 	for (int j = 0; j < s.Mg.size() - 1; j++)
 	{
 		if (y1[j + 1] > m1)
@@ -66,7 +74,7 @@ void GrafTwo::Load()
 	}
 
 
-	ui->widget->xAxis->setRange(xBegin, xEnd);
+	ui->widget->xAxis->setRange(0, s.f[s.f.size() - 1]);
 	ui->widget->xAxis->setLabel("f[Hz]");
 	ui->widget->yAxis->setRange(yBegin, yEnd);
 	ui->widget->yAxis->setLabel("[dB]");
@@ -86,22 +94,26 @@ void GrafTwo::Load()
 	}
 
 	ui->widget->legend->setVisible(true);
-	QPen pen1(SystemParameters::magGrafColor);
+	QPen pen1(SystemParameters::magGrafColor, SystemParameters::sPlotline[2]);
+	QPen penGid(SystemParameters::gridGrafTwoColor, SystemParameters::sPlotline[8], Qt::DotLine);
+	ui->widget->xAxis->grid()->setPen(penGid);
+	ui->widget->yAxis->grid()->setPen(penGid);
+	ui->widget->yAxis2->grid()->setPen(penGid);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
-	QPen pen2(SystemParameters::msgGrafColor);
+	QPen pen2(SystemParameters::msgGrafColor,SystemParameters::sPlotline[3]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");
 	ui->widget->graph(1)->addData(x, y2);
-	QPen pen3(SystemParameters::kGrafColor);
+	QPen pen3(SystemParameters::kGrafColor, SystemParameters::sPlotline[4]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(2)->setPen(pen3);
 	ui->widget->graph(2)->setName("K");
 	ui->widget->graph(2)->addData(x, y3);
-	QPen pen4(SystemParameters::muGrafColor);
+	QPen pen4(SystemParameters::muGrafColor, SystemParameters::sPlotline[5]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
 	ui->widget->graph(3)->setPen(pen4);
 	ui->widget->graph(3)->setName("μ");
@@ -146,6 +158,9 @@ void GrafTwo::Load()
 	Graphu->setValueAxis(ui->widget->yAxis2);
 }
 
+/// <summary>
+/// Изменение цвета на виджете.
+/// </summary>
 void GrafTwo::updateGrafTwoColor()
 {
 	if (fileName != "")
@@ -155,6 +170,45 @@ void GrafTwo::updateGrafTwoColor()
 	}
 }
 
+/// <summary>
+/// Сохранение виджета в изображение.
+/// </summary>
+void GrafTwo::SaveGrafTwo()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+	if (!fileName.isEmpty())
+	{
+		bool success = false;
+
+		if (fileName.endsWith(".png", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+		}
+		else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
+		{
+			success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+		}
+		else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePdf(fileName);
+		}
+
+		if (success)
+		{
+			QMessageBox::information(this, "Success", QString("The graph is saved to a file:\n%1").arg(fileName));
+		}
+		else
+		{
+			QMessageBox::warning(this, "Error", "Couldn't save graph!");
+		}
+	}
+}
+
+/// <summary>
+/// Выбор подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void GrafTwo::highlightPoint(int index)
 {
 	if (index >= 0 && index < x.size())
@@ -170,6 +224,9 @@ void GrafTwo::highlightPoint(int index)
 	}
 }
 
+/// <summary>
+/// Деструктор класса GrafTwo.
+/// </summary>
 GrafTwo::~GrafTwo()
 {
 	delete ui;

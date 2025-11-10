@@ -2,6 +2,10 @@
 #include "S2p.h"
 #include <QString>
 
+/// <summary>
+/// Конструктор класса GrafOne.
+/// </summary>
+/// <param name="parent"></param>
 GrafOne::GrafOne(QWidget* parent)
 	: QWidget(parent)
 	, ui(new Ui::GrafOneClass())
@@ -9,13 +13,16 @@ GrafOne::GrafOne(QWidget* parent)
 	ui->setupUi(this);
 }
 
+/// <summary>
+/// Загрузка параметров из SnP файла.
+/// </summary>
 void GrafOne::Load()
 {
 	extern QString fileName;
 	auto extension = fileName.toStdString();
 	size_t last_dot = extension.find_last_of('.');
 	extension = last_dot != string::npos ? extension.substr(last_dot + 1) : "";
-
+	connect(ui->SaveGrafOne,&QPushButton::clicked, this, &GrafOne::SaveGrafOne);
 	TouchstoneFile t;
 	spar_t s;
 	ui->widget->clearGraphs();
@@ -25,10 +32,7 @@ void GrafOne::Load()
 	y1 = QVector<double>::fromStdVector(s.S11);
 	y2 = QVector<double>::fromStdVector(s.S22);
 	double m1, m2;
-	hX = s.f[s.f.size() - 1] / 4;
-
-	xBegin = 0;
-	xEnd = s.f[s.f.size() - 1];
+	double yBegin, yEnd;
 	m1 = y1[0];
 	m2 = y2[0];
 	for (int j = 0; j < s.S11.size() - 1; j++)
@@ -47,68 +51,52 @@ void GrafOne::Load()
 	}
 	if (extension == "S1P" || extension == "s1p")
 	{
-		hY = m1 / 5;
 		yBegin = m1 * 1.25;
 		yEnd = 0;
 	}
 	else if (m2 < m1)
 	{
-		hY = m2 / 5;
 		yBegin = m2 * 1.25;
 		yEnd = 0;
 	}
 	else
 	{
-		hY = m1 / 5;
 		yBegin = m1 * 1.25;
 		yEnd = 0;
 	}
 
-	ui->widget->xAxis->setRange(xBegin, xEnd);
+	ui->widget->xAxis->setRange(0, s.f[s.f.size() - 1]);
 	ui->widget->xAxis->setLabel("f[Hz]");
 	ui->widget->yAxis->setRange(yBegin, yEnd);
 	ui->widget->yAxis->setLabel("[dB]");
-
-	for (xBegin; xBegin <= xEnd; xBegin += hX)
-	{
-		if (xBegin <= xEnd)
-		{
-			x;
-			y1;
-		}
-	}
-
-	for (yEnd; yEnd <= yBegin; yEnd += yBegin / 5)
-	{
-		hY + hY;
-		if (hY == yEnd)
-		{
-			x;
-			y2;
-		}
-	}
 
 	ui->widget->legend->setVisible(true);
 	if (extension == "S1P" || extension == "s1p")
 	{
 
 		ui->widget->addGraph();
-		QPen pen1(SystemParameters::s11GrafColor);
+		QPen penGid(SystemParameters::gridGrafOneColor, SystemParameters::sPlotline[9], Qt::DotLine);
+		QPen pen1(SystemParameters::s11GrafColor, SystemParameters::sPlotline[6]);
 		ui->widget->graph(0)->setPen(pen1);
+		ui->widget->xAxis->grid()->setPen(penGid);
+		ui->widget->yAxis->grid()->setPen(penGid);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 	}
 	else if (extension == "S2P" || extension == "s2p")
 	{
 		ui->widget->addGraph();
-		QPen pen1(SystemParameters::s11GrafColor);
+		QPen penGid(SystemParameters::gridGrafOneColor, SystemParameters::sPlotline[9], Qt::DotLine);
+		QPen pen1(SystemParameters::s11GrafColor, SystemParameters::sPlotline[6]);
 		ui->widget->graph(0)->setPen(pen1);
+		ui->widget->xAxis->grid()->setPen(penGid);
+		ui->widget->yAxis->grid()->setPen(penGid);
 		ui->widget->graph(0)->addData(x, y1);
 		ui->widget->graph(0)->setName("Return Loss S11");
 		ui->widget->addGraph();
 		ui->widget->graph(1)->setName("Return Loss S22");
 		ui->widget->graph(1)->addData(x, y2);
-		QPen pen2(SystemParameters::s22GrafColor);
+		QPen pen2(SystemParameters::s22GrafColor, SystemParameters::sPlotline[7]);
 		ui->widget->graph(1)->setPen(pen2);
 	}
 
@@ -127,6 +115,9 @@ void GrafOne::Load()
 	GraphS22->removeFromLegend();
 }
 
+/// <summary>
+/// Обновление цвета на виджете.
+/// </summary>
 void GrafOne::updateGrafOneColor()
 {
 	if (fileName != "")
@@ -136,6 +127,45 @@ void GrafOne::updateGrafOneColor()
 	}
 }
 
+/// <summary>
+/// Сохранение изображения виджета.
+/// </summary>
+void GrafOne::SaveGrafOne()
+{
+	QString fileName = QFileDialog::getSaveFileName(this,"Save the graph",QDir::homePath() + "/graph.png","PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+
+	if (!fileName.isEmpty()) 
+	{
+		bool success = false;
+
+		if (fileName.endsWith(".png", Qt::CaseInsensitive)) 
+		{
+			success = ui->widget->savePng(fileName,ui->widget->width() * 2,ui->widget->height() * 2,2.0);
+		}
+		else if (fileName.endsWith(".jpg", Qt::CaseInsensitive)) 
+		{
+			success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+		}
+		else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
+		{
+			success = ui->widget->savePdf(fileName);
+		}
+
+		if (success) 
+		{
+			QMessageBox::information(this, "Success",QString("The graph is saved to a file:\n%1").arg(fileName));
+		}
+		else 
+		{
+			QMessageBox::warning(this, "Error", "Couldn't save graph!");
+		}
+	}
+}
+
+/// <summary>
+/// Выбор подсвечиваемой точки.
+/// </summary>
+/// <param name="index">Номер точки.</param>
 void GrafOne::highlightPoint(int index)
 {
 	if (index >= 0 && index < x.size())
@@ -151,6 +181,9 @@ void GrafOne::highlightPoint(int index)
 	}
 }
 
+/// <summary>
+/// Деструктор класса GrafOne.
+/// </summary>
 GrafOne::~GrafOne()
 {
 	delete ui;

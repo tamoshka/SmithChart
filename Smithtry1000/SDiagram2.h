@@ -8,10 +8,16 @@
 #include <QVector>
 #include <QPoint>
 #include <QEvent>
+#include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class SDiagram2; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения S11 и S22 кругов.
+/// </summary>
 class SDiagram2 : public QWidget
 {
 	Q_OBJECT
@@ -41,15 +47,13 @@ private:
 	QPointF compute_real(float t);
 	QPointF compute_imaginary(float t);
 	QPixmap m_cache;
-	QColor mBackGroundColor;
-	QColor mShapeColor;
 	bool m_cacheValid;
 	void drawStaticObjects(QPainter&);
 	void generateCache();
 	float defaultScale = 200;
-	qreal m_scaleFactor;
 	float scale = 200;
-	float scaleFactor;
+	float scaleFactorX;
+	float scaleFactorY;
 
 	//Тип параметра (S11,S22)
 	ParameterType currentType;

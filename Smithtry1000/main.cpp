@@ -6,25 +6,36 @@
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
-map<int, tuple<Point, double, double, mode>> points;
-QList<double> qCircles;
+int allpointindex = 0;
+map<int, tuple<Point, long double, long double, mode>> points;
 int dpIndex = 0;
-double scale = 200;
 QList<QSvgWidget*> svgWidgets;
-double frequency = 500;
-QList<double> frequencyList;
-double lastPointX = 0;
-double lastPointY = 0;
+long double frequency = 500;
+QList<long double> frequencyList;
 
-double admitanceImagR = 0;
-double admitanceRealR = 0;
-double impedanceImagR = 0;
-double impedanceRealR = 0;
 QString fileName = "";
 
 int main(int argc, char *argv[])
 {
+	QCoreApplication::setApplicationName("Smithtry1000");
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setOrganizationName("Tamoshka");
+	QCoreApplication::setOrganizationDomain("Tamoshka.com");
+	try 
+	{
+		SystemParameters::deserializeFromJson();
+	}
+	catch(exception e)
+	{
+
+	}
     QApplication a(argc, argv);
+
+	QTranslator qtTranslator;
+	qtTranslator.load("qt_ru", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	a.installTranslator(&qtTranslator);
+
+	QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
 
 	GrafOne g1;
 	GrafTwo g2;
@@ -47,6 +58,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&set, &ColourSetting::grafOneColor, &g1, &GrafOne::updateGrafOneColor);
 	QObject::connect(&set, &ColourSetting::grafTwoColor, &g2, &GrafTwo::updateGrafTwoColor);
+
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);
 	QObject::connect(&w, &Smithtry1000::left, w.auxiliaryWidget, &CircuitWidget::getLeft);

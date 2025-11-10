@@ -8,6 +8,8 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_definitions(-D_WIN32_DCOM)
+
 # Поиск Qt компонентов (совместимо с Conan)
 find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
@@ -25,12 +27,21 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Все исходные файлы проекта
-set(PROJECT_SOURCES
+    set(PROJECT_SOURCES
+    #awr_interface.h
+    #AWR.cpp
+    KeyboardDialog.h
+    KeyboardDialog.cpp
     systemParameters.h
     systemParameters.cpp
     general.h
+    ElementFactory.h
+    ElementFactory.cpp
     Element.h
     Element.cpp
+    EditWidget.ui
+    EditWidget.h
+    EditWidget.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
@@ -44,8 +55,6 @@ set(PROJECT_SOURCES
     frequencyDialog.cpp
     circuitElements.h
     circuitElements.cpp
-    ComplexNumber.h
-    ComplexNumber.cpp
     qcustomplot.h
     qcustomplot.cpp
     AmplitudeFrequency.ui
@@ -70,6 +79,9 @@ set(PROJECT_SOURCES
     SDiagram1.cpp
     SDiagram2.ui
     SDiagram2.h
+    SaveDialog.ui
+    SaveDialog.h
+    SaveDialog.cpp
     SDiagram2.cpp
     SParamTable.ui
     SParamTable.h
@@ -77,6 +89,9 @@ set(PROJECT_SOURCES
     ColourSetting.ui
     ColourSetting.h
     ColourSetting.cpp
+    CirclesWidget.ui
+    CirclesWidget.h
+    CirclesWidget.cpp
     TuneWidget.ui
     TuneWidget.h
     TuneWidget.cpp
@@ -161,4 +176,8 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E echo "Qt DLLs should be in PATH or copied manually from ${QT_DLL_DIR}"
         VERBATIM
     )
+endif()
+
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /EHsc)
 endif()

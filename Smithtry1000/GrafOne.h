@@ -6,9 +6,14 @@
 #include <QVector>
 #include "ColourSetting.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class GrafOneClass; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс для отображения графика S11/S22.
+/// </summary>
 class GrafOne : public QWidget
 {
 	Q_OBJECT
@@ -21,10 +26,9 @@ public:
 public slots:
 	void highlightPoint(int index);
 	void updateGrafOneColor();
-
+	void SaveGrafOne();
 private:
 	Ui::GrafOneClass* ui;
-	double xBegin, xEnd, yBegin, yEnd, hY, hX;
 	QVector<double> x, y1, y2;
 private:
 	QCPGraph* GraphS11 = nullptr;

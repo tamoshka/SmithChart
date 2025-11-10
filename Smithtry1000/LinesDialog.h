@@ -7,6 +7,9 @@
 class QLineEdit;
 class QPushButton;
 
+/// <summary>
+/// Диалог задания линии передач.
+/// </summary>
 class LinesDialog : public QDialog {
     Q_OBJECT
 

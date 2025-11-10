@@ -6,6 +6,9 @@
 #include "SParamTable.h"
 #include "ColourSetting.h"
 
+/// <summary>
+/// Хаб для окон связанных с S-параметрами и окна настройки визуализации.
+/// </summary>
 class SParameters
 {
 public:
@@ -16,13 +19,12 @@ public:
 	ColourSetting* set;
 	SDiagram1* d1;
 	SDiagram1* d2;
+	SDiagram2* d3;
+	SDiagram2* d4;
 
 private:
 	GrafOne* grafOne;
 	GrafTwo* grafTwo;
-
-	SDiagram2* d3;
-	SDiagram2* d4;
 
 	SParamTable* stable1;
 	SParamTable* stable2;
