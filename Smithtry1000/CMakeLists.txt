@@ -142,9 +142,6 @@ else()
         Qt5::Widgets
         Qt5::Svg
         Qt5::PrintSupport
-        ole32
-        oleaut32
-        uuid
     )
 endif()
 
