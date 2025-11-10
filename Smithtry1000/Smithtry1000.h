@@ -82,11 +82,11 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    void AWR_buttonClicked();
+    ///void AWR_buttonClicked();
     void CAD_export();
 
 private:
-    AWRInterface awr = AWRInterface();
+    ///AWRInterface awr = AWRInterface();
     EditWidget* edit;
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);

@@ -88,7 +88,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->PlusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
     connect(ui->MinusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
     connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
-    connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
+    ///connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     ///connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
@@ -104,7 +104,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->SaveButton, &QPushButton::clicked, this, &Smithtry1000::Save);
     connect(ui->OpenButton, &QPushButton::clicked, this, &Smithtry1000::Load);
     connect(ui->StepForwardButton, &QPushButton::clicked, this, &Smithtry1000::Redo);
-    connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
+    ///connect(ui->AWRButton, &QPushButton::clicked, this, &Smithtry1000::AWR_buttonClicked);
     connect(ui->CADButton, &QPushButton::clicked, this, &Smithtry1000::CAD_export);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
@@ -143,7 +143,7 @@ void Smithtry1000::Reverse()
 /// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
-void Smithtry1000::AWR_buttonClicked()
+/*void Smithtry1000::AWR_buttonClicked()
 {
     if (SystemParameters::index > 1)
     {
@@ -426,7 +426,7 @@ void Smithtry1000::AWR_buttonClicked()
         bx->Information;
         bx->setText(QStringLiteral(u"Добавьте хотя бы 1 элемент в цепь."));
     }
-}
+}*/
 
 
 /// <summary>
