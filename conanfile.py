@@ -7,6 +7,7 @@ class Smithtry1000Conan(ConanFile):
     name = "smith_chart_tool"
     version = "1.0.0"
     package_type = "application"
+
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "shared": [True, False],
@@ -47,6 +48,7 @@ class Smithtry1000Conan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+    
     
     def package(self):
         if (self.settings.os == "Windows"):
