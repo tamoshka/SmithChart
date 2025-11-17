@@ -11,7 +11,7 @@ variables:
 # Job для сборки проекта
 build_job:
   stage: build
-  image: gcc:20
+  image: gcc:17
   before_script:
     - apt-get update && apt-get install -y cmake g++ git
   script:
@@ -21,7 +21,7 @@ build_job:
     - make -j$(nproc)
   artifacts:
     paths:
-      - $BUILD_DIR/your_executable  # замените на имя вашего исполняемого файла
+      - $BUILD_DIR/Smithtry1000  # замените на имя вашего исполняемого файла
       - $BUILD_DIR/tests           # если у вас есть исполняемый файл тестов
     expire_in: 1 week
   cache:
