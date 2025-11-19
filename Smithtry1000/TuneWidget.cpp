@@ -79,7 +79,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	}
 	else if (elem->GetMode() == Line || elem->GetMode() == OSLine || elem->GetMode() == SSLine)
 	{
-		name = "Z0 Line";
+		name = QStringLiteral(u"Z0 волн.");
 		box->resize(180, 150);
 		QGroupBox* elementBox2 = new QGroupBox(box);
 		elementBox2->resize(86, 114);
@@ -117,7 +117,7 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 		minlbl2->setText(QString::number(minValue[minValue.size() - 1] * n));
 		minlbl2->show();
 		minLabels.append(minlbl2);
-		name = "L elect. in lambda";
+		name = QStringLiteral(u"Эл.дл. в рад.");
 		moved = 90;
 		count++;
 	}
@@ -188,9 +188,9 @@ void TuneWidget::GetSignal(Element* elem, QString path)
 	widgets.append(svgWidget);
 	QPushButton* btn = new QPushButton(box);
 	btn->resize(50, 30);
-	btn->setText("Remove");
+	btn->setText(QStringLiteral(u"Убрать"));
 	btn->move(35, 10);
-	btn->setStyleSheet("background-color: rgb(72, 72, 72); color: rgb(0, 0, 0); ");
+	btn->setStyleSheet("background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); ");
 	btn->show();
 	buttons.append(btn);
 	mainWidget->setFixedSize(100 * (tuned->GetCircuitElements().size() + count), 150);
@@ -2079,4 +2079,9 @@ void TuneWidget::MinMaxButton_clicked()
 		i++;
 	}
 	update();
+}
+
+void TuneWidget::RemoveOnLoad()
+{
+	RemoveAll();
 }

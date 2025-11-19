@@ -260,11 +260,11 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
         }
     }
     ui->widget->xAxis->setRange(xBegin, xEnd);
-    ui->widget->xAxis->setLabel("f[Hz]");
+    ui->widget->xAxis->setLabel(QStringLiteral(u"Частота в Гц"));
     ui->widget->yAxis->setRange(0, 1);
-    ui->widget->yAxis->setLabel("S11 in dB");
+    ui->widget->yAxis->setLabel(QStringLiteral(u"S11 в разах"));
     ui->widget->yAxis2->setRange(0, 1);
-    ui->widget->yAxis2->setLabel("S21 in dB");
+    ui->widget->yAxis2->setLabel(QStringLiteral(u"S21 в разах"));
     ui->widget->yAxis2->setVisible(true);
     QPen pen1(SystemParameters::ampS11Color, SystemParameters::ampFrline[0]);
     ui->widget->setInteraction(QCP::iRangeZoom, true);

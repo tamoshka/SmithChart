@@ -17,12 +17,12 @@ class CircuitWidget : public QWidget
 public:
     CircuitWidget(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
     ~CircuitWidget();
+    QList<QString> paths;
     void addSvg(QString, int, int);
     void removeLastSvg();
+    CircuitElements* circuitElements;
 private:
     QList<int> tuned;
-    QList<QString> paths;
-    CircuitElements* circuitElements;
     CircuitElements* tuneElements;
     bool left;
 signals:

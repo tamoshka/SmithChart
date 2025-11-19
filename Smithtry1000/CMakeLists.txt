@@ -30,6 +30,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set(PROJECT_SOURCES
     #awr_interface.h
     #AWR.cpp
+    AWRExportThread.h
+    AWRExportThread.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h
@@ -42,6 +44,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     EditWidget.ui
     EditWidget.h
     EditWidget.cpp
+    PreSaveDialog.h
+    PreSaveDialog.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
@@ -142,6 +146,9 @@ else()
         Qt5::Widgets
         Qt5::Svg
         Qt5::PrintSupport
+        ole32
+        oleaut32
+        uuid
     )
 endif()
 

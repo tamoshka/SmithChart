@@ -12,8 +12,8 @@
 LinesDialog::LinesDialog(QWidget* parent)
     : QDialog(parent)
 {
-    this->setWindowTitle("Line impedance");
-    this->setFixedSize(150, 240);
+    this->setWindowTitle(QStringLiteral(u"Отрезок линии"));
+    this->setFixedSize(275, 240);
     okButton = new QPushButton("OK", this);
     Z0Box = new QGroupBox(this);
     ErBox = new QGroupBox(this);
@@ -23,10 +23,10 @@ LinesDialog::LinesDialog(QWidget* parent)
     ErField = new QLineEdit(ErBox);
     AlphaField = new QLineEdit(AlphaBox);
     LambdaField = new QLineEdit(LambdaBox);
-    Z0Box->setTitle("Z0 Line impedance");
-    ErBox->setTitle("Er");
-    AlphaBox->setTitle("alpha");
-    LambdaBox->setTitle("L electr. in lambda");
+    Z0Box->setTitle(QStringLiteral(u"Волн. сопр."));
+    ErBox->setTitle(QStringLiteral(u"Электр. проницаемость"));
+    AlphaBox->setTitle(QStringLiteral(u"Коэф. затухания"));
+    LambdaBox->setTitle(QStringLiteral(u"Эл. длина в рад."));
     Z0Field->move(0, 20);
     ErField->move(0, 20);
     AlphaField->move(0, 20);
