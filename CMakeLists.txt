@@ -16,15 +16,8 @@ else()
     set(USING_CONAN FALSE)
 endif()
 
-# Поиск Qt зависимостей
-if(USING_CONAN)
-    # Через Conan
-    find_package(Qt NAMES Qt6 REQUIRED COMPONENTS Core)
-    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets SvgWidgets PrintSupport)
-else()
-    # Системные Qt библиотеки
-    find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets SvgWidgets PrintSupport)
-endif()
+find_package(Qt6 COMPONENTS Core Widgets)
+find_package(cadmw-ui-ds REQUIRED)
 
 # Автоматическая генерация MOC, UIC, RCC
 set(CMAKE_AUTOMOC ON)

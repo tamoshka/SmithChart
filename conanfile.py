@@ -1,83 +1,36 @@
-﻿from conan import ConanFile
-from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout, CMake
-from conan.tools.files import copy, collect_libs
-import os
+﻿import os
+from conan import ConanFile
+from conan.tools.files import copy
+from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 
 class Smithtry1000Conan(ConanFile):
     name = "smith_chart_tool"
     version = "1.0.0"
-    package_type = "application"
-    settings = "os", "compiler", "build_type", "arch"
-    options = {
-        "shared": [True, False],
-        "fPIC": [True, False]
-    }
+    requires = ["cadmw-ui-ds/0.4.0", "qt/6.5.3"]
     default_options = {
-        "shared": False,
-        "fPIC": True,
-        "qt/*:shared": True,
-        "qt/*:with_gui": True,
-        "qt/*:with_widgets": True,
-        "qt/*:with_svg": True,
-        "qt/*:with_printSupport": True,
-        "qt/*:qtsvg": True
+        "qt/6.5.3:qtsvg": True,
+        "qt/6.5.3:shared": True,
+        "qt/6.5.3:with_sqlite3": False,
+        "qt/6.5.3:qtdeclarative": False,
+        "qt/6.5.3:with_pq": False,
+        "qt/6.5.3:with_md4c": False,
+        "qt/6.5.3:with_odbc": False
     }
-    
-    exports_sources = "CMakeLists.txt", "Smithtry1000/*"
-    
-    def requirements(self):
-        self.requires("qt/5.15.13")
-    
+    package_type = "application"
+    generators = "CMakeDeps"
+    settings = "os", "compiler", "build_type", "arch"
+
     def layout(self):
         cmake_layout(self)
-    
+        
     def generate(self):
-        deps = CMakeDeps(self)
-        deps.generate()
-        
+        version_parts = self.version.split('.')
+        major = version_parts[0] if len(version_parts) > 0 else "0"
+        minor = version_parts[1] if len(version_parts) > 1 else "0"
+        patch = version_parts[2] if len(version_parts) > 2 else "0"
         tc = CMakeToolchain(self)
+        tc.variables["PROJECT_VERSION"] = self.version
+        tc.variables["PROJECT_VERSION_MAJOR"] = major
+        tc.variables["PROJECT_VERSION_MINOR"] = minor
+        tc.variables["PROJECT_VERSION_PATCH"] = patch
         tc.generate()
-    
-    def configure(self):
-        if self.settings.os == "Windows":
-            del self.options.fPIC
-            self.options["qt"].shared = True
-    
-    def build(self):
-        cmake = CMake(self)
-        cmake.configure()
-        cmake.build()
-    
-    def package(self):
-        if (self.settings.os == "Windows"):
-            self._copy_qt_runtime()
-    
-    def _copy_qt_runtime(self):
-        qt_dep = self.dependencies["qt"]
-        qt_bindir = os.path.join(qt_dep.package_folder, "bin")
-        qt_pluginsdir = os.path.join(qt_dep.package_folder, "bin", "archdatadir", "plugins")
-        
-        qt_dlls = ["Qt5Core.dll", "Qt5Gui.dll", "Qt5Widgets.dll", "Qt5Svg.dll"]
-        for dll in qt_dlls:
-            copy(self, dll, 
-                 src=qt_bindir,
-                 dst=os.path.join(self.build_folder, "Smithtry1000\Release"),
-                 keep_path=False)
-        
-        copy(self, "*.dll", 
-             src=os.path.join(qt_pluginsdir, "platforms"),
-             dst=os.path.join(self.build_folder, "Smithtry1000\Release\platforms"),
-             keep_path=False)
-        
-        copy(self, "*.dll", 
-             src=os.path.join(qt_pluginsdir, "imageformats"),
-             dst=os.path.join(self.build_folder, "Smithtry1000\Release\imageformats"),
-             keep_path=False)
-
-        copy(self, "*.dll", 
-             src=os.path.join(qt_pluginsdir, "styles"),
-             dst=os.path.join(self.build_folder, "Smithtry1000\Release\styles"),
-             keep_path=False)
-    
-    def package_info(self):
-        self.cpp_info.bindirs = ["bin"]

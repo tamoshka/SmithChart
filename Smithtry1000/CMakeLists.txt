@@ -10,9 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-D_WIN32_DCOM)
 
-# Поиск Qt компонентов (совместимо с Conan)
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets SvgWidgets PrintSupport)
+
+find_package(Qt6 COMPONENTS Core Widgets)
+find_package(cadmw-ui-ds REQUIRED)
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
 # Иначе настраиваем вручную
 if(COMMAND qt_standard_project_setup)
@@ -134,17 +134,16 @@ if(USING_CONAN)
         Qt::Widgets
         Qt::SvgWidgets
         Qt::PrintSupport
+        cadmw-ui-ds::cadmw-ui-ds
     )
 else()
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
-        Qt::SvgWidgets
-        Qt::PrintSupport
-        ole32
-        oleaut32
-        uuid
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::SvgWidgets
+        Qt6::PrintSupport
+        cadmw-ui-ds::cadmw-ui-ds
     )
 endif()
 
