@@ -13,15 +13,15 @@ FrequencyDialog::FrequencyDialog(QWidget* parent, CircuitElements* circuit)
     : QDialog(parent)
 {
     circuitElements = circuit;
-    this->setWindowTitle("Frequency");
+    this->setWindowTitle(QStringLiteral(u"Частота"));
     this->setFixedSize(300, 150);
     inputField = new QLineEdit(this);
 
     powerBox = new QComboBox(this);
-    powerBox->addItem("Hz");
-    powerBox->addItem("KHz");
-    powerBox->addItem("MHz");
-    powerBox->addItem("GHz");
+    powerBox->addItem(QStringLiteral(u"Гц"));
+    powerBox->addItem(QStringLiteral(u"КГц"));
+    powerBox->addItem(QStringLiteral(u"МГц"));
+    powerBox->addItem(QStringLiteral(u"ГГц"));
     powerBox->setCurrentIndex(0);
     long double val = 1;
     if (SystemParameters::defaultFrequency > 1e9)

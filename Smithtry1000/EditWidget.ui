@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Type in the new value(s)</string>
+    <string>Введите новые значения</string>
    </property>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
@@ -134,7 +134,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Trafo n=</string>
+     <string>Коэффициент передачи</string>
     </property>
     <widget class="QLineEdit" name="NLineEdit">
      <property name="geometry">
@@ -157,7 +157,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Z0 Line impedance</string>
+     <string>Волновое сопротивление</string>
     </property>
     <widget class="QLineEdit" name="Z0LineEdit">
      <property name="geometry">
@@ -182,7 +182,7 @@
       <number>0</number>
      </property>
      <property name="text">
-      <string>Ohm</string>
+      <string>Ом</string>
      </property>
     </widget>
    </widget>
@@ -196,7 +196,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Er</string>
+     <string>Коэф. эл. проводимости</string>
     </property>
     <widget class="QLineEdit" name="ErLineEdit">
      <property name="geometry">
@@ -219,7 +219,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>L phys, m</string>
+     <string>Физ. длина в мм</string>
     </property>
     <widget class="QLineEdit" name="LPhMMLineEdit">
      <property name="geometry">
@@ -236,12 +236,12 @@
       <rect>
        <x>10</x>
        <y>70</y>
-       <width>31</width>
+       <width>41</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>max= </string>
+      <string>макс =</string>
      </property>
     </widget>
     <widget class="QLabel" name="LPhMMLabel">
@@ -281,7 +281,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>alpha dB/m (phys. length)</string>
+     <string>Коэф. затухания</string>
     </property>
     <widget class="QLineEdit" name="AlphaLineEdit">
      <property name="geometry">
@@ -299,19 +299,19 @@
      <rect>
       <x>10</x>
       <y>520</y>
-      <width>111</width>
+      <width>101</width>
       <height>91</height>
      </rect>
     </property>
     <property name="title">
-     <string>L electr. in lambda</string>
+     <string>Эл. длина в рад.</string>
     </property>
     <widget class="QLineEdit" name="LLambdaLineEdit">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>91</width>
+       <width>81</width>
        <height>24</height>
       </rect>
      </property>
@@ -321,21 +321,21 @@
       <rect>
        <x>10</x>
        <y>70</y>
-       <width>31</width>
+       <width>51</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>max= </string>
+      <string>макс =</string>
      </property>
     </widget>
     <widget class="QLabel" name="LLambdaLabel">
      <property name="geometry">
       <rect>
-       <x>44</x>
-       <y>70</y>
-       <width>61</width>
-       <height>16</height>
+       <x>54</x>
+       <y>69</y>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -346,14 +346,14 @@
    <widget class="QGroupBox" name="groupBox_11">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>120</x>
       <y>520</y>
-      <width>91</width>
+      <width>101</width>
       <height>91</height>
      </rect>
     </property>
     <property name="title">
-     <string>L electr. in m</string>
+     <string>Эл. длина в мм.</string>
     </property>
     <widget class="QLineEdit" name="LElMMLineEdit">
      <property name="geometry">
@@ -370,21 +370,21 @@
       <rect>
        <x>10</x>
        <y>70</y>
-       <width>31</width>
+       <width>41</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>max= </string>
+      <string>макс =</string>
      </property>
     </widget>
     <widget class="QLabel" name="LElMMLabel">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>60</x>
        <y>70</y>
-       <width>41</width>
-       <height>16</height>
+       <width>21</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
@@ -403,7 +403,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Draw</string>
+    <string>Нарисовать</string>
    </property>
   </widget>
   <widget class="QPushButton" name="OKButton">

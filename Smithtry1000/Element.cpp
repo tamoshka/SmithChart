@@ -176,6 +176,15 @@ QJsonObject Element::toJson() const
     return json;
 }
 
+/// <summary>
+/// Сериализация элемента для САПР.
+/// </summary>
+/// <param name="node">Текущий узел.</param>
+/// <param name="nodeMax">Максимальный узел.</param>
+/// <param name="prevTransform">До этого трансформатор/нет.</param>
+/// <param name="prevParallel">До этого параллельный элемент/нет.</param>
+/// <param name="prevOSSS">До этого шлейф/нет.</param>
+/// <returns>JsonObject.</returns>
 QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform, bool &prevParallel, bool &prevOSSS)
 {
     QJsonObject json;
@@ -206,13 +215,7 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
         {
             modelName = "R";
             rotation = 90;
-            if (prevTransform)
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax);
-                nodeMax--;
-            }
-            else if (prevParallel)
+            if (prevParallel)
             {
                 pinArray.append(nodeMax + 1);
                 pinArray.append(nodeMax + 2);
@@ -250,13 +253,7 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
         {
             modelName = "C";
             rotation = 90;
-            if (prevTransform)
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax);
-                nodeMax--;
-            }
-            else if (prevParallel)
+            if (prevParallel)
             {
                 pinArray.append(nodeMax + 1);
                 pinArray.append(nodeMax + 2);
@@ -294,13 +291,7 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
         {
             modelName = "L";
             rotation = 90;
-            if (prevTransform)
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax);
-                nodeMax--;
-            }
-            else if (prevParallel)
+            if (prevParallel)
             {
                 pinArray.append(nodeMax + 1);
                 pinArray.append(nodeMax + 2);
@@ -323,14 +314,14 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
         case Transform:
         {
             modelName = "TF";
-            if (prevParallel && !prevOSSS)
+            if (prevParallel)
             {
-                pinArray.append(node);
-                pinArray.append(nodeMax+1);
-                pinArray.append(nodeMax);
+                pinArray.append(nodeMax + 1);
                 pinArray.append(nodeMax + 2);
-                node = nodeMax + 1;
-                nodeMax += 2;
+                pinArray.append(nodeMax + 3);
+                pinArray.append(nodeMax + 4);
+                node = nodeMax + 2;
+                nodeMax += 4;
             }
             else
             {

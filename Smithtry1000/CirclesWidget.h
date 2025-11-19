@@ -18,6 +18,7 @@ class CirclesWidget : public QWidget
 public:
 	CirclesWidget(QWidget* parent = nullptr, CircuitElements* circuit = nullptr);
 	~CirclesWidget();
+	CircuitElements* circuitElements;
 
 signals:
 	void circle();
@@ -42,7 +43,6 @@ public slots:
 	void Load();
 
 private:
-	CircuitElements* circuitElements;
 	Ui::CirclesWidget *ui;
 	QMap<QCheckBox*, qreal> checkBoxVSWRIndex;
 	QMap<qreal, QCheckBox*> reverseCheckBoxVSWRIndex;
@@ -50,4 +50,5 @@ private:
 	QMap<qreal, QCheckBox*> reverseCheckBoxQIndex;
 	void addVSWR(double);
 	void addQ(double);
+	void clearOnLoad();
 };
