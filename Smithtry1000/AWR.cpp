@@ -1,6 +1,9 @@
 /*#include "awr_interface.h"
 #include <iostream>
 
+/// <summary>
+/// Конструктор класса.
+/// </summary>
 AWRInterface::AWRInterface()
     : m_pAWRApp(nullptr)
     , m_pProject(nullptr)
@@ -12,10 +15,17 @@ AWRInterface::AWRInterface()
 {
 }
 
+/// <summary>
+/// Деструктор класса.
+/// </summary>
 AWRInterface::~AWRInterface() {
     Cleanup();
 }
 
+/// <summary>
+/// Инициализация приложения.
+/// </summary>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::Initialize()
 {
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
@@ -94,6 +104,9 @@ bool AWRInterface::Initialize()
     return true;
 }
 
+/// <summary>
+/// Очистка всего.
+/// </summary>
 void AWRInterface::Cleanup()
 {
     if (m_pLastElement) {
@@ -119,6 +132,11 @@ void AWRInterface::Cleanup()
     }
 }
 
+/// <summary>
+/// Создание проекта.
+/// </summary>
+/// <param name="projectName">Название проекта.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::CreateProject(const std::wstring& projectName)
 {
     if (!m_bInitialized) {
@@ -203,6 +221,10 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
     return false;
 }
 
+/// <summary>
+/// Очистка элементов.
+/// </summary>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::ClearAllElements()
 {
     if (!m_pSchematic) return false;
@@ -259,6 +281,11 @@ bool AWRInterface::ClearAllElements()
     return SUCCEEDED(hr);
 }
 
+/// <summary>
+/// Очистка портов.
+/// </summary>
+/// <param name="end">Выбор порта, последний/первый.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::ClearAllPortElements(bool end)
 {
     if (end)
@@ -340,7 +367,10 @@ bool AWRInterface::ClearAllPortElements(bool end)
     return SUCCEEDED(hr);
 }
 
-// Метод для удаления всех проводов
+/// <summary>
+/// Удаление проводов.
+/// </summary>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::ClearAllWires()
 {
     if (!m_pSchematic) return false;
@@ -396,6 +426,11 @@ bool AWRInterface::ClearAllWires()
     return SUCCEEDED(hr);
 }
 
+/// <summary>
+/// Добавление схемы.
+/// </summary>
+/// <param name="schematicName">Название.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::AddSchematic(const std::wstring& schematicName)
 {
     if (!m_pProject) return false;
@@ -434,6 +469,12 @@ bool AWRInterface::AddSchematic(const std::wstring& schematicName)
     return false;
 }
 
+/// <summary>
+/// Добавление схемы для порта.
+/// </summary>
+/// <param name="schematicName">Название схемы.</param>
+/// <param name="end">Первый/последний порт.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::AddPortSchematic(const std::wstring& schematicName, bool end)
 {
     if (!m_pProject) return false;
@@ -479,6 +520,14 @@ bool AWRInterface::AddPortSchematic(const std::wstring& schematicName, bool end)
     return false;
 }
 
+/// <summary>
+/// Добавление элемента.
+/// </summary>
+/// <param name="elementType">Тип элемента.</param>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <param name="angle">Угол поворота.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::AddElement(const std::wstring& elementType, double x, double y, double angle)
 {
     if (!m_pSchematic) return false;
@@ -557,6 +606,15 @@ bool AWRInterface::AddElement(const std::wstring& elementType, double x, double 
     return true;
 }
 
+/// <summary>
+/// Добавление порта.
+/// </summary>
+/// <param name="elementType">Тип элемента.</param>
+/// <param name="x">X.</param>
+/// <param name="y">Y.</param>
+/// <param name="angle">Угол поворота.</param>
+/// <param name="end">Первый/последний порт.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::AddPortElement(const std::wstring& elementType, double x, double y, double angle, bool end)
 {
     if (end)
@@ -658,6 +716,14 @@ bool AWRInterface::AddPortElement(const std::wstring& elementType, double x, dou
     return true;
 }
 
+/// <summary>
+/// Добавление провода.
+/// </summary>
+/// <param name="x1">X1.</param>
+/// <param name="y1">Y1.</param>
+/// <param name="x2">X2.</param>
+/// <param name="y2">Y2.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::AddWire(double x1, double y1, double x2, double y2)
 {
     if (!m_pSchematic) return false;
@@ -736,6 +802,13 @@ bool AWRInterface::AddWire(double x1, double y1, double x2, double y2)
     return SUCCEEDED(hr);
 }
 
+/// <summary>
+/// Добавление частот для проекта.
+/// </summary>
+/// <param name="startFreq">Начальная частота.</param>
+/// <param name="stopFreq">Конечная частота.</param>
+/// <param name="numPoints">Шаг.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double numPoints)
 {
     if (!m_pProject) return false;
@@ -853,6 +926,12 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double n
     return true;
 }
 
+/// <summary>
+/// Изменение параметра элемента - строковое.
+/// </summary>
+/// <param name="paramName">Имя параметра.</param>
+/// <param name="value">Значение.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wchar_t* value)
 {
     if (!m_pLastElement || !paramName || !value) return false;
@@ -989,7 +1068,12 @@ bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wch
     return SUCCEEDED(hr);
 }
 
-
+/// <summary>
+/// Изменение параметра элемента - численное.
+/// </summary>
+/// <param name="paramName">Название параметра.</param>
+/// <param name="value">Значение.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* value)
 {
     if (!m_pLastElement || !paramName || !value) return false;
@@ -1104,6 +1188,13 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
     return SUCCEEDED(hr);
 }
 
+/// <summary>
+/// Получение значения и степени.
+/// </summary>
+/// <param name="str">Строка значения.</param>
+/// <param name="value">Значение.</param>
+/// <param name="units">Степень.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::ParseValueAndUnits(const wchar_t* str, double& value, std::wstring& units)
 {
     if (!str) return false;
@@ -1140,7 +1231,12 @@ bool AWRInterface::ParseValueAndUnits(const wchar_t* str, double& value, std::ws
     return true;
 }
 
-// Конвертация в СИ
+/// <summary>
+/// Перевод в СИ.
+/// </summary>
+/// <param name="value">Значение.</param>
+/// <param name="unit">Степень.</param>
+/// <returns>Успешно/нет.</returns>
 double AWRInterface::ConvertToSI(double value, const wchar_t* unit)
 {
     std::wstring u(unit);
@@ -1187,7 +1283,11 @@ double AWRInterface::ConvertToSI(double value, const wchar_t* unit)
     return value;
 }
 
-
+/// <summary>
+/// Сохранение проекта.
+/// </summary>
+/// <param name="filePath">Путь сохранения.</param>
+/// <returns>Успешно/нет.</returns>
 bool AWRInterface::SaveProject(const std::wstring& filePath) {
     if (!m_pProject) return false;
 
@@ -1211,6 +1311,15 @@ bool AWRInterface::SaveProject(const std::wstring& filePath) {
     return SUCCEEDED(hr);
 }
 
+/// <summary>
+/// Методы вызова.
+/// </summary>
+/// <param name="pDisp">Интерфейс COM.</param>
+/// <param name="methodName">Название метода.</param>
+/// <param name="pResult">Формат данных.</param>
+/// <param name="wFlags">Флаг, определяющий тип метода.</param>
+/// <param name="pParams">Передаваемые параметры.</param>
+/// <returns>Хэш-результат.</returns>
 HRESULT AWRInterface::InvokeMethod(IDispatch* pDisp, LPCOLESTR methodName,
     VARIANT* pResult, WORD wFlags,
     DISPPARAMS* pParams) 
@@ -1227,11 +1336,25 @@ HRESULT AWRInterface::InvokeMethod(IDispatch* pDisp, LPCOLESTR methodName,
         wFlags, pParams, pResult, nullptr, nullptr);
 }
 
+/// <summary>
+/// Получение свойств.
+/// </summary>
+/// <param name="pDisp">Интерфейс COM.</param>
+/// <param name="propName">Название метода.</param>
+/// <param name="pResult">Формат данных.</param>
+/// <returns>Хэш-результат.</returns>
 HRESULT AWRInterface::GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult) 
 {
     return InvokeMethod(pDisp, propName, pResult, DISPATCH_PROPERTYGET);
 }
 
+/// <summary>
+/// Установка свойств.
+/// </summary>
+/// <param name="pDisp">Интерфейс COM.</param>
+/// <param name="propName">Название метода.</param>
+/// <param name="pValue">Фомат данных.</param>
+/// <returns>Хэш-результат.</returns>
 HRESULT AWRInterface::SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue)
 {
     DISPID dispid;

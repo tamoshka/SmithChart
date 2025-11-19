@@ -14,12 +14,12 @@ class EditWidget : public QWidget
 public:
 	EditWidget(QWidget *parent = nullptr, CircuitElements* circuitElements = new CircuitElements(), Element* elem = new Element());
 	~EditWidget();
+	CircuitElements* circuitElements;
 
 private:
 	bool isUpdating;
 	Ui::EditWidget *ui;
 	Element* edited;
-	CircuitElements* circuitElements;
 	void recalculateFromEr();
 	void recalculateFromLambda();
 	void recalculateFromElMM();
