@@ -44,6 +44,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     EditWidget.ui
     EditWidget.h
     EditWidget.cpp
+    PreSaveDialog.h
+    PreSaveDialog.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h

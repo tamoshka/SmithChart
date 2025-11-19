@@ -928,14 +928,18 @@ void Smithtry1000::Load()
 {
     if (SystemParameters::index > 1)
     {
-        QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
-        try
+        PreSaveDialog dialog(this);
+        if (dialog.exec() == QDialog::Accepted)
         {
-            circuitElements->saveToFile(fileName);
-        }
-        catch (exception e)
-        {
+            QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
+            try
+            {
+                circuitElements->saveToFile(fileName);
+            }
+            catch (exception e)
+            {
 
+            }
         }
         SystemParameters::allpointindex = 0;
         SystemParameters::dpIndex = 0;
@@ -950,7 +954,7 @@ void Smithtry1000::Load()
         sParameters->set->hide();
         sParameters->Close();
         amplitudeFrequence->hide();
-        
+        circlesWidget->hide();
         if (SystemParameters::edit)
         {
             edit->close();

@@ -25,6 +25,7 @@
 #include "SaveDialog.h"
 #include "awr_interface.h"
 #include "EditWidget.h"
+#include "PreSaveDialog.h"
 
 /// <summary>
 /// Класс работы с курсором, являющийся также главным хабом и окном приложения.
