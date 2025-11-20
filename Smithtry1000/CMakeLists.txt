@@ -30,6 +30,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set(PROJECT_SOURCES
     #awr_interface.h
     #AWR.cpp
+    AWRExportThread.h
+    AWRExportThread.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h
@@ -143,6 +145,14 @@ else()
         Qt5::Svg
         Qt5::PrintSupport
     )
+    # Только для Windows подключаем дополнительные библиотеки
+    if(WIN32)
+        target_link_libraries(${PROJECT_NAME} PUBLIC
+            ole32
+            oleaut32
+            uuid
+        )
+    endif()
 endif()
 
 # Настройки для разных типов сборки

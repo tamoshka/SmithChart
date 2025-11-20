@@ -20,11 +20,12 @@ class TuneWidget : public QWidget
 public:
 	TuneWidget(QWidget *parent = nullptr, CircuitElements* circuitElements = new CircuitElements());
 	~TuneWidget();
+	void RemoveOnLoad();
+	CircuitElements* circuitElements;
 
 private:
 	Ui::TuneWidget *ui;
 	CircuitElements* tuned;
-	CircuitElements* circuitElements;
 	QWidget* mainWidget = new QWidget(this);
 	QList<QGroupBox*> boxes;
 	QList<QGroupBox*> slidersBoxes;
