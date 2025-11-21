@@ -20,11 +20,11 @@ class AmplitudeFrequency : public QWidget
 	Q_OBJECT
 
 private:
-	CircuitElements* circuitElements;
 	QVector<long double> freqs;
 public slots:
 	void SaveAmpFr();
 public:
+	CircuitElements* circuitElements;
 	void Clear();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();

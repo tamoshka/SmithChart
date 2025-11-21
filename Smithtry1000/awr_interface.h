@@ -49,4 +49,5 @@ private:
 
     HRESULT GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult);
     HRESULT SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue);
-};*/
+};
+*/

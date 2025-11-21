@@ -406,7 +406,7 @@ FodyWeavers.xsd
 /out/build/x64-debug
 /CMakeUserPresets.json
 
-
+/build
 Smithtry1000/ARCHITECTURE.md
 Smithtry1000/c1-context.puml
 Smithtry1000/c2-containers.puml
@@ -418,6 +418,4 @@ Smithtry1000/class-diagram.html
 Smithtry1000/class-diagram.md
 Smithtry1000/comprehensive-uml-diagram.md
 Smithtry1000/smith-chart-class-diagram.md
-out/
-
-
+CMakePresets.json
