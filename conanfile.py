@@ -7,7 +7,7 @@ import os
 
 class Smithtry1000Conan(ConanFile):    
     generators = "CMakeToolchain", "CMakeDeps"
-    name = "smith_chart_tool"
+    name = "smith-chart-tool"
     version = "1.0.0"
     package_type = "application"
     settings = "os", "compiler", "build_type", "arch"
