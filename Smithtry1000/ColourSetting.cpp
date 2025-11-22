@@ -496,6 +496,8 @@ void ColourSetting::DefaultClicked()
 	SystemParameters::ampFrline = SystemParameters::ampFrlineDefault;
 	SystemParameters::sPlotline = SystemParameters::sPlotlineDefault;
 	SystemParameters::rotate = false;
+	SystemParameters::prevz0 = SystemParameters::z0;
+	SystemParameters::z0 = 50;
 	ui->horizontalRadioButton->setChecked(true);
 	ui->z0ComboBox->setCurrentIndex(0);
 	ui->frequencyComboBox->setCurrentIndex(2);
