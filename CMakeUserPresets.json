@@ -28,7 +28,7 @@
       "name": "6.8.2_msvc2022_64",
       "inherits": "Qt",
       "environment": {
-        "QTDIR": "D:/QT/6.8.3/msvc2022_64"
+        "QTDIR": "D:/QT/5.15.2/msvc2019_64"
       },
       "architecture": {
         "strategy": "external",
@@ -37,17 +37,7 @@
       "generator": "Ninja",
       "vendor": {
         "qt-project.org/Version": {
-          "checksum": "2kyA6XdNVDE34Z34IGTj2lcHJXM="
-        }
-      }
-    },
-    {
-      "hidden": true,
-      "name": "Qt-Default",
-      "inherits": "6.8.3_msvc2022_64",
-      "vendor": {
-        "qt-project.org/Default": {
-          "checksum": "daN6rj4NJrkhJXNlYvTiZSjCI3w="
+          "checksum": "UxPX4FUTxpfR2HBluo1ce6mb/M4="
         }
       }
     },
@@ -68,11 +58,57 @@
           "checksum": "XsMePs4J2v+ixEfxOElgCT7+vxI="
         }
       }
+    },
+    {
+      "hidden": true,
+      "name": "Qt-Default",
+      "inherits": "5.15.2_msvc2019_64",
+      "vendor": {
+        "qt-project.org/Default": {
+          "checksum": "hFHqn7KAkQOhAQUh9kbJbv7R0NY="
+        }
+      }
+    },
+    {
+      "hidden": true,
+      "name": "5.15.2_msvc2019_64",
+      "inherits": "Qt",
+      "environment": {
+        "QTDIR": "D:/QT/5.15.2/msvc2019_64"
+      },
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "generator": "Ninja",
+      "vendor": {
+        "qt-project.org/Version": {
+          "checksum": "FozTwXx0wNkRO4lC236eNom3PDU="
+        }
+      }
+    },
+    {
+      "hidden": true,
+      "name": "6.5.3_msvc2019_64",
+      "inherits": "Qt",
+      "environment": {
+        "QTDIR": "D:/QT/6.5.3/msvc2019_64"
+      },
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "generator": "Ninja",
+      "vendor": {
+        "qt-project.org/Version": {
+          "checksum": "DLG93FZ9FSQHA6vra/msF4EW2Xw="
+        }
+      }
     }
   ],
   "vendor": {
     "qt-project.org/Presets": {
-      "checksum": "RP83qUHKcgNM6ydav3mCENseGHY="
+      "checksum": "eDcXqsoxLTgf+u5CIMs5gfUz+V4="
     }
   }
 }
