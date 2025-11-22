@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-D_WIN32_DCOM)
 
-
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport SvgWidgets)
 
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
@@ -125,7 +124,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-
 target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Core
     Qt6::Gui
@@ -134,4 +132,3 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::PrintSupport
     Qt6::SvgWidgets
 )
-
