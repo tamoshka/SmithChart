@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <QList>
 #include <QtSvg>
 #include <QSvgWidget>
@@ -69,4 +69,3 @@ struct Point
 
 extern QString fileName;
 extern map<int, tuple<Point, bool>> allPoints;
-extern QList<QSvgWidget*> svgWidgets;

@@ -17,6 +17,7 @@ class RenderArea : public QWidget
     Q_OBJECT
 public:
     void setCursorPosOnCircle(const QPoint& pos);
+    CircuitElements* circuitElements = new CircuitElements();
 
     RenderArea(QWidget* parent = nullptr, CircuitElements* circuitElements = nullptr);
 
@@ -29,7 +30,6 @@ signals:
 public slots:
 
 private:
-    CircuitElements* circuitElements = new CircuitElements();
     long double r;
     QPointF center;
     Point compute_real(long double t);

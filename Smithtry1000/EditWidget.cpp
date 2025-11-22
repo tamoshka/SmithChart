@@ -1,6 +1,12 @@
-#include "EditWidget.h"
+﻿#include "EditWidget.h"
 #include "ui_EditWidget.h"
 
+/// <summary>
+/// Коснтруктор класса.
+/// </summary>
+/// <param name="parent">Родительский виджет.</param>
+/// <param name="circuit">Цепь.</param>
+/// <param name="elem">Элемент.</param>
 EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	: QWidget(parent)
 	, ui(new Ui::EditWidget())
@@ -10,23 +16,23 @@ EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	circuitElements = circuit;
 	edited = elem;
 	ui->RLineEdit->setDisabled(true);
-	ui->RComboBox->addItem("mOhm");
-	ui->RComboBox->addItem("Ohm");
-	ui->RComboBox->addItem("KOhm");
-	ui->RComboBox->addItem("MOhm");
-	ui->RComboBox->addItem("GOhm");
+	ui->RComboBox->addItem(QStringLiteral(u"mOhm"));
+	ui->RComboBox->addItem(QStringLiteral(u"Ohm"));
+	ui->RComboBox->addItem(QStringLiteral(u"KOhm"));
+	ui->RComboBox->addItem(QStringLiteral(u"MOhm"));
+	ui->RComboBox->addItem(QStringLiteral(u"GOhm"));
 	ui->RComboBox->setCurrentIndex(1);
 	ui->RComboBox->setDisabled(true);
 	ui->LLineEdit->setDisabled(true);
-	ui->LComboBox->addItem("uH");
-	ui->LComboBox->addItem("nH");
-	ui->LComboBox->addItem("pH");
+	ui->LComboBox->addItem(QStringLiteral(u"uH"));
+	ui->LComboBox->addItem(QStringLiteral(u"nH"));
+	ui->LComboBox->addItem(QStringLiteral(u"pH"));
 	ui->LComboBox->setCurrentIndex(1);
 	ui->LComboBox->setDisabled(true);
 	ui->CLineEdit->setDisabled(true);
-	ui->CComboBox->addItem("uF");
-	ui->CComboBox->addItem("nF");
-	ui->CComboBox->addItem("pF");
+	ui->CComboBox->addItem(QStringLiteral(u"uF"));
+	ui->CComboBox->addItem(QStringLiteral(u"nF"));
+	ui->CComboBox->addItem(QStringLiteral(u"pF"));
 	ui->CComboBox->setCurrentIndex(2);
 	ui->CComboBox->setDisabled(true);
 	ui->NLineEdit->setDisabled(true);
@@ -168,6 +174,10 @@ EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	connect(ui->LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
 }
 
+/// <summary>
+/// Изменение текстБокса электрической проницаемости.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onErLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -193,6 +203,10 @@ void EditWidget::onErLineEditChanged(const QString& text)
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса электрической длины в радианах.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLLambdaLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -214,6 +228,10 @@ void EditWidget::onLLambdaLineEditChanged(const QString& text)
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса электрической длины в мм.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLElMMLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -235,6 +253,10 @@ void EditWidget::onLElMMLineEditChanged(const QString& text)
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса физической длины в мм.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLPhMMLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -256,6 +278,9 @@ void EditWidget::onLPhMMLineEditChanged(const QString& text)
 	}
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической проницаемости.
+/// </summary>
 void EditWidget::recalculateFromEr()
 {
 	isUpdating = true;
@@ -268,6 +293,9 @@ void EditWidget::recalculateFromEr()
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической длины в мм.
+/// </summary>
 void EditWidget::recalculateFromElMM()
 {
 	isUpdating = true;
@@ -276,6 +304,9 @@ void EditWidget::recalculateFromElMM()
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из физической длины в мм.
+/// </summary>
 void EditWidget::recalculateFromPhMM()
 {
 	isUpdating = true;
@@ -284,6 +315,9 @@ void EditWidget::recalculateFromPhMM()
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической длины в радианах.
+/// </summary>
 void EditWidget::recalculateFromLambda()
 {
 	isUpdating = true;
@@ -292,17 +326,27 @@ void EditWidget::recalculateFromLambda()
 	isUpdating = false;
 }
 
+/// <summary>
+/// Применение изменений с закрытием окна.
+/// </summary>
 void EditWidget::OKButton_clicked()
 {
 	DrawButton_clicked();
 	this->close();
 }
 
+/// <summary>
+/// Закрытие окна
+/// </summary>
+/// <param name="event">Событие закрытия.</param>
 void EditWidget::closeEvent(QCloseEvent* event)
 {
 	SystemParameters::edit = false;
 }
 
+/// <summary>
+/// Применение изменений без закрытия окна.
+/// </summary>
 void EditWidget::DrawButton_clicked()
 {
 	bool correct = true;
@@ -2000,6 +2044,9 @@ void EditWidget::DrawButton_clicked()
 	
 }
 
+/// <summary>
+/// Деструктор класса.
+/// </summary>
 EditWidget::~EditWidget()
 {
 	delete ui;

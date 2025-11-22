@@ -271,9 +271,9 @@
      <widget class="QPushButton" name="RemoveAllButton">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>190</x>
         <y>10</y>
-        <width>71</width>
+        <width>81</width>
         <height>24</height>
        </rect>
       </property>
@@ -487,7 +487,7 @@
 color: rgb(0, 0, 0);</string>
       </property>
       <property name="text">
-       <string>Remove All</string>
+       <string>Убрать все</string>
       </property>
      </widget>
      <widget class="QPushButton" name="MinMaxButton">
@@ -495,7 +495,7 @@ color: rgb(0, 0, 0);</string>
        <rect>
         <x>60</x>
         <y>10</y>
-        <width>91</width>
+        <width>111</width>
         <height>24</height>
        </rect>
       </property>
@@ -503,7 +503,7 @@ color: rgb(0, 0, 0);</string>
        <string notr="true">color: rgb(0, 0, 0);</string>
       </property>
       <property name="text">
-       <string>Reset Min/Max</string>
+       <string>Сброс мин/макс</string>
       </property>
      </widget>
      <widget class="QPushButton" name="OKButton">
@@ -520,7 +520,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(0, 0, 0);</string>
       </property>
       <property name="text">
-       <string>Ok</string>
+       <string>OK</string>
       </property>
      </widget>
     </widget>

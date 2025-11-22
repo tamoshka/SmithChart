@@ -1,4 +1,4 @@
-/*#pragma once
+﻿/*#pragma once
 
 #include <windows.h>
 #include "circuitElements.h"
@@ -49,4 +49,5 @@ private:
 
     HRESULT GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult);
     HRESULT SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pValue);
-};*/
+};
+*/

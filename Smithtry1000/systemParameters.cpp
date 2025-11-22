@@ -110,6 +110,8 @@ long double SystemParameters::lastPointY = 0;
 int SystemParameters::index = 0;
 int SystemParameters::allpointindex = 0;
 int SystemParameters::dpIndex = 0;
+
+QList<QSvgWidget*> SystemParameters::svgWidgets = {};
 /// <summary>
 /// Расчёт действительной части сопротивления.
 /// </summary>

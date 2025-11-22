@@ -6,11 +6,13 @@
 #include <qpainterpath.h>
 #include <QtSvg>
 #include <QTimer>
+#include <QThread>
 #include <QMouseEvent>
 #include "general.h"
 #include <qtablewidget.h>
 #include <QScrollArea>
 #include "frequencyDialog.h"
+#include "PreSaveDialog.h"
 #include "VerticalLinesDialog.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"
@@ -82,11 +84,12 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    ///void AWR_buttonClicked();
+    void AWR_buttonClicked();
     void CAD_export();
 
 private:
     ///AWRInterface awr = AWRInterface();
+    friend class AWRExportThread;
     EditWidget* edit;
     SParameters* sParameters;
     AmplitudeFrequency* amplitudeFrequence = new AmplitudeFrequency(nullptr, circuitElements);
@@ -97,6 +100,7 @@ private:
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();
+    bool ExportToAWR();
     void mousePressEvent(QMouseEvent* event) override;
     Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
@@ -105,6 +109,8 @@ private:
     bool tableChanged=false;
     QList<long double> pointsX;
     QList<long double> pointsY;
+    QPoint lastPos;
+    bool moving=false;
     long double t;
     long double tmin;
     long double tmax;
@@ -118,4 +124,6 @@ private:
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 };

@@ -5,7 +5,7 @@ using namespace std;
 /// <summary>
 /// Конструктор класса ColourSetting.
 /// </summary>
-/// <param name="parent"></param>
+/// <param name="parent">Родительский класс.</param>
 ColourSetting::ColourSetting(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::ColourSettingClass())
@@ -95,10 +95,10 @@ ColourSetting::ColourSetting(QWidget *parent)
 	ui->checkBox_17->setDisabled(true);
 	ui->checkBox_18->setDisabled(true);
 
-	ui->frequencyComboBox->addItem("Hz");
-	ui->frequencyComboBox->addItem("KHz");
-	ui->frequencyComboBox->addItem("MHz");
-	ui->frequencyComboBox->addItem("GHz");
+	ui->frequencyComboBox->addItem(QStringLiteral(u"Гц"));
+	ui->frequencyComboBox->addItem(QStringLiteral(u"КГц"));
+	ui->frequencyComboBox->addItem(QStringLiteral(u"МГц"));
+	ui->frequencyComboBox->addItem(QStringLiteral(u"ГГц"));
 	long double val = 1;
 	ui->frequencyComboBox->setCurrentIndex(0);
 	if (SystemParameters::defaultFrequency > 1e9)
@@ -118,10 +118,10 @@ ColourSetting::ColourSetting(QWidget *parent)
 	}
 	ui->frequencyLineEdit->setText(QString::number((double)(SystemParameters::defaultFrequency /val)));
 
-	ui->z0ComboBox->addItem("Ohm");
-	ui->z0ComboBox->addItem("KOhm");
-	ui->z0ComboBox->addItem("MOhm");
-	ui->z0ComboBox->addItem("GOhm");
+	ui->z0ComboBox->addItem(QStringLiteral(u"Ом"));
+	ui->z0ComboBox->addItem(QStringLiteral(u"КОм"));
+	ui->z0ComboBox->addItem(QStringLiteral(u"МОм"));
+	ui->z0ComboBox->addItem(QStringLiteral(u"ГОм"));
 	ui->z0ComboBox->setCurrentIndex(0);
 	val = 1;
 	if (SystemParameters::z0 > 1e9)
@@ -516,10 +516,11 @@ void ColourSetting::DefaultClicked()
 	emit signalS12S21();
 	emit grafOneColor();
 	emit allchangedsignal();
+	emit rev();
 }
 
 /// <summary>
-/// Настройка толщин линий для ДВС.
+/// Настройка цветов для ДВС.
 /// </summary>
 /// <param name="line">Толщина линии.</param>
 void ColourSetting::DVSColor()
@@ -538,7 +539,7 @@ void ColourSetting::DVSColor()
 }
 
 /// <summary>
-/// Настройка толщин линий для ДВС.
+/// Настройка цветов для АЧХ графиков.
 /// </summary>
 /// <param name="line">Толщина линии.</param>
 void ColourSetting::AmpFrColor()
@@ -557,7 +558,7 @@ void ColourSetting::AmpFrColor()
 }
 
 /// <summary>
-/// Настройка толщин линий для ДВС.
+/// Настройка цветов для S12/S21 диаграмм.
 /// </summary>
 /// <param name="line">Толщина линии.</param>
 void ColourSetting::CircleS12S21Color()
@@ -576,7 +577,7 @@ void ColourSetting::CircleS12S21Color()
 }
 
 /// <summary>
-/// Настройка толщин линий для ДВС.
+/// Настройка цветов для S11, S22 графиков.
 /// </summary>
 /// <param name="line">Толщина линии.</param>
 void ColourSetting::GrafOneColor()
@@ -595,7 +596,7 @@ void ColourSetting::GrafOneColor()
 }
 
 /// <summary>
-/// Настройка толщин линий для ДВС.
+/// Настройка цветов для mu, k, MSG, MAG графиков.
 /// </summary>
 /// <param name="line">Толщина линии.</param>
 void ColourSetting::GrafTwoColor()
