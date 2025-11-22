@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1631</width>
-    <height>933</height>
+    <height>937</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -319,7 +319,7 @@ background-color: rgb(255, 255, 255);</string>
           <rect>
            <x>270</x>
            <y>5</y>
-           <width>51</width>
+           <width>41</width>
            <height>31</height>
           </rect>
          </property>
@@ -449,7 +449,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>Mouse</string>
+          <string>Мышь</string>
          </property>
          <property name="iconSize">
           <size>
@@ -461,9 +461,9 @@ background-color: rgb(255, 255, 255);</string>
         <widget class="QPushButton" name="KeyboardButton">
          <property name="geometry">
           <rect>
-           <x>330</x>
+           <x>320</x>
            <y>5</y>
-           <width>71</width>
+           <width>81</width>
            <height>31</height>
           </rect>
          </property>
@@ -590,7 +590,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>Keyboard</string>
+          <string>Клавиатура</string>
          </property>
         </widget>
         <widget class="QPushButton" name="S11Button">
@@ -1285,7 +1285,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>AFR</string>
+          <string>АЧХ</string>
          </property>
         </widget>
         <widget class="Line" name="line_4">
@@ -1574,7 +1574,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>Tune</string>
+          <string>Тюнер</string>
          </property>
         </widget>
         <widget class="QPushButton" name="Line_button">
@@ -2303,7 +2303,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>CAD</string>
+          <string>САПР</string>
          </property>
         </widget>
        </widget>
@@ -2344,7 +2344,7 @@ background-color: rgb(255, 255, 255);</string>
               <x>0</x>
               <y>0</y>
               <width>1120</width>
-              <height>767</height>
+              <height>771</height>
              </rect>
             </property>
            </widget>
@@ -2385,7 +2385,7 @@ background-color: rgb(255, 255, 255);</string>
               <x>0</x>
               <y>0</y>
               <width>420</width>
-              <height>303</height>
+              <height>307</height>
              </rect>
             </property>
             <layout class="QFormLayout" name="formLayout">
@@ -2983,33 +2983,44 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>Редактирование</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuMode">
+    <property name="tearOffEnabled">
+     <bool>true</bool>
+    </property>
     <property name="title">
-     <string>Mode</string>
+     <string>Режим</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>Tools</string>
+     <string>Инструменты</string>
     </property>
     <addaction name="actionColors"/>
    </widget>
    <widget class="QMenu" name="menuZoom">
+    <property name="geometry">
+     <rect>
+      <x>938</x>
+      <y>391</y>
+      <width>231</width>
+      <height>56</height>
+     </rect>
+    </property>
     <property name="title">
-     <string>Zoom</string>
+     <string>Масштаб</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>Window</string>
+     <string>Окно</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>Помощь</string>
     </property>
    </widget>
    <addaction name="menuEdit"/>
@@ -3022,7 +3033,13 @@ background-color: rgb(255, 255, 255);</string>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionColors">
    <property name="text">
-    <string>Colors</string>
+    <string>Цвета</string>
+   </property>
+   <property name="iconText">
+    <string>Цвета</string>
+   </property>
+   <property name="toolTip">
+    <string>Цвета</string>
    </property>
   </action>
  </widget>

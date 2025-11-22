@@ -1,6 +1,8 @@
 from conan import ConanFile
+
 from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout, CMake
 from conan.tools.files import copy, collect_libs
+from conan.tools.build import check_min_cppstd
 import os
 
 class Smithtry1000Conan(ConanFile):
@@ -8,6 +10,7 @@ class Smithtry1000Conan(ConanFile):
     version = "1.0.0"
     package_type = "application"
     settings = "os", "compiler", "build_type", "arch"
+
     options = {
         "shared": [True, False],
         "fPIC": [True, False]
@@ -19,9 +22,10 @@ class Smithtry1000Conan(ConanFile):
         "qt/*:with_gui": True,
         "qt/*:with_widgets": True,
         "qt/*:with_svg": True,
-        "qt/*:with_printSupport": True,
+        "qt/*:with_printsupport": True,
         "qt/*:qtsvg": True
     }
+  
     
     exports_sources = "CMakeLists.txt", "Smithtry1000/*"
     

@@ -92,7 +92,6 @@ public:
 	static long double frequency;
 	static long double Im;
 	static long double Re;
-	static QList<Point> morePoints;
 	static long double lastPointX;
 	static long double lastPointY;
 	static QList<QSvgWidget*> svgWidgets;

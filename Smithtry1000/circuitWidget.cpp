@@ -39,16 +39,16 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
         this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 300);
     }
     svgWidget->load(QString(path));
-    if (svgWidgets.size() >= 2)
+    if (SystemParameters::svgWidgets.size() >= 2)
     {
         paths.pop_back();
-        svgWidgets[svgWidgets.size() - 1]->hide();
-        QSvgWidget* widget = svgWidgets.takeLast();
+        SystemParameters::svgWidgets[SystemParameters::svgWidgets.size() - 1]->hide();
+        QSvgWidget* widget = SystemParameters::svgWidgets.takeLast();
         widget->deleteLater();
         svgWidget->setGeometry(x - 40, y, 40, 40);
         svgWidget->show();
 
-        svgWidgets.append(svgWidget);
+        SystemParameters::svgWidgets.append(svgWidget);
         QSvgWidget* load = new QSvgWidget(this);
         if (!SystemParameters::rotate)
         {
@@ -63,7 +63,7 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
             load->setGeometry(39, y+40, 40, 40);
         }
         load->show();
-        svgWidgets.append(load);
+        SystemParameters::svgWidgets.append(load);
         QString tempPath=path;
         if (path == ":/Images/rev_horizontal_c.svg")
         {
@@ -130,7 +130,7 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
         paths.append(tempPath);
         svgWidget->setGeometry(x, y, 40, 40);
         svgWidget->show();
-        svgWidgets.append(svgWidget);
+        SystemParameters::svgWidgets.append(svgWidget);
     }
 }
 
@@ -142,7 +142,7 @@ void CircuitWidget::Reverse()
         this->setFixedWidth(200);
         this->setFixedHeight(circuitElements->GetCircuitElements().size() * 40 + 300);
         int i = 0;
-        for (auto var : svgWidgets)
+        for (auto var : SystemParameters::svgWidgets)
         {
             int dif=39;
             QString newpath;
@@ -208,7 +208,7 @@ void CircuitWidget::Reverse()
         this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40+200);
         this->setFixedHeight(300);
         int i = 0;
-        for (auto var : svgWidgets)
+        for (auto var : SystemParameters::svgWidgets)
         {
             int dif = 39;
             if (paths[i] == ":/Images/horizontal_c.svg" || paths[i] == ":/Images/horizontal_i.svg" || paths[i] == ":/Images/horizontal_r.svg" || paths[i] == ":/Images/horizontal_line_circuit.svg")
@@ -262,7 +262,7 @@ void CircuitWidget::RemoveAll()
 /// Удаление последнего SVG.
 /// </summary>
 void CircuitWidget::removeLastSvg() {
-    if (!svgWidgets.isEmpty() && svgWidgets.size()>2) {
+    if (!SystemParameters::svgWidgets.isEmpty() && SystemParameters::svgWidgets.size()>2) {
         paths.takeAt(paths.size()-2);
         if (SystemParameters::rotate)
         {
@@ -272,12 +272,12 @@ void CircuitWidget::removeLastSvg() {
         {
             this->setFixedWidth(circuitElements->GetCircuitElements().size() * 40 + 200);
         }
-        int deletedIndex = svgWidgets.size() - 2;
-        QSvgWidget* deleted = svgWidgets[deletedIndex];
+        int deletedIndex = SystemParameters::svgWidgets.size() - 2;
+        QSvgWidget* deleted = SystemParameters::svgWidgets[deletedIndex];
         deleted->hide();
-        svgWidgets.removeAt(svgWidgets.size() - 2);
-        int index = svgWidgets.size() - 1;
-        QSvgWidget* temp = svgWidgets[index];
+        SystemParameters::svgWidgets.removeAt(SystemParameters::svgWidgets.size() - 2);
+        int index = SystemParameters::svgWidgets.size() - 1;
+        QSvgWidget* temp = SystemParameters::svgWidgets[index];
         if (!SystemParameters::rotate)
         {
             temp->setGeometry((index + 1) * 40, 39, 40, 40);
@@ -884,12 +884,12 @@ void CircuitWidget::mouseDoubleClickEvent(QMouseEvent* event)
             QPoint clickPos = event->pos();
 
             // Проверяем все SVG виджеты
-            for (int i = 0; i < svgWidgets.size(); ++i)
+            for (int i = 0; i < SystemParameters::svgWidgets.size(); ++i)
             {
-                QSvgWidget* svgWidget = svgWidgets.at(i);
+                QSvgWidget* svgWidget = SystemParameters::svgWidgets.at(i);
 
                 // Проверяем, попал ли клик в область SVG виджета
-                if (svgWidget->geometry().contains(clickPos)&&i!=0&&i!=svgWidgets.size()-1)
+                if (svgWidget->geometry().contains(clickPos)&&i!=0&&i!= SystemParameters::svgWidgets.size()-1)
                 {
                     SystemParameters::edit = true;
                     emit Edit(circuitElements->GetCircuitElements()[i-1]);

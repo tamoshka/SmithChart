@@ -9,12 +9,17 @@ int point_index = 0;
 int allpointindex = 0;
 map<int, tuple<Point, long double, long double, mode>> points;
 int dpIndex = 0;
-QList<QSvgWidget*> svgWidgets;
 long double frequency = 500;
 QList<long double> frequencyList;
 
 QString fileName = "";
 
+/// <summary>
+/// Основная функция/точка входа.
+/// </summary>
+/// <param name="argc"></param>
+/// <param name="argv"></param>
+/// <returns></returns>
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setApplicationName("Smithtry1000");
