@@ -28,9 +28,18 @@ void GrafOne::Load()
 	ui->widget->clearGraphs();
 	s = t.Load2P(fileName.toStdString().c_str());
 
-	x = QVector<double>::fromStdVector(s.f);
-	y1 = QVector<double>::fromStdVector(s.S11);
-	y2 = QVector<double>::fromStdVector(s.S22);
+	x.resize(s.f.size());
+	for (int i = 0; i < s.f.size(); i++) {
+		x[i] = s.f[i];
+	}
+	y1.resize(s.S11.size());
+	for (int i = 0; i < s.S11.size(); i++) {
+		y1[i] = s.S11[i];
+	}
+	y2.resize(s.S22.size());
+	for (int i = 0; i < s.S22.size(); i++) {
+		y2[i] = s.S22[i];
+	}
 	double m1, m2;
 	double yBegin, yEnd;
 	m1 = y1[0];
