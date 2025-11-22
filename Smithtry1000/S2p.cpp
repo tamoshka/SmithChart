@@ -1,6 +1,7 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cctype>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <stdio.h>
 #include <string.h>
@@ -16,26 +17,38 @@ int strcasecmp(const char* first, const char* second)
     return lstrcmpiA(first, second);
 }
 #else
-#include <strings.h>    // ��� strcasecmp � Linux
-#include <cmath>        // ��� M_PI � �������������� �������
+#include <strings.h>    // для strcasecmp в Linux
+#include <cmath>        // для M_PI и математических функций
 #include <cstdlib>
 #endif
 
-// ���������, ��� M_PI ���������
+// Убедиться, что M_PI определен
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
+typedef unsigned char byte;
 using namespace std;
+
+/// <summary>
+/// Конструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::TouchstoneFile()
 {
     setlocale(LC_NUMERIC, "C");
 }
 
+/// <summary>
+/// Деструктор класса TouchstoneFile.
+/// </summary>
 TouchstoneFile::~TouchstoneFile()
 {
 }
 
+/// <summary>
+/// Загрузка S-параметров из S1P и S2P файлов.
+/// </summary>
+/// <param name="filename">Путь к файлу.</param>
+/// <returns>S-параметры.</returns>
 spar_t TouchstoneFile::Load2P(const char* filename)
 {
     ifstream File;
@@ -64,7 +77,12 @@ spar_t TouchstoneFile::Load2P(const char* filename)
             while (*line != '\0' && (isspace(*line) || *line == '#'))line++;
 
             char sFUnit[256], sSFormat[256], dontcare[256];
-            sscanf(line, "%s %s %s %s %lf", sFUnit, dontcare, sSFormat, dontcare, &R);
+            std::istringstream iss(line);
+            if (!(iss >> sFUnit >> dontcare >> sSFormat >> dontcare >> R)) {
+                // Ошибка парсинга
+                fprintf(stderr, "Error parsing line: %s\n", line);
+                continue;
+            }
             if (strcasecmp((sFUnit), "GHZ") == 0)fUnit = GHz;
             if (strcasecmp((sFUnit), "MHZ") == 0)fUnit = MHz;
             if (strcasecmp((sFUnit), "KHZ") == 0)fUnit = KHz;
@@ -75,7 +93,12 @@ spar_t TouchstoneFile::Load2P(const char* filename)
             if (strcasecmp((sSFormat), "RI") == 0)sFormat = RI;
             continue;
         }
-        sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &freq, &firstS11, &secondS11, &firstS21, &secondS21, &firstS12, &secondS12, &firstS22, &secondS22);
+        std::istringstream iss(line);
+        if (!(iss >> freq >> firstS11 >> secondS11 >> firstS21 >> secondS21 >> firstS12 >> secondS12 >> firstS22 >> secondS22)) {
+            // Ошибка парсинга
+            fprintf(stderr, "Error parsing line: %s\n", line);
+            continue;
+        }
         if (fUnit == GHz)freq *= 1e9;
         if (fUnit == MHz)freq *= 1e6;
         if (fUnit == KHz)freq *= 1e3;
@@ -104,29 +127,77 @@ spar_t TouchstoneFile::Load2P(const char* filename)
         complex_t Delta;
         Delta = tempS11 * tempS22 - tempS12 * tempS21;
         double tempK;
-        tempK = (1 - pow(abs(tempS11), 2) - pow(abs(tempS22), 2) + pow(abs(Delta), 2)) / (2 * abs(tempS12 * tempS21));
+        if (abs(tempS12*tempS21)==0)
+        {
+            tempK = 0;
+        }
+        else
+        {
+            tempK = (1 - pow(abs(tempS11), 2) - pow(abs(tempS22), 2) + pow(abs(Delta), 2)) / (2 * abs(tempS12 * tempS21));
+        }
         spar.Mk.push_back(tempK);
         double MSG;
         double MAG;
         if (tempK <= 1)
         {
-            MSG = 10 * log10(abs(tempS21) / abs(tempS12));
+            if (abs(tempS21) / abs(tempS12) <= 0)
+            {
+                MSG = 0;
+            }
+            else
+            {
+                MSG = 10 * log10(abs(tempS21) / abs(tempS12));
+            }
             MAG = 0;
         }
         else
         {
             MSG = 0;
-            MAG = 10 * log10((abs(tempS21) / abs(tempS12)) * (tempK - sqrt(pow(tempK, 2) - 1)));
+            if (abs(tempS21) / abs(tempS12) <= 0 || (pow(tempK, 2) - 1 < 0))
+            {
+                MAG = 0;
+            }
+            else
+            {
+                MAG = 10 * log10((abs(tempS21) / abs(tempS12)) * (tempK - sqrt(pow(tempK, 2) - 1)));
+            }
         }
-
         spar.Ms.push_back(MSG);
         spar.Mg.push_back(MAG);
         double Mus;
-        Mus = (1 - abs(pow(tempS22, 2))) / (abs(tempS11 - Delta * conj(tempS22)) + abs(tempS21 * tempS12));
+        if (abs(tempS11 - Delta * conj(tempS22)) + abs(tempS21 * tempS12) == 0)
+        {
+            Mus = 0;
+        }
+        else
+        {
+            Mus = (1 - abs(pow(tempS22, 2))) / (abs(tempS11 - Delta * conj(tempS22)) + abs(tempS21 * tempS12));
+        }
         spar.Mu.push_back(Mus);
-        S11 = 20 * log10(abs(tempS11));
-        S22 = 20 * log10(abs(tempS22));
-        S12 = 20 * log10(abs(tempS12));
+        if (abs(tempS11) == 0)
+        {
+            S11 = 0;
+        }
+        else
+        {
+            S11 = 20 * log10(abs(tempS11));
+        }
+        if (abs(tempS22) == 0)
+        {
+            S22 = 0;
+        }
+        else
+        {
+            S22 = 20 * log10(abs(tempS22));
+        }
+        if (abs(tempS12) == 0)
+        {
+            S12 = 0;
+        }
+        else
+        {
+            S12 = 20 * log10(abs(tempS12));
+        }
         spar.S11.push_back(S11);
         spar.S22.push_back(S22);
         spar.S12.push_back(S12);

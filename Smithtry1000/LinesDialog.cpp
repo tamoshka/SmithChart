@@ -1,15 +1,19 @@
-#include "LinesDialog.h"
+﻿#include "LinesDialog.h"
 #include "systemParameters.h"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+/// <summary>
+/// Конструктор класса LinesDialog.
+/// </summary>
+/// <param name="parent"></param>
 LinesDialog::LinesDialog(QWidget* parent)
     : QDialog(parent)
 {
-    this->setWindowTitle("Line impedance");
-    this->setFixedSize(150, 220);
+    this->setWindowTitle(QStringLiteral(u"Отрезок линии"));
+    this->setFixedSize(275, 240);
     okButton = new QPushButton("OK", this);
     Z0Box = new QGroupBox(this);
     ErBox = new QGroupBox(this);
@@ -19,10 +23,10 @@ LinesDialog::LinesDialog(QWidget* parent)
     ErField = new QLineEdit(ErBox);
     AlphaField = new QLineEdit(AlphaBox);
     LambdaField = new QLineEdit(LambdaBox);
-    Z0Box->setTitle("Z0 Line impedance");
-    ErBox->setTitle("Er");
-    AlphaBox->setTitle("alpha");
-    LambdaBox->setTitle("L electr. in lambda");
+    Z0Box->setTitle(QStringLiteral(u"Волн. сопр."));
+    ErBox->setTitle(QStringLiteral(u"Электр. проницаемость"));
+    AlphaBox->setTitle(QStringLiteral(u"Коэф. затухания"));
+    LambdaBox->setTitle(QStringLiteral(u"Эл. длина в рад."));
     Z0Field->move(0, 20);
     ErField->move(0, 20);
     AlphaField->move(0, 20);
@@ -44,6 +48,9 @@ LinesDialog::LinesDialog(QWidget* parent)
     connect(okButton, &QPushButton::clicked, this, &LinesDialog::onAccept);
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void LinesDialog::onAccept()
 {
     QString tempZ0 = Z0Field->text();
@@ -61,9 +68,9 @@ void LinesDialog::onAccept()
         validateAlpha = false;
     }
     double valueLambda = LambdaField->text().toFloat(&validateLambda);
-    if (validateZ0 && validateEr && ((validateAlpha && validateLambda)||(!validateAlpha)))
+    if (validateZ0 && valueZ0>0 && validateEr && valueEr>0 && ((validateAlpha && validateLambda)||(!validateAlpha)))
     {
-        if (validateAlpha)
+        if (validateAlpha && valueAlpha>0)
         {
             SystemParameters::alpha = valueAlpha;
             SystemParameters::lambda = valueLambda;
@@ -74,10 +81,14 @@ void LinesDialog::onAccept()
     }
     else
     {
-        reject();
-    } // ������� ����
+        SystemParameters::exc = true;
+        accept();
+    }
 }
 
+/// <summary>
+/// Изменение активности поля lambda в зависимости от alpha.
+/// </summary>
 void LinesDialog::onChanged()
 {
     QString tempAlpha = AlphaField->text();

@@ -1,0 +1,9 @@
+<svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+
+
+  <!-- Чёрные линии -->
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="20" y1="0" x2="20" y2="17"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="20" y1="23" x2="20" y2="40"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="10" y1="17" x2="30" y2="17"/>
+  <line stroke="#000" stroke-linecap="round" stroke-width="1.5" x1="10" y1="23" x2="30" y2="23"/>
+</svg>

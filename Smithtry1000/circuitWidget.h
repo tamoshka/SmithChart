@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <qpainterpath.h>
 #include <QtSvg>
@@ -6,6 +6,10 @@
 #include <QWidget>
 #include <QScrollArea>
 #include "circuitElements.h"
+
+/// <summary>
+/// Класс отображения цепи.
+/// </summary>
 class CircuitWidget : public QWidget
 {
     Q_OBJECT
@@ -13,28 +17,27 @@ class CircuitWidget : public QWidget
 public:
     CircuitWidget(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
     ~CircuitWidget();
+    QList<QString> paths;
     void addSvg(QString, int, int);
     void removeLastSvg();
-private:
-    void rImpedanceRealCalculation(double x, double y);
-    void rAdmitanceRealCalculation(double x, double y);
-    void rImpedanceImagCalculation(double x, double y);
-    void rAdmitanceImagCalculation(double x, double y);
-    QList<int> tuned;
-    QList<QString> paths;
     CircuitElements* circuitElements;
+private:
+    QList<int> tuned;
     CircuitElements* tuneElements;
     bool left;
 signals:
     void clicked(Element* tuned, QString path);
+    void Edit(Element* edit);
 
 public slots:
     void getLeft();
     void RemoveElement(Element*);
     void RemoveAll();
+    void Reverse();
 
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
-    void enterEvent(QEnterEvent* event) override;
+    void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 };

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
 **                                                                        **
 **  QCustomPlot, an easy to use, modern plotting widget for Qt            **
 **  Copyright (C) 2011-2022 Emanuel Eichhammer                            **
@@ -2057,7 +2057,7 @@ QCPRange QCPRange::bounded(double lowerBound, double upperBound) const
   
   If the original range does span positive and negative sign domains or contains zero,
   the returned range will try to approximate the original range as good as possible.
-  If the positive interval of the original range is wider than the negative interval, the
+  If the positive L of the original range is wider than the negative interval, the
   returned range will only contain the positive interval, with lower bound set to \a rangeFac or
   \a rangeFac *\a upper, whichever is closer to zero. Same procedure is used if the negative interval
   is wider than the positive interval, this time by changing the \a upper bound.

@@ -1,40 +1,89 @@
-#include "frequencyDialog.h"
+﻿#include "frequencyDialog.h"
 #include "general.h"
 #include <QLineEdit>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QMessageBox>
+#include <QBoxLayout>
 
-FrequencyDialog::FrequencyDialog(QWidget* parent)
+/// <summary>
+/// Конструктор класса FrequencyDialog.
+/// </summary>
+/// <param name="parent"></param>
+FrequencyDialog::FrequencyDialog(QWidget* parent, CircuitElements* circuit)
     : QDialog(parent)
 {
-    this->setWindowTitle("Frequency, MHz");
+    circuitElements = circuit;
+    this->setWindowTitle(QStringLiteral(u"Частота"));
+    this->setFixedSize(300, 150);
     inputField = new QLineEdit(this);
-    okButton = new QPushButton("OK", this);
 
+    powerBox = new QComboBox(this);
+    powerBox->addItem(QStringLiteral(u"Гц"));
+    powerBox->addItem(QStringLiteral(u"КГц"));
+    powerBox->addItem(QStringLiteral(u"МГц"));
+    powerBox->addItem(QStringLiteral(u"ГГц"));
+    powerBox->setCurrentIndex(0);
+    long double val = 1;
+    if (SystemParameters::defaultFrequency > 1e9)
+    {
+        val = 1e9;
+        powerBox->setCurrentIndex(3);
+    }
+    else if (SystemParameters::defaultFrequency > 1e6)
+    {
+        val = 1e6;
+        powerBox->setCurrentIndex(2);
+    }
+    else if (SystemParameters::defaultFrequency > 1e3)
+    {
+        val = 1e3;
+        powerBox->setCurrentIndex(1);
+    }
+    inputField->setText(QString::number((double)(SystemParameters::defaultFrequency / val)));
+    okButton = new QPushButton("OK", this);
     QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(inputField);
+    QGroupBox* tempBox = new QGroupBox(this);
+    QHBoxLayout* temp = new QHBoxLayout(tempBox);
+    temp->addWidget(inputField);
+    temp->addWidget(powerBox);
+    layout->addWidget(tempBox);
     layout->addWidget(okButton);
 
     connect(okButton, &QPushButton::clicked, this, &FrequencyDialog::onAccept);
 }
 
+/// <summary>
+/// Принятие изменений.
+/// </summary>
 void FrequencyDialog::onAccept()
 {
     QString temp = inputField->text();
     bool validate = true;
     double value = inputField->text().toFloat(&validate);
-    if (!validate)
+    if (!validate || value<=0)
     {
-        reject();
+        SystemParameters::exc = true;
+        accept();
     }
     else
     {
-        if (dpIndex == 0)
+        double power = 1;
+        if (powerBox->currentIndex() == 1)
         {
-            frequency = value;
+            power = 1000;
         }
-        frequencyList.append(value);
+        else if (powerBox->currentIndex() == 2)
+        {
+            power = 1000000;
+        }
+        else if (powerBox->currentIndex() == 3)
+        {
+            power = 1000000000;
+        }
+        if (SystemParameters::dpIndex == 0)
+        {
+            SystemParameters::frequency = value*power;
+        }
+        circuitElements->frequencyList.append(value * power);
         accept();
-    } // ������� ����
+    }
 }

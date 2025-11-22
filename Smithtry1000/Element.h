@@ -1,27 +1,59 @@
-#pragma once
+﻿#pragma once
 #include "general.h"
+
+/// <summary>
+/// Класс элемента.
+/// </summary>
 class Element
 {
 private:
 	Point point;
-	double frequency;
-	map<chartMode, tuple<double, double>> chartParameters;
+	long double frequency;
+	map<chartMode, tuple<long double, long double>> chartParameters;
 	map<parameterMode, Complex> parameters;
 	mode elementMode;
-	double value;
+	long double value;
 	void SetMode(mode);
-	void SetFrequency(double);
+	void SetFrequency(long double);
 public:
 	mode GetMode();
-	double GetValue();
-	void SetValue(double);
+	long double GetValue();
+	void SetValue(long double);
 	void SetPoint(Point);
-	void SetChartParameters(map<chartMode, tuple<double, double>>);
+	void SetChartParameters(map<chartMode, tuple<long double, long double>>);
 	void SetParameter(map<parameterMode, Complex> parameters);
-	double GetFrequency();
-	map<chartMode, tuple<double, double>> GetChartParameters();
+	long double GetFrequency();
+	map<chartMode, tuple<long double, long double>> GetChartParameters();
 	Point GetPoint();
 	map<parameterMode, Complex> GetParameter();
-	Element(mode, double, double, Point, map<chartMode, tuple<double, double>>, map<parameterMode, Complex>);
+	Element()
+	{
+
+	};
+	Element(mode, long double, long double, Point, map<chartMode, tuple<long double, long double>>, map<parameterMode, Complex>);
+	Element& operator=(const Element& other) {
+		if (this != &other) {
+			point = other.point;
+			frequency = other.frequency;
+			chartParameters = other.chartParameters;
+			parameters = other.parameters;
+			elementMode = other.elementMode;
+			value = other.value;
+		}
+		return *this;
+	} 
+	Element(const Element& other)
+		: point(other.point),
+		frequency(other.frequency),
+		chartParameters(other.chartParameters),
+		parameters(other.parameters),
+		elementMode(other.elementMode),
+		value(other.value)
+	{
+		// Все поля копируются автоматически, так как они имеют правильные конструкторы копирования
+	}
 	virtual ~Element();
+	virtual QJsonObject toJson() const;
+	virtual QJsonObject toCircuitJson(int&, int&, bool&, bool&, bool&);
+	virtual ElementType getElementType() const { return ElementType::BaseElement; }
 };

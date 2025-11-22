@@ -1,4 +1,4 @@
-#ifndef LINESDIALOG_H
+﻿#ifndef LINESDIALOG_H
 #define LINESDIALOG_H
 
 #include <QDialog>
@@ -7,6 +7,9 @@
 class QLineEdit;
 class QPushButton;
 
+/// <summary>
+/// Диалог задания линии передач.
+/// </summary>
 class LinesDialog : public QDialog {
     Q_OBJECT
 

@@ -1,30 +1,46 @@
-#include "Smithtry1000.h"
+Ôªø#include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
 #include "circuitElements.h"
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
-int index = 0;
-map<int, tuple<Point, double, double, mode>> points;
-QList<double> qCircles;
+int point_index = 0;
+int allpointindex = 0;
+map<int, tuple<Point, long double, long double, mode>> points;
 int dpIndex = 0;
-double scale = 200;
-QList<QSvgWidget*> svgWidgets;
-double frequency = 500;
-QList<double> frequencyList;
-double lastPointX = 0;
-double lastPointY = 0;
+long double frequency = 500;
+QList<long double> frequencyList;
 
-double admitanceImagR = 0;
-double admitanceRealR = 0;
-double impedanceImagR = 0;
-double impedanceRealR = 0;
 QString fileName = "";
 
+/// <summary>
+/// –û—Å–Ω–æ–≤–Ω–∞—è —Ñ—É–Ω–∫—Ü–∏—è/—Ç–æ—á–∫–∞ –≤—Ö–æ–¥–∞.
+/// </summary>
+/// <param name="argc"></param>
+/// <param name="argv"></param>
+/// <returns></returns>
 int main(int argc, char *argv[])
 {
+	QCoreApplication::setApplicationName("Smithtry1000");
+	QCoreApplication::setApplicationVersion("1.0");
+	QCoreApplication::setOrganizationName("Tamoshka");
+	QCoreApplication::setOrganizationDomain("Tamoshka.com");
+	try 
+	{
+		SystemParameters::deserializeFromJson();
+	}
+	catch(exception e)
+	{
+
+	}
     QApplication a(argc, argv);
+
+	QTranslator qtTranslator;
+	qtTranslator.load("qt_ru", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	a.installTranslator(&qtTranslator);
+
+	QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
 
 	GrafOne g1;
 	GrafTwo g2;
@@ -36,22 +52,17 @@ int main(int argc, char *argv[])
 	SParamTable stable1(SParamTable::STable1);
 	SParamTable stable2(SParamTable::STable2);
 
-	//ƒË‡„‡ÏÏ˚
+	//–°–∏–≥–Ω–∞–ª—ã
 	QObject::connect(&stable1, &SParamTable::rowClicked, &d1, &SDiagram1::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &d2, &SDiagram1::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowClicked, &d3, &SDiagram2::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &d4, &SDiagram2::highlightPoint);
-	//√‡ÙËÍË
+	//–ì—Ä–∞—Ñ–∏–∫–∏
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g1, &GrafOne::highlightPoint);
 	QObject::connect(&stable1, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
 	QObject::connect(&stable2, &SParamTable::rowSelected, &g2, &GrafTwo::highlightPoint);
-	//÷‚ÂÚ‡
-	QObject::connect(&set, &ColourSetting::s11ColorChanged, &g1, &GrafOne::updateS11Color);
-	QObject::connect(&set, &ColourSetting::s22ColorChanged, &g1, &GrafOne::updateS22Color);
-	QObject::connect(&set, &ColourSetting::magColorChanged, &g2, &GrafTwo::updateMAGColor);
-	QObject::connect(&set, &ColourSetting::msgColorChanged, &g2, &GrafTwo::updateMSGColor);
-	QObject::connect(&set, &ColourSetting::kColorChanged, &g2, &GrafTwo::updateKColor);
-	QObject::connect(&set, &ColourSetting::muColorChanged, &g2, &GrafTwo::updateMuColor);
+	QObject::connect(&set, &ColourSetting::grafOneColor, &g1, &GrafOne::updateGrafOneColor);
+	QObject::connect(&set, &ColourSetting::grafTwoColor, &g2, &GrafTwo::updateGrafTwoColor);
 
 	SParameters* sParameters = new SParameters(g1, g2, d1, d2, d3, d4, stable1, stable2, set);
     Smithtry1000 w = Smithtry1000(nullptr, sParameters);

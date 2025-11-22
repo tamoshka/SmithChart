@@ -1,12 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include "S2p.h"
 #include <QWidget>
 #include "ui_SParamTable.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class SParamTableClass; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс отображения таблиц S-параметров.
+/// </summary>
 class SParamTable : public QWidget
 {
 	Q_OBJECT
@@ -27,6 +32,6 @@ signals:
 private:
 	Ui::SParamTableClass* ui;
 
-	//������ ����� (STable1,STable2)
+	//Хранит выбор (STable1,STable2)
 	TableType currentType;
 };

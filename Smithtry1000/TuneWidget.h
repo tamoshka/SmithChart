@@ -1,13 +1,18 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include <QLabel>
 #include <qsvgwidget.h>
 #include "circuitElements.h"
 QT_BEGIN_NAMESPACE
+#ifndef __EAXML__
 namespace Ui { class TuneWidget; };
+#endif
 QT_END_NAMESPACE
 
+/// <summary>
+/// Класс, позволяющий проводить настройку элементов в цепи.
+/// </summary>
 class TuneWidget : public QWidget
 {
 	Q_OBJECT
@@ -15,11 +20,13 @@ class TuneWidget : public QWidget
 public:
 	TuneWidget(QWidget *parent = nullptr, CircuitElements* circuitElements = new CircuitElements());
 	~TuneWidget();
+	void RemoveOnLoad();
+	CircuitElements* circuitElements;
 
 private:
 	Ui::TuneWidget *ui;
 	CircuitElements* tuned;
-	CircuitElements* circuitElements;
+	QWidget* mainWidget = new QWidget(this);
 	QList<QGroupBox*> boxes;
 	QList<QGroupBox*> slidersBoxes;
 	QList<QSvgWidget*> widgets;
@@ -31,18 +38,6 @@ private:
 	QList<double> maxValue;
 	QList<double> minValue;
 	int count;
-	void rImpedanceRealCalculation(double, double);
-	void rImpedanceImagCalculation(double, double);
-	void rAdmitanceRealCalculation(double, double);
-	void rAdmitanceImagCalculation(double, double);
-
-	Complex zCalculation(double, double);
-	Complex yCalculation(double, double);
-
-	Complex impedanceRealChartParameters(double, double);
-	Complex impedanceImagChartParameters(double, double);
-	Complex admitanceRealChartParameters(double, double);
-	Complex admitanceImagChartParameters(double, double);
 
 private slots:
 	void OKButton_clicked();

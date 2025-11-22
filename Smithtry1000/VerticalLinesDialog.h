@@ -1,4 +1,4 @@
-#ifndef VERTICALLINESDIALOG_H
+﻿#ifndef VERTICALLINESDIALOG_H
 #define VERTICALLINESDIALOG_H
 
 #include <QDialog>
@@ -7,6 +7,9 @@
 class QLineEdit;
 class QPushButton;
 
+/// <summary>
+/// Диалог задания Шлейфоф КЗ и ХХ.
+/// </summary>
 class VerticalLinesDialog : public QDialog {
     Q_OBJECT
 
