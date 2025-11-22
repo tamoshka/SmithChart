@@ -262,7 +262,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), center.y(), s1);
                 painter.setPen(Qt::blue);
-                flagi == true;
+                flagi = true;
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;
@@ -366,7 +366,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
                 painter.setPen(Qt::red);
-                flagi == true;
+                flagi = true;
             }
             painter.drawLine(iPixel, pixel);
             iPixel = pixel;

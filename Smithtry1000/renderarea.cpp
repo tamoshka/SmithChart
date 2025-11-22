@@ -300,7 +300,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x * SystemParameters::scale + center.x(), center.y(), s1);
-                flagi == true;
+                flagi = true;
             }
             if (r == 1)
             {
@@ -410,7 +410,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x * SystemParameters::scale + center.x(), center.y() + 10, s1);
                 painter.setPen(SystemParameters::AdmitanceColor);
-                flagi == true;
+                flagi = true;
             }
             if (r == 1)
             {

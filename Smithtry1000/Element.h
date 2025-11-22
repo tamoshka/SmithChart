@@ -28,7 +28,6 @@ public:
 	map<parameterMode, Complex> GetParameter();
 	Element()
 	{
-
 	};
 	Element(mode, long double, long double, Point, map<chartMode, tuple<long double, long double>>, map<parameterMode, Complex>);
 	Element& operator=(const Element& other) {
