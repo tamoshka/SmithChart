@@ -28,6 +28,16 @@ class Smithtry1000Conan(ConanFile):
     def requirements(self):
         self.requires("qt/6.5.3")       
         
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.generate()
+        
+        deps = CMakeDeps(self)
+        deps.generate()
+        
+    def layout(self):
+        cmake_layout(self)
+        
     def package(self):
         print(f"Package folder: {self.package_folder}")
         print(f"Build folder: {self.build_folder}")
@@ -67,5 +77,3 @@ class Smithtry1000Conan(ConanFile):
                     print(f"File copied successfully to: {bin_folder}")
                 else:
                     print("Source file does not exist!")
-        
-    
