@@ -146,10 +146,15 @@ else()
         Qt5::Widgets
         Qt5::Svg
         Qt5::PrintSupport
-        ole32
-        oleaut32
-        uuid
     )
+    # Только для Windows подключаем дополнительные библиотеки
+    if(WIN32)
+        target_link_libraries(${PROJECT_NAME} PUBLIC
+            ole32
+            oleaut32
+            uuid
+        )
+    endif()
 endif()
 
 # Настройки для разных типов сборки
