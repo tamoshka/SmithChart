@@ -132,3 +132,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::PrintSupport
     Qt6::SvgWidgets
 )
+
+# Установка исполняемого файла
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}  # обычно /usr/bin
+)
