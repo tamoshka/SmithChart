@@ -109,8 +109,17 @@ QPointF SDiagram2::compute_real(float t)
 {
     float cos_t = cos(t);
     float sin_t = sin(t);
-    float x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-    float y = (1 / (r + 1)) * sin_t;
+    float x, y;
+    if (r + 1 == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        y = (1 / (r + 1)) * sin_t;
+    }
     return QPointF(x, y);
 }
 
@@ -123,8 +132,17 @@ QPointF SDiagram2::compute_imaginary(float t)
 {
     float cos_t = cos(t);
     float sin_t = sin(t);
-    float x = 1 + (1 / r) * cos_t;
-    float y = (1 / r) + (1 / r) * sin_t;
+    float x, y;
+    if (r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = 1 + (1 / r) * cos_t;
+        y = (1 / r) + (1 / r) * sin_t;
+    }
     return QPointF(x, y);
 }
 
