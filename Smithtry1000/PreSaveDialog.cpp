@@ -2,6 +2,8 @@
 #include "general.h"
 #include <QPushButton>
 #include <QBoxLayout>
+#include <QLabel>
+#include <QGroupBox>
 
 /// <summary>
 /// Конструктор класса FrequencyDialog.
