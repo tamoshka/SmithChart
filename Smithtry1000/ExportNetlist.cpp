@@ -362,20 +362,20 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
     case Line:
     {
         LinesElement* elem = dynamic_cast<LinesElement*>(element);
-        line = QString("TL%1 %2 0 %3 0 tline z0=%4 len=%5e-3 f=%6").arg(tlCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency() / 1e9);
+        line = QString("TL%1 %2 0 %3 0 tline z0=%4 len=%5e-3 f=%6").arg(tlCount++).arg(nodeCounter).arg(nodeCounter + 1).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency());
         nodeCounter++;
         break;
     }
     case OSLine:
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
-        line = QString("TL%1 %2 0 100 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency() / 1e9);
+        line = QString("TL%1 %2 0 100 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency());
         break;
     }
     case SSLine:
     {
         VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(element);
-        line = QString("TL%1 %2 0 0 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency()/1e9);
+        line = QString("TL%1 %2 0 0 0 tline z0=%3 len=%4e-3 f=%5").arg(tlCount++).arg(nodeCounter).arg(value).arg((double)(elem->GetElectricalLength() * elem->GetElectricalLength() / elem->GetMechanicalLength())).arg((double)elem->GetFrequency());
         break;
     }
     case Transform:

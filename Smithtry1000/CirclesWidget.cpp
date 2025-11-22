@@ -1,4 +1,4 @@
-#include "CirclesWidget.h"
+﻿#include "CirclesWidget.h"
 #include "ui_CirclesWidget.h"
 
 /// <summary>
@@ -64,20 +64,44 @@ CirclesWidget::CirclesWidget(QWidget *parent, CircuitElements* circuit)
 
 void CirclesWidget::Load()
 {
-	clearAllOthersClickedVSWR();
-	clearAllOthersClickedQ();
-	QSetIterator<double> k(circuitElements->VSWRCircles);
-	while (k.hasNext())
+	clearOnLoad();
+	for (const double& value : circuitElements->VSWRCircles)
 	{
-		double vswr = k.next();
-		addVSWR(vswr);
+		addVSWR(value);
 	}
-	QSetIterator<double> n(circuitElements->QCircles);
-	while (n.hasNext())
+	for (const double& value : circuitElements->QCircles)
 	{
-		double q = n.next();
-		addQ(q);
+		addQ(value);
 	}
+}
+
+void CirclesWidget::clearOnLoad()
+{
+	for (auto item : ui->listWidgetQ->findItems("*", Qt::MatchWildcard))
+	{
+		double valueQ = item->text().toDouble();
+		ui->listWidgetQ->takeItem(ui->listWidgetQ->row(item));
+	}
+
+	for (auto item : ui->listWidgetVSWR->findItems("*", Qt::MatchWildcard))
+	{
+		double valueVswr = item->text().toDouble();
+		ui->listWidgetVSWR->takeItem(ui->listWidgetVSWR->row(item));
+	}
+
+	ui->checkBox10Q->setChecked(false);
+	ui->checkBox5Q->setChecked(false);
+	ui->checkBox2Q->setChecked(false);
+	ui->checkBox1Q->setChecked(false);
+	ui->checkBox0point5Q->setChecked(false);
+	ui->checkBox0point2Q->setChecked(false);
+
+	ui->checkBox10VSWR->setChecked(false);
+	ui->checkBox5VSWR->setChecked(false);
+	ui->checkBox3VSWR->setChecked(false);
+	ui->checkBox2VSWR->setChecked(false);
+	ui->checkBox1point5VSWR->setChecked(false);
+	ui->checkBox1point2VSWR->setChecked(false);
 }
 
 /// <summary>
@@ -163,7 +187,7 @@ void CirclesWidget::insertVSWRClicked()
 void CirclesWidget::addVSWR(double val)
 {
 	circuitElements->VSWRCircles.insert(val);
-	if (val == 10 || val == 5 || val == 3 || val == 2 || val == 1.5 || val == 1.2)
+	if (val == 10.0f || val == 5.0f || val == 3.0f || val == 2.0f || val == 1.5f || val == 1.2f)
 	{
 		reverseCheckBoxVSWRIndex[val]->setChecked(true);
 	}
@@ -176,7 +200,7 @@ void CirclesWidget::addVSWR(double val)
 void CirclesWidget::addQ(double val)
 {
 	circuitElements->QCircles.insert(val);
-	if (val == 10 || val == 5 || val == 2 || val == 1 || val == 0.5 || val == 0.2)
+	if (val == 10.0f || val == 5.0f || val == 2.0f || val == 1.0f || val == 0.5f || val == 0.2f)
 	{
 		reverseCheckBoxQIndex[val]->setChecked(true);
 	}

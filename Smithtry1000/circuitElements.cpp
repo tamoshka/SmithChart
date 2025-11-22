@@ -404,20 +404,21 @@ QJsonObject CircuitElements::toCircuitJson() const
     QJsonObject schematic;
     QJsonArray components;
     QJsonObject nodes;
+    QJsonArray wires;
 
     int node = 0;
     int nodeMax = 0;
     bool prevTransform = false;
-    bool prevParallel = false;
+    bool prevParallel = true;
     bool prevOSSS = false;
     QJsonArray firstNode;
-    firstNode.append(5);
-    firstNode.append(7);
+    firstNode.append(0);
+    firstNode.append(0);
     nodes["0"] = firstNode;
     int horCount = 0;
     QJsonObject firstPort;
     firstPort["library"] = "Basic";
-    firstPort["model"] = "PORT";
+    firstPort["model"] = "TERMG";
     QJsonObject firstPortPlacement;
     firstPortPlacement["rotation"] = 0;
     firstPort["placement"] = firstPortPlacement;
@@ -431,59 +432,72 @@ QJsonObject CircuitElements::toCircuitJson() const
     firstPortParameter["name"] = "Num";
     firstPortParameter["value"] = 1;
     firstPortParameter["factor"] = "";
+    QJsonObject first2PortParameter;
+    first2PortParameter["name"] = "R";
+    first2PortParameter["value"] = (double)this->realFirstPoint;
+    first2PortParameter["factor"] = "";
+    QJsonObject first3PortParameter;
+    first3PortParameter["name"] = "X";
+    first3PortParameter["value"] = (double)this->imagFirstPoint;
+    first3PortParameter["factor"] = "";
+    QJsonObject first4PortParameter;
+    first4PortParameter["name"] = "Vdc";
+    first4PortParameter["value"] = 0;
+    first4PortParameter["factor"] = "";
     firstPortParameters.append(firstPortParameter);
+    firstPortParameters.append(first2PortParameter);
+    firstPortParameters.append(first3PortParameter);
+    firstPortParameters.append(first4PortParameter);
     firstPort["parameters"] = firstPortParameters;
     components.append(firstPort);
+    int prevNode = node;
+    bool prevprevParallel = prevParallel;
+    bool prevprevOSSS = prevOSSS;
+    int prevNodeMax = nodeMax;
     for (int i = 0; i < circuitElements.size(); i++)
     {
         if (circuitElements[i]) {
-            bool prevprevTransform = prevTransform;
-            bool prevprevParallel = prevParallel;
-            bool prevprevOSSS = prevOSSS;
-            int prevNode = node;
-            int prevNodeMax = nodeMax;
+            prevprevParallel = prevParallel;
+            prevprevOSSS = prevOSSS;
+            prevNode = node;
+            prevNodeMax = nodeMax;
             components.append(elementToCircuitJson(circuitElements[i], node, nodeMax, prevTransform, prevParallel, prevOSSS));
             if (prevTransform)
             {
-                if (prevprevParallel&&!prevOSSS)
+                if (prevprevParallel)
                 {
-                    QJsonArray secondNode;
-                    QJsonArray thirdNode;
-                    secondNode.append(5 + (horCount + 1) * 4);
-                    secondNode.append(7);
-                    thirdNode.append(5 + (horCount + 1) * 4);
-                    thirdNode.append(11);
-                    nodes[QString::number(node)] = secondNode;
-                    nodes[QString::number(nodeMax)] = thirdNode;
-                    QJsonObject gnd;
-                    gnd["library"] = "Basic";
-                    gnd["model"] = "GND";
-                    QJsonObject gndPlacement;
-                    gndPlacement["rotation"] = 0;
-                    gnd["placement"] = gndPlacement;
-                    QJsonArray gndPins;
-                    QJsonObject gndPin;
-                    gndPin["P1"] = nodeMax;
-                    gndPins.append(gndPin);
-                    gnd["pins"] = gndPins;
-                    QJsonArray gndParameters = {};
-                    gnd["parameters"] = gndParameters;
-                    components.append(gnd);
-                }
-                else
-                {
+                    QJsonArray firstTrNode;
                     QJsonArray secondNode;
                     QJsonArray thirdNode;
                     QJsonArray fourthNode;
-                    secondNode.append(5 + (horCount + 1) * 4);
-                    secondNode.append(7);
-                    thirdNode.append(5 + horCount * 4);
-                    thirdNode.append(11);
-                    fourthNode.append(5 + (horCount + 1) * 4);
-                    fourthNode.append(11);
-                    nodes[QString::number(node)] = secondNode;
-                    nodes[QString::number(nodeMax-1)] = thirdNode;
+                    firstTrNode.append((horCount+1) * 4);
+                    firstTrNode.append(0);
+                    secondNode.append((horCount + 2) * 4);
+                    secondNode.append(0);
+                    thirdNode.append((horCount+1) * 4);
+                    thirdNode.append(4);
+                    fourthNode.append((horCount + 2) * 4);
+                    fourthNode.append(4);
+                    nodes[QString::number(nodeMax-3)] = firstTrNode;
+                    nodes[QString::number(nodeMax-2)] = secondNode;
+                    nodes[QString::number(nodeMax - 1)] = thirdNode;
                     nodes[QString::number(nodeMax)] = fourthNode;
+
+                    QJsonArray wireNodes;
+                    wireNodes.append(prevNode);
+                    wireNodes.append(nodeMax-3);
+                    QJsonObject wire;
+                    if (horCount == 0)
+                    {
+                        wire["title"] = "in";
+                    }
+                    else
+                    {
+                        wire["title"] = "";
+                    }
+                    wire["nodes"] = wireNodes;
+                    wires.append(wire);
+
                     QJsonObject gnd;
                     gnd["library"] = "Basic";
                     gnd["model"] = "GND";
@@ -507,7 +521,52 @@ QJsonObject CircuitElements::toCircuitJson() const
                     gnd2["placement"] = gnd2Placement;
                     QJsonArray gnd2Pins;
                     QJsonObject gnd2Pin;
-                    gnd2Pin["P1"] = nodeMax-1;
+                    gnd2Pin["P1"] = nodeMax - 1;
+                    gnd2Pins.append(gnd2Pin);
+                    gnd2["pins"] = gnd2Pins;
+                    QJsonArray gnd2Parameters = {};
+                    gnd2["parameters"] = gnd2Parameters;
+                    components.append(gnd2);
+                }
+                else
+                {
+                    QJsonArray secondNode;
+                    QJsonArray thirdNode;
+                    QJsonArray fourthNode;
+                    secondNode.append((horCount + 1) * 4);
+                    secondNode.append(0);
+                    thirdNode.append(horCount * 4);
+                    thirdNode.append(4);
+                    fourthNode.append((horCount + 1) * 4);
+                    fourthNode.append(4);
+                    nodes[QString::number(nodeMax-2)] = secondNode;
+                    nodes[QString::number(nodeMax - 1)] = thirdNode;
+                    nodes[QString::number(nodeMax)] = fourthNode;
+
+                    QJsonObject gnd;
+                    gnd["library"] = "Basic";
+                    gnd["model"] = "GND";
+                    QJsonObject gndPlacement;
+                    gndPlacement["rotation"] = 0;
+                    gnd["placement"] = gndPlacement;
+                    QJsonArray gndPins;
+                    QJsonObject gndPin;
+                    gndPin["P1"] = nodeMax;
+                    gndPins.append(gndPin);
+                    gnd["pins"] = gndPins;
+                    QJsonArray gndParameters;
+                    gnd["parameters"] = gndParameters = {};
+                    components.append(gnd);
+
+                    QJsonObject gnd2;
+                    gnd2["library"] = "Basic";
+                    gnd2["model"] = "GND";
+                    QJsonObject gnd2Placement;
+                    gnd2Placement["rotation"] = 0;
+                    gnd2["placement"] = gnd2Placement;
+                    QJsonArray gnd2Pins;
+                    QJsonObject gnd2Pin;
+                    gnd2Pin["P1"] = nodeMax - 1;
                     gnd2Pins.append(gnd2Pin);
                     gnd2["pins"] = gnd2Pins;
                     QJsonArray gnd2Parameters = {};
@@ -518,29 +577,53 @@ QJsonObject CircuitElements::toCircuitJson() const
             }
             else if (prevOSSS)
             {
-                if (prevprevParallel && !prevprevTransform)
+                if (prevprevParallel)
                 {
+                    QJsonArray wireNodes;
+                    wireNodes.append(prevNode);
+                    wireNodes.append(node);
+                    QJsonObject wire;
+                    if (horCount == 0)
+                    {
+                        wire["title"] = "in";
+                    }
+                    else
+                    {
+                        wire["title"] = "";
+                    }
+                    wire["nodes"] = wireNodes;
+                    wires.append(wire);
                     QJsonArray secondNode;
-                    secondNode.append(5 + (horCount+1) * 4);
-                    secondNode.append(11);
+                    secondNode.append((horCount+1) * 4);
+                    secondNode.append(0);
                     nodes[QString::number(node)] = secondNode;
                     horCount++;
                 }
             }
             else if (prevParallel)
             {
-                if (prevprevTransform)
+                if (prevprevParallel)
                 {
-
-                }
-                else if (prevprevParallel)
-                {
+                    QJsonArray wireNodes;
+                    wireNodes.append(prevNode);
+                    wireNodes.append(node);
+                    QJsonObject wire;
+                    if (horCount == 0)
+                    {
+                        wire["title"] = "in";
+                    }
+                    else
+                    {
+                        wire["title"] = "";
+                    }
+                    wire["nodes"] = wireNodes;
+                    wires.append(wire);
                     QJsonArray secondNode;
                     QJsonArray thirdNode;
-                    secondNode.append(5 + (horCount + 1) * 4);
-                    secondNode.append(7);
-                    thirdNode.append(5 + (horCount + 1) * 4);
-                    thirdNode.append(11);
+                    secondNode.append((horCount + 1) * 4);
+                    secondNode.append(0);
+                    thirdNode.append((horCount + 1) * 4);
+                    thirdNode.append(4);
                     nodes[QString::number(node)] = secondNode;
                     nodes[QString::number(nodeMax)] = thirdNode;
                     QJsonObject gnd;
@@ -562,8 +645,8 @@ QJsonObject CircuitElements::toCircuitJson() const
                 else
                 {
                     QJsonArray secondNode;
-                    secondNode.append(5 + horCount * 4);
-                    secondNode.append(11);
+                    secondNode.append(horCount * 4);
+                    secondNode.append(4);
                     nodes[QString::number(nodeMax)] = secondNode;
                     QJsonObject gnd;
                     gnd["library"] = "Basic";
@@ -581,22 +664,75 @@ QJsonObject CircuitElements::toCircuitJson() const
                     components.append(gnd);
                 }
             }
+            else if (circuitElements[i]->GetMode() == Line)
+            {
+                if (prevprevOSSS)
+                {
+                    QJsonArray wireNodes;
+                    wireNodes.append(prevNode);
+                    wireNodes.append(node-1);
+                    QJsonObject wire;
+                    if (horCount == 0)
+                    {
+                        wire["title"] = "in";
+                    }
+                    else
+                    {
+                        wire["title"] = "";
+                    }
+                    wire["nodes"] = wireNodes;
+                    wires.append(wire);
+                    QJsonArray secondNode;
+                    secondNode.append((horCount + 1) * 4);
+                    secondNode.append(0);
+                    QJsonArray thirdNode;
+                    thirdNode.append((horCount + 2) * 4);
+                    thirdNode.append(0);
+                    nodes[QString::number(node-1)] = secondNode;
+                    nodes[QString::number(node)] = thirdNode;
+                    horCount ++;
+                }
+                else
+                {
+                    QJsonArray secondNode;
+                    secondNode.append((horCount + 1) * 4);
+                    secondNode.append(0);
+                    nodes[QString::number(node)] = secondNode;
+                }
+                horCount++;
+            }
             else
             {
                 QJsonArray secondNode;
-                secondNode.append(5 + (horCount + 1) * 4);
-                secondNode.append(7);
+                secondNode.append((horCount + 1) * 4);
+                secondNode.append(0);
                 nodes[QString::number(node)] = secondNode;
                 horCount++;
             }
         }
     }
     QJsonObject secondPort;
+    
     secondPort["library"] = "Basic";
-    secondPort["model"] = "PORT";
+    secondPort["model"] = "TERMG";
     QJsonObject secondPortPlacement;
     secondPortPlacement["rotation"] = 180;
     secondPort["placement"] = secondPortPlacement;
+    if (prevParallel)
+    {
+        QJsonArray newNode;
+        newNode.append((horCount+1) * 4);
+        newNode.append(0);
+        nodes[QString::number(nodeMax + 1)] = newNode;
+        QJsonArray wireNodes;
+        wireNodes.append(node);
+        wireNodes.append(nodeMax+1);
+        QJsonObject wire;
+
+        wire["title"] = "out";
+        wire["nodes"] = wireNodes;
+        wires.append(wire);
+    }
     QJsonArray secondPortPins;
     QJsonObject secondPortPin;
     secondPortPin["P1"] = node;
@@ -607,11 +743,27 @@ QJsonObject CircuitElements::toCircuitJson() const
     secondPortParameter["name"] = "Num";
     secondPortParameter["value"] = 2;
     secondPortParameter["factor"] = "";
+    QJsonObject second2PortParameter;
+    second2PortParameter["name"] = "R";
+    second2PortParameter["value"] = (double)this->circuitElements[circuitElements.size()-1]->GetParameter()[Z].real();
+    second2PortParameter["factor"] = "";
+    QJsonObject second3PortParameter;
+    second3PortParameter["name"] = "X";
+    second3PortParameter["value"] = (double)-this->circuitElements[circuitElements.size() - 1]->GetParameter()[Z].imag();
+    second3PortParameter["factor"] = "";
+    QJsonObject second4PortParameter;
+    second4PortParameter["name"] = "Vdc";
+    second4PortParameter["value"] = 0;
+    second4PortParameter["factor"] = "";
     secondPortParameters.append(secondPortParameter);
+    secondPortParameters.append(second2PortParameter);
+    secondPortParameters.append(second3PortParameter);
+    secondPortParameters.append(second4PortParameter);
     secondPort["parameters"] = secondPortParameters;
     components.append(secondPort);
     schematic["components"] = components;
     schematic["nodes"] = nodes;
+    schematic["wires"] = wires;
     json["schematic"] = schematic;
     return json;
 }

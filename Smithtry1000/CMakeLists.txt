@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.16)
 project(smith-chart-tool LANGUAGES CXX)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/qt.cmake")
@@ -29,6 +29,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set(PROJECT_SOURCES
     #awr_interface.h
     #AWR.cpp
+    AWRExportThread.h
+    AWRExportThread.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h
@@ -41,6 +43,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     EditWidget.ui
     EditWidget.h
     EditWidget.cpp
+    PreSaveDialog.h
+    PreSaveDialog.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
