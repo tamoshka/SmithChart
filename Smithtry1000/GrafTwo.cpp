@@ -1,4 +1,4 @@
-#include "GrafTwo.h"
+﻿#include "GrafTwo.h"
 #include <QMessageBox>
 #include <QtMath>
 #include <QThread>

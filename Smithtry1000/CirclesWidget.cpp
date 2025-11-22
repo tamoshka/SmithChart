@@ -1,4 +1,4 @@
-#include "CirclesWidget.h"
+﻿#include "CirclesWidget.h"
 #include "ui_CirclesWidget.h"
 
 /// <summary>

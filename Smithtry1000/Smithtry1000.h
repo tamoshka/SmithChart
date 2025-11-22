@@ -12,6 +12,7 @@
 #include <qtablewidget.h>
 #include <QScrollArea>
 #include "frequencyDialog.h"
+#include "PreSaveDialog.h"
 #include "VerticalLinesDialog.h"
 #include "AmplitudeFrequency.h"
 #include "SParameters.h"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.16)
 project(smith-chart-tool LANGUAGES CXX)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/qt.cmake")
@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-D_WIN32_DCOM)
-
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport SvgWidgets)
 
@@ -44,6 +43,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     EditWidget.ui
     EditWidget.h
     EditWidget.cpp
+    PreSaveDialog.h
+    PreSaveDialog.cpp
     main.cpp
     Smithtry1000.ui
     Smithtry1000.h
@@ -127,7 +128,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-
 target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Core
     Qt6::Gui
@@ -137,3 +137,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::SvgWidgets
 )
 
+# Установка исполняемого файла
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}  # обычно /usr/bin
+)

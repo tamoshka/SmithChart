@@ -1,4 +1,4 @@
-#include "circuitWidget.h"
+﻿#include "circuitWidget.h"
 
 /// <summary>
 /// Конструктор класса CircuitWidget.
