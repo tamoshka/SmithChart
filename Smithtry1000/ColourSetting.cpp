@@ -515,8 +515,8 @@ void ColourSetting::DefaultClicked()
 	emit grafTwoColor();
 	emit signalS12S21();
 	emit grafOneColor();
-	emit allchangedsignal();
 	emit rev();
+	emit allchangedsignal();
 }
 
 /// <summary>
