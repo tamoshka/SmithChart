@@ -1,4 +1,4 @@
-#include "Smithtry1000.h"
+﻿#include "Smithtry1000.h"
 
 class AWRExportThread : public QThread
 {

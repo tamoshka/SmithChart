@@ -1,4 +1,4 @@
-#include "SaveDialog.h"
+﻿#include "SaveDialog.h"
 #include "systemParameters.h"
 #include "ui_SaveDialog.h"
 

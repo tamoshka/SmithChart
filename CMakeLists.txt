@@ -20,7 +20,7 @@ endif()
 if(USING_CONAN)
     # Через Conan
     find_package(Qt NAMES Qt5 REQUIRED COMPONENTS Core)
-    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets PrintSupport)
 else()
     # Системные Qt библиотеки
     find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Svg PrintSupport)
