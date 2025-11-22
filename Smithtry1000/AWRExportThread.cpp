@@ -1,4 +1,4 @@
-#include "AWRExportThread.h"
+﻿#include "AWRExportThread.h"
 
 AWRExportThread::AWRExportThread(Smithtry1000* parent) :
 	m_parent(parent),

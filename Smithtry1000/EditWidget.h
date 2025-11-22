@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "circuitElements.h"
 #include <QWidget>
 QT_BEGIN_NAMESPACE

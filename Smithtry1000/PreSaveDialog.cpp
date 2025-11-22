@@ -1,6 +1,6 @@
-#include "PreSaveDialog.h"
-#include <QPushButton>
+﻿#include "PreSaveDialog.h"
 #include "general.h"
+#include <QPushButton>
 #include <QBoxLayout>
 
 /// <summary>
@@ -12,7 +12,13 @@ PreSaveDialog::PreSaveDialog(QWidget* parent)
 {
     this->setWindowTitle(QStringLiteral(u"Save project?"));
     this->setFixedSize(350, 150);
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    QVBoxLayout* vert = new QVBoxLayout(this);
+    QLabel* label = new QLabel(this);
+    label->setText(QStringLiteral(u"Сохранить проект перед загрузкой?"));
+    vert->addWidget(label);
+    QGroupBox* lay = new QGroupBox(this);
+    vert->addWidget(lay);
+    QHBoxLayout* layout = new QHBoxLayout(lay);
     okButton = new QPushButton("OK", this);
     cancelButton=new QPushButton("Cancel", this);
     layout->addWidget(okButton);

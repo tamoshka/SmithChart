@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.16)
 project(Smithtry1000 LANGUAGES CXX)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/qt.cmake")
