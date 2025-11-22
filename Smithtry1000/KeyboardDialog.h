@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QHBoxLayout>
+#include <QComboBox>
 #include "circuitElements.h"
 
 class QLineEdit;

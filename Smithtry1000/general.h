@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <QList>
 #include <QtSvg>
+#include <QSvgWidget>
 #include <QPointF>
 #include <tuple>
 #include <QMap>
@@ -35,7 +36,7 @@ enum mode
     Transform,
     AddPoint,
     Default
-}; 
+};
 enum chartMode
 {
     RealImpedance,

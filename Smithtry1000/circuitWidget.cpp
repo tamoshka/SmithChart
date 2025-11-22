@@ -850,7 +850,7 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
 /// Обработка при наведении на виджет.
 /// </summary>
 /// <param name="event"></param>
-void CircuitWidget::enterEvent(QEvent* event)
+void CircuitWidget::enterEvent(QEnterEvent* event)
 {
     SystemParameters::circuitHover = true;
     update();

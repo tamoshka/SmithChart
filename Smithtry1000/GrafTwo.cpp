@@ -35,11 +35,27 @@ void GrafTwo::Load()
 	spar_t s;
 	s = t.Load2P(fileName.toStdString().c_str());
 	ui->widget->clearGraphs();
-	x = QVector<double>::fromStdVector(s.f);
-	y1 = QVector<double>::fromStdVector(s.Mg);
-	y2 = QVector<double>::fromStdVector(s.Ms);
-	y3 = QVector<double>::fromStdVector(s.Mk);
-	y4 = QVector<double>::fromStdVector(s.Mu);
+	
+	x.resize(s.f.size());
+	for (int i = 0; i < s.f.size(); i++) {
+		x[i] = s.f[i];
+	}
+	y1.resize(s.Mg.size());
+	for (int i = 0; i < s.Mg.size(); i++) {
+		y1[i] = s.Mg[i];
+	}
+	y2.resize(s.Ms.size());
+	for (int i = 0; i < s.Ms.size(); i++) {
+		y2[i] = s.Ms[i];
+	}
+	y3.resize(s.Mk.size());
+	for (int i = 0; i < s.Mk.size(); i++) {
+		y3[i] = s.Mk[i];
+	}
+	y4.resize(s.Mu.size());
+	for (int i = 0; i < s.Mu.size(); i++) {
+		y4[i] = s.Mu[i];
+	}
 
 	double m1, m2, m3, m4;
 	m1 = y1[0];

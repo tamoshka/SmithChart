@@ -1,8 +1,11 @@
-﻿#pragma once
+#pragma once
 
 #include <QWidget>
 #include <QLabel>
-#include <qsvgwidget.h>
+#include <QSvgWidget>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QSlider>
 #include "circuitElements.h"
 QT_BEGIN_NAMESPACE
 #ifndef __EAXML__
