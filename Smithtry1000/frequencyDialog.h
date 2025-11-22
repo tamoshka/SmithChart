@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QComboBox>
+#include <QGroupBox>
 #include "circuitElements.h"
 
 class QLineEdit;

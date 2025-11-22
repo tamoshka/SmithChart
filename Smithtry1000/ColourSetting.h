@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QWidget>
+#include <QMessageBox>
 #include "ui_ColourSetting.h"
 #include "circuitElements.h"
 #include <map>
