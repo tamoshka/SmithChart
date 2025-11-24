@@ -29,9 +29,17 @@ Point RenderArea::compute_real(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-    long double y = (1 / (r + 1)) * sin_t;
-
+    long double x, y;
+    if (1 + r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        y = (1 / (r + 1)) * sin_t;
+    }
     Point tmp;
     tmp.x = x;
     tmp.y = y;
@@ -48,8 +56,17 @@ Point RenderArea::compute_realParallel(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = (cos(t) - r) / (r + 1);
-    long double y = (1 / (r + 1)) * sin_t;
+    long double x, y;
+    if (1 + r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = (cos(t) - r) / (r + 1);
+        y = (1 / (r + 1)) * sin_t;
+    }
 
 
     Point tmp;
@@ -68,8 +85,17 @@ Point RenderArea::compute_imaginary(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = 1 + (1 / r) * cos_t;
-    long double y = (1 / r) + (1 / r) * sin_t;
+    long double x, y;
+    if (r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = 1 + (1 / r) * cos_t;
+        y = (1 / r) + (1 / r) * sin_t;
+    }
     
     Point tmp;
     tmp.x = x;
@@ -90,16 +116,31 @@ Point RenderArea::compute_imaginaryParallel(long double t)
     long double y;
     if (r > 0)
     {
-        x = (cos_t - abs(r)) / r;
-        y = (1 / r) + (1 / r) * sin_t;
-        y *= -1;
+        if (r == 0)
+        {
+            x = 0;
+            y = 0;
+        }
+        else
+        {
+            x = (cos_t - abs(r)) / r;
+            y = (1 / r) + (1 / r) * sin_t;
+            y *= -1;
+        }
     }
     else
     {
-        x = -(cos_t - abs(r)) / r;
-        y = -(1 / r) + (1 / r) * sin_t;
+        if (r == 0)
+        {
+            x = 0;
+            y = 0;
+        }
+        else
+        {
+            x = -(cos_t - abs(r)) / r;
+            y = -(1 / r) + (1 / r) * sin_t;
+        }
     }
-
     Point tmp;
     tmp.x = x;
     tmp.y = y;
@@ -259,7 +300,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x * SystemParameters::scale + center.x(), center.y(), s1);
-                flagi == true;
+                flagi = true;
             }
             if (r == 1)
             {
@@ -369,7 +410,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x * SystemParameters::scale + center.x(), center.y() + 10, s1);
                 painter.setPen(SystemParameters::AdmitanceColor);
-                flagi == true;
+                flagi = true;
             }
             if (r == 1)
             {
