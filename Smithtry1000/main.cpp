@@ -45,7 +45,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 	QTranslator qtTranslator;
-	qtTranslator.load("qt_ru", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	
+	if (!qtTranslator.load("qt_ru", QLibraryInfo::path(QLibraryInfo::TranslationsPath))) 
+	{
+    	qWarning("Failed to load translator");
+	}
 	a.installTranslator(&qtTranslator);
 
 	QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));

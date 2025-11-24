@@ -141,5 +141,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 
 # Установка исполняемого файла
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION /usr/bin
+    RUNTIME DESTINATION bin/
 )

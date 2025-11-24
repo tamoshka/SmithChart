@@ -5157,6 +5157,7 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
         auxiliaryWidget->update();
         return QPoint(x, y);
     }
+    return QPoint(0, 0);
 }
 
 /// <summary>
