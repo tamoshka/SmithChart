@@ -1,8 +1,10 @@
-﻿#include "Smithtry1000.h"
+#include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
 #include "circuitElements.h"
+#include <iostream>
+
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
@@ -22,6 +24,12 @@ QString fileName = "";
 /// <returns></returns>
 int main(int argc, char *argv[])
 {
+	if (argc == 2 && QString(argv[1]) == "--version") 
+	{
+    	std::cout << "1.0.0" << std::endl;
+    	return 0;  // выход ДО создания QApplication
+	}
+	
 	QCoreApplication::setApplicationName("Smithtry1000");
 	QCoreApplication::setApplicationVersion("1.0");
 	QCoreApplication::setOrganizationName("Tamoshka");
@@ -37,7 +45,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 	QTranslator qtTranslator;
-	qtTranslator.load("qt_ru", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+	
+	if (!qtTranslator.load("qt_ru", QLibraryInfo::path(QLibraryInfo::TranslationsPath))) 
+	{
+    	qWarning("Failed to load translator");
+	}
 	a.installTranslator(&qtTranslator);
 
 	QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
