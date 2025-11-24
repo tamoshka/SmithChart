@@ -22,6 +22,12 @@ QString fileName = "";
 /// <returns></returns>
 int main(int argc, char *argv[])
 {
+	if (argc == 2 && QString(argv[1]) == "--version") 
+	{
+    	std::cout << "1.0.0" << std::endl;
+    	return 0;  // выход ДО создания QApplication
+	}
+	
 	QCoreApplication::setApplicationName("Smithtry1000");
 	QCoreApplication::setApplicationVersion("1.0");
 	QCoreApplication::setOrganizationName("Tamoshka");
