@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "circuitElements.h"
 #include <QWidget>
+#include <QMessageBox>
 QT_BEGIN_NAMESPACE
 #ifndef __EAXML__
 namespace Ui { class EditWidget; };
