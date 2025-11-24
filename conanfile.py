@@ -60,30 +60,17 @@ class Smithtry1000Conan(ConanFile):
                 keep_path=False)
             self._copy_qt_runtime()
         else:
-            # Для Linux - ищем исполняемый файл в разных возможных местах
+            # Для Linux - используем прямой путь к исполняемому файлу
             source_file = "smith-chart-tool"
-            possible_paths = [
-                os.path.join(self.build_folder, "Smithtry1000", source_file),
-                os.path.join(self.build_folder, "build", "Release", "Smithtry1000", source_file),
-                os.path.join(self.build_folder, "build", "Smithtry1000", source_file),
-                os.path.join(self.build_folder, "Release", "Smithtry1000", source_file)
-            ]
+            source_path = os.path.join(self.build_folder, "Smithtry1000", source_file)
             
-            source_path = None
-            for path in possible_paths:
-                if os.path.exists(path):
-                    source_path = path
-                    break
-            
-            if source_path:
+            if os.path.exists(source_path):
                 print(f"Found executable at: {source_path}")
                 copy(self, source_file, src=os.path.dirname(source_path), dst=bin_folder, keep_path=False)
                 print(f"File copied successfully to: {bin_folder}")
             else:
                 print("Executable file not found!")
-                print("Checked paths:")
-                for path in possible_paths:
-                    print(f"  {path}: {os.path.exists(path)}")
+                print(f"Expected path: {source_path}")
                 
                 # Выводим список файлов в build_folder для диагностики
                 print("Build folder contents:")
