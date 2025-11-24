@@ -1,8 +1,10 @@
-﻿#include "Smithtry1000.h"
+#include "Smithtry1000.h"
 #include <QtWidgets/QApplication>
 #include "general.h"
 #include <QThread>
 #include "circuitElements.h"
+#include <iostream>
+
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;
