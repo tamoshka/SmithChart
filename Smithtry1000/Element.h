@@ -49,7 +49,6 @@ public:
 		elementMode(other.elementMode),
 		value(other.value)
 	{
-		// Все поля копируются автоматически, так как они имеют правильные конструкторы копирования
 	}
 	virtual ~Element();
 	virtual QJsonObject toJson() const;
