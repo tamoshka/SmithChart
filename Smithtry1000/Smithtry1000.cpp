@@ -2551,15 +2551,18 @@ void Smithtry1000::onButtonClicked()
         while (!leftClicked && !rightClicked)
         {
             QCoreApplication::processEvents();
-            point = QCursor::pos();
-            if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(SystemParameters::scale, 2))
+            if (this->isActiveWindow())
             {
-                QCursor::setPos(tempPointX, tempPointY);
-                point.setX(tempPointX);
-                point.setY(tempPointY);
+                point = QCursor::pos();
+                if (pow(point.x() - centerGlobal.x(), 2) + pow(point.y() - centerGlobal.y(), 2) >= pow(SystemParameters::scale, 2))
+                {
+                    QCursor::setPos(tempPointX, tempPointY);
+                    point.setX(tempPointX);
+                    point.setY(tempPointY);
+                }
+                tempPointX = point.x();
+                tempPointY = point.y();
             }
-            tempPointX = point.x();
-            tempPointY = point.y();
         }
         if (leftClicked)
         {
@@ -3796,24 +3799,27 @@ void Smithtry1000::onTimeout()
 
     if (dx != 0 || dy != 0)
     {
-        // Вычисляем точку на окружности и ставим туда курсор
-        QPoint posOnCircle = getPointOnCircle(dx, dy);
-        if (SystemParameters::Model == Transform)
+        if (this->isActiveWindow())
         {
-            double tempX=0, tempY=0;
-            if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(SystemParameters::scale, 2))
+            // Вычисляем точку на окружности и ставим туда курсор
+            QPoint posOnCircle = getPointOnCircle(dx, dy);
+            if (SystemParameters::Model == Transform)
             {
-                QCursor::setPos(tempX, tempY);
-                posOnCircle.setX(tempX);
-                posOnCircle.setY(tempY);
+                double tempX = 0, tempY = 0;
+                if (pow(posOnCircle.x() - centerLocal.x(), 2) + pow(posOnCircle.y() - centerLocal.y(), 2) > pow(SystemParameters::scale, 2))
+                {
+                    QCursor::setPos(tempX, tempY);
+                    posOnCircle.setX(tempX);
+                    posOnCircle.setY(tempY);
+                }
+                tempX = posOnCircle.x();
+                tempY = posOnCircle.y();
             }
-            tempX = posOnCircle.x();
-            tempY = posOnCircle.y();
+            QCursor::setPos(renderArea->mapToGlobal(posOnCircle));
+            renderArea->setCursorPosOnCircle(posOnCircle);
+            // Возвращаем системный курсор обратно в центр
+            QCursor::setPos(centerGlobal);
         }
-        QCursor::setPos(renderArea->mapToGlobal(posOnCircle));
-        renderArea->setCursorPosOnCircle(posOnCircle);
-        // Возвращаем системный курсор обратно в центр
-        QCursor::setPos(centerGlobal);
     }
 }
 
