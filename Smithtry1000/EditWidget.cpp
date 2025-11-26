@@ -350,169 +350,11 @@ void EditWidget::closeEvent(QCloseEvent* event)
 void EditWidget::DrawButton_clicked()
 {
 	bool correct = true;
-	if (edited->GetMode() == ResistorParallel || edited->GetMode() == ResistorShunt)
-	{
-		QString tempR = ui->RLineEdit->text();
-		bool validateR = true;
-		long double valueR = ui->RLineEdit->text().toFloat(&validateR);
-		if (!validateR || valueR <= 0)
-		{
-			correct = false;
-			QMessageBox* bx = new QMessageBox();
-			bx->show();
-			bx->Warning;
-			QLocale locale(QLocale::C);
-			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
-			SystemParameters::exc = false;
-		}
-		else
-		{
-			if (ui->RComboBox->currentIndex() == 0)
-			{
-				valueR /= 1e3;
-			}
-			else if (ui->RComboBox->currentIndex() == 2)
-			{
-				valueR *= 1e3;
-			}
-			else if (ui->RComboBox->currentIndex() == 3)
-			{
-				valueR *= 1e6;
-			}
-			else if (ui->RComboBox->currentIndex() == 4)
-			{
-				valueR *= 1e9;
-			}
-			edited->SetValue(valueR);
-		}
-	}
-	else if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
-	{
-		QString tempC = ui->CLineEdit->text();
-		bool validateC = true;
-		long double valueC = ui->CLineEdit->text().toFloat(&validateC);
-		if (!validateC || valueC <= 0)
-		{
-			correct = false;
-			QMessageBox* bx = new QMessageBox();
-			bx->show();
-			bx->Warning;
-			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
-			SystemParameters::exc = false;
-		}
-		else
-		{
-			if (ui->CComboBox->currentIndex() == 0)
-			{
-				valueC /= 1e6;
-			}
-			else if (ui->CComboBox->currentIndex() == 1)
-			{
-				valueC /= 1e9;
-			}
-			else
-			{
-				valueC /= 1e12;
-			}
-			edited->SetValue(valueC);
-		}
-	}
-	else if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
-	{
-		QString tempL = ui->LLineEdit->text();
-		bool validateL= true;
-		long double valueL = ui->LLineEdit->text().toFloat(&validateL);
-		if (!validateL || valueL <= 0)
-		{
-			correct = false;
-			QMessageBox* bx = new QMessageBox();
-			bx->show();
-			bx->Warning;
-			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
-			SystemParameters::exc = false;
-		}
-		else
-		{
-			if (ui->LComboBox->currentIndex() == 0)
-			{
-				valueL /= 1e6;
-			}
-			else if (ui->LComboBox->currentIndex() == 1)
-			{
-				valueL /= 1e9;
-			}
-			else
-			{
-				valueL /= 1e12;
-			}
-			edited->SetValue(valueL);
-		}
-	}
-	else if (edited->GetMode() == Transform)
-	{
-		QString tempN = ui->NLineEdit->text();
-		bool validateN = true;
-		long double valueN = ui->NLineEdit->text().toFloat(&validateN);
-		if (!validateN || valueN <= 0)
-		{
-			correct = false;
-			QMessageBox* bx = new QMessageBox();
-			bx->show();
-			bx->Warning;
-			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
-			SystemParameters::exc = false;
-		}
-		else
-		{
-			edited->SetValue(valueN);
-		}
-	}
-	else if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)
-	{
-		QString tempZ0 = ui->Z0LineEdit->text();
-		QString tempEr = ui->ErLineEdit->text();
-		QString tempLambda = ui->LLambdaLineEdit->text();
-		QString tempLEl = ui->LElMMLineEdit->text();
-		QString tempLPh = ui->LPhMMLineEdit->text();
-		bool validateZ0 = true;
-		bool validateEr = true;
-		bool validateLambda = true;
-		bool validateLEl = true;
-		bool validateLPh = true;
-		long double valueZ0 = ui->Z0LineEdit->text().toFloat(&validateZ0);
-		long double valueEr = ui->ErLineEdit->text().toFloat(&validateEr);
-		long double valueLambda = ui->LLambdaLineEdit->text().toFloat(&validateLambda);
-		long double valueLEl = ui->LElMMLineEdit->text().toFloat(&validateLEl);
-		long double valueLPh = ui->LPhMMLineEdit->text().toFloat(&validateLPh);
-		if (!validateZ0 || !validateEr || !validateLambda || !validateLEl || !validateLPh || valueZ0 <= 0 || valueEr<=0 || valueLambda<=0 || valueLambda>0.5 || valueLEl<=0 || valueLPh<=0)
-		{
-			correct = false;
-			QMessageBox* bx = new QMessageBox();
-			bx->show();
-			bx->Warning;
-			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
-			SystemParameters::exc = false;
-		}
-		else
-		{
-			if (edited->GetMode() == OSLine || edited->GetMode() == SSLine)
-			{
-				VerticalLinesElement* vl = dynamic_cast<VerticalLinesElement*>(edited);
-				vl->SetValue(valueZ0);
-				vl->SetLambda(valueLambda);
-				vl->SetMechanicalLength(valueLPh);
-				vl->SetElectricalLength(valueLEl);
-			}
-			else
-			{
-				LinesElement* vl = dynamic_cast<LinesElement*>(edited);
-				vl->SetValue(valueZ0);
-				vl->SetLambda(valueLambda);
-				vl->SetMechanicalLength(valueLPh);
-				vl->SetElectricalLength(valueLEl);
-			}
-		}
-	}
+	AddResistor(correct);
+	AddCapacitor(correct);
+	AddInduction(correct);
+	AddTransform(correct);
+	AddLines(correct);
 	if (correct)
 	{
 		int j = 0;
@@ -2042,6 +1884,189 @@ void EditWidget::DrawButton_clicked()
 		}
 	}
 	
+}
+
+void EditWidget::AddResistor(bool& correct)
+{
+	if (edited->GetMode() == ResistorParallel || edited->GetMode() == ResistorShunt)
+	{
+		QString tempR = ui->RLineEdit->text();
+		bool validateR = true;
+		long double valueR = ui->RLineEdit->text().toFloat(&validateR);
+		if (!validateR || valueR <= 0)
+		{
+			correct = false;
+			QMessageBox* bx = new QMessageBox();
+			bx->show();
+			bx->Warning;
+			QLocale locale(QLocale::C);
+			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
+			SystemParameters::exc = false;
+		}
+		else
+		{
+			if (ui->RComboBox->currentIndex() == 0)
+			{
+				valueR /= 1e3;
+			}
+			else if (ui->RComboBox->currentIndex() == 2)
+			{
+				valueR *= 1e3;
+			}
+			else if (ui->RComboBox->currentIndex() == 3)
+			{
+				valueR *= 1e6;
+			}
+			else if (ui->RComboBox->currentIndex() == 4)
+			{
+				valueR *= 1e9;
+			}
+			edited->SetValue(valueR);
+		}
+	}
+}
+
+void EditWidget::AddCapacitor(bool& correct)
+{
+	if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
+	{
+		QString tempC = ui->CLineEdit->text();
+		bool validateC = true;
+		long double valueC = ui->CLineEdit->text().toFloat(&validateC);
+		if (!validateC || valueC <= 0)
+		{
+			correct = false;
+			QMessageBox* bx = new QMessageBox();
+			bx->show();
+			bx->Warning;
+			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
+			SystemParameters::exc = false;
+		}
+		else
+		{
+			if (ui->CComboBox->currentIndex() == 0)
+			{
+				valueC /= 1e6;
+			}
+			else if (ui->CComboBox->currentIndex() == 1)
+			{
+				valueC /= 1e9;
+			}
+			else
+			{
+				valueC /= 1e12;
+			}
+			edited->SetValue(valueC);
+		}
+	}
+}
+
+void EditWidget::AddInduction(bool& correct)
+{
+	if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
+	{
+		QString tempL = ui->LLineEdit->text();
+		bool validateL = true;
+		long double valueL = ui->LLineEdit->text().toFloat(&validateL);
+		if (!validateL || valueL <= 0)
+		{
+			correct = false;
+			QMessageBox* bx = new QMessageBox();
+			bx->show();
+			bx->Warning;
+			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
+			SystemParameters::exc = false;
+		}
+		else
+		{
+			if (ui->LComboBox->currentIndex() == 0)
+			{
+				valueL /= 1e6;
+			}
+			else if (ui->LComboBox->currentIndex() == 1)
+			{
+				valueL /= 1e9;
+			}
+			else
+			{
+				valueL /= 1e12;
+			}
+			edited->SetValue(valueL);
+		}
+	}
+}
+
+void EditWidget::AddTransform(bool& correct)
+{
+	if (edited->GetMode() == Transform)
+	{
+		QString tempN = ui->NLineEdit->text();
+		bool validateN = true;
+		long double valueN = ui->NLineEdit->text().toFloat(&validateN);
+		if (!validateN || valueN <= 0)
+		{
+			correct = false;
+			QMessageBox* bx = new QMessageBox();
+			bx->show();
+			bx->Warning;
+			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
+			SystemParameters::exc = false;
+		}
+		else
+		{
+			edited->SetValue(valueN);
+		}
+	}
+}
+
+void EditWidget::AddLines(bool& correct)
+{
+	if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)
+	{
+		QString tempZ0 = ui->Z0LineEdit->text();
+		QString tempEr = ui->ErLineEdit->text();
+		QString tempLambda = ui->LLambdaLineEdit->text();
+		QString tempLEl = ui->LElMMLineEdit->text();
+		QString tempLPh = ui->LPhMMLineEdit->text();
+		bool validateZ0 = true;
+		bool validateEr = true;
+		bool validateLambda = true;
+		bool validateLEl = true;
+		bool validateLPh = true;
+		long double valueZ0 = ui->Z0LineEdit->text().toFloat(&validateZ0);
+		long double valueEr = ui->ErLineEdit->text().toFloat(&validateEr);
+		long double valueLambda = ui->LLambdaLineEdit->text().toFloat(&validateLambda);
+		long double valueLEl = ui->LElMMLineEdit->text().toFloat(&validateLEl);
+		long double valueLPh = ui->LPhMMLineEdit->text().toFloat(&validateLPh);
+		if (!validateZ0 || !validateEr || !validateLambda || !validateLEl || !validateLPh || valueZ0 <= 0 || valueEr <= 0 || valueLambda <= 0 || valueLambda > 0.5 || valueLEl <= 0 || valueLPh <= 0)
+		{
+			correct = false;
+			QMessageBox* bx = new QMessageBox();
+			bx->show();
+			bx->Warning;
+			bx->setText(QString::fromUtf8("Все параметры должны быть заданы положительными числами"));
+			SystemParameters::exc = false;
+		}
+		else
+		{
+			if (edited->GetMode() == OSLine || edited->GetMode() == SSLine)
+			{
+				VerticalLinesElement* vl = dynamic_cast<VerticalLinesElement*>(edited);
+				vl->SetValue(valueZ0);
+				vl->SetLambda(valueLambda);
+				vl->SetMechanicalLength(valueLPh);
+				vl->SetElectricalLength(valueLEl);
+			}
+			else
+			{
+				LinesElement* vl = dynamic_cast<LinesElement*>(edited);
+				vl->SetValue(valueZ0);
+				vl->SetLambda(valueLambda);
+				vl->SetMechanicalLength(valueLPh);
+				vl->SetElectricalLength(valueLEl);
+			}
+		}
+	}
 }
 
 /// <summary>

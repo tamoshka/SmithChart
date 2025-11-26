@@ -48,6 +48,9 @@ public:
 	bool loadFromFile(const QString& filePath);
 	bool saveToFile(const QString& filePath) const;
     bool saveToJSON(const QString& filePath) const;
+    void ElementsNodesWiresInJSON(bool&, int&, int&, int&, int&, bool&, QJsonObject&, QJsonArray&, QJsonArray&) const;
+    void TransformInJSON(bool&, int&, int&, int&, QJsonObject&, QJsonArray&, QJsonArray&) const;
+    void ParallelInJSON(bool&, int&, int&, int&, int&, QJsonObject&, QJsonArray&, QJsonArray&) const;
 	~CircuitElements();
     CircuitElements(const CircuitElements& other) {
         // ГЛУБОКОЕ копирование - создаем новые объекты Element

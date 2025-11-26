@@ -29,6 +29,7 @@ public:
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
 	void SetPoint(long double[], long double[], long double[]);
+	void CalculateMatrix(Complex(&first)[2][2], Complex(&second)[2][2], QList<Element*> circuit, long double w);
 	~AmplitudeFrequency();
 	Ui::AmplitudeFrequency *ui;
 };

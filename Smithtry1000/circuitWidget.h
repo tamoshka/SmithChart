@@ -25,6 +25,9 @@ public:
 private:
     QList<int> tuned;
     CircuitElements* tuneElements;
+    void TunedPaint(QPainter&);
+    void ElementValuesPaint(QPainter&);
+    void CurrentValuePaint(QPainter&);
     bool left;
 signals:
     void clicked(Element* tuned, QString path);

@@ -25,6 +25,11 @@ private:
 	void recalculateFromLambda();
 	void recalculateFromElMM();
 	void recalculateFromPhMM();
+	void AddResistor(bool&);
+	void AddInduction(bool&);
+	void AddCapacitor(bool&);
+	void AddLines(bool&);
+	void AddTransform(bool&);
 
 private slots:
 	void OKButton_clicked();
