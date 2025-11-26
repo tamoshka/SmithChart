@@ -1,5 +1,5 @@
 ﻿#include "AmplitudeFrequency.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса AmplitudeFrequency.
 /// </summary>

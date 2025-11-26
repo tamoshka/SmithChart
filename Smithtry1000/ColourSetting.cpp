@@ -1,5 +1,6 @@
 ﻿#include "ColourSetting.h"
 #include <QColorDialog>
+#include "systemParameters.h"
 using namespace std;
 
 /// <summary>

@@ -3,7 +3,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QBoxLayout>
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса FrequencyDialog.
 /// </summary>

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Line.h"
 #include "ElementFactory.h"
-#include "systemParameters.h"
 
 
 /// <summary>
@@ -24,7 +23,7 @@ public:
 	QList<Point> morePoints;
 	QSet<double> VSWRCircles;
 	QSet<double> QCircles;
-	long double z0 = SystemParameters::z0;
+	long double z0;
 	QList<int> elementIndexes;
 	QList<int> pointIndexes;
 	QList<long double> frequencyList;

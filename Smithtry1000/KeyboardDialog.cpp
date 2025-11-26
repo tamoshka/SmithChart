@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include "systemParameters.h"
 
 /// <summary>
 /// Конструктор класса KeyboardDialog.

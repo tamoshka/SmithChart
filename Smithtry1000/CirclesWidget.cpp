@@ -1,6 +1,6 @@
 ﻿#include "CirclesWidget.h"
 #include "ui_CirclesWidget.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса CirclesWidget.
 /// </summary>

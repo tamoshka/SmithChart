@@ -30,6 +30,7 @@ public slots:
 private:
 	Ui::GrafTwoClass* ui;
 	QVector<double> x, y1, y2, y3, y4;
+	void Paint();
 private:
 	QCPGraph* GraphK = nullptr;
 	QCPGraph* Graphu = nullptr;

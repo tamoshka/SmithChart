@@ -1,10 +1,12 @@
 ﻿#include "circuitElements.h"
+#include "systemParameters.h"
 
 /// <summary>
 /// Конструктор класса CircuitElements.
 /// </summary>
 CircuitElements::CircuitElements()
 {
+    this->z0 = SystemParameters::z0;
 	this->circuitElements = QList<Element*>();
 }
 

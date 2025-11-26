@@ -3,6 +3,7 @@
 #include "general.h"
 #include <QThread>
 #include "circuitElements.h"
+#include "systemParameters.h"
 QList<Point> morePoints;
 map<int, tuple<Point, bool>> allPoints;
 int point_index = 0;

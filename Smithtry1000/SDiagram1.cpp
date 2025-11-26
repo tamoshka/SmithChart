@@ -2,7 +2,7 @@
 #include "S2p.h"
 #include "math.h"
 #include <QString>
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса SDiagram1
 /// </summary>

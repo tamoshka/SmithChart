@@ -195,151 +195,7 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
     QString paramName;
     double paramValue;
     QString paramFactor;
-    switch (this->elementMode)
-    {
-        case ResistorShunt:
-        {
-            modelName = "R";
-            pinArray.append(node);
-            pinArray.append(nodeMax + 1);
-            node = nodeMax + 1;
-            nodeMax++;
-            paramName = "R";
-            paramFactor = "";
-            paramValue = this->value;
-            prevTransform = false;
-            prevParallel = false;
-            break;
-        }
-        case ResistorParallel:
-        {
-            modelName = "R";
-            rotation = 90;
-            if (prevParallel)
-            {
-                pinArray.append(nodeMax + 1);
-                pinArray.append(nodeMax + 2);
-                node = nodeMax + 1;
-                nodeMax++;
-            }
-            else
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax + 1);
-            }
-            paramName = "R";
-            paramFactor = "";
-            paramValue = this->value;
-            nodeMax++;
-            prevTransform = false;
-            prevParallel = true;
-            break;
-        }
-        case CapacitorShunt:
-        {
-            modelName = "C";
-            pinArray.append(node);
-            pinArray.append(nodeMax + 1);
-            paramName = "C";
-            paramFactor = "p";
-            paramValue = this->value*1e12;
-            node = nodeMax + 1;
-            nodeMax++;
-            prevTransform = false;
-            prevParallel = false;
-            break;
-        }
-        case CapacitorParallel:
-        {
-            modelName = "C";
-            rotation = 90;
-            if (prevParallel)
-            {
-                pinArray.append(nodeMax + 1);
-                pinArray.append(nodeMax + 2);
-                node = nodeMax + 1;
-                nodeMax++;
-            }
-            else
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax + 1);
-            }
-            paramName = "C";
-            paramFactor = "p";
-            paramValue = this->value * 1e12;
-            nodeMax++;
-            prevTransform = false;
-            prevParallel = true;
-            break;
-        }
-        case InductionShunt:
-        {
-            modelName = "L";
-            pinArray.append(node);
-            pinArray.append(nodeMax + 1);
-            paramName = "L";
-            paramFactor = "n";
-            paramValue = this->value * 1e9;
-            node = nodeMax + 1;
-            nodeMax++;
-            prevTransform = false;
-            prevParallel = false;
-            break;
-        }
-        case InductionParallel:
-        {
-            modelName = "L";
-            rotation = 90;
-            if (prevParallel)
-            {
-                pinArray.append(nodeMax + 1);
-                pinArray.append(nodeMax + 2);
-                node = nodeMax + 1;
-                nodeMax++;
-            }
-            else
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax + 1);
-            }
-            paramName = "L";
-            paramFactor = "n";
-            paramValue = this->value * 1e9;
-            nodeMax++;
-            prevTransform = false;
-            prevParallel = true;
-            break;
-        }
-        case Transform:
-        {
-            modelName = "TF";
-            if (prevParallel)
-            {
-                pinArray.append(nodeMax + 1);
-                pinArray.append(nodeMax + 2);
-                pinArray.append(nodeMax + 3);
-                pinArray.append(nodeMax + 4);
-                node = nodeMax + 2;
-                nodeMax += 4;
-            }
-            else
-            {
-                pinArray.append(node);
-                pinArray.append(nodeMax + 1);
-                pinArray.append(nodeMax + 2);
-                pinArray.append(nodeMax + 3);
-                node = nodeMax + 1;
-                nodeMax += 3;
-            }
-            paramName = "T";
-            paramFactor = "";
-            paramValue = this->value;
-            prevTransform = true;
-            prevParallel = true;
-            break;
-        }
-    }
+    SwitchMode(modelName, pinArray, node, nodeMax, paramName, paramFactor, paramValue, prevTransform, prevParallel, rotation);
     prevOSSS = false;
     json["model"] = modelName;
     QJsonObject rotate;
@@ -374,4 +230,154 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
     json["parameters"] = jsonParameters;
 
     return json;
+}
+
+void Element::SwitchMode(QString& modelName, QList<int>& pinArray, int& node, int& nodeMax, QString& paramName,
+    QString& paramFactor, double& paramValue, bool& prevTransform, bool& prevParallel, int& rotation) const
+{
+    switch (this->elementMode)
+    {
+    case ResistorShunt:
+    {
+        modelName = "R";
+        pinArray.append(node);
+        pinArray.append(nodeMax + 1);
+        node = nodeMax + 1;
+        nodeMax++;
+        paramName = "R";
+        paramFactor = "";
+        paramValue = this->value;
+        prevTransform = false;
+        prevParallel = false;
+        break;
+    }
+    case ResistorParallel:
+    {
+        modelName = "R";
+        rotation = 90;
+        if (prevParallel)
+        {
+            pinArray.append(nodeMax + 1);
+            pinArray.append(nodeMax + 2);
+            node = nodeMax + 1;
+            nodeMax++;
+        }
+        else
+        {
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+        }
+        paramName = "R";
+        paramFactor = "";
+        paramValue = this->value;
+        nodeMax++;
+        prevTransform = false;
+        prevParallel = true;
+        break;
+    }
+    case CapacitorShunt:
+    {
+        modelName = "C";
+        pinArray.append(node);
+        pinArray.append(nodeMax + 1);
+        paramName = "C";
+        paramFactor = "p";
+        paramValue = this->value * 1e12;
+        node = nodeMax + 1;
+        nodeMax++;
+        prevTransform = false;
+        prevParallel = false;
+        break;
+    }
+    case CapacitorParallel:
+    {
+        modelName = "C";
+        rotation = 90;
+        if (prevParallel)
+        {
+            pinArray.append(nodeMax + 1);
+            pinArray.append(nodeMax + 2);
+            node = nodeMax + 1;
+            nodeMax++;
+        }
+        else
+        {
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+        }
+        paramName = "C";
+        paramFactor = "p";
+        paramValue = this->value * 1e12;
+        nodeMax++;
+        prevTransform = false;
+        prevParallel = true;
+        break;
+    }
+    case InductionShunt:
+    {
+        modelName = "L";
+        pinArray.append(node);
+        pinArray.append(nodeMax + 1);
+        paramName = "L";
+        paramFactor = "n";
+        paramValue = this->value * 1e9;
+        node = nodeMax + 1;
+        nodeMax++;
+        prevTransform = false;
+        prevParallel = false;
+        break;
+    }
+    case InductionParallel:
+    {
+        modelName = "L";
+        rotation = 90;
+        if (prevParallel)
+        {
+            pinArray.append(nodeMax + 1);
+            pinArray.append(nodeMax + 2);
+            node = nodeMax + 1;
+            nodeMax++;
+        }
+        else
+        {
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+        }
+        paramName = "L";
+        paramFactor = "n";
+        paramValue = this->value * 1e9;
+        nodeMax++;
+        prevTransform = false;
+        prevParallel = true;
+        break;
+    }
+    case Transform:
+    {
+        modelName = "TF";
+        if (prevParallel)
+        {
+            pinArray.append(nodeMax + 1);
+            pinArray.append(nodeMax + 2);
+            pinArray.append(nodeMax + 3);
+            pinArray.append(nodeMax + 4);
+            node = nodeMax + 2;
+            nodeMax += 4;
+        }
+        else
+        {
+            pinArray.append(node);
+            pinArray.append(nodeMax + 1);
+            pinArray.append(nodeMax + 2);
+            pinArray.append(nodeMax + 3);
+            node = nodeMax + 1;
+            nodeMax += 3;
+        }
+        paramName = "T";
+        paramFactor = "";
+        paramValue = this->value;
+        prevTransform = true;
+        prevParallel = true;
+        break;
+    }
+    }
 }

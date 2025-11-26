@@ -1,5 +1,5 @@
 ﻿#include "circuitWidget.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса CircuitWidget.
 /// </summary>

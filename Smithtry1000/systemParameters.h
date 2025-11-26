@@ -1,4 +1,4 @@
-﻿#include "Element.h"
+﻿#include "circuitElements.h"
 #include <QColor>
 #include <QSvgWidget>
 
@@ -144,6 +144,14 @@ public:
 	static Complex impedanceImagChartParameters(long double, long double);
 	static Complex admitanceRealChartParameters(long double, long double);
 	static Complex admitanceImagChartParameters(long double, long double);
+
+	static Complex EditResistorShunt(CircuitElements*, Complex, int);
+	static Complex EditResistorParallel(CircuitElements*, Complex, int);
+	static Complex EditCapIndShunt(CircuitElements*, int, long double, long double);
+	static Complex EditCapIndParallel(CircuitElements*, int, long double, long double);
+	static Complex EditLine(CircuitElements*, Complex, int);
+	static Complex EditOSSSLine(CircuitElements*, Complex, long double, VerticalLinesElement*, int);
+	static void AddElement(CircuitElements*, long double, long double, int);
 private:
 	static QString colorToString(const QColor&);
 	static QColor stringToColor(const QString&);

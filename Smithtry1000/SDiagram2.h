@@ -54,7 +54,10 @@ private:
 	float scale = 200;
 	float scaleFactorX;
 	float scaleFactorY;
-
+	void ImpedanceImagLines(long double, long double, QPainter&);
+	void ImpedanceRealLines(long double, long double, QPainter&);
+	void AdmitanceImagLines(long double, long double, QPainter&);
+	void AdmitanceRealLines(long double, long double, QPainter&);
 	//Тип параметра (S11,S22)
 	ParameterType currentType;
 };

@@ -12,6 +12,7 @@
 #include <QThread>
 #include <cmath>
 #include <exception>
+#include "systemParameters.h"
 
 /// <summary>
 /// Конструктор класса Smithtry1000.

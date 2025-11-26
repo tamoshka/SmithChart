@@ -7,7 +7,7 @@
 #include <iostream>
 #include <QtMath>
 #include <QString>
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса SDiagram2.
 /// </summary>
@@ -168,7 +168,19 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
     QPointF iPixel;
     step = intervalLength / stepCount;
     painter.setPen(Qt::blue);
-    double m = 0;
+    ImpedanceImagLines(step, intervalLength, painter);
+    ImpedanceRealLines(step, intervalLength, painter);
+    painter.setPen(Qt::red);
+    AdmitanceImagLines(step, intervalLength, painter);
+    AdmitanceRealLines(step, intervalLength, painter);
+    
+}
+
+void SDiagram2::ImpedanceImagLines(long double step, long double intervalLength, QPainter& painter)
+{
+    QPointF iPoint;
+    QPointF iPixel;
+    long double m = 0;
     for (SDiagram2::r = -10; SDiagram2::r <= 10; SDiagram2::r += 0) {
         if (r == -10)
         {
@@ -208,7 +220,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::magenta, 2));
-                QString s1 = QString::number((double)(r*SystemParameters::z0));
+                QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(point.x() * scale + center.x(), -point.y() * scale + center.y(), s1);
                 painter.setPen(Qt::blue);
@@ -235,6 +247,12 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
         }
         r = m;
     }
+}
+
+void SDiagram2::ImpedanceRealLines(long double step, long double intervalLength, QPainter& painter)
+{
+    QPointF iPoint;
+    QPointF iPixel;
     double k = 0.125;
     for (SDiagram2::r = 0; SDiagram2::r < 10; SDiagram2::r += 0) {
         if (r == 0.25)
@@ -270,8 +288,14 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
         k *= 2;
         r = k;
     }
-    painter.setPen(Qt::red);
-    m = 0;
+}
+
+void SDiagram2::AdmitanceImagLines(long double step, long double intervalLength, QPainter& painter)
+{
+    QPointF iPoint;
+    QPointF iPixel;
+    painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2] * 0.5));
+    double m = 0;
     for (SDiagram2::r = -10; SDiagram2::r <= 10; SDiagram2::r += 0) {
         if (r == -10)
         {
@@ -311,7 +335,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
                 )
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number((double)(r * 1000/-SystemParameters::z0));
+                QString s1 = QString::number((double)(r * 1000 / -SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x() + 10, -point.y() * scale + center.y() - 10, s1);
                 painter.setPen(Qt::red);
@@ -338,7 +362,13 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
         }
         r = m;
     }
-    k = 0.25;
+}
+
+void SDiagram2::AdmitanceRealLines(long double step, long double intervalLength, QPainter& painter)
+{
+    QPointF iPoint;
+    QPointF iPixel;
+    double k = 0.25;
     for (SDiagram2::r = 0.25; SDiagram2::r < 10; SDiagram2::r += 0) {
         if (r == 0.25)
         {
@@ -362,7 +392,7 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
             if ((floor(point.y() * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 painter.setPen(QPen(Qt::green, 2));
-                QString s1 = QString::number((double)(r * 1000/SystemParameters::z0));
+                QString s1 = QString::number((double)(r * 1000 / SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
                 painter.drawText(-point.x() * scale + center.x(), center.y() + 10, s1);
                 painter.setPen(Qt::red);

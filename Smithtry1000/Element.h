@@ -15,6 +15,7 @@ private:
 	long double value;
 	void SetMode(mode);
 	void SetFrequency(long double);
+	void SwitchMode(QString&, QList<int>&, int&, int&, QString&, QString&, double&, bool&, bool&, int&) const;
 public:
 	mode GetMode();
 	long double GetValue();

@@ -1,6 +1,6 @@
 ﻿#include "TuneWidget.h"
 #include "ui_TuneWidget.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса TuneWidget.
 /// </summary>
@@ -547,34 +547,8 @@ void TuneWidget::ValueChanged(int value)
 							y2 = 0.0001;
 						}
 					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (cos_t2 < 0 && sin_t2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else if (cos_t2 > 0 && sin_t2 < 0)
-					{
-						t1 = 2 * M_PI - abs(t1);
-					}
-					else if (sin_t2 > 0 && cos_t2 < 0)
-					{
-						t1 = M_PI - abs(t1);
-					}
-					if (x - 1 != 0)
-					{
-						r3 = (cos(t1) - x) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
+					Complex params = SystemParameters::impedanceRealChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -713,38 +687,8 @@ void TuneWidget::ValueChanged(int value)
 					{
 						y2 = -0.0001;
 					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(cos_t2 / sin_t2);
-					if (y2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else
-					{
-						t1 += 2 * M_PI;
-					}
-					if (x - 1 != 0)
-					{
-						r3 = cos(t1) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 < 0)
-					{
-						r3 = abs(r3);
-					}
-					else
-					{
-						r3 = abs(r3) * (-1);
-					}
+					Complex params = SystemParameters::impedanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -863,38 +807,8 @@ void TuneWidget::ValueChanged(int value)
 					{
 						y2 = -0.0001;
 					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(cos_t2 / sin_t2);
-					if (y2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else
-					{
-						t1 += 2 * M_PI;
-					}
-					if (x - 1 != 0)
-					{
-						r3 = cos(t1) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 < 0)
-					{
-						r3 = abs(r3);
-					}
-					else
-					{
-						r3 = abs(r3) * (-1);
-					}
+					Complex params = SystemParameters::impedanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1037,31 +951,8 @@ void TuneWidget::ValueChanged(int value)
 							y2 = 0.0001;
 						}
 					}
-					long double circleRadius = -1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 + 2 * x));
-					long double xCenter = -1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					dy *= -1;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (cos_t2 < 0 && sin_t2 < 0)
-					{
-						t1 = abs(t1) - M_PI;
-					}
-					else if (sin_t2 > 0 && cos_t2 < 0)
-					{
-						t1 = M_PI - abs(t1);
-					}
-					if (x - 1 != 0)
-					{
-						r3 = abs((cos(t1) - x) / (x + 1));
-					}
-					else
-					{
-						r3 = 1e9;
-					}
+					Complex params = SystemParameters::admitanceRealChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1200,26 +1091,8 @@ void TuneWidget::ValueChanged(int value)
 					{
 						y2 = -0.0001;
 					}
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
+					Complex params = SystemParameters::admitanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1339,26 +1212,8 @@ void TuneWidget::ValueChanged(int value)
 					{
 						y2 = -0.0001;
 					}
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
+					Complex params = SystemParameters::admitanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1637,49 +1492,8 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (cos(t) - r) / (r + 1);
 					y2 = (1 / (r + 1)) * sin_t * -1;
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					if (abs(y2) <= 1e-6 && abs(y2) >= 0)
-					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = M_PI / 2;
-						}
-						else if (x < -0.99)
-						{
-							t1 = -M_PI / 2;
-						}
-						else
-						{
-							t1 = 0;
-						}
-					}
-					else
-					{
-						t1 = atan(sin_t2 / cos_t2);
-					}
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
-						t1 = -M_PI / 2;
-					}
+					Complex params = SystemParameters::admitanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
@@ -1808,49 +1622,8 @@ void TuneWidget::ValueChanged(int value)
 					sin_t = sin(t);
 					x = (cos(t) - r) / (r + 1);
 					y2 = (1 / (r + 1)) * sin_t * -1;
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					if (abs(y2) <= 1e-6 && abs(y2) >= 0)
-					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = M_PI / 2;
-						}
-						else if (x < -0.99)
-						{
-							t1 = -M_PI / 2;
-						}
-						else
-						{
-							t1 = 0;
-						}
-					}
-					else
-					{
-						t1 = atan(sin_t2 / cos_t2);
-					}
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
-						t1 = -M_PI / 2;
-					}
+					Complex params = SystemParameters::admitanceImagChartParameters(x, y2);
+					r3 = params.real();
 					max_step++;
 					if (max_step == 500)
 					{
