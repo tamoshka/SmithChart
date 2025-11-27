@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Line.h"
 #include "ElementFactory.h"
-#include "systemParameters.h"
 
 
 /// <summary>
@@ -24,7 +23,7 @@ public:
 	QList<Point> morePoints;
 	QSet<double> VSWRCircles;
 	QSet<double> QCircles;
-	long double z0 = SystemParameters::z0;
+	long double z0;
 	QList<int> elementIndexes;
 	QList<int> pointIndexes;
 	QList<long double> frequencyList;
@@ -48,6 +47,9 @@ public:
 	bool loadFromFile(const QString& filePath);
 	bool saveToFile(const QString& filePath) const;
     bool saveToJSON(const QString& filePath) const;
+    void ElementsNodesWiresInJSON(bool&, int&, int&, int&, int&, bool&, QJsonObject&, QJsonArray&, QJsonArray&) const;
+    void TransformInJSON(bool&, int&, int&, int&, QJsonObject&, QJsonArray&, QJsonArray&) const;
+    void ParallelInJSON(bool&, int&, int&, int&, int&, QJsonObject&, QJsonArray&, QJsonArray&) const;
 	~CircuitElements();
     CircuitElements(const CircuitElements& other) {
         // ГЛУБОКОЕ копирование - создаем новые объекты Element

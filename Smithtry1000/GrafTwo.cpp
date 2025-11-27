@@ -8,7 +8,7 @@
 #include <QString>
 #include "S2p.h"
 #include "ColourSetting.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса GrafTwo.
 /// </summary>
@@ -108,7 +108,11 @@ void GrafTwo::Load()
 			y2[i] = qQNaN();
 		}
 	}
+	Paint();
+}
 
+void GrafTwo::Paint()
+{
 	ui->widget->legend->setVisible(true);
 	QPen pen1(SystemParameters::magGrafColor, SystemParameters::sPlotline[2]);
 	QPen penGid(SystemParameters::gridGrafTwoColor, SystemParameters::sPlotline[8], Qt::DotLine);
@@ -119,7 +123,7 @@ void GrafTwo::Load()
 	ui->widget->graph(0)->setPen(pen1);
 	ui->widget->graph(0)->setName("MAG");
 	ui->widget->graph(0)->addData(x, y1);
-	QPen pen2(SystemParameters::msgGrafColor,SystemParameters::sPlotline[3]);
+	QPen pen2(SystemParameters::msgGrafColor, SystemParameters::sPlotline[3]);
 	ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
 	ui->widget->graph(1)->setPen(pen2);
 	ui->widget->graph(1)->setName("MSG");

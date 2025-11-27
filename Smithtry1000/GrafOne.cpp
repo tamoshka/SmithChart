@@ -1,7 +1,7 @@
 ﻿#include "GrafOne.h"
 #include "S2p.h"
 #include <QString>
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса GrafOne.
 /// </summary>
@@ -73,6 +73,11 @@ void GrafOne::Load()
 		yBegin = m1 * 1.25;
 		yEnd = 0;
 	}
+	Paint(extension, yBegin, yEnd, s);
+}
+
+void GrafOne::Paint(string extension, double yBegin, double yEnd, spar_t s)
+{
 
 	ui->widget->xAxis->setRange(0, s.f[s.f.size() - 1]);
 	ui->widget->xAxis->setLabel("f[Hz]");

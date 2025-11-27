@@ -41,6 +41,7 @@ private:
 	QList<double> maxValue;
 	QList<double> minValue;
 	int count;
+	void SwitchMode(Complex, Complex, int);
 
 private slots:
 	void OKButton_clicked();
