@@ -120,6 +120,31 @@ private:
     bool firstDeleted = true;
     QPoint getPointOnCircle(int, int);
     QTimer* timer;
+    void ChangeAllElements();
+    void SwitchElementName(QString&, bool&);
+    void RedoElement();
+    void RedoPoints();
+    void SaveBeforeLoad();
+    void CorrectZ0(long double, long double);
+    void LoadElementsAndPoints();
+    void AppendTransformer(Complex);
+    void AppendLine(Complex);
+    void AppendPoint(long double, long double);
+    void AppendVerticalLines(Complex);
+    void AppendResShunt(long double, long double);
+    void AppendResPar(long double, long double);
+    void AppendIndCapShunt(long double, long double);
+    void AppendIndCapPar(long double, long double);
+    void ChangeCursorTable(long double, long double);
+    void UpdateCursorTableInMode(long double&, long double&);
+    void IndCapShuntPoint(int, int, long double&, long double&);
+    void IndCapParPoint(int, int, long double&, long double&);
+    void ResShuntPoint(int, int, long double&, long double&);
+    void ResParPoint(int, int, long double&, long double&);
+    void OSSSPoint(int, int, long double&, long double&);
+    void LinePoint(int, int, long double&, long double&);
+    void TransformPoint(int, int, long double&, long double&);
+    void NormalTransformPoint(int, int, long double&, long double&);
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;

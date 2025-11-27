@@ -380,7 +380,6 @@ void EditWidget::DrawButton_clicked()
 		Complex tempY;
 		for (j; j < circuitElements->GetCircuitElements().size(); j++)
 		{
-			int max_step = 0;
 			if (j != 0)
 			{
 				z = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Z);
@@ -393,131 +392,130 @@ void EditWidget::DrawButton_clicked()
 				y = circuitElements->y;
 				g = circuitElements->g;
 			}
-			long double step = 0.1;
 			switch (circuitElements->GetCircuitElements()[j]->GetMode())
 			{
-			case ResistorShunt:
-			{
-				Complex params = SystemParameters::EditResistorShunt(circuitElements, z, j);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case InductionShunt:
-			{
-				long double r1 = z.imag();
-				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint + r1;
-				Complex params= SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case CapacitorShunt:
-			{
-				long double r1 = z.imag();
-				long double r2 = r1 - 1 / (circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint);
-				Complex params = SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case ResistorParallel:
-			{
-				Complex params = SystemParameters::EditResistorParallel(circuitElements, y, j);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case InductionParallel:
-			{
-				long double r1 = y.imag();
-				long double r2 = r1 - (M_PI * 500 * 100) / (circuitElements->GetCircuitElements()[j]->GetValue() * circuitElements->frequencyFirstPoint * 1e9 / 1e6);
-				Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case CapacitorParallel:
-			{
-				long double r1 = y.imag();
-				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue() * M_PI * circuitElements->frequencyFirstPoint * 1e12 / 1e6) / 500;
-				Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case Line:
-			{
-				Complex params = SystemParameters::EditLine(circuitElements, z, j);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				break;
-			}
-			case OSLine:
-			{
-				VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
-				long double tn;
-				long double angle = 2 * M_PI * elem->GetLambda();
-				if (elem->GetLambda() > 0.25)
+				case ResistorShunt:
 				{
-					angle -= M_PI;
+					Complex params = SystemParameters::EditResistorShunt(circuitElements, z, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
 				}
-				tn = tan(angle) * 1000 / elem->GetValue();
-				Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
-				long double theta;
-				long double o;
-				o = atan((y3.imag() - y.imag()) / 1000 * elem->GetValue());
-				if (o < 0)
+				case InductionShunt:
 				{
-					o += M_PI;
+					long double r1 = z.imag();
+					long double r2 = circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint + r1;
+					Complex params= SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
 				}
-				theta = o * 180 / M_PI;
-				elem->SetTheta(theta);
-				break;
-			}
-			case SSLine:
-			{
-				VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
-				long double tn;
-				long double angle = 2 * M_PI * elem->GetLambda();
-				if (elem->GetLambda() > 0.25)
+				case CapacitorShunt:
 				{
-					angle -= M_PI;
+					long double r1 = z.imag();
+					long double r2 = r1 - 1 / (circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint);
+					Complex params = SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
 				}
-				tn = -1000 / tan(angle) / elem->GetValue();
-				Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
-				SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
-				Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
-				long double theta;
-				long double o;
-				o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
-				if (o < 0)
+				case ResistorParallel:
 				{
-					o += M_PI;
+					Complex params = SystemParameters::EditResistorParallel(circuitElements, y, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
 				}
-				theta = o * 180 / M_PI;
-				elem->SetTheta(theta);
-				break;
-			}
-			case Transform:
-			{
-				long double x;
-				long double y2;
-				long double t;
-				long double r1 = z.real();
-				long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(), 2) * r1;
-				r2 = r2 / SystemParameters::z0;
-				long double q = z.imag() / z.real();
-				long double rIm = q * r2;
-				long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;
+				case InductionParallel:
+				{
+					long double r1 = y.imag();
+					long double r2 = r1 - (M_PI * 500 * 100) / (circuitElements->GetCircuitElements()[j]->GetValue() * circuitElements->frequencyFirstPoint * 1e9 / 1e6);
+					Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case CapacitorParallel:
+				{
+					long double r1 = y.imag();
+					long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue() * M_PI * circuitElements->frequencyFirstPoint * 1e12 / 1e6) / 500;
+					Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case Line:
+				{
+					Complex params = SystemParameters::EditLine(circuitElements, z, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case OSLine:
+				{
+					VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
+					long double tn;
+					long double angle = 2 * M_PI * elem->GetLambda();
+					if (elem->GetLambda() > 0.25)
+					{
+						angle -= M_PI;
+					}
+					tn = tan(angle) * 1000 / elem->GetValue();
+					Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
+					long double theta;
+					long double o;
+					o = atan((y3.imag() - y.imag()) / 1000 * elem->GetValue());
+					if (o < 0)
+					{
+						o += M_PI;
+					}
+					theta = o * 180 / M_PI;
+					elem->SetTheta(theta);
+					break;
+				}
+				case SSLine:
+				{
+					VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
+					long double tn;
+					long double angle = 2 * M_PI * elem->GetLambda();
+					if (elem->GetLambda() > 0.25)
+					{
+						angle -= M_PI;
+					}
+					tn = -1000 / tan(angle) / elem->GetValue();
+					Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
+					long double theta;
+					long double o;
+					o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
+					if (o < 0)
+					{
+						o += M_PI;
+					}
+					theta = o * 180 / M_PI;
+					elem->SetTheta(theta);
+					break;
+				}
+				case Transform:
+				{
+					long double x;
+					long double y2;
+					long double t;
+					long double r1 = z.real();
+					long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(), 2) * r1;
+					r2 = r2 / SystemParameters::z0;
+					long double q = z.imag() / z.real();
+					long double rIm = q * r2;
+					long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;
 
-				if (denominator != 0) {
-					x = (r2 * r2 + rIm * rIm - 1) / denominator;
-					y2 = (2 * rIm) / denominator;
+					if (denominator != 0) {
+						x = (r2 * r2 + rIm * rIm - 1) / denominator;
+						y2 = (2 * rIm) / denominator;
+					}
+					else {
+						x = -1;
+						y2 = 0;
+					}
+					y2 *= -1;
+					SystemParameters::AddElement(circuitElements, x, y2, j);
+					break;
 				}
-				else {
-					x = -1;
-					y2 = 0;
-				}
-				y2 *= -1;
-				SystemParameters::AddElement(circuitElements, x, y2, j);
-				break;
-			}
 			}
 			SystemParameters::tunedElements = temp;
 			SystemParameters::edited = true;

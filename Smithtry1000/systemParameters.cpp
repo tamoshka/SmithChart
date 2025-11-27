@@ -1290,6 +1290,8 @@ Complex SystemParameters::EditLine(CircuitElements* circuitElements, Complex z, 
 		}
 		max_step++;
 	}
+	elem->SetElectricalLength(L * 1000);
+	elem->SetMechanicalLength(L * 1000 / sqrt(er));
 	elem->SetTheta(Theta);
 	return Complex(x, y2);
 }
