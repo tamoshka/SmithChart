@@ -661,7 +661,7 @@ void Smithtry1000::Save()
 {
     if (SystemParameters::index > 1)
     {
-        QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
+        QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.SC", "SC Files (*.SC)");
         try
         {
             circuitElements->saveToFile(fileName);
@@ -730,44 +730,53 @@ void Smithtry1000::Redo()
     {
         timer->stop();
         firstDeleted = true;
-        RedoElement();
-        RedoPoints();
-        circuitElements->chart = tempCircuit.chart;
-        circuitElements->firstPoint = tempCircuit.firstPoint;
-        circuitElements->frequencyFirstPoint = tempCircuit.frequencyFirstPoint;
-        ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
-        circuitElements->z = tempCircuit.z;
-        circuitElements->y = tempCircuit.y;
-        circuitElements->g = tempCircuit.g;
-        circuitElements->imagFirstPoint = tempCircuit.imagFirstPoint;
-        circuitElements->realFirstPoint = tempCircuit.realFirstPoint;
-        circuitElements->frequencyList.append(tempCircuit.frequencyList[circuitElements->frequencyList.size()]);
-        int row = ui->pointTable->rowCount();
-        ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Да")));
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
-        SystemParameters::rImpedanceRealCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
-        SystemParameters::rImpedanceImagCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
-        QString temp2 = " + j";
-        if (SystemParameters::impedanceImagR < 0)
+        if (tempCircuit.elementIndexes.contains(SystemParameters::allpointindex))
         {
-            temp2 = " - j";
+            RedoElement();
         }
-        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
-        if (SystemParameters::impedanceRealR == 0)
+        else if (tempCircuit.pointIndexes.contains(SystemParameters::allpointindex))
         {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            RedoPoints();
         }
         else
         {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+            circuitElements->chart = tempCircuit.chart;
+            circuitElements->firstPoint = tempCircuit.firstPoint;
+            circuitElements->frequencyFirstPoint = tempCircuit.frequencyFirstPoint;
+            ui->rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
+            circuitElements->z = tempCircuit.z;
+            circuitElements->y = tempCircuit.y;
+            circuitElements->g = tempCircuit.g;
+            circuitElements->imagFirstPoint = tempCircuit.imagFirstPoint;
+            circuitElements->realFirstPoint = tempCircuit.realFirstPoint;
+            circuitElements->frequencyList.append(tempCircuit.frequencyList[circuitElements->frequencyList.size()]);
+            int row = ui->pointTable->rowCount();
+            ui->pointTable->insertRow(row);
+            ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Да")));
+            ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+            SystemParameters::rImpedanceRealCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+            SystemParameters::rImpedanceImagCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+            QString temp2 = " + j";
+            if (SystemParameters::impedanceImagR < 0)
+            {
+                temp2 = " - j";
+            }
+            ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
+            if (SystemParameters::impedanceRealR == 0)
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+            }
+            else
+            {
+                ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+            }
+            ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
+            pointsX.append(circuitElements->firstPoint.x);
+            pointsY.append(circuitElements->firstPoint.y);
+            allPoints[SystemParameters::allpointindex] = make_tuple(circuitElements->firstPoint, false);
+            SystemParameters::index++;
+            SystemParameters::dpIndex++;
         }
-        ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
-        pointsX.append(circuitElements->firstPoint.x);
-        pointsY.append(circuitElements->firstPoint.y);
-        allPoints[SystemParameters::allpointindex] = make_tuple(circuitElements->firstPoint, false);
-        SystemParameters::index++;
-        SystemParameters::dpIndex++;
         SystemParameters::allpointindex++;
         if (SystemParameters::index > 1)
         {
@@ -783,9 +792,9 @@ void Smithtry1000::Redo()
     }
 }
 
-void Smithtry1000::SwitchElementName(QString& name, bool& mood)
+void Smithtry1000::SwitchElementName(QString& name, bool& mood, int j)
 {
-    switch (circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetMode())
+    switch (circuitElements->GetCircuitElements()[j]->GetMode())
     {
     case ResistorShunt:
     {
@@ -852,95 +861,89 @@ void Smithtry1000::SwitchElementName(QString& name, bool& mood)
 
 void Smithtry1000::RedoElement()
 {
-    if (tempCircuit.elementIndexes.contains(SystemParameters::allpointindex))
+    circuitElements->AddCircuitElements(tempCircuit.GetCircuitElements()[circuitElements->GetCircuitElements().size()]);
+    circuitElements->elementIndexes.append(tempCircuit.elementIndexes[circuitElements->elementIndexes.size()]);
+    int row = ui->pointTable->rowCount();
+    ui->pointTable->insertRow(row);
+    ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
+    SystemParameters::rImpedanceRealCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
+    SystemParameters::rImpedanceImagCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
+    QString temp2 = " + j";
+    if (SystemParameters::impedanceImagR < 0)
     {
-        circuitElements->AddCircuitElements(tempCircuit.GetCircuitElements()[circuitElements->GetCircuitElements().size()]);
-        circuitElements->elementIndexes.append(tempCircuit.elementIndexes[circuitElements->elementIndexes.size()]);
-        int row = ui->pointTable->rowCount();
-        ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("TP " + QString::number(SystemParameters::index + SystemParameters::dpIndex)));
-        SystemParameters::rImpedanceRealCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
-        SystemParameters::rImpedanceImagCalculation(circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x, circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y);
-        QString temp2 = " + j";
-        if (SystemParameters::impedanceImagR < 0)
-        {
-            temp2 = " - j";
-        }
-        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
-        if (SystemParameters::impedanceRealR == 0)
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
-        }
-        else
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
-        }
-        ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
-        QString name;
-        bool mood = true;
-        SwitchElementName(name, mood);
-        int val;
-        if (mood)
-        {
-            val = 20;
-        }
-        else
-        {
-            val = 39;
-        }
-        if (SystemParameters::rotate)
-        {
-            QString rev = "rev_";
-            auxiliaryWidget->addSvg(QString(":/Images/" + rev + name + ".svg"), val + 40, (circuitElements->GetCircuitElements().size() - 1 + 2) * 40);
-        }
-        else
-        {
-            auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (circuitElements->GetCircuitElements().size() - 1 + 3) * 40, val);
-        }
-        Point point;
-        point.x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
-        point.y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
-        allPoints[SystemParameters::allpointindex] = make_tuple(point, true);
-        pointsX.append(point.x);
-        pointsY.append(point.y);
-        SystemParameters::index++;
+        temp2 = " - j";
     }
+    ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
+    if (SystemParameters::impedanceRealR == 0)
+    {
+        ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+    }
+    else
+    {
+        ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+    }
+    ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
+    QString name;
+    bool mood = true;
+    SwitchElementName(name, mood, circuitElements->GetCircuitElements().size() - 1);
+    int val;
+    if (mood)
+    {
+        val = 20;
+    }
+    else
+    {
+        val = 39;
+    }
+    if (SystemParameters::rotate)
+    {
+        QString rev = "rev_";
+        auxiliaryWidget->addSvg(QString(":/Images/" + rev + name + ".svg"), val + 40, (circuitElements->GetCircuitElements().size() - 1 + 2) * 40);
+    }
+    else
+    {
+        auxiliaryWidget->addSvg(QString(":/Images/" + name + ".svg"), (circuitElements->GetCircuitElements().size() - 1 + 3) * 40, val);
+    }
+    Point point;
+    point.x = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().x;
+    point.y = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
+    allPoints[SystemParameters::allpointindex] = make_tuple(point, true);
+    pointsX.append(point.x);
+    pointsY.append(point.y);
+    SystemParameters::index++;
 }
 
 void Smithtry1000::RedoPoints()
 {
-    if (tempCircuit.pointIndexes.contains(SystemParameters::allpointindex))
+    circuitElements->morePoints.append(tempCircuit.morePoints[circuitElements->morePoints.size()]);
+    circuitElements->pointIndexes.append(tempCircuit.pointIndexes[circuitElements->pointIndexes.size()]);
+    circuitElements->frequencyList.append(tempCircuit.frequencyList[circuitElements->frequencyList.size()]);
+    int row = ui->pointTable->rowCount();
+    ui->pointTable->insertRow(row);
+    ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Нет")));
+    ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(circuitElements->morePoints.size() + 1)));
+    SystemParameters::rImpedanceRealCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
+    SystemParameters::rImpedanceImagCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
+    QString temp2 = " + j";
+    if (SystemParameters::impedanceImagR < 0)
     {
-        circuitElements->morePoints.append(tempCircuit.morePoints[circuitElements->morePoints.size()]);
-        circuitElements->pointIndexes.append(tempCircuit.pointIndexes[circuitElements->pointIndexes.size()]);
-        circuitElements->frequencyList.append(tempCircuit.frequencyList[circuitElements->frequencyList.size()]);
-        int row = ui->pointTable->rowCount();
-        ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Нет")));
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP " + QString::number(circuitElements->morePoints.size() + 1)));
-        SystemParameters::rImpedanceRealCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
-        SystemParameters::rImpedanceImagCalculation(circuitElements->morePoints[circuitElements->morePoints.size() - 1].x, circuitElements->morePoints[circuitElements->morePoints.size() - 1].y);
-        QString temp2 = " + j";
-        if (SystemParameters::impedanceImagR < 0)
-        {
-            temp2 = " - j";
-        }
-        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
-        if (SystemParameters::impedanceRealR == 0)
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
-        }
-        else
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
-        }
-        ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[circuitElements->frequencyList.size() - 1])));
-        Point point;
-        point.x = circuitElements->morePoints[circuitElements->morePoints.size() - 1].x;
-        point.y = circuitElements->morePoints[circuitElements->morePoints.size() - 1].y;
-        allPoints[SystemParameters::allpointindex] = make_tuple(point, false);
-        SystemParameters::dpIndex++;
+        temp2 = " - j";
     }
+    ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
+    if (SystemParameters::impedanceRealR == 0)
+    {
+        ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+    }
+    else
+    {
+        ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+    }
+    ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyList[circuitElements->frequencyList.size() - 1])));
+    Point point;
+    point.x = circuitElements->morePoints[circuitElements->morePoints.size() - 1].x;
+    point.y = circuitElements->morePoints[circuitElements->morePoints.size() - 1].y;
+    allPoints[SystemParameters::allpointindex] = make_tuple(point, false);
+    SystemParameters::dpIndex++;
 }
 
 /// <summary>
@@ -949,69 +952,86 @@ void Smithtry1000::RedoPoints()
 void Smithtry1000::Load()
 {
     SaveBeforeLoad();
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project"), "", tr("JSON Files (*.json)"));
-    try
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project"), "", tr("SC Files (*.SC)"));
+    if (fileName != "")
     {
-
-        circuitElements->loadFromFile(fileName);
-        SystemParameters::dpIndex = circuitElements->morePoints.size() + 1;
-        SystemParameters::index = circuitElements->GetCircuitElements().size() + 1;
-        long double Re = circuitElements->z.real();
-        long double Im = -circuitElements->z.imag();
-        long double x;
-        long double y;
-        Re /= SystemParameters::z0;
-        Im /= SystemParameters::z0;
-        long double denominator = (Re + 1) * (Re + 1) + Im * Im;
-
-        if (denominator != 0) {
-            x = (Re * Re + Im * Im - 1) / denominator;
-            y = (2 * Im) / denominator;
-        }
-        else {
-            x = -1;
-            y = 0;
-        }
-        CorrectZ0(x, y);
-        allPoints[0] = make_tuple(circuitElements->firstPoint, false);
-        pointsX.append(circuitElements->firstPoint.x);
-        pointsY.append(circuitElements->firstPoint.y);
-        int row = ui->pointTable->rowCount();
-        ui->pointTable->insertRow(row);
-        ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Да")));
-        ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
-        SystemParameters::rImpedanceRealCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
-        SystemParameters::rImpedanceImagCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
-        QString temp2 = " + j";
-        if (SystemParameters::impedanceImagR < 0)
+        try
         {
-            temp2 = " - j";
-        }
-        ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
-        if (SystemParameters::impedanceRealR == 0)
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
-        }
-        else
-        {
-            ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
-        }
-        ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
-        LoadElementsAndPoints();
-        SystemParameters::allpointindex = SystemParameters::index + circuitElements->morePoints.size();
-        auxiliaryWidget->circuitElements = circuitElements;
-        amplitudeFrequence->circuitElements = circuitElements;
-        renderArea->circuitElements = circuitElements;
-        tuneWidget->circuitElements = circuitElements;
-        circlesWidget->circuitElements = circuitElements;
-        renderArea->update();
-        auxiliaryWidget->update();
-        firstDeleted = true;
-        emit load();
-    }
-    catch (exception e)
-    {
+            if (circuitElements->loadFromFile(fileName))
+            {
+                auxiliaryWidget->circuitElements = circuitElements;
+                amplitudeFrequence->circuitElements = circuitElements;
+                renderArea->circuitElements = circuitElements;
+                tuneWidget->circuitElements = circuitElements;
+                circlesWidget->circuitElements = circuitElements;
+                SystemParameters::dpIndex = circuitElements->morePoints.size() + 1;
+                SystemParameters::index = circuitElements->GetCircuitElements().size() + 1;
+                long double Re = circuitElements->z.real();
+                long double Im = -circuitElements->z.imag();
+                long double x;
+                long double y;
+                Re /= SystemParameters::z0;
+                Im /= SystemParameters::z0;
+                long double denominator = (Re + 1) * (Re + 1) + Im * Im;
 
+                if (denominator != 0) {
+                    x = (Re * Re + Im * Im - 1) / denominator;
+                    y = (2 * Im) / denominator;
+                }
+                else {
+                    x = -1;
+                    y = 0;
+                }
+                CorrectZ0(x, y);
+                allPoints[0] = make_tuple(circuitElements->firstPoint, false);
+                pointsX.append(circuitElements->firstPoint.x);
+                pointsY.append(circuitElements->firstPoint.y);
+                int row = ui->pointTable->rowCount();
+                ui->pointTable->insertRow(row);
+                ui->pointTable->setItem(row, 0, new QTableWidgetItem(QStringLiteral(u"Да")));
+                ui->pointTable->setItem(row, 1, new QTableWidgetItem("DP 1"));
+                SystemParameters::rImpedanceRealCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+                SystemParameters::rImpedanceImagCalculation(circuitElements->firstPoint.x, circuitElements->firstPoint.y);
+                QString temp2 = " + j";
+                if (SystemParameters::impedanceImagR < 0)
+                {
+                    temp2 = " - j";
+                }
+                ui->pointTable->setItem(row, 2, new QTableWidgetItem(QString::number(round((double)SystemParameters::impedanceRealR * 100) / 100) + temp2 + QString::number(round((double)abs(SystemParameters::impedanceImagR) * 100) / 100)));
+                if (SystemParameters::impedanceRealR == 0)
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem("0"));
+                }
+                else
+                {
+                    ui->pointTable->setItem(row, 3, new QTableWidgetItem(QString::number(round((double)abs(SystemParameters::impedanceImagR / SystemParameters::impedanceRealR) * 100) / 100)));
+                }
+                ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
+                LoadElementsAndPoints();
+                SystemParameters::allpointindex = SystemParameters::index + circuitElements->morePoints.size();
+                auxiliaryWidget->circuitElements = circuitElements;
+                amplitudeFrequence->circuitElements = circuitElements;
+                renderArea->circuitElements = circuitElements;
+                tuneWidget->circuitElements = circuitElements;
+                circlesWidget->circuitElements = circuitElements;
+                renderArea->update();
+                auxiliaryWidget->update();
+                firstDeleted = true;
+                emit load();
+            }
+            else
+            {
+                QMessageBox* bx = new QMessageBox();
+                bx->show();
+                bx->Warning;
+                bx->setText(QStringLiteral(u"Произошла ошибка во время загрузки проекта"));
+                SystemParameters::exc = false;
+            }
+        }
+        catch (exception e)
+        {
+
+        }
     }
 }
 
@@ -1022,7 +1042,7 @@ void Smithtry1000::SaveBeforeLoad()
         PreSaveDialog dialog(this);
         if (dialog.exec() == QDialog::Accepted)
         {
-            QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.json", "JSON Files (*.json)");
+            QString fileName = QFileDialog::getSaveFileName(this, "Save the project", QDir::homePath() + "/project.SC", "SC Files (*.SC)");
             try
             {
                 circuitElements->saveToFile(fileName);
@@ -1066,6 +1086,12 @@ void Smithtry1000::SaveBeforeLoad()
         circuitElements->elementIndexes.clear();
         circuitElements->pointIndexes.clear();
         circuitElements->frequencyList.clear();
+        circuitElements->imagFirstPoint = -9999;
+        circuitElements->realFirstPoint = -9999;
+        circuitElements->frequencyFirstPoint = -9999;
+        circuitElements->z = Complex(-9999, -9999);
+        circuitElements->y = Complex(-9999, -9999);
+        circuitElements->g = Complex(-9999, -9999);
         circuitElements = new CircuitElements();
         while (tempCircuit.GetCircuitElements().size() > 0)
         {
@@ -1081,6 +1107,7 @@ void Smithtry1000::SaveBeforeLoad()
         lastPos = QPoint(0, 0);
         firstDeleted = true;
         allPoints.clear();
+        ui->pointTable->setRowCount(1);
     }
 }
 
@@ -1230,7 +1257,7 @@ void Smithtry1000::LoadElementsAndPoints()
                 ui->pointTable->setItem(row, 4, new QTableWidgetItem(QString::number((double)circuitElements->frequencyFirstPoint)));
                 allPoints[i + 1] = make_tuple(circuitElements->GetCircuitElements()[j]->GetPoint(), true);
                 bool mood;
-                SwitchElementName(name, mood);
+                SwitchElementName(name, mood, j);
                 int val;
                 if (mood == false)
                 {
@@ -1842,7 +1869,8 @@ void Smithtry1000::onKeyboard_buttonClicked()
     if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
     {
         long double frequency = SystemParameters::frequency;
-        long double x, y;
+        long double x=0;
+        long double y = 0;
         long double Re = SystemParameters::Re;
         long double Im = SystemParameters::Im;
         if (SystemParameters::val == Cartesian)
@@ -2540,7 +2568,8 @@ void Smithtry1000::onButtonClicked()
         leftClicked = false;
         rightClicked = false;
         QPoint point = QCursor::pos();
-        double tempPointX, tempPointY;
+        double tempPointX = point.x();
+        double tempPointY = point.y();;
         while (!leftClicked && !rightClicked)
         {
             QCoreApplication::processEvents();

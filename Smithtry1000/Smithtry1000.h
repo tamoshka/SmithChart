@@ -121,7 +121,7 @@ private:
     QPoint getPointOnCircle(int, int);
     QTimer* timer;
     void ChangeAllElements();
-    void SwitchElementName(QString&, bool&);
+    void SwitchElementName(QString&, bool&, int);
     void RedoElement();
     void RedoPoints();
     void SaveBeforeLoad();
