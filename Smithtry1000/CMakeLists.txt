@@ -124,9 +124,11 @@ else()
 endif()
 
 # Свойства для Windows
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
+if(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
+endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Core
@@ -135,4 +137,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Svg
     Qt6::PrintSupport
     Qt6::SvgWidgets
+)
+
+# Установка исполняемого файла
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin/
 )

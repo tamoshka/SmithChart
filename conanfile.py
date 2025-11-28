@@ -38,6 +38,11 @@ class Smithtry1000Conan(ConanFile):
     def layout(self):
         cmake_layout(self)
         
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
+        
     def package(self):
         print(f"Package folder: {self.package_folder}")
         print(f"Build folder: {self.build_folder}")
@@ -49,31 +54,30 @@ class Smithtry1000Conan(ConanFile):
         print(f"Bin folder created: {bin_folder}")
         
         if self.settings.os == "Windows":
-            copy(self, "*.exe", 
-                src=self.build_folder, 
-                dst=bin_folder, 
+            copy(self, "*.exe",
+                src=self.build_folder,
+                dst=bin_folder,
                 keep_path=False)
             self._copy_qt_runtime()
         else:
-            # Для Linux - правильный путь к исполняемому файлу
-            # Исполняемый файл находится в подкаталоге build
-            source_dir = os.path.join(self.build_folder, "Smithtry1000", "build")
+            # Для Linux - используем прямой путь к исполняемому файлу
             source_file = "smith-chart-tool"
-            source_path = os.path.join(source_dir, source_file)
-            
-            print(f"Corrected source dir: {source_dir}")
-            print(f"Corrected source path: {source_path}")
-            print(f"Source file exists: {os.path.exists(source_path)}")
+            source_path = os.path.join(self.build_folder, "Smithtry1000", source_file)
             
             if os.path.exists(source_path):
-                copy(self, source_file, src=source_dir, dst=bin_folder, keep_path=False)
+                print(f"Found executable at: {source_path}")
+                copy(self, source_file, src=os.path.dirname(source_path), dst=bin_folder, keep_path=False)
                 print(f"File copied successfully to: {bin_folder}")
             else:
-                # Если не нашли в build, попробуем в корне build_folder
-                source_dir = self.build_folder
-                source_path = os.path.join(source_dir, source_file)
-                if os.path.exists(source_path):
-                    copy(self, source_file, src=source_dir, dst=bin_folder, keep_path=False)
-                    print(f"File copied successfully to: {bin_folder}")
-                else:
-                    print("Source file does not exist!")
+                print("Executable file not found!")
+                print(f"Expected path: {source_path}")
+                
+                # Выводим список файлов в build_folder для диагностики
+                print("Build folder contents:")
+                for root, dirs, files in os.walk(self.build_folder):
+                    level = root.replace(self.build_folder, '').count(os.sep)
+                    indent = ' ' * 2 * level
+                    print(f"{indent}{os.path.basename(root)}/")
+                    subindent = ' ' * 2 * (level + 1)
+                    for file in files:
+                        print(f"{subindent}{file}")
