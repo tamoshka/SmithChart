@@ -1,5 +1,4 @@
-﻿/*#include "awr_interface.h"
-#include <iostream>
+﻿#include "awr_interface.h"
 
 /// <summary>
 /// Конструктор класса.
@@ -233,7 +232,7 @@ bool AWRInterface::ClearAllElements()
     DISPID dispid;
 
     // Получаем коллекцию Elements
-    OLECHAR* propElements = L"Elements";
+    OLECHAR* propElements = SysAllocString(L"Elements");
     hr = m_pSchematic->GetIDsOfNames(IID_NULL, &propElements, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -253,13 +252,13 @@ bool AWRInterface::ClearAllElements()
     IDispatch* pElements = varElements.pdispVal;
 
     // Вызываем метод Clear() или RemoveAll()
-    OLECHAR* methodClear = L"Clear";
+    OLECHAR* methodClear = SysAllocString(L"Clear");
     hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
         LOCALE_USER_DEFAULT, &dispid);
 
     if (FAILED(hr)) {
         // Если Clear не найден, пробуем RemoveAll
-        methodClear = L"RemoveAll";
+        methodClear = SysAllocString(L"RemoveAll");
         hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
             LOCALE_USER_DEFAULT, &dispid);
     }
@@ -298,7 +297,7 @@ bool AWRInterface::ClearAllPortElements(bool end)
     }
     HRESULT hr;
     DISPID dispid;
-    OLECHAR* propElements = L"Elements";
+    OLECHAR* propElements = SysAllocString(L"Elements");
     if (end)
     {
         hr = m_port2Schematic->GetIDsOfNames(IID_NULL, &propElements, 1,
@@ -339,13 +338,13 @@ bool AWRInterface::ClearAllPortElements(bool end)
     IDispatch* pElements = varElements.pdispVal;
 
     // Вызываем метод Clear() или RemoveAll()
-    OLECHAR* methodClear = L"Clear";
+    OLECHAR* methodClear = SysAllocString(L"Clear");
     hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
         LOCALE_USER_DEFAULT, &dispid);
 
     if (FAILED(hr)) {
         // Если Clear не найден, пробуем RemoveAll
-        methodClear = L"RemoveAll";
+        methodClear = SysAllocString(L"RemoveAll");
         hr = pElements->GetIDsOfNames(IID_NULL, &methodClear, 1,
             LOCALE_USER_DEFAULT, &dispid);
     }
@@ -379,7 +378,7 @@ bool AWRInterface::ClearAllWires()
     DISPID dispid;
 
     // Получаем коллекцию Wires
-    OLECHAR* propWires = L"Wires";
+    OLECHAR* propWires = SysAllocString(L"Wires");
     hr = m_pSchematic->GetIDsOfNames(IID_NULL, &propWires, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -399,12 +398,12 @@ bool AWRInterface::ClearAllWires()
     IDispatch* pWires = varWires.pdispVal;
 
     // Вызываем Clear()
-    OLECHAR* methodClear = L"Clear";
+    OLECHAR* methodClear = SysAllocString(L"Clear");
     hr = pWires->GetIDsOfNames(IID_NULL, &methodClear, 1,
         LOCALE_USER_DEFAULT, &dispid);
 
     if (FAILED(hr)) {
-        methodClear = L"RemoveAll";
+        methodClear = SysAllocString(L"RemoveAll");
         hr = pWires->GetIDsOfNames(IID_NULL, &methodClear, 1,
             LOCALE_USER_DEFAULT, &dispid);
     }
@@ -732,7 +731,7 @@ bool AWRInterface::AddWire(double x1, double y1, double x2, double y2)
     DISPID dispid;
 
     // 1. Получаем коллекцию Wires
-    OLECHAR* propWires = L"Wires";
+    OLECHAR* propWires = SysAllocString(L"Wires");
     hr = m_pSchematic->GetIDsOfNames(IID_NULL, &propWires, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -752,7 +751,7 @@ bool AWRInterface::AddWire(double x1, double y1, double x2, double y2)
     IDispatch* pWires = varWires.pdispVal;
 
     // 2. Вызываем метод Add для добавления провода
-    OLECHAR* methodAdd = L"Add";
+    OLECHAR* methodAdd = SysAllocString(L"Add");
     hr = pWires->GetIDsOfNames(IID_NULL, &methodAdd, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) {
@@ -817,7 +816,7 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double n
     DISPID dispid;
 
     // 1. Получаем объект Frequencies
-    OLECHAR* propFrequencies = L"Frequencies";
+    OLECHAR* propFrequencies = SysAllocString(L"Frequencies");
     hr = m_pProject->GetIDsOfNames(IID_NULL, &propFrequencies, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -837,7 +836,7 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double n
     IDispatch* pFrequencies = varFreqs.pdispVal;
 
     // 2. Устанавливаем начальную частоту (Start)
-    OLECHAR* propStart = L"Start";
+    OLECHAR* propStart = SysAllocString(L"Start");
     hr = pFrequencies->GetIDsOfNames(IID_NULL, &propStart, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (SUCCEEDED(hr)) {
@@ -865,7 +864,7 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double n
     }
 
     // 3. Устанавливаем конечную частоту (Stop)
-    OLECHAR* propStop = L"Stop";
+    OLECHAR* propStop = SysAllocString(L"Stop");
     hr = pFrequencies->GetIDsOfNames(IID_NULL, &propStop, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (SUCCEEDED(hr)) {
@@ -893,7 +892,7 @@ bool AWRInterface::SetFrequencySweep(double startFreq, double stopFreq, double n
     }
 
     // 4. Устанавливаем количество точек (NumPts)
-    OLECHAR* propNumPts = L"NumPts";
+    OLECHAR* propNumPts = SysAllocString(L"NumPts");
     hr = pFrequencies->GetIDsOfNames(IID_NULL, &propNumPts, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (SUCCEEDED(hr)) {
@@ -940,7 +939,7 @@ bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wch
     DISPID dispid;
 
     // 1. Получаем коллекцию Parameters
-    OLECHAR* propParameters = L"Parameters";
+    OLECHAR* propParameters = SysAllocString(L"Parameters");
     hr = m_pLastElement->GetIDsOfNames(IID_NULL, &propParameters, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -959,7 +958,7 @@ bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wch
     IDispatch* pParameters = varResult.pdispVal;
 
     // 2. Получаем конкретный параметр по имени через Item
-    OLECHAR* methodItem = L"Item";
+    OLECHAR* methodItem = SysAllocString(L"Item");
     hr = pParameters->GetIDsOfNames(IID_NULL, &methodItem, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) {
@@ -998,7 +997,7 @@ bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wch
     IDispatch* pParam = varParam.pdispVal;
 
     // 3. Пробуем установить через Expression (это правильный способ!)
-    OLECHAR* propExpression = L"Expression";
+    OLECHAR* propExpression = SysAllocString(L"Expression");
     hr = pParam->GetIDsOfNames(IID_NULL, &propExpression, 1,
         LOCALE_USER_DEFAULT, &dispid);
 
@@ -1032,7 +1031,7 @@ bool AWRInterface::SetStringElementParameter(const wchar_t* paramName, const wch
     }
 
     // 4. Если Expression не сработало, пробуем ValueAsString
-    OLECHAR* propValueAsString = L"ValueAsString";
+    OLECHAR* propValueAsString = SysAllocString(L"ValueAsString");
     hr = pParam->GetIDsOfNames(IID_NULL, &propValueAsString, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) {
@@ -1082,7 +1081,7 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
     DISPID dispid;
 
     // 1. Получаем коллекцию Parameters
-    OLECHAR* propParameters = L"Parameters";
+    OLECHAR* propParameters = SysAllocString(L"Parameters");
     hr = m_pLastElement->GetIDsOfNames(IID_NULL, &propParameters, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) return false;
@@ -1101,7 +1100,7 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
     IDispatch* pParameters = varResult.pdispVal;
 
     // 2. Получаем конкретный параметр по имени через Item
-    OLECHAR* methodItem = L"Item";
+    OLECHAR* methodItem = SysAllocString(L"Item");
     hr = pParameters->GetIDsOfNames(IID_NULL, &methodItem, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) {
@@ -1152,7 +1151,7 @@ bool AWRInterface::SetElementParameter(const wchar_t* paramName, const wchar_t* 
     double siValue = ConvertToSI(numValue, units.c_str());
 
     // 5. Устанавливаем через ValueAsDouble
-    OLECHAR* propValueAsDouble = L"ValueAsDouble";
+    OLECHAR* propValueAsDouble = SysAllocString(L"ValueAsDouble");
     hr = pParam->GetIDsOfNames(IID_NULL, &propValueAsDouble, 1,
         LOCALE_USER_DEFAULT, &dispid);
     if (FAILED(hr)) {
@@ -1371,4 +1370,4 @@ HRESULT AWRInterface::SetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT*
 
     return pDisp->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT,
         DISPATCH_PROPERTYPUT, &params, nullptr, nullptr, nullptr);
-}*/
+}

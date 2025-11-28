@@ -28,6 +28,7 @@ private:
     void TunedPaint(QPainter&);
     void ElementValuesPaint(QPainter&);
     void CurrentValuePaint(QPainter&);
+    void mousePressEvent(QMouseEvent* event) override;
     bool left;
 signals:
     void clicked(Element* tuned, QString path);

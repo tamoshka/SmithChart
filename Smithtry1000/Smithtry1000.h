@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <QMdiArea>
+#include <QMdiSubWindow>
 #include "ui_Smithtry1000.h"
 #include <qgraphicsscene.h>
 #include <qpainterpath.h>
@@ -34,7 +36,7 @@ class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
 
-public: 
+public:
     Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr);
     ~Smithtry1000();
     CircuitElements* circuitElements = new CircuitElements();
@@ -48,6 +50,10 @@ public slots:
     void getallchangedsignal();
     void Reverse();
     void GetEditSignal(Element* element);
+    void getLeftClicked(QPoint);
+    void getReleased();
+    void getMoved(QPoint);
+    void getResized(long double, long double, long double, long double);
 
 signals:
     void left();
@@ -89,6 +95,7 @@ private slots:
 
 private:
     ///AWRInterface awr = AWRInterface();
+    QMdiArea* mdiArea;
     friend class AWRExportThread;
     EditWidget* edit;
     SParameters* sParameters;
@@ -106,16 +113,16 @@ private:
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;
-    bool tableChanged=false;
+    bool tableChanged = false;
     QList<long double> pointsX;
     QList<long double> pointsY;
     QPoint lastPos;
-    bool moving=false;
+    bool moving = false;
     long double t;
     long double tmin;
     long double tmax;
     long double step;
-    long double r;   
+    long double r;
     long double intervalLength = 2 * M_PI;
     bool firstDeleted = true;
     QPoint getPointOnCircle(int, int);
@@ -148,7 +155,4 @@ private:
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
-    void resizeEvent(QResizeEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
 };

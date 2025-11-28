@@ -1697,3 +1697,56 @@ void RenderArea::setCursorPosOnCircle(const QPoint& pos)
     cursorPos = pos;
     update();
 }
+
+/// <summary>
+/// Обработка нажатий кнопок мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        leftClicked = true;
+        emit leftsignal(event->globalPos());
+    }
+}
+
+/// <summary>
+/// Перемещение мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mouseMoveEvent(QMouseEvent* event)
+{
+    if (leftClicked)
+    {
+        emit moved(event->globalPos());
+    }
+}
+
+/// <summary>
+/// Отжатие кнопки мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && leftClicked) {
+        leftClicked = false;
+        emit released();
+    }
+}
+
+/// <summary>
+/// Масштабирование в зависимости от пропорций окна.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::resizeEvent(QResizeEvent* event)
+{
+    if (!SystemParameters::unresized)
+    {
+        SystemParameters::sizeChanged = true;
+        this->update();
+        if (event->oldSize().width() != -1)
+        {
+            emit resized((long double)event->size().width(), (long double)event->size().height(), (long double)event->oldSize().width(), (long double)event->oldSize().height());
+        }
+    }
+}

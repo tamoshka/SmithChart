@@ -28,7 +28,61 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     this->sParameters = sParameters1;
     SystemParameters::Model = Default;
     this->resize(1600, 920);
-    this->setMinimumSize(1630, 920);
+    QWidget* centralWidget = new QWidget(this);
+    QVBoxLayout* vBox = new QVBoxLayout(centralWidget);
+    mdiArea = new QMdiArea(this);
+    vBox->addWidget(ui->groupBox_2);
+    vBox->addWidget(mdiArea);
+    setCentralWidget(centralWidget);
+    int mdiWidth = 1600;
+    int mdiHeight = 800;
+    QMdiSubWindow* dvs = mdiArea->addSubWindow(ui->scrollAreaDiagram);
+    dvs->setWindowTitle(QString("ДВС"));
+    dvs->resize(1200, 800);
+    QMdiSubWindow* crc = mdiArea->addSubWindow(ui->scrollArea);
+    crc->setWindowTitle(QString("Цепь"));
+    crc->resize(430, 330);
+    QMdiSubWindow* rTab = mdiArea->addSubWindow(ui->rTable);
+    rTab->setWindowTitle(QString("Координаты курсора"));
+    rTab->resize(430, 200);
+    QMdiSubWindow* pTab = mdiArea->addSubWindow(ui->pointTable);
+    pTab->setWindowTitle(QString("Точки"));
+    pTab->resize(430, 250);
+    int leftWidth = mdiWidth * 0.75;
+    int rightWidth = mdiWidth * 0.25;
+    int rightHeight = mdiHeight / 3;
+    dvs->setGeometry(0, 0, leftWidth, mdiHeight);
+
+    crc->setGeometry(leftWidth, 0, rightWidth, rightHeight);
+
+    rTab->setGeometry(leftWidth, rightHeight, rightWidth, rightHeight);
+
+    pTab->setGeometry(leftWidth, rightHeight * 2, rightWidth, rightHeight);
+
+    dvs->setWindowFlags(Qt::Window |
+        Qt::WindowMinimizeButtonHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowTitleHint);
+
+    crc->setWindowFlags(Qt::Window |
+        Qt::WindowMinimizeButtonHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowTitleHint);
+
+    rTab->setWindowFlags(Qt::Window |
+        Qt::WindowMinimizeButtonHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowTitleHint);
+
+    pTab->setWindowFlags(Qt::Window |
+        Qt::WindowMinimizeButtonHint |
+        Qt::WindowMaximizeButtonHint |
+        Qt::WindowTitleHint);
+
+    dvs->show();
+    crc->show();
+    rTab->show();
+    pTab->show();
     ui->pointTable->setColumnCount(5);
     ui->pointTable->setRowCount(1);
     ui->pointTable->setColumnWidth(0, 50);
@@ -118,6 +172,10 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     QObject::connect(sParameters->set, &ColourSetting::rev, this, &Smithtry1000::Reverse);
     QObject::connect(this, &Smithtry1000::reverse, auxiliaryWidget, &CircuitWidget::Reverse);
     QObject::connect(auxiliaryWidget, &CircuitWidget::Edit, this, &Smithtry1000::GetEditSignal);
+    QObject::connect(renderArea, &RenderArea::leftsignal, this, &Smithtry1000::getLeftClicked);
+    QObject::connect(renderArea, &RenderArea::moved, this, &Smithtry1000::getMoved);
+    QObject::connect(renderArea, &RenderArea::released, this, &Smithtry1000::getReleased);
+    QObject::connect(renderArea, &RenderArea::resized, this, &Smithtry1000::getResized);
     renderArea->setMinimumHeight(800);
     renderArea->setMinimumWidth(1200);
     ui->scrollAreaDiagram->setWidget(renderArea);
@@ -481,7 +539,7 @@ void Smithtry1000::getallchangedsignal()
         Point point;
         point.x = x;
         point.y = y;
-        circuitElements->firstPoint=point;
+        circuitElements->firstPoint = point;
         Complex z2 = SystemParameters::zCalculation(x, y);
         Complex y3 = SystemParameters::yCalculation(x, y);
         Complex g;
@@ -506,7 +564,7 @@ void Smithtry1000::getallchangedsignal()
         chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
         chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
         chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-        circuitElements->chart=chart;
+        circuitElements->chart = chart;
         circuitElements->z = z2;
         circuitElements->y = y3;
         circuitElements->g = g;
@@ -715,7 +773,7 @@ void Smithtry1000::Redo()
     QList<Element*> list1 = tempCircuit.GetCircuitElements();
     QList<Element*> list2 = circuitElements->GetCircuitElements();
 
-    if (list1.size() != list2.size()) 
+    if (list1.size() != list2.size())
     {
         areEqual = false;
     }
@@ -726,7 +784,7 @@ void Smithtry1000::Redo()
         areEqual = false;
     }
 
-    if (!areEqual||circuitElements->firstPoint.x!=tempCircuit.firstPoint.x||circuitElements->firstPoint.y!=tempCircuit.firstPoint.y) 
+    if (!areEqual || circuitElements->firstPoint.x != tempCircuit.firstPoint.x || circuitElements->firstPoint.y != tempCircuit.firstPoint.y)
     {
         timer->stop();
         firstDeleted = true;
@@ -1365,7 +1423,7 @@ void Smithtry1000::Copy()
                 QPrinter printer(QPrinter::HighResolution);
                 printer.setOutputFormat(QPrinter::PdfFormat);
                 printer.setOutputFileName(fileName);
-                printer.setPageSize(QPageSize(widget->size()/10, QPageSize::Point));
+                printer.setPageSize(QPageSize(widget->size() / 10, QPageSize::Point));
 
                 QPainter painter(&printer);
                 widget->render(&painter);
@@ -1390,7 +1448,7 @@ void Smithtry1000::Copy()
 /// </summary>
 void Smithtry1000::onTransform_buttonClicked()
 {
-    long double y0=0;
+    long double y0 = 0;
     if (circuitElements->GetCircuitElements().size() > 0)
     {
         y0 = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetPoint().y;
@@ -1450,7 +1508,7 @@ void Smithtry1000::onTransform_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2-0.02;
+            t = M_PI * 3 / 2 - 0.02;
         }
         else
         {
@@ -1475,8 +1533,8 @@ void Smithtry1000::onTransform_buttonClicked()
                 t = -M_PI - t;
             }
             r = ycenter;
-            tmin = -M_PI+0.02;
-            tmax = M_PI-0.02;
+            tmin = -M_PI + 0.02;
+            tmax = M_PI - 0.02;
         }
         trackingEnabled = !trackingEnabled;
         while (!leftClicked && !rightClicked)
@@ -1588,7 +1646,7 @@ void Smithtry1000::onLine_buttonClicked()
     if (SystemParameters::index > 0)
     {
         LinesDialog dialog(this);
-        if (dialog.exec() == QDialog::Accepted&&!SystemParameters::exc)
+        if (dialog.exec() == QDialog::Accepted && !SystemParameters::exc)
         {
             SystemParameters::Model = mode::Line;
             auxiliaryWidget->update();
@@ -1648,7 +1706,7 @@ void Smithtry1000::onLine_buttonClicked()
             }
             else if (sin_t <= 0)
             {
-                t=M_PI - t;
+                t = M_PI - t;
             }
             else
             {
@@ -1806,7 +1864,7 @@ void Smithtry1000::onOSLine_buttonClicked()
     if (SystemParameters::index > 0)
     {
         VerticalLinesDialog dialog(this);
-        if (dialog.exec() == QDialog::Accepted&&!SystemParameters::exc)
+        if (dialog.exec() == QDialog::Accepted && !SystemParameters::exc)
         {
             SystemParameters::Model = mode::OSLine;
             VerticalLines();
@@ -1837,7 +1895,7 @@ void Smithtry1000::onSSLine_buttonClicked()
     if (SystemParameters::index > 0)
     {
         VerticalLinesDialog dialog(this);
-        if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
+        if (dialog.exec() == QDialog::Accepted && !SystemParameters::exc)
         {
             SystemParameters::Model = mode::SSLine;
             VerticalLines();
@@ -1866,10 +1924,10 @@ void Smithtry1000::onSSLine_buttonClicked()
 void Smithtry1000::onKeyboard_buttonClicked()
 {
     KeyboardDialog dialog(this, circuitElements);
-    if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
+    if (dialog.exec() == QDialog::Accepted && !SystemParameters::exc)
     {
         long double frequency = SystemParameters::frequency;
-        long double x=0;
+        long double x = 0;
         long double y = 0;
         long double Re = SystemParameters::Re;
         long double Im = SystemParameters::Im;
@@ -1892,8 +1950,8 @@ void Smithtry1000::onKeyboard_buttonClicked()
             }
             else if (SystemParameters::sys == Admittance)
             {
-                Re /= 1000/SystemParameters::z0;
-                Im /= 1000/ SystemParameters::z0;
+                Re /= 1000 / SystemParameters::z0;
+                Im /= 1000 / SystemParameters::z0;
                 long double denominator = (1 + Re) * (1 + Re) + Im * Im;
 
                 if (denominator != 0) {
@@ -1916,7 +1974,7 @@ void Smithtry1000::onKeyboard_buttonClicked()
             if (SystemParameters::sys == Impedance)
             {
                 Re /= SystemParameters::z0;
-                Im = Im * M_PI/180;
+                Im = Im * M_PI / 180;
                 double Z_real = Re * cos(Im);
                 double Z_imag = Re * sin(Im);
                 double denominator = (Z_real + 1) * (Z_real + 1) + Z_imag * Z_imag;
@@ -1932,7 +1990,7 @@ void Smithtry1000::onKeyboard_buttonClicked()
             }
             else if (SystemParameters::sys == Admittance)
             {
-                Re /= 1000/SystemParameters::z0;
+                Re /= 1000 / SystemParameters::z0;
                 Im = Im * M_PI / 180;
                 double Z_real = Re * cos(Im);
                 double Z_imag = Re * sin(Im);
@@ -1958,7 +2016,7 @@ void Smithtry1000::onKeyboard_buttonClicked()
         QPoint temp = QPoint(x * SystemParameters::scale + renderArea->rect().center().x(), y * SystemParameters::scale + renderArea->rect().center().y());
         renderArea->setCursorPosOnCircle(temp);
         AppendPoint(x, y);
-        tempCircuit=*circuitElements;
+        tempCircuit = *circuitElements;
         firstDeleted = true;
     }
     else if (SystemParameters::exc)
@@ -1966,10 +2024,10 @@ void Smithtry1000::onKeyboard_buttonClicked()
         QMessageBox* bx = new QMessageBox();
         bx->show();
         bx->Warning;
-        bx->setText(QStringLiteral(u"Все параметры должны быть заданы числами.\nДействительное сопротивление/проводимость всегда больше нуля.\nМагнитуда от 0 до единицы.\n")+
+        bx->setText(QStringLiteral(u"Все параметры должны быть заданы числами.\nДействительное сопротивление/проводимость всегда больше нуля.\nМагнитуда от 0 до единицы.\n") +
             QStringLiteral(u"Декартовы координаты при задании через коэффициент отражения в сумме умещаются в единичную окружность"));
         SystemParameters::exc = false;
-        }
+    }
 }
 
 void Smithtry1000::AppendPoint(long double x, long double y)
@@ -2341,24 +2399,24 @@ void Smithtry1000::TableUpdate()
                     }
                     double number = SystemParameters::tunedElements[j]->GetParameter()[Z].real();
                     double number2 = SystemParameters::tunedElements[j]->GetParameter()[Z].imag();
-                    ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(round(number*100)/100)
-                        + temp2 + QString::number(round(abs(number2)*100)/100)));
+                    ui->pointTable->setItem(i, 2, new QTableWidgetItem(QString::number(round(number * 100) / 100)
+                        + temp2 + QString::number(round(abs(number2) * 100) / 100)));
                     if (SystemParameters::impedanceRealR == 0)
                     {
                         ui->pointTable->setItem(i, 3, new QTableWidgetItem("0"));
                     }
                     else
                     {
-                        double number3 = abs(SystemParameters::tunedElements[j]->GetParameter()[Z].imag() 
-                            /SystemParameters::tunedElements[j]->GetParameter()[Z].real());
-                        ui->pointTable->setItem(i, 3, new QTableWidgetItem(QString::number(round(number3*100)/100)));
+                        double number3 = abs(SystemParameters::tunedElements[j]->GetParameter()[Z].imag()
+                            / SystemParameters::tunedElements[j]->GetParameter()[Z].real());
+                        ui->pointTable->setItem(i, 3, new QTableWidgetItem(QString::number(round(number3 * 100) / 100)));
                     }
                 }
                 id++;
             }
         }
     }
-    tempCircuit=*circuitElements;
+    tempCircuit = *circuitElements;
     firstDeleted = true;
     SystemParameters::tunedElements = {};
     tableChanged = false;
@@ -2465,11 +2523,6 @@ void Smithtry1000::onTune_buttonClicked()
             {
                 QCoreApplication::processEvents();
                 auxiliaryWidget->update();
-                if (leftClicked)
-                {
-                    emit left();
-                    leftClicked = false;
-                }
             }
         }
         tuneWidget->hide();
@@ -2489,68 +2542,49 @@ void Smithtry1000::onTune_buttonClicked()
 /// <param name="event"></param>
 void Smithtry1000::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        leftClicked = true;
-        QPoint globalPos = mapToGlobal(event->pos());
-        QPoint scrollAreaPos = ui->scrollAreaDiagram->viewport()->mapFromGlobal(globalPos);
-        if (ui->scrollAreaDiagram->viewport()->rect().contains(scrollAreaPos))
-        {
-            setCursor(Qt::ClosedHandCursor);
-            moving = true;
-            lastPos = event->pos();
-        }
-    }
-    else if (event->button() == Qt::RightButton)
+    if (event->button() == Qt::RightButton)
     {
         rightClicked = true;
         if (SystemParameters::Model == Default)
         {
             onDelete_buttonClicked();
         }
-    }
-}
-
-/// <summary>
-/// Перемещение мыши.
-/// </summary>
-/// <param name="event"></param>
-void Smithtry1000::mouseMoveEvent(QMouseEvent* event)
-{
-    if (leftClicked && moving) 
-    {
-        // Вычисляем дельту перемещения
-        QPoint delta = event->pos() - lastPos;
-
-        // Получаем scrollbars
-        QScrollBar* hBar = ui->scrollAreaDiagram->horizontalScrollBar();
-        QScrollBar* vBar = ui->scrollAreaDiagram->verticalScrollBar();
-
-        // Перемещаем scrollbars в противоположном направлении
-        // (чтобы создать эффект "перетаскивания" содержимого)
-        if (hBar) {
-            hBar->setValue(hBar->value() - delta.x());
-        }
-        if (vBar) {
-            vBar->setValue(vBar->value() - delta.y());
-        }
-
-        lastPos = event->pos();
         event->accept();
     }
 }
 
-/// <summary>
-/// Отжатие кнопки мыши.
-/// </summary>
-/// <param name="event"></param>
-void Smithtry1000::mouseReleaseEvent(QMouseEvent* event)
+void Smithtry1000::getLeftClicked(QPoint pos)
 {
-    if (event->button() == Qt::LeftButton && leftClicked) {
-        leftClicked = false;
-        setCursor(Qt::ArrowCursor); // Возвращаем обычный курсор
-        moving = false;
-        event->accept();
+    leftClicked = true;
+    QPoint globalPos = mapToGlobal(pos);
+    QPoint scrollAreaPos = ui->scrollAreaDiagram->viewport()->mapFromGlobal(globalPos);
+    setCursor(Qt::ClosedHandCursor);
+    moving = true;
+    lastPos = pos;
+}
+
+void Smithtry1000::getMoved(QPoint pos)
+{
+    QPoint delta = pos - lastPos;
+
+    QScrollBar* hBar = ui->scrollAreaDiagram->horizontalScrollBar();
+    QScrollBar* vBar = ui->scrollAreaDiagram->verticalScrollBar();
+
+    if (hBar) {
+        hBar->setValue(hBar->value() - delta.x());
     }
+    if (vBar) {
+        vBar->setValue(vBar->value() - delta.y());
+    }
+
+    lastPos = pos;
+}
+
+void Smithtry1000::getReleased()
+{
+    leftClicked = false;
+    setCursor(Qt::ArrowCursor);
+    moving = false;
 }
 
 /// <summary>
@@ -2559,7 +2593,7 @@ void Smithtry1000::mouseReleaseEvent(QMouseEvent* event)
 void Smithtry1000::onButtonClicked()
 {
     FrequencyDialog dialog(this, circuitElements);
-    if (dialog.exec() == QDialog::Accepted&& !SystemParameters::exc)
+    if (dialog.exec() == QDialog::Accepted && !SystemParameters::exc)
     {
         SystemParameters::Model = AddPoint;
         QPoint centerLocal = renderArea->rect().center();
@@ -2603,7 +2637,7 @@ void Smithtry1000::onButtonClicked()
             QPoint temp = QPoint(x * SystemParameters::scale + renderArea->rect().center().x(), y * SystemParameters::scale + renderArea->rect().center().y());
             renderArea->setCursorPosOnCircle(temp);
             AppendPoint(x, y);
-            tempCircuit=*circuitElements;
+            tempCircuit = *circuitElements;
             firstDeleted = true;
         }
         SystemParameters::Model = Default;
@@ -2698,7 +2732,7 @@ void Smithtry1000::onResistor_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2- 1 / 1e9;
+            t = M_PI * 3 / 2 - 1 / 1e9;
         }
         else
         {
@@ -2728,16 +2762,16 @@ void Smithtry1000::onResistor_buttonClicked()
             if (y < 0)
             {
                 r = fabs(r);
-                tmin = t+ 1 / 1e9;
+                tmin = t + 1 / 1e9;
                 t = tmin;
-                tmax = M_PI * 3 / 2- 1 / 1e9;
+                tmax = M_PI * 3 / 2 - 1 / 1e9;
             }
             else
             {
                 r = fabs(r) * (-1);
-                tmax = t- 1 / 1e9;
+                tmax = t - 1 / 1e9;
                 t = tmax;
-                tmin = M_PI * 3 / 2- 1 / 1e9;
+                tmin = M_PI * 3 / 2 - 1 / 1e9;
             }
         }
         trackingEnabled = !trackingEnabled;
@@ -2922,7 +2956,7 @@ void Smithtry1000::onResistorParallel_buttonClicked()
                     r = fabs(r) * -1;
                 }
             }
-            t = M_PI * 3 / 2- 1 / 1e9;
+            t = M_PI * 3 / 2 - 1 / 1e9;
         }
         else
         {
@@ -2944,15 +2978,15 @@ void Smithtry1000::onResistorParallel_buttonClicked()
             if (y > 0)
             {
                 r *= -1;
-                tmin = t+ 1 / 1e9;
+                tmin = t + 1 / 1e9;
                 t = tmin;
-                tmax = M_PI / 2-1/1e9;
+                tmax = M_PI / 2 - 1 / 1e9;
             }
             else
             {
-                tmax = t- 1 / 1e9;
+                tmax = t - 1 / 1e9;
                 t = tmax;
-                tmin = -M_PI / 2+ 1 / 1e9;
+                tmin = -M_PI / 2 + 1 / 1e9;
             }
         }
         trackingEnabled = !trackingEnabled;
@@ -3071,7 +3105,7 @@ void Smithtry1000::onDelete_buttonClicked()
             tempCircuit = CircuitElements(*circuitElements);
             firstDeleted = false;
         }
-        if (get<1>(allPoints[SystemParameters::allpointindex-1]))
+        if (get<1>(allPoints[SystemParameters::allpointindex - 1]))
         {
             auxiliaryWidget->removeLastSvg();
             renderArea->update();
@@ -3239,15 +3273,15 @@ void Smithtry1000::ImaginaryImpedance()
         {
         case InductionShunt:
         {
-            tmin = t+ 0.04;
+            tmin = t + 0.04;
             t = tmin;
-            tmax = 2 * M_PI- 0.04;
+            tmax = 2 * M_PI - 0.04;
             break;
         }
         case CapacitorShunt:
         {
             tmin = 0.04;
-            tmax = t- 0.04;
+            tmax = t - 0.04;
             t = tmax;
             break;
         }
@@ -3457,15 +3491,15 @@ void Smithtry1000::ImaginaryAdmitance()
         {
         case InductionParallel:
         {
-            tmin = t+0.04;
+            tmin = t + 0.04;
             t = tmin;
-            tmax = M_PI-0.04;
+            tmax = M_PI - 0.04;
             break;
         }
         case CapacitorParallel:
         {
-            tmin = -M_PI+0.04;
-            tmax = t-0.04;
+            tmin = -M_PI + 0.04;
+            tmax = t - 0.04;
             t = tmax;
             break;
         }
@@ -3730,56 +3764,56 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     long double y = 0;
     switch (SystemParameters::Model)
     {
-        case ResistorShunt:
-        {
-            ResShuntPoint(dx, dy, x, y);
-            break;
-        }
-        case InductionShunt:
-        {
-            IndCapShuntPoint(dx, dy, x, y);
-            break;
-        }
-        case CapacitorShunt:
-        {
-            IndCapShuntPoint(dx, dy, x, y);
-            break;
-        }
-        case ResistorParallel:
-        {
-            ResParPoint(dx, dy, x, y);
-            break;
-        }
-        case InductionParallel:
-        {
-            IndCapParPoint(dx, dy, x, y);
-            break;
-        }
-        case CapacitorParallel:
-        {
-            IndCapParPoint(dx, dy, x, y);
-            break;
-        }
-        case Line:
-        {
-            LinePoint(dx, dy, x, y);
-            break;
-        }
-        case OSLine:
-        {
-            OSSSPoint(dx, dy, x, y);
-            break;
-        }
-        case SSLine:
-        {
-            OSSSPoint(dx, dy, x, y);
-            break;
-        }
-        case Transform:
-        {
-            TransformPoint(dx, dy, x, y);
-            break;
-        }
+    case ResistorShunt:
+    {
+        ResShuntPoint(dx, dy, x, y);
+        break;
+    }
+    case InductionShunt:
+    {
+        IndCapShuntPoint(dx, dy, x, y);
+        break;
+    }
+    case CapacitorShunt:
+    {
+        IndCapShuntPoint(dx, dy, x, y);
+        break;
+    }
+    case ResistorParallel:
+    {
+        ResParPoint(dx, dy, x, y);
+        break;
+    }
+    case InductionParallel:
+    {
+        IndCapParPoint(dx, dy, x, y);
+        break;
+    }
+    case CapacitorParallel:
+    {
+        IndCapParPoint(dx, dy, x, y);
+        break;
+    }
+    case Line:
+    {
+        LinePoint(dx, dy, x, y);
+        break;
+    }
+    case OSLine:
+    {
+        OSSSPoint(dx, dy, x, y);
+        break;
+    }
+    case SSLine:
+    {
+        OSSSPoint(dx, dy, x, y);
+        break;
+    }
+    case Transform:
+    {
+        TransformPoint(dx, dy, x, y);
+        break;
+    }
     }
     UpdateCursorTableInMode(x, y);
     auxiliaryWidget->update();
@@ -4679,6 +4713,7 @@ void Smithtry1000::UpdateCursorTableInMode(long double& x, long double& y)
 /// </summary>
 void Smithtry1000::onPlusSize_buttonClicked()
 {
+    SystemParameters::unresized = true;
     if (SystemParameters::scale < 2000)
     {
         if (SystemParameters::scale == 1900)
@@ -4698,6 +4733,7 @@ void Smithtry1000::onPlusSize_buttonClicked()
         ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale - 100)));
         ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale - 100)));
     }
+    SystemParameters::unresized = false;
 }
 
 /// <summary>
@@ -4705,6 +4741,7 @@ void Smithtry1000::onPlusSize_buttonClicked()
 /// </summary>
 void Smithtry1000::onMinusSize_buttonClicked()
 {
+    SystemParameters::unresized = true;
     if (SystemParameters::scale > 100)
     {
         if (SystemParameters::scale == 200)
@@ -4724,6 +4761,7 @@ void Smithtry1000::onMinusSize_buttonClicked()
         ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale + 100)));
         ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale + 100)));
     }
+    SystemParameters::unresized = false;
 }
 
 /// <summary>
@@ -4731,10 +4769,12 @@ void Smithtry1000::onMinusSize_buttonClicked()
 /// </summary>
 void Smithtry1000::onDefaultSize_buttonClicked()
 {
+    SystemParameters::unresized = true;
     SystemParameters::scale = 200;
     renderArea->update();
     renderArea->setFixedWidth(1200);
     renderArea->setFixedHeight(800);
+    SystemParameters::unresized = false;
 }
 
 /// <summary>
@@ -4820,26 +4860,17 @@ void Smithtry1000::getsignalDVS()
     renderArea->update();
 }
 
-/// <summary>
-/// Масштабирование в зависимости от пропорций окна.
-/// </summary>
-/// <param name="event"></param>
-void Smithtry1000::resizeEvent(QResizeEvent* event)
+
+void Smithtry1000::getResized(long double width, long double height, long double oldwidth, long double oldheight)
 {
-    QMainWindow::resizeEvent(event);
-    SystemParameters::sizeChanged = true;
-    renderArea->update();
-    if (event->oldSize().width() != -1)
-    {
-        long double coef1 = (long double)event->size().width() / (long double)event->oldSize().width();
-        long double coef2 = (long double)event->size().height() / (long double)event->oldSize().height();
-        long double coef = coef1 * coef2;
-        SystemParameters::scale = SystemParameters::scale * coef;
-        int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
-        int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
-        renderArea->setFixedWidth(1200 + (SystemParameters::scale - 200) * 2);
-        renderArea->setFixedHeight(800 + (SystemParameters::scale - 200) * 2);
-        ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale - 100)));
-        ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale - 100)));
-    }
+    long double coef1 = width / oldwidth;
+    long double coef2 = height / oldheight;
+    long double coef = coef1 * coef2;
+    SystemParameters::scale = SystemParameters::scale * coef;
+    int n = ui->scrollAreaDiagram->horizontalScrollBar()->value();
+    int m = ui->scrollAreaDiagram->verticalScrollBar()->value();
+    renderArea->setFixedWidth(1200 + (SystemParameters::scale - 200) * 2);
+    renderArea->setFixedHeight(800 + (SystemParameters::scale - 200) * 2);
+    ui->scrollAreaDiagram->horizontalScrollBar()->setValue(n * (SystemParameters::scale / (SystemParameters::scale - 100)));
+    ui->scrollAreaDiagram->verticalScrollBar()->setValue(m * (SystemParameters::scale / (SystemParameters::scale - 100)));
 }

@@ -103,6 +103,7 @@ long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
 bool SystemParameters::exc = false;
 bool SystemParameters::rotate = false;
+bool SystemParameters::unresized = false;
 mode SystemParameters::Model = Default;
 long double SystemParameters::scale=200;
 long double SystemParameters::lastPointX = 0;
