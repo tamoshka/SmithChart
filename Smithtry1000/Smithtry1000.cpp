@@ -1254,45 +1254,54 @@ void Smithtry1000::Load()
 void Smithtry1000::Copy()
 {
     SaveDialog dialog(this);
+
+    dialog.showDialog();
+    
+    QEventLoop loop;
+    connect(&dialog, &SaveDialog::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+    
+    if (dialog.result() == QDialog::Accepted) 
     {
-        if (dialog.exec() == QDialog::Accepted)
+        QWidget* widget;
+        if (SystemParameters::saved == 0)
         {
-            QWidget* widget;
-            if (SystemParameters::saved == 0)
-            {
-                widget = renderArea;
-            }
-            else
-            {
-                widget = auxiliaryWidget;
-            }
-            QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+            widget = renderArea;
+        }
+        else
+        {
+            widget = auxiliaryWidget;
+        }
+        QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
 
-            QPixmap pixmap(widget->size());
-            widget->render(&pixmap);
+        QPixmap pixmap(widget->size());
+        widget->render(&pixmap);
 
-            QString extension = QFileInfo(fileName).suffix().toLower();
+        QString extension = QFileInfo(fileName).suffix().toLower();
 
-            if (extension == "pdf") {
-                QPrinter printer(QPrinter::HighResolution);
-                printer.setOutputFormat(QPrinter::PdfFormat);
-                printer.setOutputFileName(fileName);
-                printer.setPageSize(QPageSize(widget->size()/10, QPageSize::Point));
+        if (extension == "pdf") 
+        {
+            QPrinter printer(QPrinter::HighResolution);
+            printer.setOutputFormat(QPrinter::PdfFormat);
+            printer.setOutputFileName(fileName);
+            printer.setPageSize(QPageSize(widget->size()/10, QPageSize::Point));
 
-                QPainter painter(&printer);
-                widget->render(&painter);
-                painter.end();
-            }
-            else if (extension == "jpg" || extension == "jpeg") {
-                pixmap.save(fileName, "JPG", 90);
-            }
-            else if (extension == "png") {
-                pixmap.save(fileName, "PNG");
-            }
-            else {
-                // По умолчанию сохраняем как PNG
-                pixmap.save(fileName + ".png", "PNG");
-            }
+            QPainter painter(&printer);
+            widget->render(&painter);
+            painter.end();
+        }
+        else if (extension == "jpg" || extension == "jpeg") 
+        {
+            pixmap.save(fileName, "JPG", 90);
+        }
+        else if (extension == "png") 
+        {
+            pixmap.save(fileName, "PNG");
+        }
+        else 
+        {
+            // По умолчанию сохраняем как PNG
+            pixmap.save(fileName + ".png", "PNG");
         }
     }
 }

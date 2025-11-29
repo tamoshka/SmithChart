@@ -1,27 +1,47 @@
 #pragma once
 
-#include <QDialog>
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class SaveDialog; };
-#endif
-QT_END_NAMESPACE
+#include <QWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
-/// <summary>
-/// Диалог для сохранения изображения виджета.
-/// </summary>
-class SaveDialog : public QDialog
+#include <ui_ds/controls/organisms/windows/modal_window/modal_window.h>
+#include <ui_ds/controls/organisms/radio_button/radio_button.h>
+#include <ui_ds/controls/molecules/buttons/secondary_button.h>
+
+using namespace ui::ds::controls::organisms::radio_button;
+using namespace ui::ds::controls::organisms::modal_window;
+using namespace ui::ds::controls::molecules::buttons;
+
+class SaveDialog : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
+
+signals:
+    void finished(int result);
 
 public:
-	SaveDialog(QWidget *parent = nullptr);
-	~SaveDialog();
+    SaveDialog(QWidget *parent = nullptr);
+    ~SaveDialog();
+    void showDialog() 
+	{ 
+        SDialog->show(); 
+        SDialog->raise();
+        SDialog->activateWindow();
+    }
+
+    int result() const { return m_result; }
 
 private slots:
-	void Save();
-	void Cancel();
+    void Save();
+    void Cancel();
 
 private:
-	Ui::SaveDialog *ui;
+    QVBoxLayout *m_mainLayout;
+    QHBoxLayout *m_buttonsLayout;
+    RadioButton *Circuit = nullptr;
+    RadioButton *Diagram = nullptr;
+    ModalWindow *SDialog = nullptr;
+    SecondaryButton *SaveButton = nullptr;
+    SecondaryButton *CancelButton = nullptr;
+    int m_result = 0;
 };
