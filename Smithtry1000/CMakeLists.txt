@@ -79,11 +79,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     SDiagram1.cpp
     SDiagram2.ui
     SDiagram2.h
-    SaveDialog.ui
     SaveDialog.h
     SaveDialog.cpp
     SDiagram2.cpp
-    SParamTable.ui
     SParamTable.h
     SParamTable.cpp
     ColourSetting.ui
