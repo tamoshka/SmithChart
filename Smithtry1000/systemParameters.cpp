@@ -797,7 +797,7 @@ Complex SystemParameters::EditResistorShunt(CircuitElements* circuitElements, Co
 	x = 1 + (1 / r) * cos_t;
 	y2 = (1 / r) + (1 / r) * sin_t;
 	y2 = y2 * (-1);
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -902,7 +902,7 @@ Complex SystemParameters::EditCapIndShunt(CircuitElements* circuitElements, int 
 	{
 		y2 = -0.0001;
 	}
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -989,7 +989,7 @@ Complex SystemParameters::EditCapIndParallel(CircuitElements* circuitElements, i
 	{
 		y2 = -0.0001;
 	}
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -1215,7 +1215,7 @@ Complex SystemParameters::EditLine(CircuitElements* circuitElements, Complex z, 
 	long double Theta;
 	long double step = M_PI / 2;
 	bool flag = true;
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (flag == true)
 		{
@@ -1339,7 +1339,7 @@ Complex SystemParameters::EditOSSSLine(CircuitElements* circuitElements, Complex
 	long double sin_t = sin(t);
 	x = (cos(t) - r) / (r + 1);
 	y2 = (1 / (r + 1)) * sin_t * -1;
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
