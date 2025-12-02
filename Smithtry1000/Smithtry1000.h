@@ -2,8 +2,20 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QMdiArea>
+#include <QIcon>
+#include <QAction>
+#include <QFormLayout>
+#include <QFrame>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QMenuBar>
+#include <QPushButton>
+#include <QStatusBar>
+#include <QTableWidget>
+#include <QVBoxLayout>
+#include <QWidget>
 #include <QMdiSubWindow>
-#include "ui_Smithtry1000.h"
 #include <qgraphicsscene.h>
 #include <qpainterpath.h>
 #include <QtSvg>
@@ -17,6 +29,7 @@
 #include "PreSaveDialog.h"
 #include "VerticalLinesDialog.h"
 #include "AmplitudeFrequency.h"
+#include "circuitWidget.h"
 #include "SParameters.h"
 #include "ExportNetlist.h"
 #include "renderarea.h"
@@ -95,6 +108,70 @@ private slots:
 
 private:
     ///AWRInterface awr = AWRInterface();
+
+    QAction* actionColors;
+    QWidget* centralWidget;
+    QVBoxLayout* verticalLayout_3;
+    QVBoxLayout* verticalLayout;
+    QGroupBox* groupBox_2;
+    QPushButton* OpenButton;
+    QPushButton* SaveButton;
+    QPushButton* CopyButton;
+    QPushButton* StepBackButton;
+    QPushButton* StepForwardButton;
+    QPushButton* PrintButton;
+    QFrame* line;
+    QPushButton* MouseButton;
+    QPushButton* KeyboardButton;
+    QPushButton* S11Button;
+    QPushButton* S22Button;
+    QFrame* line_2;
+    QPushButton* PlusSizeButton;
+    QPushButton* MinusSizeButton;
+    QPushButton* OneToOneButton;
+    QFrame* line_3;
+    QPushButton* Resistor_button;
+    QPushButton* Induction_button;
+    QPushButton* Capacitor_button;
+    QPushButton* ResistorParallel_button;
+    QPushButton* InductionParallel_button;
+    QPushButton* CapacitorParallel_button;
+    QPushButton* GraphButton;
+    QFrame* line_4;
+    QPushButton* ExportNetlistButton;
+    QPushButton* Tune;
+    QPushButton* Line_button;
+    QPushButton* SSLine_button;
+    QPushButton* OSLine_button;
+    QPushButton* CirclesButton;
+    QPushButton* ParametersButton;
+    QPushButton* Transform_button;
+    QPushButton* AWRButton;
+    QPushButton* Diagram_button;
+    QPushButton* SPlotButton;
+    QPushButton* CADButton;
+    QHBoxLayout* horizontalLayout;
+    QGroupBox* groupBox;
+    QHBoxLayout* horizontalLayout_2;
+    QScrollArea* scrollAreaDiagram;
+    QWidget* scrollAreaWidgetContents_2;
+    QGroupBox* groupBox_3;
+    QVBoxLayout* verticalLayout_2;
+    QScrollArea* scrollArea;
+    QWidget* scrollAreaWidgetContents;
+    QFormLayout* formLayout;
+    CircuitWidget* circuitWidget;
+    QTableWidget* rTable;
+    QTableWidget* pointTable;
+    QMenuBar* menuBar;
+    QMenu* menuEdit;
+    QMenu* menuMode;
+    QMenu* menuTools;
+    QMenu* menuZoom;
+    QMenu* menuWindow;
+    QMenu* menuHelp;
+    QStatusBar* statusBar;
+
     QMdiArea* mdiArea;
     friend class AWRExportThread;
     EditWidget* edit;
@@ -104,12 +181,12 @@ private:
     CircuitElements tempCircuit;
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
     CirclesWidget* circlesWidget = new CirclesWidget(nullptr, circuitElements);
+    void SetupUI();
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();
     bool ExportToAWR();
     void mousePressEvent(QMouseEvent* event) override;
-    Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;

@@ -7,11 +7,8 @@
 #include <QPushButton>
 #include <QSlider>
 #include "circuitElements.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class TuneWidget; };
-#endif
-QT_END_NAMESPACE
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 /// <summary>
 /// Класс, позволяющий проводить настройку элементов в цепи.
@@ -27,7 +24,13 @@ public:
 	CircuitElements* circuitElements;
 
 private:
-	Ui::TuneWidget *ui;
+	QVBoxLayout* verticalLayout;
+	QScrollArea* scrollArea;
+	QWidget* scrollAreaWidgetContents;
+	QGroupBox* groupBox;
+	QPushButton* RemoveAllButton;
+	QPushButton* MinMaxButton;
+	QPushButton* OKButton;
 	CircuitElements* tuned;
 	QWidget* mainWidget = new QWidget(this);
 	QList<QGroupBox*> boxes;
