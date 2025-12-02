@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include <QStatusBar>
 #include <QTableWidget>
+#include <QToolBar>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QMdiSubWindow>
@@ -108,58 +109,45 @@ private slots:
 
 private:
     ///AWRInterface awr = AWRInterface();
-
+    QToolBar* toolbar;
     QAction* actionColors;
     QWidget* centralWidget;
     QVBoxLayout* verticalLayout_3;
     QVBoxLayout* verticalLayout;
-    QGroupBox* groupBox_2;
-    QPushButton* OpenButton;
-    QPushButton* SaveButton;
-    QPushButton* CopyButton;
-    QPushButton* StepBackButton;
-    QPushButton* StepForwardButton;
-    QPushButton* PrintButton;
-    QFrame* line;
-    QPushButton* MouseButton;
-    QPushButton* KeyboardButton;
-    QPushButton* S11Button;
-    QPushButton* S22Button;
-    QFrame* line_2;
-    QPushButton* PlusSizeButton;
-    QPushButton* MinusSizeButton;
-    QPushButton* OneToOneButton;
-    QFrame* line_3;
-    QPushButton* Resistor_button;
-    QPushButton* Induction_button;
-    QPushButton* Capacitor_button;
-    QPushButton* ResistorParallel_button;
-    QPushButton* InductionParallel_button;
-    QPushButton* CapacitorParallel_button;
-    QPushButton* GraphButton;
-    QFrame* line_4;
-    QPushButton* ExportNetlistButton;
-    QPushButton* Tune;
-    QPushButton* Line_button;
-    QPushButton* SSLine_button;
-    QPushButton* OSLine_button;
-    QPushButton* CirclesButton;
-    QPushButton* ParametersButton;
-    QPushButton* Transform_button;
-    QPushButton* AWRButton;
-    QPushButton* Diagram_button;
-    QPushButton* SPlotButton;
-    QPushButton* CADButton;
-    QHBoxLayout* horizontalLayout;
-    QGroupBox* groupBox;
-    QHBoxLayout* horizontalLayout_2;
+    QAction* OpenButton;
+    QAction* SaveButton;
+    QAction* CopyButton;
+    QAction* StepBackButton;
+    QAction* StepForwardButton;
+    QAction* PrintButton;
+    QAction* MouseButton;
+    QAction* KeyboardButton;
+    QAction* S11Button;
+    QAction* S22Button;
+    QAction* PlusSizeButton;
+    QAction* MinusSizeButton;
+    QAction* OneToOneButton;
+    QAction* Resistor_button;
+    QAction* Induction_button;
+    QAction* Capacitor_button;
+    QAction* ResistorParallel_button;
+    QAction* InductionParallel_button;
+    QAction* CapacitorParallel_button;
+    QAction* GraphButton;
+    QAction* ExportNetlistButton;
+    QAction* Tune;
+    QAction* Line_button;
+    QAction* SSLine_button;
+    QAction* OSLine_button;
+    QAction* CirclesButton;
+    QAction* ParametersButton;
+    QAction* Transform_button;
+    QAction* AWRButton;
+    QAction* Diagram_button;
+    QAction* SPlotButton;
+    QAction* CADButton;
     QScrollArea* scrollAreaDiagram;
-    QWidget* scrollAreaWidgetContents_2;
-    QGroupBox* groupBox_3;
-    QVBoxLayout* verticalLayout_2;
     QScrollArea* scrollArea;
-    QWidget* scrollAreaWidgetContents;
-    QFormLayout* formLayout;
     CircuitWidget* circuitWidget;
     QTableWidget* rTable;
     QTableWidget* pointTable;
