@@ -85,10 +85,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     SParamTable.ui
     SParamTable.h
     SParamTable.cpp
-    ColourSetting.ui
     ColourSetting.h
     ColourSetting.cpp
-    CirclesWidget.ui
     CirclesWidget.h
     CirclesWidget.cpp
     TuneWidget.h
