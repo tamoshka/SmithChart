@@ -499,6 +499,12 @@ void TuneWidget::ValueChanged(int value)
 	update();
 }
 
+/// <summary>
+/// Настройка элементов по режиму.
+/// </summary>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="y">Комплексная проводимость.</param>
+/// <param name="j">Номер элемента в цепи.</param>
 void TuneWidget::SwitchMode(Complex z, Complex y, int j)
 {
 
@@ -751,6 +757,9 @@ void TuneWidget::MinMaxButton_clicked()
 	update();
 }
 
+/// <summary>
+/// Удаление элементов из тюнера при загрузке.
+/// </summary>
 void TuneWidget::RemoveOnLoad()
 {
 	RemoveAll();

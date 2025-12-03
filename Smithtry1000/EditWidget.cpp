@@ -174,6 +174,9 @@ EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	connect(LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
 }
 
+/// <summary>
+/// Настройка пользовательского интерфейса.
+/// </summary>
 void EditWidget::SetupUI()
 {
 	this->setWindowTitle(QStringLiteral(u"Изменение элемента"));
@@ -615,6 +618,10 @@ void EditWidget::DrawButton_clicked()
 	
 }
 
+/// <summary>
+/// Изменяется резистор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddResistor(bool& correct)
 {
 	if (edited->GetMode() == ResistorParallel || edited->GetMode() == ResistorShunt)
@@ -655,6 +662,10 @@ void EditWidget::AddResistor(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется конденсатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddCapacitor(bool& correct)
 {
 	if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
@@ -690,6 +701,10 @@ void EditWidget::AddCapacitor(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется катушка.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddInduction(bool& correct)
 {
 	if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
@@ -725,6 +740,10 @@ void EditWidget::AddInduction(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется трансформатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddTransform(bool& correct)
 {
 	if (edited->GetMode() == Transform)
@@ -748,6 +767,10 @@ void EditWidget::AddTransform(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется линия передач/шлейф.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddLines(bool& correct)
 {
 	if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)

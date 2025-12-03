@@ -214,6 +214,12 @@ void RenderArea::drawStaticObjects(QPainter& painter)
     AdmitanceRealLines(step, intervalLength, painter);
 }
 
+/// <summary>
+/// Отрисовка линий мнимого сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::ImpedanceImagLines(long double step, long double intervalLength, QPainter& painter)
 {
     Point iPoint;
@@ -286,6 +292,12 @@ void RenderArea::ImpedanceImagLines(long double step, long double intervalLength
     }
 }
 
+/// <summary>
+/// Отрисовка линий реального сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::ImpedanceRealLines(long double step, long double intervalLength, QPainter& painter)
 {
     Point iPoint;
@@ -335,6 +347,12 @@ void RenderArea::ImpedanceRealLines(long double step, long double intervalLength
     }
 }
 
+/// <summary>
+/// Отрисовка линий мнимой проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::AdmitanceImagLines(long double step, long double intervalLength, QPainter& painter)
 {
     Point iPoint;
@@ -407,6 +425,12 @@ void RenderArea::AdmitanceImagLines(long double step, long double intervalLength
     }
 }
 
+/// <summary>
+/// Отрисовка линий реальной проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::AdmitanceRealLines(long double step, long double intervalLength, QPainter& painter)
 {
     Point iPoint;
@@ -466,6 +490,10 @@ void RenderArea::drawDynamicObject(QPainter& painter)
     DrawQ(painter);
 }
 
+/// <summary>
+/// Отрисовка точек.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawPoints(QPainter& painter)
 {
     painter.setPen(Qt::NoPen);
@@ -523,6 +551,10 @@ void RenderArea::DrawPoints(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка элементов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawElements(QPainter& painter)
 {
     painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
@@ -584,6 +616,11 @@ void RenderArea::DrawElements(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка последовательных катушек/конденсаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawIndCapShuntElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -626,6 +663,11 @@ void RenderArea::DrawIndCapShuntElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка последовательных резисторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawResShuntElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -726,6 +768,11 @@ void RenderArea::DrawResShuntElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка параллельных катушек/конденсаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawIndCapParElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -768,6 +815,11 @@ void RenderArea::DrawIndCapParElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка параллельных резисторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawResParElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -870,6 +922,11 @@ void RenderArea::DrawResParElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка линий передач.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawLineElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -962,6 +1019,11 @@ void RenderArea::DrawLineElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка шлейфов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawOSSSElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -1043,6 +1105,11 @@ void RenderArea::DrawOSSSElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка трансформаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
 void RenderArea::DrawTransformElements(QPainter& painter, int ll)
 {
     Point iPoint;
@@ -1152,6 +1219,10 @@ void RenderArea::DrawTransformElements(QPainter& painter, int ll)
     }
 }
 
+/// <summary>
+/// Отрисовка текущего элемента.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1216,6 +1287,10 @@ void RenderArea::DrawCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущей последовательной катушки/конденсатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawIndCapShuntCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1264,6 +1339,10 @@ void RenderArea::DrawIndCapShuntCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущего последовательного резистора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawResShuntCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1343,6 +1422,10 @@ void RenderArea::DrawResShuntCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущей параллельной катушки/конденсатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawIndCapParCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1391,6 +1474,10 @@ void RenderArea::DrawIndCapParCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущего параллельного резистора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawResParCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1470,6 +1557,10 @@ void RenderArea::DrawResParCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущей линии передачи.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawLineCurrent(QPainter& painter)
 {
     Point point;
@@ -1494,6 +1585,10 @@ void RenderArea::DrawLineCurrent(QPainter& painter)
     painter.drawEllipse(QPointF(center2 * SystemParameters::scale + center.x(), center.y()), R * SystemParameters::scale, R * SystemParameters::scale);
 }
 
+/// <summary>
+/// Отрисовка текущего шлейфа.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawOSSSCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1529,6 +1624,10 @@ void RenderArea::DrawOSSSCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка текущего трансформатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawTransformCurrent(QPainter& painter)
 {
     Point iPoint;
@@ -1574,6 +1673,10 @@ void RenderArea::DrawTransformCurrent(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка кругов КСВН.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawVSWR(QPainter& painter)
 {
     QSetIterator<double> k(circuitElements->VSWRCircles);
@@ -1590,6 +1693,10 @@ void RenderArea::DrawVSWR(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка локусов равной добротности.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void RenderArea::DrawQ(QPainter& painter)
 {
     QPointF iPixel;

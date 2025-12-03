@@ -37,6 +37,9 @@ void PreSaveDialog::onAccept()
     accept();
 }
 
+/// <summary>
+/// Отмена сохранения.
+/// </summary>
 void PreSaveDialog::onReject()
 {
     reject();

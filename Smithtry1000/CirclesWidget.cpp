@@ -62,6 +62,9 @@ CirclesWidget::CirclesWidget(QWidget *parent, CircuitElements* circuit)
 	connect(ui->ClearAllOtherButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedQ);
 }
 
+/// <summary>
+/// Загрузка кругов при загрузке файла проекта.
+/// </summary>
 void CirclesWidget::Load()
 {
 	clearOnLoad();
@@ -75,6 +78,9 @@ void CirclesWidget::Load()
 	}
 }
 
+/// <summary>
+/// Очистка от старых кругов при загрузке проекта.
+/// </summary>
 void CirclesWidget::clearOnLoad()
 {
 	for (auto item : ui->listWidgetQ->findItems("*", Qt::MatchWildcard))
@@ -184,6 +190,10 @@ void CirclesWidget::insertVSWRClicked()
 	ui->FieldVSWR->setText("");
 }
 
+/// <summary>
+/// Добавление круга VSWR.
+/// </summary>
+/// <param name="val">Значение.</param>
 void CirclesWidget::addVSWR(double val)
 {
 	circuitElements->VSWRCircles.insert(val);
@@ -197,6 +207,10 @@ void CirclesWidget::addVSWR(double val)
 	}
 }
 
+/// <summary>
+/// Добавление круга Q.
+/// </summary>
+/// <param name="val">Значение.</param>
 void CirclesWidget::addQ(double val)
 {
 	circuitElements->QCircles.insert(val);

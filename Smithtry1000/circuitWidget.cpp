@@ -134,6 +134,9 @@ void CircuitWidget::addSvg(QString path, int x, int y) {
     }
 }
 
+/// <summary>
+/// Изменение ориентации цепи.
+/// </summary>
 void CircuitWidget::Reverse()
 {
     bool vertical = SystemParameters::rotate;
@@ -332,6 +335,10 @@ void CircuitWidget::paintEvent(QPaintEvent* event)
     left = false;
 }
 
+/// <summary>
+/// Отрисовка прямоугольников для настраиваемых элементов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void CircuitWidget::TunedPaint(QPainter& painter)
 {
     if (SystemParameters::tune && SystemParameters::circuitHover)
@@ -427,6 +434,10 @@ void CircuitWidget::TunedPaint(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка значений элементов цепи.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void CircuitWidget::ElementValuesPaint(QPainter& painter)
 {
     QList<Element*> temp = circuitElements->GetCircuitElements();
@@ -604,6 +615,10 @@ void CircuitWidget::ElementValuesPaint(QPainter& painter)
     }
 }
 
+/// <summary>
+/// Отрисовка значения добавляемого элемента.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
 void CircuitWidget::CurrentValuePaint(QPainter& painter)
 {
     QString s1, s3;
@@ -893,6 +908,10 @@ void CircuitWidget::getLeft()
     update();
 }
 
+/// <summary>
+/// Обработка двойного нажатия мыши.
+/// </summary>
+/// <param name="event">Событие мыши.</param>
 void CircuitWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
     if (!SystemParameters::tune && !SystemParameters::edit)

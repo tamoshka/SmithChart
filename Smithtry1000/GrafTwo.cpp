@@ -111,6 +111,9 @@ void GrafTwo::Load()
 	Paint();
 }
 
+/// <summary>
+/// Отрисовка графиков.
+/// </summary>
 void GrafTwo::Paint()
 {
 	ui->widget->legend->setVisible(true);

@@ -24,6 +24,13 @@ AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuit
     connect(saveButton, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
 }
 
+/// <summary>
+/// Рассчёт A-матрицы.
+/// </summary>
+/// <param name="first">Первая матрица.</param>
+/// <param name="second">Вторая матрица.</param>
+/// <param name="circuit">Цеп.</param>
+/// <param name="w">Угловая частота.</param>
 void AmplitudeFrequency::CalculateMatrix(Complex(&first)[2][2], Complex(&second)[2][2], QList<Element*> circuit, long double w)
 {
     for (int i = circuitElements->GetCircuitElements().size() - 1; i >= 0; i--)
@@ -302,6 +309,9 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
     widget->axisRect()->setRangeZoomAxes(axises);
 }
 
+/// <summary>
+/// Очистка графиков.
+/// </summary>
 void AmplitudeFrequency::Clear()
 {
     widget->clearGraphs();

@@ -337,7 +337,7 @@ Element* CircuitElements::jsonToElement(const QJsonObject& obj)
 }
 
 /// <summary>
-/// Загрузка из JSON.
+/// Загрузка из файла SC.
 /// </summary>
 /// <param name="filePath">Путь к файлу.</param>
 /// <returns>Получилось/не получилось.</returns>
@@ -374,7 +374,7 @@ bool CircuitElements::loadFromFile(const QString& filePath)
 }
 
 /// <summary>
-/// Сохранение в файл JSON.
+/// Сохранение в файл SC.
 /// </summary>
 /// <param name="filePath">Путь к файлу.</param>
 /// <returns>Получилось/не получилось.</returns>
@@ -399,6 +399,10 @@ bool CircuitElements::saveToFile(const QString& filePath) const
     return false;
 }
 
+/// <summary>
+/// Сохранение в JSON для САПР.
+/// </summary>
+/// <returns></returns>
 QJsonObject CircuitElements::toCircuitJson() const
 {
     QJsonObject json;
@@ -515,6 +519,18 @@ QJsonObject CircuitElements::toCircuitJson() const
     return json;
 }
 
+/// <summary>
+/// Запись элементов, узлов и проводов в JSON.
+/// </summary>
+/// <param name="prevParallel">Элемент параллельный/трансформатор.</param>
+/// <param name="horCount">Количество горизонтальных элементов/подряд идущих параллельных/трансформаторов.</param>
+/// <param name="nodeMax">Максимальный номер узла.</param>
+/// <param name="node">Текущий номер узла.</param>
+/// <param name="prevNode">Предыдущий номер узла.</param>
+/// <param name="prevOSSS">Элемент шлейф.</param>
+/// <param name="nodes">Узлы в JSON.</param>
+/// <param name="wires">Провода в JSON.</param>
+/// <param name="components">Компоненты в JSON.</param>
 void CircuitElements::ElementsNodesWiresInJSON(bool &prevParallel, int &horCount, int &nodeMax, int &node, int &prevNode, bool& prevOSSS, QJsonObject& nodes, QJsonArray& wires, QJsonArray& components) const
 {
     bool prevprevParallel = prevParallel;
@@ -611,6 +627,16 @@ void CircuitElements::ElementsNodesWiresInJSON(bool &prevParallel, int &horCount
     }
 }
 
+/// <summary>
+/// Логика добавления трансформатора (его узлов и проводов) в JSON.
+/// </summary>
+/// <param name="prevprevParallel">Предыдущий элемент параллельный/трансформатор.</param>
+/// <param name="horCount">Количество горизонтальных элементов/подряд идущих параллельных/трансформаторов.</param>
+/// <param name="nodeMax">Максимальный номер узла.</param>
+/// <param name="prevNode">Предыдущий номер узла.</param>
+/// <param name="nodes">Узлы в JSON.</param>
+/// <param name="wires">Провода в JSON.</param>
+/// <param name="components">Компоненты в JSON.</param>
 void CircuitElements::TransformInJSON(bool& prevprevParallel, int& horCount, int& nodeMax, int& prevNode, QJsonObject& nodes, QJsonArray& wires, QJsonArray& components) const
 {
     if (prevprevParallel)
@@ -726,6 +752,17 @@ void CircuitElements::TransformInJSON(bool& prevprevParallel, int& horCount, int
     horCount++;
 }
 
+/// <summary>
+/// Логика добавления параллельных элементов (их узлов и проводов) в JSON.
+/// </summary>
+/// <param name="prevprevParallel">Предыдущий элемент параллельный/трансформатор.</param>
+/// <param name="horCount">Количество горизонтальных элементов/подряд идущих параллельных/трансформаторов.</param>
+/// <param name="nodeMax">Максимальный номер узла.</param>
+/// <param name="prevNode">Предыдущий номер узла.</param>
+/// <param name="node">Текущий номер узла.</param>
+/// <param name="nodes">Узлы в JSON.</param>
+/// <param name="wires">Провода в JSON.</param>
+/// <param name="components">Компоненты в JSON.</param>
 void CircuitElements::ParallelInJSON(bool& prevprevParallel, int& horCount, int& nodeMax, int& prevNode, int& node, QJsonObject& nodes, QJsonArray& wires, QJsonArray& components) const
 {
     if (prevprevParallel)
@@ -791,6 +828,11 @@ void CircuitElements::ParallelInJSON(bool& prevprevParallel, int& horCount, int&
     }
 }
 
+/// <summary>
+/// Сохранение в JSON.
+/// </summary>
+/// <param name="filePath">Путь к файлу.</param>
+/// <returns>Получилось/не получилось.</returns>
 bool CircuitElements::saveToJSON(const QString& filePath) const
 {
     QJsonObject json = toCircuitJson();
@@ -812,6 +854,16 @@ bool CircuitElements::saveToJSON(const QString& filePath) const
     return false;
 }
 
+/// <summary>
+/// Элемент в JSON для САПР.
+/// </summary>
+/// <param name="element">Элемент.</param>
+/// <param name="node">Текущий номер узла.</param>
+/// <param name="nodeMax">Максимальный номер узла.</param>
+/// <param name="prevTransform">Элемент трансформатор.</param>
+/// <param name="prevParallel">Элемент параллельный/трансформатор.</param>
+/// <param name="prevOSSS">Элемент шлейф.</param>
+/// <returns></returns>
 QJsonObject CircuitElements::elementToCircuitJson(Element* element, int& node, int& nodeMax, bool& prevTransform, bool& prevParallel, bool& prevOSSS)
 {
     if (!element) {

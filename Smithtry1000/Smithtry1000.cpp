@@ -131,6 +131,9 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     timer->start(10);  // Частое обновление для плавности
 }
 
+/// <summary>
+/// Настройка интерфейса
+/// </summary>
 void Smithtry1000::SetupUI()
 {
     this->resize(1700, 937);
@@ -156,6 +159,29 @@ void Smithtry1000::SetupUI()
     actionColors = new QAction(this);
     menuTools->addAction(actionColors);
     toolbar = new QToolBar("Главное меню", this);
+    toolbar->setStyleSheet(
+        "QToolBar {"
+        "   background: #f0f0f0;"
+        "   border: 1px solid #ccc;"
+        "   spacing: 2px;"
+        "   padding: 2px;"
+        "}"
+        "QToolButton {"
+        "   background: white;"
+        "   border: 1px solid #999;"
+        "   border-radius: 2px;"
+        "   padding: 2px 2px;"
+        "   margin: 2px;"
+        "}"
+        "QToolButton:hover {"
+        "   background: #e3f2fd;"
+        "   border: 1px solid #2196F3;"
+        "}"
+        "QToolButton:pressed {"
+        "   background: #bbdefb;"
+        "   border: 1px solid #1976D2;"
+        "}"
+    );
     OpenButton = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/Open.png")), "");
     SaveButton = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/Save.png")), "");
     CopyButton = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/Copy.png")), "");
@@ -286,7 +312,7 @@ void Smithtry1000::Reverse()
 /// </summary>
 void Smithtry1000::AWR_buttonClicked()
 {
-    /*if (SystemParameters::index <= 1)
+    if (SystemParameters::index <= 1)
     {
         QMessageBox::information(this, "Внимание",
             "Добавьте хотя бы 1 элемент в цепь.");
@@ -301,7 +327,7 @@ void Smithtry1000::AWR_buttonClicked()
         thread->deleteLater();
         });
 
-    thread->start();*/
+    thread->start();
 }
 
 /// <summary>
@@ -310,7 +336,7 @@ void Smithtry1000::AWR_buttonClicked()
 /// <returns>Успешно/нет.</returns>
 bool Smithtry1000::ExportToAWR()
 {
-    /*if (!awr.Initialize()) {
+    if (!awr.Initialize()) {
         return false;
     }
 
@@ -582,7 +608,7 @@ bool Smithtry1000::ExportToAWR()
         qDebug() << "Project saved successfully!";
         return true;
     }
-    */
+    
     return false;
 }
 
@@ -696,6 +722,9 @@ void Smithtry1000::getallchangedsignal()
     renderArea->update();
 }
 
+/// <summary>
+/// Вспомогательный метод для изменения всех элементов в цепи.
+/// </summary>
 void Smithtry1000::ChangeAllElements()
 {
     long double Re, Im, denominator, x, y;
@@ -926,6 +955,12 @@ void Smithtry1000::Redo()
     }
 }
 
+/// <summary>
+/// Преобразование режима работы элемента в имя элемента (путь).
+/// </summary>
+/// <param name="name">Имя/путь.</param>
+/// <param name="mood">Режим.</param>
+/// <param name="j">Номер элемента в списке.</param>
 void Smithtry1000::SwitchElementName(QString& name, bool& mood, int j)
 {
     switch (circuitElements->GetCircuitElements()[j]->GetMode())
@@ -993,6 +1028,9 @@ void Smithtry1000::SwitchElementName(QString& name, bool& mood, int j)
     }
 }
 
+/// <summary>
+/// Восстановление элемента.
+/// </summary>
 void Smithtry1000::RedoElement()
 {
     circuitElements->AddCircuitElements(tempCircuit.GetCircuitElements()[circuitElements->GetCircuitElements().size()]);
@@ -1047,6 +1085,9 @@ void Smithtry1000::RedoElement()
     SystemParameters::index++;
 }
 
+/// <summary>
+/// Восстановление точек.
+/// </summary>
 void Smithtry1000::RedoPoints()
 {
     circuitElements->morePoints.append(tempCircuit.morePoints[circuitElements->morePoints.size()]);
@@ -1169,6 +1210,9 @@ void Smithtry1000::Load()
     }
 }
 
+/// <summary>
+/// Сохранение перед загрузкой.
+/// </summary>
 void Smithtry1000::SaveBeforeLoad()
 {
     if (SystemParameters::index > 1)
@@ -1245,6 +1289,11 @@ void Smithtry1000::SaveBeforeLoad()
     }
 }
 
+/// <summary>
+/// Изменение координат элементов в зависимости от z0.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::CorrectZ0(long double x, long double y)
 {
     if (x != circuitElements->firstPoint.x || y != circuitElements->firstPoint.y)
@@ -1357,6 +1406,9 @@ void Smithtry1000::CorrectZ0(long double x, long double y)
     }
 }
 
+/// <summary>
+/// Загрузка элементов и точек.
+/// </summary>
 void Smithtry1000::LoadElementsAndPoints()
 {
     QString name;
@@ -1641,6 +1693,10 @@ void Smithtry1000::onTransform_buttonClicked()
     }
 }
 
+/// <summary>
+/// Добавление трансформатора в цепь.
+/// </summary>
+/// <param name="zl">Комплексное сопротивление прошлой точки.</param>
 void Smithtry1000::AppendTransformer(Complex zl)
 {
     SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
@@ -1828,6 +1884,10 @@ void Smithtry1000::onLine_buttonClicked()
     }
 }
 
+/// <summary>
+/// Добавление линии передач в цепь.
+/// </summary>
+/// <param name="zl">Комплексное сопротивление прошлой точки.</param>
 void Smithtry1000::AppendLine(Complex zl)
 {
     SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
@@ -2106,6 +2166,11 @@ void Smithtry1000::onKeyboard_buttonClicked()
     }
 }
 
+/// <summary>
+/// Добавление свободной точки в цепь.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::AppendPoint(long double x, long double y)
 {
     QPoint temp = QPoint(x * SystemParameters::scale + renderArea->rect().center().x(), y * SystemParameters::scale + renderArea->rect().center().y());
@@ -2337,6 +2402,10 @@ void Smithtry1000::VerticalLines()
     SystemParameters::Model = Default;
 }
 
+/// <summary>
+/// Добавление шлейфов в цепь.
+/// </summary>
+/// <param name="yl">Комплексная проводимость прошлой точки.</param>
 void Smithtry1000::AppendVerticalLines(Complex yl)
 {
     SystemParameters::rAdmitanceImagCalculation(SystemParameters::lastPointX, SystemParameters::lastPointY);
@@ -2628,6 +2697,10 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
     }
 }
 
+/// <summary>
+/// Получение сигнала о нажатии левой кнопки мыши на дочернем виджете.
+/// </summary>
+/// <param name="pos">Позиция курсора.</param>
 void Smithtry1000::getLeftClicked(QPoint pos)
 {
     leftClicked = true;
@@ -2638,6 +2711,10 @@ void Smithtry1000::getLeftClicked(QPoint pos)
     lastPos = pos;
 }
 
+/// <summary>
+/// Получение информации о перемещении мыши на дочернем виджете ДВС.
+/// </summary>
+/// <param name="pos">Новая позиция курсора.</param>
 void Smithtry1000::getMoved(QPoint pos)
 {
     QPoint delta = pos - lastPos;
@@ -2655,6 +2732,9 @@ void Smithtry1000::getMoved(QPoint pos)
     lastPos = pos;
 }
 
+/// <summary>
+/// Получение информации об отжатии мыши на дочернем виджете ДВС.
+/// </summary>
 void Smithtry1000::getReleased()
 {
     leftClicked = false;
@@ -2878,6 +2958,11 @@ void Smithtry1000::onResistor_buttonClicked()
     }
 }
 
+/// <summary>
+/// Добавление последовательного резистора в цепь.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::AppendResShunt(long double x, long double y)
 {
     SystemParameters::rImpedanceRealCalculation(x, y);
@@ -3093,6 +3178,11 @@ void Smithtry1000::onResistorParallel_buttonClicked()
     }
 }
 
+/// <summary>
+/// Добавление параллельного резистора в цепь.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::AppendResPar(long double x, long double y)
 {
     SystemParameters::rAdmitanceRealCalculation(x, y);
@@ -3390,6 +3480,11 @@ void Smithtry1000::ImaginaryImpedance()
     SystemParameters::Model = Default;
 }
 
+/// <summary>
+/// Добавление последовательной катушки/конденсатора в цепь.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::AppendIndCapShunt(long double x, long double y)
 {
     SystemParameters::rImpedanceImagCalculation(x, y);
@@ -3607,6 +3702,11 @@ void Smithtry1000::ImaginaryAdmitance()
     SystemParameters::Model = Default;
 }
 
+/// <summary>
+/// Добавление параллельной катушки/конденсатора в цепь.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::AppendIndCapPar(long double x, long double y)
 {
     SystemParameters::rAdmitanceImagCalculation(x, y);
@@ -3769,6 +3869,11 @@ void Smithtry1000::onTimeout()
     }
 }
 
+/// <summary>
+/// Изменение таблицы с параметрами по координатам курсора.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::ChangeCursorTable(long double x, long double y)
 {
     if (pow(x, 2) + pow(y, 2) <= 1)
@@ -3895,6 +4000,13 @@ QPoint Smithtry1000::getPointOnCircle(int dx, int dy)
     return QPoint(x, y);
 }
 
+/// <summary>
+/// Получение новой точки для последовательной катушки/конденсатора.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::IndCapShuntPoint(int dx, int dy, long double& x, long double& y)
 {
     t = t;
@@ -3996,6 +4108,13 @@ void Smithtry1000::IndCapShuntPoint(int dx, int dy, long double& x, long double&
     }
 }
 
+/// <summary>
+/// Получение новой точки для параллельной катушки/конденсатора.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::IndCapParPoint(int dx, int dy, long double& x, long double& y)
 {
     t = t;
@@ -4098,6 +4217,13 @@ void Smithtry1000::IndCapParPoint(int dx, int dy, long double& x, long double& y
     }
 }
 
+/// <summary>
+/// Получение новой точки для последовательного резистора.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::ResShuntPoint(int dx, int dy, long double& x, long double& y)
 {
     x = 0;
@@ -4221,6 +4347,13 @@ void Smithtry1000::ResShuntPoint(int dx, int dy, long double& x, long double& y)
     }
 }
 
+/// <summary>
+/// Получение новой точки для параллельного резистора.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::ResParPoint(int dx, int dy, long double& x, long double& y)
 {
     if (SystemParameters::resistorLinear)
@@ -4340,6 +4473,13 @@ void Smithtry1000::ResParPoint(int dx, int dy, long double& x, long double& y)
     }
 }
 
+/// <summary>
+/// Получение новой точки для шлейфов.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::OSSSPoint(int dx, int dy, long double& x, long double& y)
 {
     t = t;
@@ -4444,6 +4584,13 @@ void Smithtry1000::OSSSPoint(int dx, int dy, long double& x, long double& y)
     }
 }
 
+/// <summary>
+/// Получение новой точки для линии передач.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::LinePoint(int dx, int dy, long double& x, long double& y)
 {
     t = t;
@@ -4562,6 +4709,13 @@ void Smithtry1000::LinePoint(int dx, int dy, long double& x, long double& y)
     }
 }
 
+/// <summary>
+/// Получение новой точки для трансформатора (линеаризированного).
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::TransformPoint(int dx, int dy, long double& x, long double& y)
 {
     x = 0;
@@ -4604,6 +4758,13 @@ void Smithtry1000::TransformPoint(int dx, int dy, long double& x, long double& y
     NormalTransformPoint(dx, dy, x, y);
 }
 
+/// <summary>
+/// Получение новой точки для трансформатора обычного.
+/// </summary>
+/// <param name="dx">Сдвиг по x.</param>
+/// <param name="dy">Сдвиг по y.</param>
+/// <param name="x">Новый x.</param>
+/// <param name="y">Новый y.</param>
 void Smithtry1000::NormalTransformPoint(int dx, int dy, long double& x, long double& y)
 {
     long double dif;
@@ -4733,6 +4894,11 @@ void Smithtry1000::NormalTransformPoint(int dx, int dy, long double& x, long dou
     }
 }
 
+/// <summary>
+/// Обновление таблицы параметров по позиции курсора в режиме добавления элементов.
+/// </summary>
+/// <param name="x">x.</param>
+/// <param name="y">y.</param>
 void Smithtry1000::UpdateCursorTableInMode(long double& x, long double& y)
 {
     SystemParameters::lastPointX = x;
@@ -4935,7 +5101,13 @@ void Smithtry1000::getsignalDVS()
     renderArea->update();
 }
 
-
+/// <summary>
+/// Реакция на изменение размера виджета ДВС.
+/// </summary>
+/// <param name="width">Ширина окна.</param>
+/// <param name="height">Высота окна.</param>
+/// <param name="oldwidth">Старая ширина.</param>
+/// <param name="oldheight">Старая высота.</param>
 void Smithtry1000::getResized(long double width, long double height, long double oldwidth, long double oldheight)
 {
     long double coef1 = width / oldwidth;

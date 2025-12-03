@@ -108,7 +108,7 @@ private slots:
     void CAD_export();
 
 private:
-    ///AWRInterface awr = AWRInterface();
+    AWRInterface awr = AWRInterface();
     QToolBar* toolbar;
     QAction* actionColors;
     QWidget* centralWidget;
