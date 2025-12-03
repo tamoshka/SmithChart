@@ -248,6 +248,9 @@ ColourSetting::ColourSetting(QWidget *parent)
 	connect(OKButton, &QPushButton::clicked, this, &ColourSetting::ButtonOK);
 }
 
+/// <summary>
+/// Настройка пользовательского интерфейса.
+/// </summary>
 void ColourSetting::SetupUI()
 {
 	this->resize(772, 549);
@@ -288,6 +291,9 @@ void ColourSetting::SetupUI()
 
 }
 
+/// <summary>
+/// Настройка страницы ДВС.
+/// </summary>
 void ColourSetting::SetupDVS()
 {
 	groupBox = new QGroupBox(DVSTab);
@@ -524,6 +530,9 @@ void ColourSetting::SetupDVS()
 	checkBoxMainLabels->setText(QStringLiteral(u"Осн. подписи"));
 }
 
+/// <summary>
+/// Настройка страницы S-графики.
+/// </summary>
 void ColourSetting::SetupSPlot()
 {
 	groupBox_6 = new QGroupBox(SPlotTab);
@@ -637,6 +646,9 @@ void ColourSetting::SetupSPlot()
 
 }
 
+/// <summary>
+/// Настройка страницы основное.
+/// </summary>
 void ColourSetting::SetupMain() 
 {
 	groupBox_9 = new QGroupBox(MainTab);
@@ -650,6 +662,9 @@ void ColourSetting::SetupMain()
 	checkBoxSPlot->setText(QStringLiteral(u"S-графики"));
 }
 
+/// <summary>
+/// Настройка страницы АЧХ.
+/// </summary>
 void ColourSetting::SetupAFR()
 {
 	groupBox_8 = new QGroupBox(AFRTab);

@@ -60,6 +60,9 @@ CirclesWidget::CirclesWidget(QWidget *parent, CircuitElements* circuit)
 	connect(ClearAllOtherButtonQ, &QPushButton::clicked, this, &CirclesWidget::clearAllOthersClickedQ);
 }
 
+/// <summary>
+/// Настройка пользовательского интерфейса.
+/// </summary>
 void CirclesWidget::SetupUI()
 {
 	this->resize(600, 600);
