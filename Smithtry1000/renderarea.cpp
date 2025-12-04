@@ -1813,7 +1813,11 @@ void RenderArea::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
         leftClicked = true;
-        emit leftsignal(event->globalPos());
+        emit leftsignal(event->globalPos(), true);
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        emit leftsignal(event->globalPos(), false);
     }
 }
 

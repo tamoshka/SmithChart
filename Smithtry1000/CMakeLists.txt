@@ -29,8 +29,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set(PROJECT_SOURCES
     awr_interface.h
     AWR.cpp
-    AWRExportThread.h
-    AWRExportThread.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h

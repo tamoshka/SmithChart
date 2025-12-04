@@ -64,7 +64,7 @@ public slots:
     void getallchangedsignal();
     void Reverse();
     void GetEditSignal(Element* element);
-    void getLeftClicked(QPoint);
+    void getLeftClicked(QPoint, bool);
     void getReleased();
     void getMoved(QPoint);
     void getResized(long double, long double, long double, long double);
@@ -104,11 +104,12 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    void AWR_buttonClicked();
+    void ExportToAWR();
     void CAD_export();
 
 private:
     AWRInterface awr = AWRInterface();
+
     QToolBar* toolbar;
     QAction* actionColors;
     QWidget* centralWidget;
@@ -173,7 +174,6 @@ private:
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();
-    bool ExportToAWR();
     void mousePressEvent(QMouseEvent* event) override;
     bool trackingEnabled;
     bool leftClicked;

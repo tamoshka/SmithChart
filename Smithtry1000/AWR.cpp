@@ -8,7 +8,7 @@ AWRInterface::AWRInterface()
     , m_pProject(nullptr)
     , m_pSchematic(nullptr)
     , m_pLastElement(nullptr)
-    , m_bInitialized(false) 
+    , m_bInitialized(false)
     , m_portSchematic(nullptr)
     , m_port2Schematic(nullptr)
 {
@@ -29,7 +29,7 @@ bool AWRInterface::Initialize()
 {
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     if (FAILED(hr)) {
-        qDebug() << "Failed to initialize COM: 0x"<<hr;
+        qDebug() << "Failed to initialize COM: 0x" << hr;
         return false;
     }
 
@@ -152,7 +152,7 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
     VariantInit(&result);
     HRESULT hr = InvokeMethod(m_pAWRApp, L"New_Project", &result, DISPATCH_METHOD);
 
-    qDebug() << "New_Project returned: 0x"<<hr;
+    qDebug() << "New_Project returned: 0x" << hr;
     if (result.vt != VT_EMPTY) {
         qDebug() << "Result variant type: ";
     }
@@ -162,9 +162,9 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
     VariantInit(&projectVar);
 
     // Пробуем свойство Project
-    qDebug()<<"Trying to get Project property...";
+    qDebug() << "Trying to get Project property...";
     hr = GetProperty(m_pAWRApp, L"Project", &projectVar);
-    qDebug() << "GetProperty(Project) returned: 0x"<<hr;
+    qDebug() << "GetProperty(Project) returned: 0x" << hr;
 
     if (SUCCEEDED(hr) && projectVar.vt == VT_DISPATCH && projectVar.pdispVal != nullptr) {
         m_pProject = projectVar.pdispVal;
@@ -177,7 +177,7 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
     VARIANT projectsVar;
     VariantInit(&projectsVar);
     hr = GetProperty(m_pAWRApp, L"Projects", &projectsVar);
-    qDebug() << "GetProperty(Projects) returned: 0x"<<hr;
+    qDebug() << "GetProperty(Projects) returned: 0x" << hr;
 
     if (SUCCEEDED(hr) && projectsVar.vt == VT_DISPATCH && projectsVar.pdispVal != nullptr) {
         // Получаем количество проектов
@@ -187,7 +187,7 @@ bool AWRInterface::CreateProject(const std::wstring& projectName)
 
         if (SUCCEEDED(hr)) {
             long count = (countVar.vt == VT_I4) ? countVar.lVal : 0;
-            qDebug() << "Projects count: "<<count;
+            qDebug() << "Projects count: " << count;
 
             if (count > 0) {
                 // Получаем первый проект через Item(1)
@@ -309,8 +309,8 @@ bool AWRInterface::ClearAllPortElements(bool end)
             LOCALE_USER_DEFAULT, &dispid);
     }
 
-   
-   
+
+
     if (FAILED(hr)) return false;
 
     DISPPARAMS noParams = { NULL, NULL, 0, 0 };
@@ -329,7 +329,7 @@ bool AWRInterface::ClearAllPortElements(bool end)
             DISPATCH_PROPERTYGET, &noParams,
             &varElements, NULL, NULL);
     }
-    
+
     if (FAILED(hr) || varElements.vt != VT_DISPATCH) {
         VariantClear(&varElements);
         return false;
@@ -537,7 +537,7 @@ bool AWRInterface::AddElement(const std::wstring& elementType, double x, double 
 
     HRESULT hr = GetProperty(m_pSchematic, L"Elements", &elements);
     if (FAILED(hr) || elements.vt != VT_DISPATCH) {
-        qDebug() << "Failed to get Elements collection: 0x" <<hr;
+        qDebug() << "Failed to get Elements collection: 0x" << hr;
 
         // Пробуем альтернативные имена
         hr = GetProperty(m_pSchematic, L"Schematic_Elements", &elements);
@@ -585,7 +585,7 @@ bool AWRInterface::AddElement(const std::wstring& elementType, double x, double 
     SysFreeString(args[3].bstrVal);
 
     if (FAILED(hr)) {
-        qDebug() << "Failed to add element: 0x"<< hr;
+        qDebug() << "Failed to add element: 0x" << hr;
         elements.pdispVal->Release();
         return false;
     }
@@ -637,7 +637,7 @@ bool AWRInterface::AddPortElement(const std::wstring& elementType, double x, dou
     {
         hr = GetProperty(m_portSchematic, L"Elements", &elements);
     }
-    
+
     if (FAILED(hr) || elements.vt != VT_DISPATCH) {
         qDebug() << "Failed to get Elements collection: 0x" << hr;
 
@@ -1321,7 +1321,7 @@ bool AWRInterface::SaveProject(const std::wstring& filePath) {
 /// <returns>Хэш-результат.</returns>
 HRESULT AWRInterface::InvokeMethod(IDispatch* pDisp, LPCOLESTR methodName,
     VARIANT* pResult, WORD wFlags,
-    DISPPARAMS* pParams) 
+    DISPPARAMS* pParams)
 {
     DISPID dispid;
     HRESULT hr = pDisp->GetIDsOfNames(IID_NULL, const_cast<LPOLESTR*>(&methodName),
@@ -1342,7 +1342,7 @@ HRESULT AWRInterface::InvokeMethod(IDispatch* pDisp, LPCOLESTR methodName,
 /// <param name="propName">Название метода.</param>
 /// <param name="pResult">Формат данных.</param>
 /// <returns>Хэш-результат.</returns>
-HRESULT AWRInterface::GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult) 
+HRESULT AWRInterface::GetProperty(IDispatch* pDisp, LPCOLESTR propName, VARIANT* pResult)
 {
     return InvokeMethod(pDisp, propName, pResult, DISPATCH_PROPERTYGET);
 }

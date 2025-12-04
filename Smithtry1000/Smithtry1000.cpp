@@ -1,4 +1,4 @@
-﻿#include "AWRExportThread.h"
+﻿#include "Smithtry1000.h"
 #include <QCursor>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -26,7 +26,6 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     SetupUI();
     this->sParameters = sParameters1;
     SystemParameters::Model = Default;
-    
     pointTable->setColumnCount(5);
     pointTable->setRowCount(1);
     pointTable->setColumnWidth(0, 50);
@@ -102,7 +101,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(SaveButton, &QAction::triggered, this, &Smithtry1000::Save);
     connect(OpenButton, &QAction::triggered, this, &Smithtry1000::Load);
     connect(StepForwardButton, &QAction::triggered, this, &Smithtry1000::Redo);
-    connect(AWRButton, &QAction::triggered, this, &Smithtry1000::AWR_buttonClicked);
+    connect(AWRButton, &QAction::triggered, this, &Smithtry1000::ExportToAWR);
     connect(CADButton, &QAction::triggered, this, &Smithtry1000::CAD_export);
     QObject::connect(circlesWidget, &CirclesWidget::circle, this, &Smithtry1000::getCirclesSignal);
     QObject::connect(sParameters->set, &ColourSetting::signalS12S21, this, &Smithtry1000::getS12S21signal);
@@ -157,6 +156,7 @@ void Smithtry1000::SetupUI()
     menuBar->addAction(menuWindow->menuAction());
     menuBar->addAction(menuHelp->menuAction());
     actionColors = new QAction(this);
+    actionColors->setText(QStringLiteral("Пользовательские настройки"));
     menuTools->addAction(actionColors);
     toolbar = new QToolBar("Главное меню", this);
     toolbar->setStyleSheet(
@@ -209,7 +209,7 @@ void Smithtry1000::SetupUI()
     InductionParallel_button = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/vertical_i.svg")), "");
     CapacitorParallel_button = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/vertical_c.svg")), "");
     OSLine_button = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/os.svg")), "");
-    SSLine_button = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/ss.svg")), ""); 
+    SSLine_button = toolbar->addAction(QIcon(QString::fromUtf8(":/Images/ss.svg")), "");
     toolbar->addSeparator();
     GraphButton = toolbar->addAction(QStringLiteral(u"АЧХ"));
     ExportNetlistButton = toolbar->addAction(QStringLiteral(u"Netlist"));
@@ -232,12 +232,16 @@ void Smithtry1000::SetupUI()
     pointTable->setColumnCount(5);
     pointTable->horizontalHeader()->setDefaultSectionSize(70);
 
-    QWidget* centralWidget2 = new QWidget(this);
-    QVBoxLayout* vBox = new QVBoxLayout(centralWidget2);
+    centralWidget = new QWidget(this);
+    QVBoxLayout* vBox = new QVBoxLayout(centralWidget);
     mdiArea = new QMdiArea(this);
+    mdiArea->setContentsMargins(0, 0, 0, 0);
+
+    vBox->setContentsMargins(0, 0, 0, 0);
+    vBox->setSpacing(0);
     vBox->addWidget(toolbar);
     vBox->addWidget(mdiArea);
-    setCentralWidget(centralWidget2);
+    setCentralWidget(centralWidget);
     int mdiWidth = 1600;
     int mdiHeight = 800;
     QMdiSubWindow* dvs = mdiArea->addSubWindow(scrollAreaDiagram);
@@ -308,310 +312,285 @@ void Smithtry1000::Reverse()
 }
 
 /// <summary>
-/// Метод для кнопки AWR, запускающий отдельный поток для COM.
-/// </summary>
-void Smithtry1000::AWR_buttonClicked()
-{
-    if (SystemParameters::index <= 1)
-    {
-        QMessageBox::information(this, "Внимание",
-            "Добавьте хотя бы 1 элемент в цепь.");
-        return;
-    }
-
-    // Создаём поток для экспорта
-    AWRExportThread* thread = new AWRExportThread(this);
-
-    connect(thread, &AWRExportThread::finished, [this, thread]() {
-        bool success = thread->getSuccess();
-        thread->deleteLater();
-        });
-
-    thread->start();
-}
-
-/// <summary>
 /// Экспорт схемы в AWR.
 /// </summary>
 /// <returns>Успешно/нет.</returns>
-bool Smithtry1000::ExportToAWR()
+void Smithtry1000::ExportToAWR()
 {
-    if (!awr.Initialize()) {
-        return false;
-    }
-
-    qDebug() << "Creating project...";
-    if (!awr.CreateProject(L"SmithChartMatch")) {
-        return false;
-    }
-
-    int x = 1000;
-    if (awr.m_portSchematic == nullptr)
+    if (SystemParameters::index > 1)
     {
-        if (!awr.AddPortSchematic(L"ZL", false)) {
-            return false;
-        }
-    }
-    else
-    {
-        awr.ClearAllPortElements(false);
-    }
-    qDebug() << "\nAdding source port...";
-    if (awr.AddPortElement(L"PORT", 1000, 800, 180, false))
-    {
-        awr.SetElementParameter(L"P", L"1");
-        awr.SetElementParameter(L"Z", L"50");
-    }
-    if (awr.AddPortElement(L"IMPED", 1000, 800, 270, false))
-    {
-        double real = circuitElements->z.real();
-        double imag = circuitElements->z.imag();
-        wchar_t realstr[64];
-        swprintf(realstr, 64, L"%.2f", real);
-        wchar_t imagstr[64];
-        swprintf(imagstr, 64, L"%.2f", imag);
-        awr.SetElementParameter(L"R", realstr);
-        awr.SetElementParameter(L"X", imagstr);
-    }
-    if (awr.AddPortElement(L"GND", 1000, 1800, 0, false))
-    {
-
-    }
-    qDebug() << "Adding schematic...";
-    if (awr.m_pSchematic == nullptr)
-    {
-        if (!awr.AddSchematic(L"MatchingNetwork")) {
-            return false;
-        }
-    }
-    else
-    {
-        awr.ClearAllElements();
-        awr.ClearAllWires();
-    }
-    if (awr.AddElement(L"PORT_TN", x, 800, 0))
-    {
-        awr.SetElementParameter(L"P", L"2");
-        awr.SetStringElementParameter(L"NET", L"\"ZL\"");
-        awr.SetElementParameter(L"NP", L"1");
-    }
-    bool prevPar = false;
-    for (auto const& val : circuitElements->GetCircuitElements())
-    {
-        if (val->GetMode() == CapacitorParallel || val->GetMode() == InductionParallel || val->GetMode() == ResistorParallel)
+        if (!awr.Initialize())
         {
-            const wchar_t* type;
-            const wchar_t* cotype;
-            wchar_t valuestr[64];
-            double value;
-            bool ground = true;
-            if (val->GetMode() == CapacitorParallel)
-            {
-                type = L"CAP";
-                cotype = L"C";
-                value = val->GetValue() * 1e12;
-                swprintf(valuestr, 64, L"%.2fpF", value);
-            }
-            else if (val->GetMode() == InductionParallel)
-            {
-                type = L"IND";
-                cotype = L"L";
-                value = val->GetValue() * 1e9;
-                swprintf(valuestr, 64, L"%.2fnH", value);
-            }
-            else if (val->GetMode() == ResistorParallel)
-            {
-                type = L"RES";
-                cotype = L"R";
-                value = val->GetValue();
-                swprintf(valuestr, 64, L"%.2f", value);
-            }
-            if (prevPar == true)
-            {
-                x += 500;
-            }
-            if (awr.AddElement(type, x, 800, 270))
-            {
-                awr.SetElementParameter(cotype, valuestr);
-            }
-            if (awr.AddElement(L"GND", x, 1800, 0))
-            {
-            }
-            if (prevPar == true)
-            {
-                awr.AddWire(x, 800, x - 500, 800);
-            }
-            prevPar = true;
+
         }
-        else if (val->GetMode() == CapacitorShunt || val->GetMode() == InductionShunt || val->GetMode() == ResistorShunt)
+
+        qDebug() << "Creating project...";
+        if (!awr.CreateProject(L"SmithChartMatch"))
         {
-            const wchar_t* type;
-            const wchar_t* cotype;
-            double value;
-            wchar_t valuestr[64];
-            if (val->GetMode() == CapacitorShunt)
-            {
-                type = L"CAP";
-                cotype = L"C";
-                value = val->GetValue() * 1e12;
-                swprintf(valuestr, 64, L"%.2fpF", value);
-            }
-            else if (val->GetMode() == InductionShunt)
-            {
-                type = L"IND";
-                cotype = L"L";
-                value = val->GetValue() * 1e9;
-                swprintf(valuestr, 64, L"%.2fnH", value);
-            }
-            else if (val->GetMode() == ResistorShunt)
-            {
-                type = L"RES";
-                cotype = L"R";
-                value = val->GetValue();
-                swprintf(valuestr, 64, L"%.2f", value);
-            }
-            if (awr.AddElement(type, x, 800, 0))
-            {
-                awr.SetElementParameter(cotype, valuestr);
-            }
-            x += 1000;
-            prevPar = false;
+
         }
-        else if (val->GetMode() == OSLine || val->GetMode() == SSLine || val->GetMode() == Line)
+
+        int x = 1000;
+        if (awr.m_portSchematic == nullptr)
         {
-            const wchar_t* type;
-            double value;
-            double valuez0;
-            double valueEeff;
-            double valueFreq;
-            double angle = 270;
-            if (val->GetMode() == OSLine)
-            {
-                type = L"TLOCP";
+            if (!awr.AddPortSchematic(L"ZL", false)) {
             }
-            else if (val->GetMode() == SSLine)
-            {
-                type = L"TLSCP";
+        }
+        else
+        {
+            awr.ClearAllPortElements(false);
+        }
+        qDebug() << "\nAdding source port...";
+        if (awr.AddPortElement(L"PORT", 1000, 800, 180, false))
+        {
+            awr.SetElementParameter(L"P", L"1");
+            awr.SetElementParameter(L"Z", L"50");
+        }
+        if (awr.AddPortElement(L"IMPED", 1000, 800, 270, false))
+        {
+            double real = circuitElements->z.real();
+            double imag = circuitElements->z.imag();
+            wchar_t realstr[64];
+            swprintf(realstr, 64, L"%.2f", real);
+            wchar_t imagstr[64];
+            swprintf(imagstr, 64, L"%.2f", imag);
+            awr.SetElementParameter(L"R", realstr);
+            awr.SetElementParameter(L"X", imagstr);
+        }
+        if (awr.AddPortElement(L"GND", 1000, 1800, 0, false))
+        {
+
+        }
+        qDebug() << "Adding schematic...";
+        if (awr.m_pSchematic == nullptr)
+        {
+            if (!awr.AddSchematic(L"MatchingNetwork")) {
             }
-            else
+        }
+        else
+        {
+            awr.ClearAllElements();
+            awr.ClearAllWires();
+        }
+        if (awr.AddElement(L"PORT_TN", x, 800, 0))
+        {
+            awr.SetElementParameter(L"P", L"2");
+            awr.SetStringElementParameter(L"NET", L"\"ZL\"");
+            awr.SetElementParameter(L"NP", L"1");
+        }
+        bool prevPar = false;
+        for (auto const& val : circuitElements->GetCircuitElements())
+        {
+            if (val->GetMode() == CapacitorParallel || val->GetMode() == InductionParallel || val->GetMode() == ResistorParallel)
             {
-                angle = 0;
-                type = L"TLINP";
-            }
-            VerticalLinesElement* temp = dynamic_cast<VerticalLinesElement*>(val);
-            value = temp->GetElectricalLength();
-            valuez0 = temp->GetValue();
-            valueEeff = pow(temp->GetElectricalLength() / temp->GetMechanicalLength(), 2);
-            valueFreq = circuitElements->frequencyFirstPoint / 1e6;
-            wchar_t valuestr[64];
-            swprintf(valuestr, 64, L"%.2fmm", value);
-            wchar_t valuez0str[64];
-            swprintf(valuez0str, 64, L"%.2f", valuez0);
-            wchar_t valueeeffstr[64];
-            swprintf(valueeeffstr, 64, L"%.2f", valueEeff);
-            wchar_t valuefreqstr[64];
-            swprintf(valuefreqstr, 64, L"%.2fMHz", valueFreq);
-            if (prevPar == true && val->GetMode() != Line)
-            {
-                x += 1000;
-            }
-            if (awr.AddElement(type, x, 800, angle))
-            {
-                awr.SetElementParameter(L"L", valuestr);
-                awr.SetElementParameter(L"Z0", valuez0str);
-                awr.SetElementParameter(L"Eeff", valueeeffstr);
-                awr.SetElementParameter(L"F0", valuefreqstr);
-            }
-            if (val->GetMode() == Line)
-            {
-                x += 1000;
-                prevPar = false;
-            }
-            else
-            {
+                const wchar_t* type;
+                const wchar_t* cotype;
+                wchar_t valuestr[64];
+                double value;
+                bool ground = true;
+                if (val->GetMode() == CapacitorParallel)
+                {
+                    type = L"CAP";
+                    cotype = L"C";
+                    value = val->GetValue() * 1e12;
+                    swprintf(valuestr, 64, L"%.2fpF", value);
+                }
+                else if (val->GetMode() == InductionParallel)
+                {
+                    type = L"IND";
+                    cotype = L"L";
+                    value = val->GetValue() * 1e9;
+                    swprintf(valuestr, 64, L"%.2fnH", value);
+                }
+                else if (val->GetMode() == ResistorParallel)
+                {
+                    type = L"RES";
+                    cotype = L"R";
+                    value = val->GetValue();
+                    swprintf(valuestr, 64, L"%.2f", value);
+                }
                 if (prevPar == true)
                 {
-                    awr.AddWire(x, 800, x - 1000, 800);
+                    x += 500;
+                }
+                if (awr.AddElement(type, x, 800, 270))
+                {
+                    awr.SetElementParameter(cotype, valuestr);
+                }
+                if (awr.AddElement(L"GND", x, 1800, 0))
+                {
+                }
+                if (prevPar == true)
+                {
+                    awr.AddWire(x, 800, x - 500, 800);
                 }
                 prevPar = true;
             }
-        }
-        else if (val->GetMode() == Transform)
-        {
-            double value = val->GetValue();
-            if (prevPar == true)
+            else if (val->GetMode() == CapacitorShunt || val->GetMode() == InductionShunt || val->GetMode() == ResistorShunt)
             {
+                const wchar_t* type;
+                const wchar_t* cotype;
+                double value;
+                wchar_t valuestr[64];
+                if (val->GetMode() == CapacitorShunt)
+                {
+                    type = L"CAP";
+                    cotype = L"C";
+                    value = val->GetValue() * 1e12;
+                    swprintf(valuestr, 64, L"%.2fpF", value);
+                }
+                else if (val->GetMode() == InductionShunt)
+                {
+                    type = L"IND";
+                    cotype = L"L";
+                    value = val->GetValue() * 1e9;
+                    swprintf(valuestr, 64, L"%.2fnH", value);
+                }
+                else if (val->GetMode() == ResistorShunt)
+                {
+                    type = L"RES";
+                    cotype = L"R";
+                    value = val->GetValue();
+                    swprintf(valuestr, 64, L"%.2f", value);
+                }
+                if (awr.AddElement(type, x, 800, 0))
+                {
+                    awr.SetElementParameter(cotype, valuestr);
+                }
                 x += 1000;
-                awr.AddWire(x, 800, x - 1000, 800);
+                prevPar = false;
             }
-            wchar_t valuestr[64];
-            swprintf(valuestr, 64, L"%.2f", value);
-            if (awr.AddElement(L"XFMR", x, 800, 0))
+            else if (val->GetMode() == OSLine || val->GetMode() == SSLine || val->GetMode() == Line)
             {
-                awr.SetElementParameter(L"N", valuestr);
+                const wchar_t* type;
+                double value;
+                double valuez0;
+                double valueEeff;
+                double valueFreq;
+                double angle = 270;
+                if (val->GetMode() == OSLine)
+                {
+                    type = L"TLOCP";
+                }
+                else if (val->GetMode() == SSLine)
+                {
+                    type = L"TLSCP";
+                }
+                else
+                {
+                    angle = 0;
+                    type = L"TLINP";
+                }
+                VerticalLinesElement* temp = dynamic_cast<VerticalLinesElement*>(val);
+                value = temp->GetElectricalLength();
+                valuez0 = temp->GetValue();
+                valueEeff = pow(temp->GetElectricalLength() / temp->GetMechanicalLength(), 2);
+                valueFreq = circuitElements->frequencyFirstPoint / 1e6;
+                wchar_t valuestr[64];
+                swprintf(valuestr, 64, L"%.2fmm", value);
+                wchar_t valuez0str[64];
+                swprintf(valuez0str, 64, L"%.2f", valuez0);
+                wchar_t valueeeffstr[64];
+                swprintf(valueeeffstr, 64, L"%.2f", valueEeff);
+                wchar_t valuefreqstr[64];
+                swprintf(valuefreqstr, 64, L"%.2fMHz", valueFreq);
+                if (prevPar == true && val->GetMode() != Line)
+                {
+                    x += 1000;
+                }
+                if (awr.AddElement(type, x, 800, angle))
+                {
+                    awr.SetElementParameter(L"L", valuestr);
+                    awr.SetElementParameter(L"Z0", valuez0str);
+                    awr.SetElementParameter(L"Eeff", valueeeffstr);
+                    awr.SetElementParameter(L"F0", valuefreqstr);
+                }
+                if (val->GetMode() == Line)
+                {
+                    x += 1000;
+                    prevPar = false;
+                }
+                else
+                {
+                    if (prevPar == true)
+                    {
+                        awr.AddWire(x, 800, x - 1000, 800);
+                    }
+                    prevPar = true;
+                }
             }
-            if (awr.AddElement(L"GND", x, 1000, 0))
+            else if (val->GetMode() == Transform)
             {
+                double value = val->GetValue();
+                if (prevPar == true)
+                {
+                    x += 1000;
+                    awr.AddWire(x, 800, x - 1000, 800);
+                }
+                wchar_t valuestr[64];
+                swprintf(valuestr, 64, L"%.2f", value);
+                if (awr.AddElement(L"XFMR", x, 800, 0))
+                {
+                    awr.SetElementParameter(L"N", valuestr);
+                }
+                if (awr.AddElement(L"GND", x, 1000, 0))
+                {
+                }
+
+                if (awr.AddElement(L"GND", x + 1000, 1000, 0))
+                {
+                }
+                x += 1500;
+                awr.AddWire(x, 800, x - 500, 800);
+                prevPar = false;
             }
 
-            if (awr.AddElement(L"GND", x + 1000, 1000, 0))
-            {
+        }
+        if (awr.AddElement(L"PORT_TN", x, 800, 180))
+        {
+            awr.SetElementParameter(L"P", L"1");
+            awr.SetStringElementParameter(L"NET", L"\"ZS\"");
+            awr.SetElementParameter(L"NP", L"1");
+        }
+        if (awr.m_port2Schematic == nullptr)
+        {
+            if (!awr.AddPortSchematic(L"ZS", true)) {
             }
-            x += 1500;
-            awr.AddWire(x, 800, x - 500, 800);
-            prevPar = false;
+        }
+        else
+        {
+            awr.ClearAllPortElements(true);
+        }
+        if (awr.AddPortElement(L"PORT", 1000, 800, 0, true))
+        {
+            awr.SetElementParameter(L"P", L"1");
+            awr.SetElementParameter(L"Z", L"50");
+        }
+        if (awr.AddPortElement(L"IMPED", 1000, 800, 270, true))
+        {
+            double real = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real();
+            double imag = -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag();
+            wchar_t realstr[64];
+            swprintf(realstr, 64, L"%.2f", real);
+            wchar_t imagstr[64];
+            swprintf(imagstr, 64, L"%.2f", imag);
+            awr.SetElementParameter(L"R", realstr);
+            awr.SetElementParameter(L"X", imagstr);
+        }
+        if (awr.AddPortElement(L"GND", 1000, 1800, 0, true))
+        {
+
         }
 
-    }
-    if (awr.AddElement(L"PORT_TN", x, 800, 180))
-    {
-        awr.SetElementParameter(L"P", L"1");
-        awr.SetStringElementParameter(L"NET", L"\"ZS\"");
-        awr.SetElementParameter(L"NP", L"1");
-    }
-    if (awr.m_port2Schematic == nullptr)
-    {
-        if (!awr.AddPortSchematic(L"ZS", true)) {
-            return false;
+
+        awr.SetFrequencySweep(1e8, 3e9, 1e8);
+
+        qDebug() << "Saving project...";
+        if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
+            qDebug() << "Project saved successfully!";
         }
     }
-    else
-    {
-        awr.ClearAllPortElements(true);
-    }
-    if (awr.AddPortElement(L"PORT", 1000, 800, 0, true))
-    {
-        awr.SetElementParameter(L"P", L"1");
-        awr.SetElementParameter(L"Z", L"50");
-    }
-    if (awr.AddPortElement(L"IMPED", 1000, 800, 270, true))
-    {
-        double real = circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].real();
-        double imag = -circuitElements->GetCircuitElements()[circuitElements->GetCircuitElements().size() - 1]->GetParameter()[Z].imag();
-        wchar_t realstr[64];
-        swprintf(realstr, 64, L"%.2f", real);
-        wchar_t imagstr[64];
-        swprintf(imagstr, 64, L"%.2f", imag);
-        awr.SetElementParameter(L"R", realstr);
-        awr.SetElementParameter(L"X", imagstr);
-    }
-    if (awr.AddPortElement(L"GND", 1000, 1800, 0, true))
-    {
-
-    }
-
-
-    awr.SetFrequencySweep(1e8, 3e9, 1e8);
-
-    qDebug() << "Saving project...";
-    if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
-        qDebug() << "Project saved successfully!";
-        return true;
-    }
-    
-    return false;
 }
-
 
 /// <summary>
 /// Получение сигнала об изменении всего (при изменении опорного сопротивления).
@@ -2701,14 +2680,25 @@ void Smithtry1000::mousePressEvent(QMouseEvent* event)
 /// Получение сигнала о нажатии левой кнопки мыши на дочернем виджете.
 /// </summary>
 /// <param name="pos">Позиция курсора.</param>
-void Smithtry1000::getLeftClicked(QPoint pos)
+void Smithtry1000::getLeftClicked(QPoint pos, bool left)
 {
-    leftClicked = true;
-    QPoint globalPos = mapToGlobal(pos);
-    QPoint scrollAreaPos = scrollAreaDiagram->viewport()->mapFromGlobal(globalPos);
-    setCursor(Qt::ClosedHandCursor);
-    moving = true;
-    lastPos = pos;
+    if (left)
+    {
+        leftClicked = true;
+        QPoint globalPos = mapToGlobal(pos);
+        QPoint scrollAreaPos = scrollAreaDiagram->viewport()->mapFromGlobal(globalPos);
+        setCursor(Qt::ClosedHandCursor);
+        moving = true;
+        lastPos = pos;
+    }
+    else
+    {
+        rightClicked = true;
+        if (SystemParameters::Model == Default)
+        {
+            onDelete_buttonClicked();
+        }
+    }
 }
 
 /// <summary>

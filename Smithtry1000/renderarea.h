@@ -31,7 +31,7 @@ protected:
 signals:
     void moved(QPoint);
     void released();
-    void leftsignal(QPoint);
+    void leftsignal(QPoint, bool);
     void resized(long double, long double, long double, long double);
 
 public slots:
