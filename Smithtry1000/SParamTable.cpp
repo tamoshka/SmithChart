@@ -6,9 +6,9 @@
 #include <QHeaderView>
 #include <QStandardItemModel>
 #include <QLabel>
-
+#include <ui_ds/atoms/typography/typography.h>
+using namespace ui::ds::atoms::typography;
 using namespace ui::ds::controls::organisms::table_view;
-
 /// <summary>
 /// Конструктор класса SParamTable.
 /// </summary>
@@ -40,6 +40,12 @@ void SParamTable::Load()
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
 
+    QFont paragraphSemibold = ui::ds::atoms::typography::Typography::instance()
+        .getFont(ui::ds::atoms::typography::TFontName::PARAGRAPH_SEMIBOLD);
+    
+    QFont paragraphMedium = ui::ds::atoms::typography::Typography::instance()
+        .getFont(ui::ds::atoms::typography::TFontName::PARAGRAPH_MEDIUM);
+
     if (currentType == TableType::STable2) 
     {
         if (extension == "S2P" || extension == "s2p") 
@@ -63,12 +69,15 @@ void SParamTable::Load()
                     QVariant o(S[j]);
                     QStandardItem* item = new QStandardItem();
                     item->setData(o, Qt::DisplayRole);
+                    item->setFont(paragraphMedium);
+                    item->setTextAlignment(Qt::AlignCenter);
                     model->setItem(i, j, item);
                 }
             }
             
             tableWidget->setModel(model);
             tableWidget->verticalHeader()->hide();
+            tableWidget->horizontalHeader()->setFont(paragraphSemibold);
             tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         }
     }
@@ -92,12 +101,15 @@ void SParamTable::Load()
                     QVariant o(S[j]);
                     QStandardItem* item = new QStandardItem();
                     item->setData(o, Qt::DisplayRole);
+                    item->setFont(paragraphMedium);
+                    item->setTextAlignment(Qt::AlignCenter);
                     model->setItem(i, j, item);
                 }
             }
             
             tableWidget->setModel(model);
             tableWidget->verticalHeader()->hide();
+            tableWidget->horizontalHeader()->setFont(paragraphSemibold);
             tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         }
         else if (extension == "S2P" || extension == "s2p")
@@ -125,12 +137,15 @@ void SParamTable::Load()
                     QVariant o(S[j]);
                     QStandardItem* item = new QStandardItem();
                     item->setData(o, Qt::DisplayRole);
+                    item->setFont(paragraphMedium);
+                    item->setTextAlignment(Qt::AlignCenter);
                     model->setItem(i, j, item);
                 }
             }
             
             tableWidget->setModel(model);
             tableWidget->verticalHeader()->hide();
+            tableWidget->horizontalHeader()->setFont(paragraphSemibold);
             tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         }
     }
