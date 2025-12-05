@@ -7,6 +7,7 @@
 #include "general.h"
 #include <cmath>
 #include <QCursor>
+#include "systemParameters.h"
 
 /// <summary>
 /// Конструктор класса RenderArea.
@@ -14,12 +15,9 @@
 /// <param name="parent">Родительский виджет (Smithtry1000).</param>
 /// <param name="newElements">Цепь.</param>
 RenderArea::RenderArea(QWidget* parent, CircuitElements* newElements) :
-    QWidget(parent),
-    mBackGroundColor(255, 255, 255),
-    mShapeColor(0, 0, 0)
+    QWidget(parent)
 {
     m_cacheValid = false;
-    m_scaleFactor = 2.0;
     circuitElements = newElements;
 }
 
@@ -32,9 +30,17 @@ Point RenderArea::compute_real(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-    long double y = (1 / (r + 1)) * sin_t;
-
+    long double x, y;
+    if (1 + r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
+        y = (1 / (r + 1)) * sin_t;
+    }
     Point tmp;
     tmp.x = x;
     tmp.y = y;
@@ -51,8 +57,17 @@ Point RenderArea::compute_realParallel(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = (cos(t) - r) / (r + 1);
-    long double y = (1 / (r + 1)) * sin_t;
+    long double x, y;
+    if (1 + r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = (cos(t) - r) / (r + 1);
+        y = (1 / (r + 1)) * sin_t;
+    }
 
 
     Point tmp;
@@ -71,8 +86,17 @@ Point RenderArea::compute_imaginary(long double t)
 {
     long double cos_t = cos(t);
     long double sin_t = sin(t);
-    long double x = 1 + (1 / r) * cos_t;
-    long double y = (1 / r) + (1 / r) * sin_t;
+    long double x, y;
+    if (r == 0)
+    {
+        x = 0;
+        y = 0;
+    }
+    else
+    {
+        x = 1 + (1 / r) * cos_t;
+        y = (1 / r) + (1 / r) * sin_t;
+    }
     
     Point tmp;
     tmp.x = x;
@@ -93,16 +117,31 @@ Point RenderArea::compute_imaginaryParallel(long double t)
     long double y;
     if (r > 0)
     {
-        x = (cos_t - abs(r)) / r;
-        y = (1 / r) + (1 / r) * sin_t;
-        y *= -1;
+        if (r == 0)
+        {
+            x = 0;
+            y = 0;
+        }
+        else
+        {
+            x = (cos_t - abs(r)) / r;
+            y = (1 / r) + (1 / r) * sin_t;
+            y *= -1;
+        }
     }
     else
     {
-        x = -(cos_t - abs(r)) / r;
-        y = -(1 / r) + (1 / r) * sin_t;
+        if (r == 0)
+        {
+            x = 0;
+            y = 0;
+        }
+        else
+        {
+            x = -(cos_t - abs(r)) / r;
+            y = -(1 / r) + (1 / r) * sin_t;
+        }
     }
-
     Point tmp;
     tmp.x = x;
     tmp.y = y;
@@ -154,21 +193,37 @@ Point RenderArea::compute_q(long double t, long double radius)
 /// <param name="painter"></param>
 void RenderArea::drawStaticObjects(QPainter& painter)
 {
+    int stepCount = 2000;
+    long double intervalLength = 2 * M_PI;
+    long double step;
+    step = intervalLength / stepCount;
     center = this->rect().center();
     painter.setBrush(SystemParameters::BackgroundColor);
-    painter.setPen(QPen((mShapeColor, 20)));
+    painter.setPen(QPen((QColor(0, 0, 0), 20)));
     painter.drawRect(this->rect());
     painter.drawLine(QPointF(center.x(), -1000 + center.y()), QPointF(center.x(), 1000 + center.y()));
     painter.drawLine(QPointF(-1000 + center.x(), center.y()), QPointF(1000 + center.x(), center.y()));
-    painter.setPen(mShapeColor);
+    painter.setPen(QColor(0, 0, 0));
     painter.setPen(SystemParameters::ImpedanceColor);
-    long double intervalLength = 2 * M_PI;
-    int stepCount = 2000;
-    long double step;
     Point iPoint;
     QPointF iPixel;
-    step = intervalLength / stepCount;
     painter.setPen(QPen(SystemParameters::ImpedanceColor, SystemParameters::linesWidth[1]*0.5));
+    ImpedanceImagLines(step, intervalLength, painter);
+    ImpedanceRealLines(step, intervalLength, painter);
+    AdmitanceImagLines(step, intervalLength, painter);
+    AdmitanceRealLines(step, intervalLength, painter);
+}
+
+/// <summary>
+/// Отрисовка линий мнимого сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::ImpedanceImagLines(long double step, long double intervalLength, QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
     long double m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
@@ -189,22 +244,22 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         }
         iPoint = compute_imaginary(0);
         iPixel.setX
-        (iPoint.x * scale + center.x());
-        iPixel.setY(-iPoint.y * scale + center.y());
+        (iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + center.y());
         bool flagi = false;
         for (long double t = step; t < intervalLength; t += step) {
 
             Point point = compute_imaginary(t);
             QPointF pixel;
-            pixel.setX(point.x * scale + center.x());
-            pixel.setY(-point.y * scale + center.y());
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
 
             if ((abs(pow(point.x, 2) + pow(point.y, 2) - 1) < 0.012) &&
                 ((abs(pow(point.x, 2) + pow(point.y, 2) - 1) > 0.005)) &&
                 flagi == false &&
                 (
-                    (point.y * scale + center.y() > iPixel.y() + 1) ||
-                    (point.y * scale + center.y() < iPixel.y() - 1)
+                    (point.y * SystemParameters::scale + center.y() > iPixel.y() + 1) ||
+                    (point.y * SystemParameters::scale + center.y() < iPixel.y() - 1)
                     )
                 && r > 0
                 )
@@ -212,7 +267,7 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             {
                 QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
-                painter.drawText(point.x * scale + center.x(), -point.y * scale + center.y(), s1);
+                painter.drawText(point.x * SystemParameters::scale + center.x(), -point.y * SystemParameters::scale + center.y(), s1);
                 flagi = true;
             }
             if (pow(point.x, 2) + pow(point.y, 2) < 1)
@@ -235,8 +290,19 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         }
         r = m;
     }
+}
 
-    long double k = 0.125;
+/// <summary>
+/// Отрисовка линий реального сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::ImpedanceRealLines(long double step, long double intervalLength, QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    double k = 0.125;
     for (RenderArea::r = 0; RenderArea::r < 10; RenderArea::r += 0) {
         if (r == 0.25)
         {
@@ -247,22 +313,22 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             r = 10;
         }
         iPoint = compute_real(0);
-        iPixel.setX(iPoint.x * scale + center.x());
-        iPixel.setY(-iPoint.y * scale + center.y());
+        iPixel.setX(iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + center.y());
         bool flagi = false;
         for (long double t = 0; t < intervalLength; t += step) {
 
             Point point = compute_real(t);
             QPointF pixel;
-            pixel.setX(point.x * scale + center.x());
-            pixel.setY(point.y * scale + center.y());
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
 
-            if ((floor(point.y * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
+            if ((floor(point.y * SystemParameters::scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
                 QString s1 = QString::number((double)(r * SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
-                painter.drawText(point.x * scale + center.x(), center.y(), s1);
-                flagi == true;
+                painter.drawText(point.x * SystemParameters::scale + center.x(), center.y(), s1);
+                flagi = true;
             }
             if (r == 1)
             {
@@ -279,8 +345,20 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         k *= 2;
         r = k;
     }
+}
+
+/// <summary>
+/// Отрисовка линий мнимой проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::AdmitanceImagLines(long double step, long double intervalLength, QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
     painter.setPen(QPen(SystemParameters::AdmitanceColor, SystemParameters::linesWidth[2] * 0.5));
-    m = 0;
+    double m = 0;
     for (RenderArea::r = -10; RenderArea::r <= 10; RenderArea::r += 0) {
         if (r == -10)
         {
@@ -300,29 +378,29 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         }
         iPoint = compute_imaginary(0);
         iPixel.setX
-        (-iPoint.x * scale + center.x());
-        iPixel.setY(-iPoint.y * scale + center.y());
+        (-iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + center.y());
         bool flagi = false;
         for (long double t = step; t < intervalLength; t += step) {
 
             Point point = compute_imaginary(t);
             QPointF pixel;
-            pixel.setX(-point.x * scale + center.x());
-            pixel.setY(-point.y * scale + center.y());
+            pixel.setX(-point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
 
             if ((abs(pow(point.x, 2) + pow(point.y, 2) - 1) < 0.012) &&
                 ((abs(pow(point.x, 2) + pow(point.y, 2) - 1) > 0.005)) &&
                 flagi == false &&
                 r < 0 &&
                 (
-                    (point.y * scale + center.y() > iPixel.y() + 1) ||
-                    (point.y * scale + center.y() < iPixel.y() - 1)
+                    (point.y * SystemParameters::scale + center.y() > iPixel.y() + 1) ||
+                    (point.y * SystemParameters::scale + center.y() < iPixel.y() - 1)
                     )
                 )
             {
-                QString s1 = QString::number((double)(r * 1000/-SystemParameters::z0));
+                QString s1 = QString::number((double)(r * 1000 / -SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
-                painter.drawText(-point.x * scale + center.x() + 10, -point.y * scale + center.y() - 10, s1);
+                painter.drawText(-point.x * SystemParameters::scale + center.x() + 10, -point.y * SystemParameters::scale + center.y() - 10, s1);
                 flagi = true;
             }
             if (pow(point.x, 2) + pow(point.y, 2) < 1)
@@ -345,7 +423,19 @@ void RenderArea::drawStaticObjects(QPainter& painter)
         }
         r = m;
     }
-    k = 0.25;
+}
+
+/// <summary>
+/// Отрисовка линий реальной проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::AdmitanceRealLines(long double step, long double intervalLength, QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    double k = 0.25;
     for (RenderArea::r = 0.25; RenderArea::r < 10; RenderArea::r += 0) {
         if (r == 0.25)
         {
@@ -356,23 +446,23 @@ void RenderArea::drawStaticObjects(QPainter& painter)
             r = 10;
         }
         iPoint = compute_real(0);
-        iPixel.setX(-iPoint.x * scale + center.x());
-        iPixel.setY(-iPoint.y * scale + center.y());
+        iPixel.setX(-iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + center.y());
         bool flagi = false;
         for (long double t = 0; t < intervalLength; t += step) {
 
             Point point = compute_real(t);
             QPointF pixel;
-            pixel.setX(-point.x * scale + center.x());
-            pixel.setY(point.y * scale + center.y());
+            pixel.setX(-point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
 
-            if ((floor(point.y * scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
+            if ((floor(point.y * SystemParameters::scale) == 0.0) && (pixel.y() < iPixel.y()) && flagi == false)
             {
-                QString s1 = QString::number((double)(r * 1000/SystemParameters::z0));
+                QString s1 = QString::number((double)(r * 1000 / SystemParameters::z0));
                 painter.setFont(QFont("Arial", 8));
-                painter.drawText(-point.x * scale + center.x(), center.y() + 10, s1);
+                painter.drawText(-point.x * SystemParameters::scale + center.x(), center.y() + 10, s1);
                 painter.setPen(SystemParameters::AdmitanceColor);
-                flagi == true;
+                flagi = true;
             }
             if (r == 1)
             {
@@ -393,26 +483,33 @@ void RenderArea::drawStaticObjects(QPainter& painter)
 /// <param name="painter"></param>
 void RenderArea::drawDynamicObject(QPainter& painter)
 {
-    long double intervalLength = 2 * M_PI;
-    int stepCount = 2000;
-    long double step;
-    Point iPoint;
-    QPointF iPixel;
-    step = intervalLength / stepCount;
+    DrawPoints(painter);
+    DrawElements(painter);
+    DrawCurrent(painter);
+    DrawVSWR(painter);
+    DrawQ(painter);
+}
+
+/// <summary>
+/// Отрисовка точек.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawPoints(QPainter& painter)
+{
     painter.setPen(Qt::NoPen);
     painter.setBrush(SystemParameters::DataPointsColor);
-    if (Model != Default && Model != AddPoint)
+    if (SystemParameters::Model != Default && SystemParameters::Model != AddPoint)
     {
         painter.drawEllipse(cursorPos, 5, 5);
     }
     int i = 0;
     int j = 0;
-    for (int ii = 0; ii < allpointindex; ii++)
+    for (int ii = 0; ii < SystemParameters::allpointindex; ii++)
     {
         if (get<1>(allPoints[ii]))
         {
-            long double x = circuitElements->GetCircuitElements()[i]->GetPoint().x * scale + this->rect().center().x();
-            long double y = circuitElements->GetCircuitElements()[i]->GetPoint().y * scale + this->rect().center().y();
+            long double x = circuitElements->GetCircuitElements()[i]->GetPoint().x * SystemParameters::scale + this->rect().center().x();
+            long double y = circuitElements->GetCircuitElements()[i]->GetPoint().y * SystemParameters::scale + this->rect().center().y();
             QPointF point = QPointF(x, y);
             painter.drawEllipse(point, 5, 5);
             painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
@@ -426,8 +523,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         {
             if (j == 0)
             {
-                long double x = circuitElements->firstPoint.x * scale + this->rect().center().x();
-                long double y = circuitElements->firstPoint.y * scale + this->rect().center().y();
+                long double x = circuitElements->firstPoint.x * SystemParameters::scale + this->rect().center().x();
+                long double y = circuitElements->firstPoint.y * SystemParameters::scale + this->rect().center().y();
                 QPointF point = QPointF(x, y);
                 painter.drawEllipse(point, 5, 5);
                 painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
@@ -439,8 +536,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             }
             else
             {
-                long double x = circuitElements->morePoints[j-1].x * scale + this->rect().center().x();
-                long double y = circuitElements->morePoints[j-1].y * scale + this->rect().center().y();
+                long double x = circuitElements->morePoints[j - 1].x * SystemParameters::scale + this->rect().center().x();
+                long double y = circuitElements->morePoints[j - 1].y * SystemParameters::scale + this->rect().center().y();
                 QPointF point = QPointF(x, y);
                 painter.drawEllipse(point, 5, 5);
                 painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
@@ -452,932 +549,1136 @@ void RenderArea::drawDynamicObject(QPainter& painter)
             }
         }
     }
+}
+
+/// <summary>
+/// Отрисовка элементов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawElements(QPainter& painter)
+{
     painter.setPen(QPen(SystemParameters::ElementsColor, SystemParameters::linesWidth[5]));
-    for (int ll = 0; ll < index - 1; ll++)
+    for (int ll = 0; ll < SystemParameters::index - 1; ll++)
     {
-        if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionShunt || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorShunt)
+        switch (circuitElements->GetCircuitElements()[ll]->GetMode())
         {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealImpedance);
-            r = get<0>(tuple1);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(RealImpedance);
-                t = get<1>(tuple2);
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealImpedance);
-                t = get<1>(tuple2);
-            }
-            if (t2 < t)
-            {
-                long double temp = t;
-                t = t2;
-                t2 = temp;
-            }
-            iPoint = compute_real(t);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(iPoint.y * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            for (t; t < t2; t += step)
-            {
-                Point point = compute_real(t);
-                QPointF pixel;
-                pixel.setX(point.x * scale + center.x());
-                pixel.setY(point.y * scale + center.y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorShunt)
-        {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double x, y;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(ImagImpedance);
-                t = get<1>(tuple2);
-                x = circuitElements->firstPoint.x;
-                y = circuitElements->firstPoint.y;
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagImpedance);
-                t = get<1>(tuple2);
-                x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
-                y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
-            }
-            r = get<0>(tuple2);
-            long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y) <= 0.0001)
-            {
-                long double x2;
-                x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                QPointF pixel;
-                iPixel.setX(x* scale + this->rect().center().x());
-                iPixel.setY(y * scale + this->rect().center().y());
-                pixel.setX(x2* scale + center.x());
-                pixel.setY(y2 * scale + center.y());
-                painter.drawLine(iPixel, pixel);
-            }
-            else if (abs(y2)<=0.0001)
-            {
-                long double tmin, tmax;
-                if (y<0)
-                {
-                    step = abs(M_PI * 3 / 2 - t) / 100;
-                    tmax = M_PI * 3 / 2;
-                    tmin = t;
-                }
-                else
-                {
-                    step = abs(M_PI * 3 / 2 - t) / 100;
-                    tmax = t;
-                    tmin = M_PI * 3 / 2;
-                }
-                iPoint = compute_imaginary(tmin);
-                iPixel.setX(iPoint.x * scale + this->rect().center().x());
-                iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-                for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                    Point point = compute_imaginary(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-            else
-            {
-                step = abs(t2 - t) / 100;
-                long double tmin, tmax;
-                if (t2 > t)
-                {
-                    tmax = t2;
-                    tmin = t;
-                }
-                else
-                {
-                    tmax = t;
-                    tmin = t2;
-                }
-                iPoint = compute_imaginary(tmin);
-                iPixel.setX(iPoint.x * scale + this->rect().center().x());
-                iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-                for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                    Point point = compute_imaginary(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::InductionParallel || circuitElements->GetCircuitElements()[ll]->GetMode() == mode::CapacitorParallel)
-        {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
-            r = get<0>(tuple1);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            if (t2 < t)
-            {
-                long double temp = t;
-                t = t2;
-                t2 = temp;
-            }
-            iPoint = compute_realParallel(t);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            for (t; t < t2; t += step)
-            {
-                Point point = compute_realParallel(t);
-                QPointF pixel;
-                pixel.setX(point.x * scale + center.x());
-                pixel.setY(-point.y * scale + center.y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::ResistorParallel)
-        {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double x, y;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(ImagAdmitance);
-                t = get<1>(tuple2);
-                x = circuitElements->firstPoint.x;
-                y = circuitElements->firstPoint.y;
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagAdmitance);
-                t = get<1>(tuple2);
-                x = circuitElements->GetCircuitElements()[ll-1]->GetPoint().x;
-                y = circuitElements->GetCircuitElements()[ll-1]->GetPoint().y;
-            }
-            long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            if (abs(y) <= 0.0001)
-            {
-                long double x2;
-                x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                QPointF pixel;
-                iPixel.setX(x * scale + this->rect().center().x());
-                iPixel.setY(y * scale + this->rect().center().y());
-                pixel.setX(x2 * scale + center.x());
-                pixel.setY(y2 * scale + center.y());
-                painter.drawLine(iPixel, pixel);
-            }
-            else if (abs(y2) <= 0.0001)
-            {
-                r = get<0>(tuple2);
-                long double tmin, tmax;
-                if (y > 0)
-                {
-                    tmax = M_PI * 3 / 2;
-                    tmin = t;
-                    step = abs(M_PI * 3 / 2 - t) / 100;
-                }
-                else
-                {
-
-                    step = abs(-M_PI/2 - t) / 100;
-                    tmax = t;
-                    tmin = -M_PI / 2;
-                }
-                iPoint = compute_imaginaryParallel(tmin);
-                iPixel.setX(iPoint.x * scale + this->rect().center().x());
-                iPixel.setY(iPoint.y * scale + this->rect().center().y());
-                for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                    Point point = compute_imaginaryParallel(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-            else
-            {
-                r = get<0>(tuple1);
-                step = abs(t2 - t) / 100;
-                long double tmin, tmax;
-                if (t2 > t)
-                {
-                    tmax = t2;
-                    tmin = t;
-                }
-                else
-                {
-                    tmax = t;
-                    tmin = t2;
-                }
-                iPoint = compute_imaginaryParallel(tmin);
-                iPixel.setX(iPoint.x * scale + this->rect().center().x());
-                iPixel.setY(iPoint.y * scale + this->rect().center().y());
-                for (tmin = tmin + step; tmin < tmax; tmin += step) {
-
-                    Point point = compute_imaginaryParallel(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::Line)
-        {
-            Complex zl;
-            long double x1, y1;
-            if (ll == 0)
-            {
-                zl = circuitElements->z;
-                x1 = circuitElements->firstPoint.x;
-                y1 = circuitElements->firstPoint.y;
-            }
-            else
-            {
-                zl = circuitElements->GetCircuitElements()[ll-1]->GetParameter()[Z];
-                x1 = circuitElements->GetCircuitElements()[ll-1]->GetPoint().x;
-                y1 = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
-            }
-            Complex g1 = (zl - SystemParameters::z0) / (zl + SystemParameters::z0);
-            LinesElement* temp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[ll]);
-            Complex z3 = temp->GetValue() * (zl + Complex(0, temp->GetValue())) / (temp->GetValue() + Complex(0, 1) * zl);
-            Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
-            long double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
-            long double R = abs(center2 - g1);
-            long double dx = x1 - center2;
-            long double dy = y1;
-            dy *= -1;
-            long double sin_t = dy;
-            long double cos_t = dx;
-            long double t1 = atan(sin_t / cos_t);
-            if (cos_t >= 0)
-            {
-                t1 *= -1;
-            }
-            else if (sin_t <= 0)
-            {
-                t1 = M_PI - t1;
-            }
-            else
-            {
-                t1 = -M_PI - t1;
-            }
-            r = center2;
-            long double x2, y2;
-            x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-            y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-            long double sin_t2 = y2 * -1;
-            long double cos_t2 = x2 - center2;
-            long double t2 = atan(sin_t2 / cos_t2);
-            if (cos_t2 >= 0)
-            {
-                t2 *= -1;
-            }
-            else if (sin_t2 <= 0)
-            {
-                t2 = M_PI - t2;
-            }
-            else
-            {
-                t2 = -M_PI - t2;
-            }
-            step = abs(t2 - t1) / 100;
-            iPoint = compute_line(t1, R);
-            iPixel.setX(iPoint.x* scale + center.x());
-            iPixel.setY(iPoint.y * scale + center.y());
-            if (t1 < t2)
-            {
-                for (t1; t1 < t2; t1 += step)
-                {
-                    Point point = compute_line(t1, R);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-            else
-            {
-                for (t1; t1 < t2 + 2 * M_PI; t1 += step)
-                {
-                    Point point = compute_line(t1, R);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::OSLine)
-        {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
-            r = get<0>(tuple1);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            iPoint = compute_realParallel(t);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            if (t > t2)
-            {
-                for (t; t > t2; t -= step)
-                {
-                    Point point = compute_realParallel(t);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-            else
-            {
-                for (t; t > t2-2*M_PI; t -= step)
-                {
-                    Point point = compute_realParallel(t);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == mode::SSLine)
-        {
-            tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
-            r = get<0>(tuple1);
-            long double t2 = get<1>(tuple1);
-            tuple<long double, long double> tuple2;
-            long double t;
-            if (ll == 0)
-            {
-                tuple2 = circuitElements->chart.at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            else
-            {
-                tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
-                t = get<1>(tuple2);
-            }
-            bool flagi = false;
-            step = abs(t2 - t) / 100;
-            iPoint = compute_realParallel(t);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            if (t < t2)
-            {
-                for (t; t < t2; t += step)
-                {
-                    Point point = compute_realParallel(t);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-            else
-            {
-                for (t; t < t2+2*M_PI; t += step)
-                {
-                    Point point = compute_realParallel(t);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    painter.drawLine(iPixel, pixel);
-                    iPixel = pixel;
-                }
-            }
-        }
-        else if (circuitElements->GetCircuitElements()[ll]->GetMode() == Transform)
-        {
-            Complex zl;
-            long double x, y;
-            long double dx, dy;
-            if (ll == 0)
-            {
-                zl = circuitElements->z;
-                y = circuitElements->firstPoint.y;
-                x = circuitElements->firstPoint.x;
-            }
-            else
-            {
-                zl = circuitElements->GetCircuitElements()[ll - 1]->GetParameter()[Z];
-                y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
-                x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
-            }
-            if (abs(y) <= 0.001)
-            {
-                long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
-                long double x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                QPointF pixel;
-                iPixel.setX(x* scale + this->rect().center().x());
-                iPixel.setY(y* scale + this->rect().center().y());
-                pixel.setX(x2* scale + center.x());
-                pixel.setY(y2* scale + center.y());
-                painter.drawLine(iPixel, pixel);
-            }
-            
-            else
-            {
-                long double q = zl.imag() / zl.real();
-                long double ycenter = -1 / q;
-                long double R = sqrt(1 + 1 / pow(q, 2));
-                if (ll == 0)
-                {
-                    dx = circuitElements->firstPoint.x;
-                    dy = circuitElements->firstPoint.y + ycenter;
-                }
-                else
-                {
-                    dx = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
-                    dy = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y + ycenter;
-                }
-
-                long double sin_t = dy;
-                long double cos_t = dx;
-                long double t1 = atan(sin_t / cos_t);
-                if (cos_t >= 0)
-                {
-                    t1 *= -1;
-                }
-                else if (sin_t <= 0)
-                {
-                    t1 = M_PI - t1;
-                }
-                else
-                {
-                    t1 = -M_PI - t1;
-                }
-                Complex z = circuitElements->GetCircuitElements()[ll]->GetParameter()[Z];
-
-                dx = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
-                dy = circuitElements->GetCircuitElements()[ll]->GetPoint().y + ycenter;
-                sin_t = dy;
-                cos_t = dx;
-                long double t2 = atan(sin_t / cos_t);
-                if (cos_t >= 0)
-                {
-                    t2 *= -1;
-                }
-                else if (sin_t <= 0)
-                {
-                    t2 = M_PI - t2;
-                }
-                else
-                {
-                    t2 = -M_PI - t2;
-                }
-                if (t1 > t2)
-                {
-                    long double temp = t2;
-                    t2 = t1;
-                    t1 = temp;
-                }
-                bool flagi = false;
-                step = abs(t2 - t1) / 100;
-                r = ycenter;
-                iPoint = compute_q(t1, R);
-                iPixel.setX(iPoint.x * scale + this->rect().center().x());
-                iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-                for (t1; t1 < t2; t1 += step)
-                {
-                    Point point = compute_q(t1, R);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(-point.y, 2) <= 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-        }
-    }
-
-    painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
-    if (index > 0 && Model != mode::AddPoint && Model != mode::Default)
-    {
-        long double tmax, tmin;
-        if (Model == mode::InductionShunt || Model == mode::CapacitorShunt)
-        {
-            tuple<long double, long double> tuple1;
-            if (index == 1)
-            {
-                tuple1 = circuitElements->chart.at(RealImpedance);
-            }
-            else
-            {
-                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealImpedance);
-            }
-            r = get<0>(tuple1);
-            long double t = get<1>(tuple1);
-            switch (Model)
-            {
             case InductionShunt:
             {
-                tmin = t;
-                tmax = 2 * M_PI;
+                DrawIndCapShuntElements(painter, ll);
                 break;
             }
             case CapacitorShunt:
             {
-                tmin = 0;
-                tmax = t;
+                DrawIndCapShuntElements(painter, ll);
                 break;
             }
-            }
-            iPoint = compute_real(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(iPoint.y * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step) {
-
-                Point point = compute_real(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + this->rect().center().x());
-                pixel.setY(point.y * scale + this->rect().center().y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-            }
-        }
-        else if (Model == mode::ResistorShunt)
-        {
-            if (SystemParameters::resistorLinear)
+            case ResistorShunt:
             {
-                long double x, y;
-                if (index == 1)
-                {
-                    x = circuitElements->firstPoint.x;
-                    y = circuitElements->firstPoint.y;
-                }
-                else
-                {
-                    x = circuitElements->GetCircuitElements()[index - 2]->GetPoint().x;
-                    y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
-                }
-                QPointF pixel;
-                pixel.setX(x * scale + center.x());
-                pixel.setY(y * scale + center.y());
-                painter.drawLine(pixel, QPointF(1*scale+center.x(), center.y()));
+                DrawResShuntElements(painter, ll);
+                break;
             }
-            else
-            {
-                long double y;
-                tuple<long double, long double> tuple1;
-                if (index == 1)
-                {
-                    tuple1 = circuitElements->chart.at(ImagImpedance);
-                    y = circuitElements->firstPoint.y;
-                }
-                else
-                {
-                    tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagImpedance);
-                    y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
-                }
-                if (y >= 0 && y < 0.0001)
-                {
-                    y = 0.0001;
-                }
-                else if (y <= 0 && y > -0.0001)
-                {
-                    y = -0.0001;
-                }
-                r = get<0>(tuple1);
-                long double t = get<1>(tuple1);
-                if (y < 0)
-                {
-                    tmin = t;
-                    tmax = M_PI * 3 / 2;
-                }
-                else
-                {
-                    tmax = t;
-                    tmin = M_PI * 3 / 2;
-                }
-                step = (tmax - tmin) / 100;
-                iPoint = compute_imaginary(tmin);
-                iPixel.setX
-                (iPoint.x * scale + center.x());
-                iPixel.setY(-iPoint.y * scale + center.y());
-                bool flagi = false;
-                for (tmin; tmin < tmax; tmin += step)
-                {
-                    Point point = compute_imaginary(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(-point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
-            }
-        }
-        else if (Model == mode::InductionParallel || Model == mode::CapacitorParallel)
-        {
-            tuple<long double, long double> tuple1;
-            if (index == 1)
-            {
-                tuple1 = circuitElements->chart.at(RealAdmitance);
-            }
-            else
-            {
-                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealAdmitance);
-            }
-            r = get<0>(tuple1);
-            long double t = get<1>(tuple1);
-            switch (Model)
-            {
             case InductionParallel:
             {
-                tmax = M_PI;
-                tmin = t;
+                DrawIndCapParElements(painter, ll);
                 break;
             }
             case CapacitorParallel:
             {
-                tmin = -M_PI;
-                tmax = t;
+                DrawIndCapParElements(painter, ll);
                 break;
             }
-            }
-            iPoint = compute_realParallel(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step)
+            case ResistorParallel:
             {
-                Point point = compute_realParallel(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + this->rect().center().x());
-                pixel.setY(-point.y * scale + this->rect().center().y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
+                DrawResParElements(painter, ll);
+                break;
             }
-        }
-        else if (Model == mode::ResistorParallel)
-        {
-            if (SystemParameters::resistorLinear)
+            case Line:
             {
-                long double x, y;
-                if (index == 1)
-                {
-                    x = circuitElements->firstPoint.x;
-                    y = circuitElements->firstPoint.y;
-                }
-                else
-                {
-                    x = circuitElements->GetCircuitElements()[index - 2]->GetPoint().x;
-                    y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
-                }
-                QPointF pixel;
-                pixel.setX(x* scale + center.x());
-                pixel.setY(y* scale + center.y());
-                painter.drawLine(pixel, QPointF(-1 * scale + center.x(), center.y()));
+                DrawLineElements(painter, ll);
+                break;
             }
-            else
+            case OSLine:
             {
-                long double y;
-                tuple<long double, long double> tuple1;
-                if (index == 1)
-                {
-                    tuple1 = circuitElements->chart.at(ImagAdmitance);
-                    y = circuitElements->firstPoint.y;
-                }
-                else
-                {
-                    tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(ImagAdmitance);
-                    y = circuitElements->GetCircuitElements()[index - 2]->GetPoint().y;
-                }
-                if (y >= 0 && y < 0.0001)
-                {
-                    y = 0.0001;
-                }
-                else if (y <= 0 && y > -0.0001)
-                {
-                    y = -0.0001;
-                }
-                r = get<0>(tuple1);
-                long double t = get<1>(tuple1);
-                if (y > 0)
-                {
-                    tmin = t;
-                    tmax = M_PI / 2;
-                }
-                else
-                {
-                    tmax = t;
-                    tmin = -M_PI / 2;
-                }
-                step = (tmax - tmin) / 100;
-                iPoint = compute_imaginaryParallel(tmin);
-                iPixel.setX
-                (iPoint.x * scale + center.x());
-                iPixel.setY(iPoint.y * scale + center.y());
-                bool flagi = false;
-                for (tmin; tmin < tmax; tmin += step)
-                {
-                    Point point = compute_imaginaryParallel(tmin);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) < 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
+                DrawOSSSElements(painter, ll);
+                break;
             }
-        }
-        else if (Model == mode::Line) 
-        {
-            Point point;
-            tuple<long double, long double> tuple1;
-            Complex zl;
-            if (index == 1)
+            case SSLine:
             {
-                point = circuitElements->firstPoint;
-                zl = circuitElements->z;
+                DrawOSSSElements(painter, ll);
+                break;
             }
-            else
+            case Transform:
             {
-                point = circuitElements->GetCircuitElements()[index - 2]->GetPoint();
-                zl = circuitElements->GetCircuitElements()[index - 2]->GetParameter()[Z];
-            }
-            Complex g1 = (zl - SystemParameters::z0) / (zl + SystemParameters::z0);
-            Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
-            Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
-            long double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
-            qreal R = abs(center2 - g1);
-            painter.setBrush(QBrush(Qt::NoBrush));
-            painter.drawEllipse(QPointF(center2*scale+center.x(), center.y()), R*scale, R*scale);
-        }
-        else if (Model == mode::OSLine)
-        {
-            tuple<long double, long double> tuple1;
-            if (index == 1)
-            {
-                tuple1 = circuitElements->chart.at(RealAdmitance);
-            }
-            else
-            {
-                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealAdmitance);
-            }
-            r = get<0>(tuple1);
-            long double t = get<1>(tuple1);
-            tmin = t;
-            tmax = t + 2 * M_PI;
-            iPoint = compute_realParallel(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step)
-            {
-                Point point = compute_realParallel(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + this->rect().center().x());
-                pixel.setY(-point.y * scale + this->rect().center().y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-            }
-        }
-        else if (Model == mode::SSLine)
-        {
-            tuple<long double, long double> tuple1;
-            if (index == 1)
-            {
-                tuple1 = circuitElements->chart.at(RealAdmitance);
-            }
-            else
-            {
-                tuple1 = circuitElements->GetCircuitElements()[index - 2]->GetChartParameters().at(RealAdmitance);
-            }
-            r = get<0>(tuple1);
-            long double t = get<1>(tuple1);
-            tmin = t;
-            tmax = t + 2 * M_PI;
-            iPoint = compute_realParallel(tmin);
-            iPixel.setX(iPoint.x * scale + this->rect().center().x());
-            iPixel.setY(-iPoint.y * scale + this->rect().center().y());
-            bool flagi = false;
-            step = abs(tmax - tmin) / 100;
-            for (tmin; tmin < tmax; tmin += step)
-            {
-                Point point = compute_realParallel(tmin);
-                QPointF pixel;
-                pixel.setX(point.x * scale + this->rect().center().x());
-                pixel.setY(-point.y * scale + this->rect().center().y());
-                painter.drawLine(iPixel, pixel);
-                iPixel = pixel;
-            }
-        }
-        else if (Model == mode::Transform)
-        {
-            Complex zl;
-            long double y;
-            if (index == 1)
-            {
-                zl = circuitElements->z;
-                y = circuitElements->firstPoint.y;
-            }
-            else
-            {
-                zl = circuitElements->GetCircuitElements()[index - 2]->GetParameter()[Z];
-                y = circuitElements->GetCircuitElements()[index-2]->GetPoint().y;
-            }
-            if (abs(y) <= 0.0001)
-            {
-                painter.drawLine(QPointF(-1*scale+center.x(), center.y()), QPointF(1 * scale + center.x(), center.y() ));
-            }
-            else
-            {
-                long double q = zl.imag() / zl.real();
-                QPointF centertemp = QPointF(0, -1 / q);
-                double radius = sqrt(1 + 1 / pow(q, 2));
-                double t1 = 0;
-                double t2 = 2 * M_PI;
-                step = t2 / 2000;
-                r = -centertemp.y();
-                for (t1; t1 < t2; t1 += step)
-                {
-                    Point point = compute_q(t1, radius);
-                    QPointF pixel;
-                    pixel.setX(point.x * scale + center.x());
-                    pixel.setY(point.y * scale + center.y());
-                    if (pow(point.x, 2) + pow(point.y, 2) <= 1)
-                    {
-                        painter.drawLine(iPixel, pixel);
-                    }
-                    iPixel = pixel;
-                }
+                DrawTransformElements(painter, ll);
+                break;
             }
         }
     }
+}
+
+/// <summary>
+/// Отрисовка последовательных катушек/конденсаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawIndCapShuntElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealImpedance);
+    r = get<0>(tuple1);
+    long double t2 = get<1>(tuple1);
+    tuple<long double, long double> tuple2;
+    long double t;
+    if (ll == 0)
+    {
+        tuple2 = circuitElements->chart.at(RealImpedance);
+        t = get<1>(tuple2);
+    }
+    else
+    {
+        tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealImpedance);
+        t = get<1>(tuple2);
+    }
+    if (t2 < t)
+    {
+        long double temp = t;
+        t = t2;
+        t2 = temp;
+    }
+    iPoint = compute_real(t);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(iPoint.y * SystemParameters::scale + this->rect().center().y());
+    bool flagi = false;
+    step = abs(t2 - t) / 100;
+    for (t; t < t2; t += step)
+    {
+        Point point = compute_real(t);
+        QPointF pixel;
+        pixel.setX(point.x * SystemParameters::scale + center.x());
+        pixel.setY(point.y * SystemParameters::scale + center.y());
+        painter.drawLine(iPixel, pixel);
+        iPixel = pixel;
+    }
+}
+
+/// <summary>
+/// Отрисовка последовательных резисторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawResShuntElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagImpedance);
+    long double t2 = get<1>(tuple1);
+    tuple<long double, long double> tuple2;
+    long double x, y;
+    long double t;
+    if (ll == 0)
+    {
+        tuple2 = circuitElements->chart.at(ImagImpedance);
+        t = get<1>(tuple2);
+        x = circuitElements->firstPoint.x;
+        y = circuitElements->firstPoint.y;
+    }
+    else
+    {
+        tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagImpedance);
+        t = get<1>(tuple2);
+        x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+        y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
+    }
+    r = get<0>(tuple2);
+    long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+    if (abs(y2) <= 0.0001)
+    {
+        long double x2;
+        x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+        QPointF pixel;
+        iPixel.setX(x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(y * SystemParameters::scale + this->rect().center().y());
+        pixel.setX(x2 * SystemParameters::scale + center.x());
+        pixel.setY(y2 * SystemParameters::scale + center.y());
+        painter.drawLine(iPixel, pixel);
+    }
+    /*else if (abs(y2) <= 0.0001)
+    {
+        long double tmin, tmax;
+        if (y<0)
+        {
+            step = abs(M_PI * 3 / 2 - t) / 100;
+            tmax = M_PI * 3 / 2;
+            tmin = t;
+        }
+        else
+        {
+            step = abs(M_PI * 3 / 2 - t) / 100;
+            tmax = t;
+            tmin = M_PI * 3 / 2;
+        }
+        iPoint = compute_imaginary(tmin);
+        iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+        for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+            Point point = compute_imaginary(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }*/
+    else
+    {
+        step = abs(t2 - t) / 100;
+        long double tmin, tmax;
+        if (t2 > t)
+        {
+            tmax = t2;
+            tmin = t;
+        }
+        else
+        {
+            tmax = t;
+            tmin = t2;
+        }
+        iPoint = compute_imaginary(tmin);
+        iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+        for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+            Point point = compute_imaginary(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка параллельных катушек/конденсаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawIndCapParElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
+    r = get<0>(tuple1);
+    long double t2 = get<1>(tuple1);
+    tuple<long double, long double> tuple2;
+    long double t;
+    if (ll == 0)
+    {
+        tuple2 = circuitElements->chart.at(RealAdmitance);
+        t = get<1>(tuple2);
+    }
+    else
+    {
+        tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
+        t = get<1>(tuple2);
+    }
+    bool flagi = false;
+    step = abs(t2 - t) / 100;
+    if (t2 < t)
+    {
+        long double temp = t;
+        t = t2;
+        t2 = temp;
+    }
+    iPoint = compute_realParallel(t);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+    for (t; t < t2; t += step)
+    {
+        Point point = compute_realParallel(t);
+        QPointF pixel;
+        pixel.setX(point.x * SystemParameters::scale + center.x());
+        pixel.setY(-point.y * SystemParameters::scale + center.y());
+        painter.drawLine(iPixel, pixel);
+        iPixel = pixel;
+    }
+}
+
+/// <summary>
+/// Отрисовка параллельных резисторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawResParElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(ImagAdmitance);
+    long double t2 = get<1>(tuple1);
+    tuple<long double, long double> tuple2;
+    long double x, y;
+    long double t;
+    if (ll == 0)
+    {
+        tuple2 = circuitElements->chart.at(ImagAdmitance);
+        t = get<1>(tuple2);
+        x = circuitElements->firstPoint.x;
+        y = circuitElements->firstPoint.y;
+    }
+    else
+    {
+        tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(ImagAdmitance);
+        t = get<1>(tuple2);
+        x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+        y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
+    }
+    long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+    if (abs(y2) <= 0.0001)
+    {
+        long double x2;
+        x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+        QPointF pixel;
+        iPixel.setX(x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(y * SystemParameters::scale + this->rect().center().y());
+        pixel.setX(x2 * SystemParameters::scale + center.x());
+        pixel.setY(y2 * SystemParameters::scale + center.y());
+        painter.drawLine(iPixel, pixel);
+    }
+    /*else if (abs(y2) <= 0.0001)
+    {
+        r = get<0>(tuple2);
+        long double tmin, tmax;
+        if (y > 0)
+        {
+            tmax = M_PI * 3 / 2;
+            tmin = t;
+            step = abs(M_PI * 3 / 2 - t) / 100;
+        }
+        else
+        {
+
+            step = abs(-M_PI/2 - t) / 100;
+            tmax = t;
+            tmin = -M_PI / 2;
+        }
+        iPoint = compute_imaginaryParallel(tmin);
+        iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(iPoint.y * SystemParameters::scale + this->rect().center().y());
+        for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+            Point point = compute_imaginaryParallel(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }*/
+    else
+    {
+        r = get<0>(tuple1);
+        step = abs(t2 - t) / 100;
+        long double tmin, tmax;
+        if (t2 > t)
+        {
+            tmax = t2;
+            tmin = t;
+        }
+        else
+        {
+            tmax = t;
+            tmin = t2;
+        }
+        iPoint = compute_imaginaryParallel(tmin);
+        iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(iPoint.y * SystemParameters::scale + this->rect().center().y());
+        for (tmin = tmin + step; tmin < tmax; tmin += step) {
+
+            Point point = compute_imaginaryParallel(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка линий передач.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawLineElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    Complex zl;
+    long double x1, y1;
+    if (ll == 0)
+    {
+        zl = circuitElements->z;
+        x1 = circuitElements->firstPoint.x;
+        y1 = circuitElements->firstPoint.y;
+    }
+    else
+    {
+        zl = circuitElements->GetCircuitElements()[ll - 1]->GetParameter()[Z];
+        x1 = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+        y1 = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
+    }
+    Complex g1 = (zl - SystemParameters::z0) / (zl + SystemParameters::z0);
+    LinesElement* temp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[ll]);
+    Complex z3 = temp->GetValue() * (zl + Complex(0, temp->GetValue())) / (temp->GetValue() + Complex(0, 1) * zl);
+    Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
+    long double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+    long double R = abs(center2 - g1);
+    long double dx = x1 - center2;
+    long double dy = y1;
+    dy *= -1;
+    long double sin_t = dy;
+    long double cos_t = dx;
+    long double t1 = atan(sin_t / cos_t);
+    if (cos_t >= 0)
+    {
+        t1 *= -1;
+    }
+    else if (sin_t <= 0)
+    {
+        t1 = M_PI - t1;
+    }
+    else
+    {
+        t1 = -M_PI - t1;
+    }
+    r = center2;
+    long double x2, y2;
+    x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+    y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+    long double sin_t2 = y2 * -1;
+    long double cos_t2 = x2 - center2;
+    long double t2 = atan(sin_t2 / cos_t2);
+    if (cos_t2 >= 0)
+    {
+        t2 *= -1;
+    }
+    else if (sin_t2 <= 0)
+    {
+        t2 = M_PI - t2;
+    }
+    else
+    {
+        t2 = -M_PI - t2;
+    }
+    step = abs(t2 - t1) / 100;
+    iPoint = compute_line(t1, R);
+    iPixel.setX(iPoint.x * SystemParameters::scale + center.x());
+    iPixel.setY(iPoint.y * SystemParameters::scale + center.y());
+    if (t1 < t2)
+    {
+        for (t1; t1 < t2; t1 += step)
+        {
+            Point point = compute_line(t1, R);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            painter.drawLine(iPixel, pixel);
+            iPixel = pixel;
+        }
+    }
+    else
+    {
+        for (t1; t1 < t2 + 2 * M_PI; t1 += step)
+        {
+            Point point = compute_line(t1, R);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            painter.drawLine(iPixel, pixel);
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка шлейфов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawOSSSElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[ll]->GetChartParameters().at(RealAdmitance);
+    r = get<0>(tuple1);
+    long double t2 = get<1>(tuple1);
+    tuple<long double, long double> tuple2;
+    long double t;
+    if (ll == 0)
+    {
+        tuple2 = circuitElements->chart.at(RealAdmitance);
+        t = get<1>(tuple2);
+    }
+    else
+    {
+        tuple2 = circuitElements->GetCircuitElements()[ll - 1]->GetChartParameters().at(RealAdmitance);
+        t = get<1>(tuple2);
+    }
+    bool flagi = false;
+    step = abs(t2 - t) / 100;
+    iPoint = compute_realParallel(t);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+    if (circuitElements->GetCircuitElements()[ll]->GetMode() == OSLine)
+    {
+        if (t > t2)
+        {
+            for (t; t > t2; t -= step)
+            {
+                Point point = compute_realParallel(t);
+                QPointF pixel;
+                pixel.setX(point.x * SystemParameters::scale + center.x());
+                pixel.setY(-point.y * SystemParameters::scale + center.y());
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+            }
+        }
+        else
+        {
+            for (t; t > t2 - 2 * M_PI; t -= step)
+            {
+                Point point = compute_realParallel(t);
+                QPointF pixel;
+                pixel.setX(point.x * SystemParameters::scale + center.x());
+                pixel.setY(-point.y * SystemParameters::scale + center.y());
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+            }
+        }
+    }
+    else
+    {
+        if (t < t2)
+        {
+            for (t; t < t2; t += step)
+            {
+                Point point = compute_realParallel(t);
+                QPointF pixel;
+                pixel.setX(point.x * SystemParameters::scale + center.x());
+                pixel.setY(-point.y * SystemParameters::scale + center.y());
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+            }
+        }
+        else
+        {
+            for (t; t < t2 + 2 * M_PI; t += step)
+            {
+                Point point = compute_realParallel(t);
+                QPointF pixel;
+                pixel.setX(point.x * SystemParameters::scale + center.x());
+                pixel.setY(-point.y * SystemParameters::scale + center.y());
+                painter.drawLine(iPixel, pixel);
+                iPixel = pixel;
+            }
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка трансформаторов.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+/// <param name="ll">Номер элемента.</param>
+void RenderArea::DrawTransformElements(QPainter& painter, int ll)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    Complex zl;
+    long double x, y;
+    long double dx, dy;
+    if (ll == 0)
+    {
+        zl = circuitElements->z;
+        y = circuitElements->firstPoint.y;
+        x = circuitElements->firstPoint.x;
+    }
+    else
+    {
+        zl = circuitElements->GetCircuitElements()[ll - 1]->GetParameter()[Z];
+        y = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y;
+        x = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+    }
+    if (abs(y) <= 0.001)
+    {
+        long double y2 = circuitElements->GetCircuitElements()[ll]->GetPoint().y;
+        long double x2 = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+        QPointF pixel;
+        iPixel.setX(x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(y * SystemParameters::scale + this->rect().center().y());
+        pixel.setX(x2 * SystemParameters::scale + center.x());
+        pixel.setY(y2 * SystemParameters::scale + center.y());
+        painter.drawLine(iPixel, pixel);
+    }
+
+    else
+    {
+        long double q = zl.imag() / zl.real();
+        long double ycenter = -1 / q;
+        long double R = sqrt(1 + 1 / pow(q, 2));
+        if (ll == 0)
+        {
+            dx = circuitElements->firstPoint.x;
+            dy = circuitElements->firstPoint.y + ycenter;
+        }
+        else
+        {
+            dx = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().x;
+            dy = circuitElements->GetCircuitElements()[ll - 1]->GetPoint().y + ycenter;
+        }
+
+        long double sin_t = dy;
+        long double cos_t = dx;
+        long double t1 = atan(sin_t / cos_t);
+        if (cos_t >= 0)
+        {
+            t1 *= -1;
+        }
+        else if (sin_t <= 0)
+        {
+            t1 = M_PI - t1;
+        }
+        else
+        {
+            t1 = -M_PI - t1;
+        }
+        Complex z = circuitElements->GetCircuitElements()[ll]->GetParameter()[Z];
+
+        dx = circuitElements->GetCircuitElements()[ll]->GetPoint().x;
+        dy = circuitElements->GetCircuitElements()[ll]->GetPoint().y + ycenter;
+        sin_t = dy;
+        cos_t = dx;
+        long double t2 = atan(sin_t / cos_t);
+        if (cos_t >= 0)
+        {
+            t2 *= -1;
+        }
+        else if (sin_t <= 0)
+        {
+            t2 = M_PI - t2;
+        }
+        else
+        {
+            t2 = -M_PI - t2;
+        }
+        if (t1 > t2)
+        {
+            long double temp = t2;
+            t2 = t1;
+            t1 = temp;
+        }
+        bool flagi = false;
+        step = abs(t2 - t1) / 100;
+        r = ycenter;
+        iPoint = compute_q(t1, R);
+        iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+        for (t1; t1 < t2; t1 += step)
+        {
+            Point point = compute_q(t1, R);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(-point.y, 2) <= 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка текущего элемента.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    painter.setPen(QPen(SystemParameters::RootColor, SystemParameters::linesWidth[4]));
+    if (SystemParameters::index > 0 && SystemParameters::Model != mode::AddPoint && SystemParameters::Model != mode::Default)
+    {
+        switch (SystemParameters::Model)
+        {
+            case InductionShunt:
+            {
+                DrawIndCapShuntCurrent(painter);
+                break;
+            }
+            case CapacitorShunt:
+            {
+                DrawIndCapShuntCurrent(painter);
+                break;
+            }
+            case ResistorShunt:
+            {
+                DrawResShuntCurrent(painter);
+                break;
+            }
+            case InductionParallel:
+            {
+                DrawIndCapParCurrent(painter);
+                break;
+            }
+            case CapacitorParallel:
+            {
+                DrawIndCapParCurrent(painter);
+                break;
+            }
+            case ResistorParallel:
+            {
+                DrawResParCurrent(painter);
+                break;
+            }
+            case Line:
+            {
+                DrawLineCurrent(painter);
+                break;
+            }
+            case OSLine:
+            {
+                DrawOSSSCurrent(painter);
+                break;
+            }
+            case SSLine:
+            {
+                DrawOSSSCurrent(painter);
+                break;
+            }
+            case Transform:
+            {
+                DrawTransformCurrent(painter);
+                break;
+            }
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка текущей последовательной катушки/конденсатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawIndCapShuntCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    long double tmax, tmin;
+    tuple<long double, long double> tuple1;
+    if (SystemParameters::index == 1)
+    {
+        tuple1 = circuitElements->chart.at(RealImpedance);
+    }
+    else
+    {
+        tuple1 = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetChartParameters().at(RealImpedance);
+    }
+    r = get<0>(tuple1);
+    long double t = get<1>(tuple1);
+    switch (SystemParameters::Model)
+    {
+    case InductionShunt:
+    {
+        tmin = t;
+        tmax = 2 * M_PI;
+        break;
+    }
+    case CapacitorShunt:
+    {
+        tmin = 0;
+        tmax = t;
+        break;
+    }
+    }
+    iPoint = compute_real(tmin);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(iPoint.y * SystemParameters::scale + this->rect().center().y());
+    bool flagi = false;
+    step = abs(tmax - tmin) / 100;
+    for (tmin; tmin < tmax; tmin += step) {
+
+        Point point = compute_real(tmin);
+        QPointF pixel;
+        pixel.setX(point.x * SystemParameters::scale + this->rect().center().x());
+        pixel.setY(point.y * SystemParameters::scale + this->rect().center().y());
+        painter.drawLine(iPixel, pixel);
+        iPixel = pixel;
+    }
+}
+
+/// <summary>
+/// Отрисовка текущего последовательного резистора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawResShuntCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    long double tmax, tmin;
+    if (SystemParameters::resistorLinear)
+    {
+        long double x, y;
+        if (SystemParameters::index == 1)
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
+        else
+        {
+            x = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().y;
+        }
+        QPointF pixel;
+        pixel.setX(x * SystemParameters::scale + center.x());
+        pixel.setY(y * SystemParameters::scale + center.y());
+        painter.drawLine(pixel, QPointF(1 * SystemParameters::scale + center.x(), center.y()));
+    }
+    else
+    {
+        long double y;
+        tuple<long double, long double> tuple1;
+        if (SystemParameters::index == 1)
+        {
+            tuple1 = circuitElements->chart.at(ImagImpedance);
+            y = circuitElements->firstPoint.y;
+        }
+        else
+        {
+            tuple1 = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetChartParameters().at(ImagImpedance);
+            y = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().y;
+        }
+        if (y >= 0 && y < 0.0001)
+        {
+            y = 0.0001;
+        }
+        else if (y <= 0 && y > -0.0001)
+        {
+            y = -0.0001;
+        }
+        r = get<0>(tuple1);
+        long double t = get<1>(tuple1);
+        if (y < 0)
+        {
+            tmin = t;
+            tmax = M_PI * 3 / 2;
+        }
+        else
+        {
+            tmax = t;
+            tmin = M_PI * 3 / 2;
+        }
+        step = (tmax - tmin) / 100;
+        iPoint = compute_imaginary(tmin);
+        iPixel.setX
+        (iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(-iPoint.y * SystemParameters::scale + center.y());
+        bool flagi = false;
+        for (tmin; tmin < tmax; tmin += step)
+        {
+            Point point = compute_imaginary(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(-point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка текущей параллельной катушки/конденсатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawIndCapParCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    long double tmax, tmin;
+    tuple<long double, long double> tuple1;
+    if (SystemParameters::index == 1)
+    {
+        tuple1 = circuitElements->chart.at(RealAdmitance);
+    }
+    else
+    {
+        tuple1 = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetChartParameters().at(RealAdmitance);
+    }
+    r = get<0>(tuple1);
+    long double t = get<1>(tuple1);
+    switch (SystemParameters::Model)
+    {
+    case InductionParallel:
+    {
+        tmax = M_PI;
+        tmin = t;
+        break;
+    }
+    case CapacitorParallel:
+    {
+        tmin = -M_PI;
+        tmax = t;
+        break;
+    }
+    }
+    iPoint = compute_realParallel(tmin);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+    bool flagi = false;
+    step = abs(tmax - tmin) / 100;
+    for (tmin; tmin < tmax; tmin += step)
+    {
+        Point point = compute_realParallel(tmin);
+        QPointF pixel;
+        pixel.setX(point.x * SystemParameters::scale + this->rect().center().x());
+        pixel.setY(-point.y * SystemParameters::scale + this->rect().center().y());
+        painter.drawLine(iPixel, pixel);
+        iPixel = pixel;
+    }
+}
+
+/// <summary>
+/// Отрисовка текущего параллельного резистора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawResParCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    long double tmax, tmin;
+    if (SystemParameters::resistorLinear)
+    {
+        long double x, y;
+        if (SystemParameters::index == 1)
+        {
+            x = circuitElements->firstPoint.x;
+            y = circuitElements->firstPoint.y;
+        }
+        else
+        {
+            x = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().x;
+            y = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().y;
+        }
+        QPointF pixel;
+        pixel.setX(x * SystemParameters::scale + center.x());
+        pixel.setY(y * SystemParameters::scale + center.y());
+        painter.drawLine(pixel, QPointF(-1 * SystemParameters::scale + center.x(), center.y()));
+    }
+    else
+    {
+        long double y;
+        tuple<long double, long double> tuple1;
+        if (SystemParameters::index == 1)
+        {
+            tuple1 = circuitElements->chart.at(ImagAdmitance);
+            y = circuitElements->firstPoint.y;
+        }
+        else
+        {
+            tuple1 = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetChartParameters().at(ImagAdmitance);
+            y = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().y;
+        }
+        if (y >= 0 && y < 0.0001)
+        {
+            y = 0.0001;
+        }
+        else if (y <= 0 && y > -0.0001)
+        {
+            y = -0.0001;
+        }
+        r = get<0>(tuple1);
+        long double t = get<1>(tuple1);
+        if (y > 0)
+        {
+            tmin = t;
+            tmax = M_PI / 2;
+        }
+        else
+        {
+            tmax = t;
+            tmin = -M_PI / 2;
+        }
+        step = (tmax - tmin) / 100;
+        iPoint = compute_imaginaryParallel(tmin);
+        iPixel.setX
+        (iPoint.x * SystemParameters::scale + center.x());
+        iPixel.setY(iPoint.y * SystemParameters::scale + center.y());
+        bool flagi = false;
+        for (tmin; tmin < tmax; tmin += step)
+        {
+            Point point = compute_imaginaryParallel(tmin);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) < 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка текущей линии передачи.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawLineCurrent(QPainter& painter)
+{
+    Point point;
+    tuple<long double, long double> tuple1;
+    Complex zl;
+    if (SystemParameters::index == 1)
+    {
+        point = circuitElements->firstPoint;
+        zl = circuitElements->z;
+    }
+    else
+    {
+        point = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint();
+        zl = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetParameter()[Z];
+    }
+    Complex g1 = (zl - SystemParameters::z0) / (zl + SystemParameters::z0);
+    Complex z3 = SystemParameters::z0line * (zl + Complex(0, SystemParameters::z0line)) / (SystemParameters::z0line + Complex(0, 1) * zl);
+    Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
+    long double center2 = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
+    qreal R = abs(center2 - g1);
+    painter.setBrush(QBrush(Qt::NoBrush));
+    painter.drawEllipse(QPointF(center2 * SystemParameters::scale + center.x(), center.y()), R * SystemParameters::scale, R * SystemParameters::scale);
+}
+
+/// <summary>
+/// Отрисовка текущего шлейфа.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawOSSSCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    long double tmax, tmin;
+    tuple<long double, long double> tuple1;
+    if (SystemParameters::index == 1)
+    {
+        tuple1 = circuitElements->chart.at(RealAdmitance);
+    }
+    else
+    {
+        tuple1 = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetChartParameters().at(RealAdmitance);
+    }
+    r = get<0>(tuple1);
+    long double t = get<1>(tuple1);
+    tmin = t;
+    tmax = t + 2 * M_PI;
+    iPoint = compute_realParallel(tmin);
+    iPixel.setX(iPoint.x * SystemParameters::scale + this->rect().center().x());
+    iPixel.setY(-iPoint.y * SystemParameters::scale + this->rect().center().y());
+    bool flagi = false;
+    step = abs(tmax - tmin) / 100;
+    for (tmin; tmin < tmax; tmin += step)
+    {
+        Point point = compute_realParallel(tmin);
+        QPointF pixel;
+        pixel.setX(point.x * SystemParameters::scale + this->rect().center().x());
+        pixel.setY(-point.y * SystemParameters::scale + this->rect().center().y());
+        painter.drawLine(iPixel, pixel);
+        iPixel = pixel;
+    }
+}
+
+/// <summary>
+/// Отрисовка текущего трансформатора.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawTransformCurrent(QPainter& painter)
+{
+    Point iPoint;
+    QPointF iPixel;
+    long double step;
+    Complex zl;
+    long double y;
+    if (SystemParameters::index == 1)
+    {
+        zl = circuitElements->z;
+        y = circuitElements->firstPoint.y;
+    }
+    else
+    {
+        zl = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetParameter()[Z];
+        y = circuitElements->GetCircuitElements()[SystemParameters::index - 2]->GetPoint().y;
+    }
+    if (abs(y) <= 0.0001)
+    {
+        painter.drawLine(QPointF(-1 * SystemParameters::scale + center.x(), center.y()), QPointF(1 * SystemParameters::scale + center.x(), center.y()));
+    }
+    else
+    {
+        long double q = zl.imag() / zl.real();
+        QPointF centertemp = QPointF(0, -1 / q);
+        double radius = sqrt(1 + 1 / pow(q, 2));
+        double t1 = 0;
+        double t2 = 2 * M_PI;
+        step = t2 / 2000;
+        r = -centertemp.y();
+        for (t1; t1 < t2; t1 += step)
+        {
+            Point point = compute_q(t1, radius);
+            QPointF pixel;
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
+            if (pow(point.x, 2) + pow(point.y, 2) <= 1)
+            {
+                painter.drawLine(iPixel, pixel);
+            }
+            iPixel = pixel;
+        }
+    }
+}
+
+/// <summary>
+/// Отрисовка кругов КСВН.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawVSWR(QPainter& painter)
+{
     QSetIterator<double> k(circuitElements->VSWRCircles);
     while (k.hasNext())
     {
@@ -1385,11 +1686,20 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         double radius = (vswr - 1) / (vswr + 1);
         painter.setBrush(QBrush(Qt::NoBrush));
         painter.setPen(QPen(SystemParameters::VSWRColor, SystemParameters::linesWidth[9]));
-        painter.drawEllipse(QPointF(center.x(), center.y()), radius* scale, radius* scale);
+        painter.drawEllipse(QPointF(center.x(), center.y()), radius * SystemParameters::scale, radius * SystemParameters::scale);
         QString s1 = "VSWR = " + QString::number(vswr);
         painter.setFont(QFont("Arial", 8));
-        painter.drawText(center.x(), -radius * scale + center.y(), s1);
+        painter.drawText(center.x(), -radius * SystemParameters::scale + center.y(), s1);
     }
+}
+
+/// <summary>
+/// Отрисовка локусов равной добротности.
+/// </summary>
+/// <param name="painter">Объект для рисования.</param>
+void RenderArea::DrawQ(QPainter& painter)
+{
+    QPointF iPixel;
     QSetIterator<double> l(circuitElements->QCircles);
     while (l.hasNext())
     {
@@ -1400,14 +1710,14 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         painter.setPen(QPen(SystemParameters::QCirclesColor, SystemParameters::linesWidth[10]));
         double t1 = 0;
         double t2 = 2 * M_PI;
-        step = t2 / 2000;
+        double step = t2 / 2000;
         r = centertemp.y();
         for (t1; t1 < t2; t1 += step)
         {
             Point point = compute_q(t1, radius);
             QPointF pixel;
-            pixel.setX(point.x * scale + center.x());
-            pixel.setY(point.y * scale + center.y());
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
             if (pow(point.x, 2) + pow(point.y, 2) <= 1)
             {
                 painter.drawLine(iPixel, pixel);
@@ -1420,8 +1730,8 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         {
             Point point = compute_q(t1, radius);
             QPointF pixel;
-            pixel.setX(point.x * scale + center.x());
-            pixel.setY(point.y * scale + center.y());
+            pixel.setX(point.x * SystemParameters::scale + center.x());
+            pixel.setY(point.y * SystemParameters::scale + center.y());
             if (pow(point.x, 2) + pow(point.y, 2) <= 1)
             {
                 painter.drawLine(iPixel, pixel);
@@ -1430,8 +1740,9 @@ void RenderArea::drawDynamicObject(QPainter& painter)
         }
         QString s1 = "Q = " + QString::number(q);
         painter.setFont(QFont("Arial", 8));
-        painter.drawText(center.x(), -centertemp.y() * scale -radius*scale + center.y(), s1);
+        painter.drawText(center.x(), -centertemp.y() * SystemParameters::scale - radius * SystemParameters::scale + center.y(), s1);
     }
+
 }
 
 /// <summary>
@@ -1439,7 +1750,7 @@ void RenderArea::drawDynamicObject(QPainter& painter)
 /// </summary>
 void RenderArea::generateCache()
 {
-    QSize scaledSize = size() * m_scaleFactor;
+    QSize scaledSize = size() * 2;
     QImage image(scaledSize, QImage::Format_ARGB32_Premultiplied);
     image.fill(Qt::transparent);
 
@@ -1448,7 +1759,7 @@ void RenderArea::generateCache()
     cachePainter.setRenderHint(QPainter::TextAntialiasing, true);
     cachePainter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    cachePainter.scale(m_scaleFactor, m_scaleFactor);
+    cachePainter.scale(2, 2);
     drawStaticObjects(cachePainter);
 
     m_cache = QPixmap::fromImage(
@@ -1465,10 +1776,10 @@ void RenderArea::generateCache()
 void RenderArea::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
-    if (!m_cacheValid || defaultScale != scale || SystemParameters::colorChanged || SystemParameters::sizeChanged)
+    if (!m_cacheValid || defaultScale != SystemParameters::scale || SystemParameters::colorChanged || SystemParameters::sizeChanged)
     {
         generateCache();
-        defaultScale = scale;
+        defaultScale = SystemParameters::scale;
         if (SystemParameters::colorChanged)
         {
             SystemParameters::colorChanged = false;
@@ -1492,4 +1803,61 @@ void RenderArea::setCursorPosOnCircle(const QPoint& pos)
 {
     cursorPos = pos;
     update();
+}
+
+/// <summary>
+/// Обработка нажатий кнопок мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        leftClicked = true;
+        emit leftsignal(event->globalPos(), true);
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        emit leftsignal(event->globalPos(), false);
+    }
+}
+
+/// <summary>
+/// Перемещение мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mouseMoveEvent(QMouseEvent* event)
+{
+    if (leftClicked)
+    {
+        emit moved(event->globalPos());
+    }
+}
+
+/// <summary>
+/// Отжатие кнопки мыши.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && leftClicked) {
+        leftClicked = false;
+        emit released();
+    }
+}
+
+/// <summary>
+/// Масштабирование в зависимости от пропорций окна.
+/// </summary>
+/// <param name="event"></param>
+void RenderArea::resizeEvent(QResizeEvent* event)
+{
+    if (!SystemParameters::unresized)
+    {
+        SystemParameters::sizeChanged = true;
+        this->update();
+        if (event->oldSize().width() != -1)
+        {
+            emit resized((long double)event->size().width(), (long double)event->size().height(), (long double)event->oldSize().width(), (long double)event->oldSize().height());
+        }
+    }
 }

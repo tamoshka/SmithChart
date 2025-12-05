@@ -1,5 +1,5 @@
 ﻿#include "AmplitudeFrequency.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса AmplitudeFrequency.
 /// </summary>
@@ -7,48 +7,168 @@
 /// <param name="circuitElements">Цепь.</param>
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
 	: QWidget(parent)
-	, ui(new Ui::AmplitudeFrequency())
 {
-	ui->setupUi(this);
-    setMinimumSize(150, 150);
+    setMinimumSize(400, 300);
+    this->setWindowTitle(QStringLiteral(u"АЧХ"));
+    gridLayout = new QGridLayout(this);
+    gridLayout->setSpacing(6);
+    gridLayout->setContentsMargins(11, 11, 11, 11);
+    saveButton = new QPushButton(this);
+    saveButton->setText(QStringLiteral(u"Сохранить"));
+    gridLayout->addWidget(saveButton, 0, 0, 1, 1);
+    horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    gridLayout->addItem(horizontalSpacer, 0, 1, 1, 1);
+    widget = new QCustomPlot(this);
+    gridLayout->addWidget(widget, 1, 0, 1, 2);
     this->circuitElements = circuitElements;
-    connect(ui->SaveAmpFr, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
+    connect(saveButton, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
 }
 
 /// <summary>
-/// Сеттер gamma1.
+/// Рассчёт A-матрицы.
 /// </summary>
-/// <param name="gamma1">gamma1.</param>
-void AmplitudeFrequency::SetGamma1(Complex gamma1)
+/// <param name="first">Первая матрица.</param>
+/// <param name="second">Вторая матрица.</param>
+/// <param name="circuit">Цеп.</param>
+/// <param name="w">Угловая частота.</param>
+void AmplitudeFrequency::CalculateMatrix(Complex(&first)[2][2], Complex(&second)[2][2], QList<Element*> circuit, long double w)
 {
-    this->gamma1 = gamma1;
-}
+    for (int i = circuitElements->GetCircuitElements().size() - 1; i >= 0; i--)
+    {
+        switch (circuitElements->GetCircuitElements()[i]->GetMode())
+        {
+        case ResistorShunt:
+        {
+            Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+            second[0][0] = 1;
+            second[0][1] = z;
+            second[1][0] = 0;
+            second[1][1] = 1;
+            break;
+        }
+        case InductionShunt:
+        {
+            Complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+            Complex y = Complex(1, 0) / z;
+            second[0][0] = 1;
+            second[0][1] = z;
+            second[1][0] = 0;
+            second[1][1] = 1;
+            break;
+        }
+        case CapacitorShunt:
+        {
+            Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+            Complex z = Complex(1, 0) / y;
+            second[0][0] = 1;
+            second[0][1] = z;
+            second[1][0] = 0;
+            second[1][1] = 1;
+            break;
+        }
+        case ResistorParallel:
+        {
+            Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
+            Complex y = Complex(1, 0) / z;
+            second[0][0] = 1;
+            second[0][1] = 0;
+            second[1][0] = y;
+            second[1][1] = 1;
+            break;
+        }
+        case InductionParallel:
+        {
+            Complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+            Complex y = Complex(1, 0) / z;
+            second[0][0] = 1;
+            second[0][1] = 0;
+            second[1][0] = y;
+            second[1][1] = 1;
+            break;
+        }
+        case CapacitorParallel:
+        {
+            Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
+            Complex z = Complex(1, 0) / y;
+            second[0][0] = 1;
+            second[0][1] = 0;
+            second[1][0] = y;
+            second[1][1] = 1;
+            break;
+        }
+        case Line:
+        {
+            LinesElement* tmp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[i]);
+            long double r0 = tmp->GetValue();
+            long double t = tmp->GetTheta();
+            long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength() / tmp->GetMechanicalLength();
+            long double theta = l * w / 299792458;
+            second[0][0] = cos(theta);
+            second[1][1] = cos(theta);
+            second[0][1] = Complex(0, 1) * r0 * sin(theta);
+            second[1][0] = Complex(0, sin(theta)) / r0;
+            break;
+        }
+        case OSLine:
+        {
+            VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
+            long double r0 = tmp->GetValue();
+            long double t = tmp->GetTheta();
+            long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength() / tmp->GetMechanicalLength();
+            long double theta = l * w / 299792458;
+            Complex z = Complex(0, -1) * r0 / tan(theta);
+            Complex y = (long double)1 / z;
+            second[0][0] = 1;
+            second[0][1] = 0;
+            second[1][0] = y;
+            second[1][1] = 1;
+            break;
+        }
+        case SSLine:
+        {
+            VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
+            long double r0 = tmp->GetValue();
+            long double t = tmp->GetTheta();
+            long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength() / tmp->GetMechanicalLength();
+            long double theta = l * w / 299792458;
+            Complex z = Complex(0, 1) * r0 * tan(theta);
+            Complex y = (long double)1 / z;
+            second[0][0] = 1;
+            second[0][1] = 0;
+            second[1][0] = y;
+            second[1][1] = 1;
+            break;
+        }
+        case Transform:
+        {
+            Complex n = circuitElements->GetCircuitElements()[i]->GetValue();
+            second[0][0] = n;
+            second[0][1] = 0;
+            second[1][0] = 0;
+            second[1][1] = (long double)1 / n;
+            break;
+        }
+        }
+        if (i == circuitElements->GetCircuitElements().size() - 1)
+        {
+            first[0][0] = second[0][0];
+            first[0][1] = second[0][1];
+            first[1][0] = second[1][0];
+            first[1][1] = second[1][1];
+        }
+        else
+        {
+            Complex mem1 = first[0][0] * second[0][0] + first[0][1] * second[1][0];
+            Complex mem2 = first[0][0] * second[0][1] + first[0][1] * second[1][1];
+            Complex mem3 = first[1][0] * second[0][0] + first[1][1] * second[1][0];
+            Complex mem4 = first[1][0] * second[0][1] + first[1][1] * second[1][1];
 
-/// <summary>
-/// Сеттер gamma2.
-/// </summary>
-/// <param name="gamma2">gamma2.</param>
-void AmplitudeFrequency::SetGamma2(Complex gamma2)
-{
-    this->gamma2 = gamma2;
-}
-
-/// <summary>
-/// Геттер gamma1.
-/// </summary>
-/// <returns>gamma1.</returns>
-Complex AmplitudeFrequency::GetGamma1()
-{
-    return this->gamma1;
-}
-
-/// <summary>
-/// Геттер gamma2.
-/// </summary>
-/// <returns>gamma2.</returns>
-Complex AmplitudeFrequency::GetGamma2()
-{
-    return this->gamma2;
+            first[0][0] = mem1;
+            first[0][1] = mem2;
+            first[1][0] = mem3;
+            first[1][1] = mem4;
+        }
+    }
 }
 
 /// <summary>
@@ -67,142 +187,7 @@ void AmplitudeFrequency::MatrixCalculation()
     {
         w = 2 * M_PI * freq;
 
-        for (int i = circuitElements->GetCircuitElements().size()-1; i >= 0; i--)
-        {
-            switch (circuitElements->GetCircuitElements()[i]->GetMode())
-            {
-                case ResistorShunt:
-                {
-                    Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
-                    A1[0][0] = 1;
-                    A1[0][1] = z;
-                    A1[1][0] = 0;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case InductionShunt:
-                {
-                    Complex z(0, w  * circuitElements->GetCircuitElements()[i]->GetValue());
-                    Complex y = Complex(1, 0) / z;
-                    A1[0][0] = 1;
-                    A1[0][1] = z;
-                    A1[1][0] = 0;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case CapacitorShunt:
-                {
-                    Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                    Complex z = Complex(1, 0) / y;
-                    A1[0][0] = 1;
-                    A1[0][1] = z;
-                    A1[1][0] = 0;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case ResistorParallel:
-                {
-                    Complex z(circuitElements->GetCircuitElements()[i]->GetValue(), 0);
-                    Complex y = Complex(1, 0) /z;
-                    A1[0][0] = 1;
-                    A1[0][1] = 0;
-                    A1[1][0] = y;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case InductionParallel:
-                {
-                    Complex z(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                    Complex y = Complex(1,0) / z;
-                    A1[0][0] = 1;
-                    A1[0][1] = 0;
-                    A1[1][0] = y;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case CapacitorParallel:
-                {
-                    Complex y(0, w * circuitElements->GetCircuitElements()[i]->GetValue());
-                    Complex z = Complex(1, 0) / y;
-                    A1[0][0] = 1;
-                    A1[0][1] = 0;
-                    A1[1][0] = y;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case Line:
-                {
-                    LinesElement* tmp = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    long double r0 = tmp->GetValue();
-                    long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9)* tmp->GetElectricalLength() / tmp->GetMechanicalLength();
-                    long double theta = l * w / 299792458;
-                    A1[0][0] = cos(theta);
-                    A1[1][1] = cos(theta);
-                    A1[0][1] = Complex(0, 1)*r0*sin(theta);
-                    A1[1][0] = Complex(0, sin(theta))/r0;
-                    break;
-                }
-                case OSLine:
-                {
-                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    long double r0 = tmp->GetValue();
-                    long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength()/tmp->GetMechanicalLength();
-                    long double theta = l * w / 299792458;
-                    Complex z = Complex(0, -1)*r0/ tan(theta);
-                    Complex y = (long double)1 / z;
-                    A1[0][0] = 1;
-                    A1[0][1] = 0;
-                    A1[1][0] = y;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case SSLine:
-                {
-                    VerticalLinesElement* tmp = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[i]);
-                    long double r0 = tmp->GetValue();
-                    long double t = tmp->GetTheta();
-                    long double l = t * 299792458 / (360 * 1e9) * tmp->GetElectricalLength() / tmp->GetMechanicalLength();
-                    long double theta = l * w/ 299792458;
-                    Complex z = Complex(0, 1)*r0 * tan(theta);
-                    Complex y = (long double)1 / z;
-                    A1[0][0] = 1;
-                    A1[0][1] = 0;
-                    A1[1][0] = y;
-                    A1[1][1] = 1;
-                    break;
-                }
-                case Transform:
-                {
-                    Complex n = circuitElements->GetCircuitElements()[i]->GetValue();
-                    A1[0][0] = n;
-                    A1[0][1] = 0;
-                    A1[1][0] = 0;
-                    A1[1][1] = (long double)1/n;
-                    break;
-                }
-            }
-            if (i == circuitElements->GetCircuitElements().size() - 1)
-            {
-                A[0][0] = A1[0][0];
-                A[0][1] = A1[0][1];
-                A[1][0] = A1[1][0];
-                A[1][1] = A1[1][1];
-            }
-            else
-            {
-                Complex mem1 = A[0][0] * A1[0][0] + A[0][1] * A1[1][0];
-                Complex mem2 = A[0][0] * A1[0][1] + A[0][1] * A1[1][1];
-                Complex mem3 = A[1][0] * A1[0][0] + A[1][1] * A1[1][0];
-                Complex mem4 = A[1][0] * A1[0][1] + A[1][1] * A1[1][1];
-
-                A[0][0] = mem1;
-                A[0][1] = mem2;
-                A[1][0] = mem3;
-                A[1][1] = mem4;
-            }
-        }
+        CalculateMatrix(A, A1, circuitElements->GetCircuitElements(), w);
         Complex z0 = SystemParameters::z0;
         Complex dT = A[0][0] + A[0][1] / z0 + A[1][0] * z0 + A[1][1];
         Complex s11 = (A[0][0] + A[0][1] / z0 - A[1][0] * z0 - A[1][1]) / dT;
@@ -223,8 +208,8 @@ void AmplitudeFrequency::MatrixCalculation()
         }
         else
         {
-            SetGamma1((R1 - z0) / (R1 + z0));
-            SetGamma2((R2 - z0) / (R2 + z0));
+            Complex gamma1=(R1 - z0) / (R1 + z0);
+            Complex gamma2=(R2 - z0) / (R2 + z0);
             Complex sopr1(gamma1.real(), -gamma1.imag());
             Complex sopr2(gamma2.real(), -gamma2.imag());
             long double g1 = abs(gamma1);
@@ -257,7 +242,7 @@ void AmplitudeFrequency::MatrixCalculation()
 /// <param name="z">S21.</param>
 void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double z[])
 {
-    ui->widget->clearGraphs();
+    widget->clearGraphs();
     QVector<double> x1, y1, z1;
     for (int i = 0; i < 100; i++)
     {
@@ -295,39 +280,42 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
             zEnd = z1[i + 1];
         }
     }
-    ui->widget->xAxis->setRange(xBegin, xEnd);
-    ui->widget->xAxis->setLabel("f[Hz]");
-    ui->widget->yAxis->setRange(0, 1);
-    ui->widget->yAxis->setLabel("S11 in dB");
-    ui->widget->yAxis2->setRange(0, 1);
-    ui->widget->yAxis2->setLabel("S21 in dB");
-    ui->widget->yAxis2->setVisible(true);
+    widget->xAxis->setRange(xBegin, xEnd);
+    widget->xAxis->setLabel(QStringLiteral(u"Частота в Гц"));
+    widget->yAxis->setRange(0, 1);
+    widget->yAxis->setLabel(QStringLiteral(u"S11 в разах"));
+    widget->yAxis2->setRange(0, 1);
+    widget->yAxis2->setLabel(QStringLiteral(u"S21 в разах"));
+    widget->yAxis2->setVisible(true);
     QPen pen1(SystemParameters::ampS11Color, SystemParameters::ampFrline[0]);
-    ui->widget->setInteraction(QCP::iRangeZoom, true);
-    ui->widget->setInteraction(QCP::iRangeDrag, true);
-    ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
-    ui->widget->graph(0)->addData(x1, y1);
-    ui->widget->graph(0)->setPen(pen1);
-    ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
-    ui->widget->graph(1)->addData(x1, z1);
+    widget->setInteraction(QCP::iRangeZoom, true);
+    widget->setInteraction(QCP::iRangeDrag, true);
+    widget->addGraph(widget->xAxis, widget->yAxis2);
+    widget->graph(0)->addData(x1, y1);
+    widget->graph(0)->setPen(pen1);
+    widget->addGraph(widget->xAxis, widget->yAxis);
+    widget->graph(1)->addData(x1, z1);
     QPen pen(SystemParameters::ampS21Color, SystemParameters::ampFrline[1]);
-    ui->widget->graph(1)->setPen(pen);
-    ui->widget->replot();
+    widget->graph(1)->setPen(pen);
+    widget->replot();
 
-    ui->widget->setInteraction(QCP::iRangeZoom, true);
-    ui->widget->setInteraction(QCP::iRangeDrag, true);
+    widget->setInteraction(QCP::iRangeZoom, true);
+    widget->setInteraction(QCP::iRangeDrag, true);
     QList<QCPAxis*> axises;
-    axises.append(ui->widget->xAxis);
-    axises.append(ui->widget->yAxis);
-    axises.append(ui->widget->yAxis2);
-    ui->widget->axisRect()->setRangeDragAxes(axises);
-    ui->widget->axisRect()->setRangeZoomAxes(axises);
+    axises.append(widget->xAxis);
+    axises.append(widget->yAxis);
+    axises.append(widget->yAxis2);
+    widget->axisRect()->setRangeDragAxes(axises);
+    widget->axisRect()->setRangeZoomAxes(axises);
 }
 
+/// <summary>
+/// Очистка графиков.
+/// </summary>
 void AmplitudeFrequency::Clear()
 {
-    ui->widget->clearGraphs();
-    ui->widget->replot();
+    widget->clearGraphs();
+    widget->replot();
 }
 
 /// <summary>
@@ -343,15 +331,15 @@ void AmplitudeFrequency::SaveAmpFr()
 
         if (fileName.endsWith(".png", Qt::CaseInsensitive))
         {
-            success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+            success = widget->savePng(fileName, widget->width() * 2, widget->height() * 2, 2.0);
         }
         else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
         {
-            success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+            success = widget->saveJpg(fileName, widget->width(), widget->height());
         }
         else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
         {
-            success = ui->widget->savePdf(fileName);
+            success = widget->savePdf(fileName);
         }
 
         if (success)

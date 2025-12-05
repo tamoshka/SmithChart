@@ -1,145 +1,151 @@
-#include "EditWidget.h"
-#include "ui_EditWidget.h"
+﻿#include "EditWidget.h"
+#include "systemParameters.h"
 
+/// <summary>
+/// Коснтруктор класса.
+/// </summary>
+/// <param name="parent">Родительский виджет.</param>
+/// <param name="circuit">Цепь.</param>
+/// <param name="elem">Элемент.</param>
 EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	: QWidget(parent)
-	, ui(new Ui::EditWidget())
 {
-	ui->setupUi(this);
+	SetupUI();
 	this->setMinimumSize(400, 800);
 	circuitElements = circuit;
 	edited = elem;
-	ui->RLineEdit->setDisabled(true);
-	ui->RComboBox->addItem("mOhm");
-	ui->RComboBox->addItem("Ohm");
-	ui->RComboBox->addItem("KOhm");
-	ui->RComboBox->addItem("MOhm");
-	ui->RComboBox->addItem("GOhm");
-	ui->RComboBox->setCurrentIndex(1);
-	ui->RComboBox->setDisabled(true);
-	ui->LLineEdit->setDisabled(true);
-	ui->LComboBox->addItem("uH");
-	ui->LComboBox->addItem("nH");
-	ui->LComboBox->addItem("pH");
-	ui->LComboBox->setCurrentIndex(1);
-	ui->LComboBox->setDisabled(true);
-	ui->CLineEdit->setDisabled(true);
-	ui->CComboBox->addItem("uF");
-	ui->CComboBox->addItem("nF");
-	ui->CComboBox->addItem("pF");
-	ui->CComboBox->setCurrentIndex(2);
-	ui->CComboBox->setDisabled(true);
-	ui->NLineEdit->setDisabled(true);
-	ui->Z0LineEdit->setDisabled(true);
-	ui->ErLineEdit->setDisabled(true);
-	ui->LLambdaLineEdit->setDisabled(true);
-	ui->LElMMLineEdit->setDisabled(true);
-	ui->LPhMMLineEdit->setDisabled(true);
-	ui->AlphaLineEdit->setDisabled(true);
+	RLineEdit->setDisabled(true);
+	RComboBox->addItem(QStringLiteral(u"mOhm"));
+	RComboBox->addItem(QStringLiteral(u"Ohm"));
+	RComboBox->addItem(QStringLiteral(u"KOhm"));
+	RComboBox->addItem(QStringLiteral(u"MOhm"));
+	RComboBox->addItem(QStringLiteral(u"GOhm"));
+	RComboBox->setCurrentIndex(1);
+	RComboBox->setDisabled(true);
+	LLineEdit->setDisabled(true);
+	LComboBox->addItem(QStringLiteral(u"uH"));
+	LComboBox->addItem(QStringLiteral(u"nH"));
+	LComboBox->addItem(QStringLiteral(u"pH"));
+	LComboBox->setCurrentIndex(1);
+	LComboBox->setDisabled(true);
+	CLineEdit->setDisabled(true);
+	CComboBox->addItem(QStringLiteral(u"uF"));
+	CComboBox->addItem(QStringLiteral(u"nF"));
+	CComboBox->addItem(QStringLiteral(u"pF"));
+	CComboBox->setCurrentIndex(2);
+	CComboBox->setDisabled(true);
+	NLineEdit->setDisabled(true);
+	Z0LineEdit->setDisabled(true);
+	ErLineEdit->setDisabled(true);
+	LLambdaLineEdit->setDisabled(true);
+	LElMMLineEdit->setDisabled(true);
+	LPhMMLineEdit->setDisabled(true);
+	AlphaLineEdit->setDisabled(true);
 	mode curMode = elem->GetMode();
 	if (curMode == ResistorParallel || curMode == ResistorShunt)
 	{
-		ui->RLineEdit->setEnabled(true);
-		ui->RComboBox->setEnabled(true);
+		RLineEdit->setEnabled(true);
+		RComboBox->setEnabled(true);
 		long double val = 1e-3;
-		ui->RComboBox->setCurrentIndex(0);
+		RComboBox->setCurrentIndex(0);
 		if (elem->GetValue() > 1e9)
 		{
 			val = 1e9;
-			ui->RComboBox->setCurrentIndex(4);
+			RComboBox->setCurrentIndex(4);
 		}
 		else if (elem->GetValue() > 1e6)
 		{
 			val = 1e6;
-			ui->RComboBox->setCurrentIndex(3);
+			RComboBox->setCurrentIndex(3);
 		}
 		else if (elem->GetValue() > 1e3)
 		{
 			val = 1e3;
-			ui->RComboBox->setCurrentIndex(2);
+			RComboBox->setCurrentIndex(2);
 		}
 		else if (elem->GetValue() > 1)
 		{
 			val = 1;
-			ui->RComboBox->setCurrentIndex(1);
+			RComboBox->setCurrentIndex(1);
 		}
-		ui->RLineEdit->setText(QString::number((double)(elem->GetValue() / val)));
+		RLineEdit->setText(QString::number((double)(elem->GetValue() / val)));
 	}
 	else if (curMode == CapacitorParallel || curMode == CapacitorShunt)
 	{
-		ui->CLineEdit->setEnabled(true);
-		ui->CComboBox->setEnabled(true);
+		CLineEdit->setEnabled(true);
+		CComboBox->setEnabled(true);
 		long double val = elem->GetValue();
-		ui->CComboBox->setCurrentIndex(0);
+		CComboBox->setCurrentIndex(0);
 		QString power;
 		val *= 1e12;
 		if (val < 1000)
 		{
-			ui->CComboBox->setCurrentIndex(2);
+			CComboBox->setCurrentIndex(2);
 		}
 		else if (val < 1000000)
 		{
 			val /= 1e3;
-			ui->CComboBox->setCurrentIndex(1);
+			CComboBox->setCurrentIndex(1);
 		}
 		else
 		{
 			val /= 1e6;
-			ui->CComboBox->setCurrentIndex(0);
+			CComboBox->setCurrentIndex(0);
 		}
-		ui->CLineEdit->setText(QString::number((double)val));
+		CLineEdit->setText(QString::number((double)val));
 	}
 	else if (curMode == InductionParallel || curMode == InductionShunt)
 	{
-		ui->LLineEdit->setEnabled(true);
-		ui->LComboBox->setEnabled(true);
+		LLineEdit->setEnabled(true);
+		LComboBox->setEnabled(true);
 		long double val = elem->GetValue();
-		ui->LComboBox->setCurrentIndex(0);
+		LComboBox->setCurrentIndex(0);
 		QString power;
 		val *= 1e9;
 		if (val < 1)
 		{
 			val *= 1e3;
-			ui->LComboBox->setCurrentIndex(2);
+			LComboBox->setCurrentIndex(2);
 		}
 		else if (val < 1000)
 		{
-			ui->LComboBox->setCurrentIndex(1);
+			LComboBox->setCurrentIndex(1);
 		}
 		else
 		{
 			val /= 1e3;
-			ui->LComboBox->setCurrentIndex(0);
+			LComboBox->setCurrentIndex(0);
 		}
-		ui->LLineEdit->setText(QString::number((double)val));
+		LLineEdit->setText(QString::number((double)val));
 	}
 	else if (curMode == Transform)
 	{
-		ui->NLineEdit->setEnabled(true);
+		NLineEdit->setEnabled(true);
+		NLineEdit->setText(QString::number((double)elem->GetValue()));
 	}
 	else if (curMode==OSLine || curMode==SSLine||curMode==Line)
 	{
-		ui->Z0LineEdit->setEnabled(true);
-		ui->ErLineEdit->setEnabled(true);
-		ui->LLambdaLineEdit->setEnabled(true);
-		ui->LElMMLineEdit->setEnabled(true);
-		ui->LPhMMLineEdit->setEnabled(true);
-		ui->Z0LineEdit->setText(QString::number((double)elem->GetValue()));
+		Z0LineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
+		LLambdaLineEdit->setEnabled(true);
+		LElMMLineEdit->setEnabled(true);
+		LPhMMLineEdit->setEnabled(true);
+		Z0LineEdit->setText(QString::number((double)elem->GetValue()));
 		if (curMode == OSLine || curMode == SSLine)
 		{
 			VerticalLinesElement* vl = dynamic_cast<VerticalLinesElement*>(edited);
-			ui->ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
-			ui->LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
-			ui->LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
-			ui->LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
+			ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
+			LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
+			LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
+			LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
 		}
 		else
 		{
 			LinesElement* vl = dynamic_cast<LinesElement*>(edited);
-			ui->ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
-			ui->LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
-			ui->LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
-			ui->LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
+			ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
+			LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
+			LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
+			LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
 		}
 		QLocale locale(QLocale::C);
 		QDoubleValidator* z0Validator = new QDoubleValidator(0.0, 999999.0, 2, this);
@@ -150,24 +156,124 @@ EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 		lambdaValidator->setLocale(locale);
 		QDoubleValidator* elValidator = new QDoubleValidator(0.0, 149.5, 2, this);
 		elValidator->setLocale(locale);
-		QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ui->ErLineEdit->text().toDouble()), 2, this);
+		QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ErLineEdit->text().toDouble()), 2, this);
 		phValidator->setLocale(locale);
-		ui->LPhMMLabel->setText(QString::number(149.5 / sqrt(ui->ErLineEdit->text().toDouble())));
-		ui->Z0LineEdit->setValidator(z0Validator);
-		ui->ErLineEdit->setValidator(erValidator);
-		ui->LLambdaLineEdit->setValidator(lambdaValidator);
-		ui->LElMMLineEdit->setValidator(elValidator);
-		ui->LPhMMLineEdit->setValidator(phValidator);
+		LPhMMLabel->setText(QString::number(149.5 / sqrt(ErLineEdit->text().toDouble())));
+		Z0LineEdit->setValidator(z0Validator);
+		ErLineEdit->setValidator(erValidator);
+		LLambdaLineEdit->setValidator(lambdaValidator);
+		LElMMLineEdit->setValidator(elValidator);
+		LPhMMLineEdit->setValidator(phValidator);
 	}
 	isUpdating = false;
-	connect(ui->OKButton, &QPushButton::clicked, this, &EditWidget::OKButton_clicked);
-	connect(ui->DrawButton, &QPushButton::clicked, this, &EditWidget::DrawButton_clicked);
-	connect(ui->ErLineEdit, &QLineEdit::textChanged, this, &EditWidget::onErLineEditChanged);
-	connect(ui->LLambdaLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLLambdaLineEditChanged);
-	connect(ui->LElMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLElMMLineEditChanged);
-	connect(ui->LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
+	connect(OKButton, &QPushButton::clicked, this, &EditWidget::OKButton_clicked);
+	connect(DrawButton, &QPushButton::clicked, this, &EditWidget::DrawButton_clicked);
+	connect(ErLineEdit, &QLineEdit::textChanged, this, &EditWidget::onErLineEditChanged);
+	connect(LLambdaLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLLambdaLineEditChanged);
+	connect(LElMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLElMMLineEditChanged);
+	connect(LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
 }
 
+/// <summary>
+/// Настройка пользовательского интерфейса.
+/// </summary>
+void EditWidget::SetupUI()
+{
+	this->setWindowTitle(QStringLiteral(u"Изменение элемента"));
+	this->setFixedSize(400, 800);
+	this->resize(400, 800);
+	groupBox = new QGroupBox(this);
+	groupBox->setGeometry(QRect(0, 10, 391, 711));
+	groupBox->setTitle(QStringLiteral(u"Введите новые значения"));
+	groupBox_2 = new QGroupBox(groupBox);
+	groupBox_2->setGeometry(QRect(10, 30, 311, 80));
+	groupBox_2->setTitle("R");
+	RLineEdit = new QLineEdit(groupBox_2);
+	RLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	RComboBox = new QComboBox(groupBox_2);
+	RComboBox->setGeometry(QRect(190, 40, 111, 24));
+	groupBox_3 = new QGroupBox(groupBox);
+	groupBox_3->setGeometry(QRect(10, 130, 311, 80));
+	groupBox_3->setTitle("L");
+	LComboBox = new QComboBox(groupBox_3);
+	LComboBox->setGeometry(QRect(190, 40, 111, 24));
+	LLineEdit = new QLineEdit(groupBox_3);
+	LLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	groupBox_4 = new QGroupBox(groupBox);
+	groupBox_4->setGeometry(QRect(10, 230, 311, 80));
+	groupBox_4->setTitle("C");
+	CLineEdit = new QLineEdit(groupBox_4);
+	CLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	CComboBox = new QComboBox(groupBox_4);
+	CComboBox->setGeometry(QRect(190, 40, 111, 24));
+	groupBox_5 = new QGroupBox(groupBox);
+	groupBox_5->setGeometry(QRect(10, 330, 211, 80));
+	groupBox_5->setTitle(QStringLiteral(u"Коэффициент передачи"));
+	NLineEdit = new QLineEdit(groupBox_5);
+	NLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	groupBox_6 = new QGroupBox(groupBox);
+	groupBox_6->setGeometry(QRect(10, 430, 211, 80));
+	groupBox_6->setTitle(QStringLiteral(u"Волновое сопротивление"));
+	Z0LineEdit = new QLineEdit(groupBox_6);
+	Z0LineEdit->setGeometry(QRect(10, 40, 131, 24));
+	label = new QLabel(groupBox_6);
+	label->setGeometry(QRect(160, 45, 55, 16));
+	label->setLineWidth(0);
+	label->setText(QStringLiteral(u"Ом"));
+	groupBox_7 = new QGroupBox(groupBox);
+	groupBox_7->setGeometry(QRect(230, 430, 151, 80));
+	groupBox_7->setTitle(QStringLiteral(u"Коэффициент электрической проводимости"));
+	ErLineEdit = new QLineEdit(groupBox_7);
+	ErLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	groupBox_8 = new QGroupBox(groupBox);
+	groupBox_8->setGeometry(QRect(230, 520, 151, 91));
+	groupBox_8->setTitle(QStringLiteral(u"Физ. длина в мм."));
+	LPhMMLineEdit = new QLineEdit(groupBox_8);
+	LPhMMLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	label_4 = new QLabel(groupBox_8);
+	label_4->setGeometry(QRect(10, 70, 41, 16));
+	label_4->setText(QStringLiteral(u"макс = "));
+	LPhMMLabel = new QLabel(groupBox_8);
+	LPhMMLabel->setGeometry(QRect(60, 70, 61, 16));
+	groupBox_9 = new QGroupBox(groupBox);
+	groupBox_9->setGeometry(QRect(230, 620, 151, 80));
+	groupBox_9->setTitle(QStringLiteral(u"Коэф. затухания"));
+	AlphaLineEdit = new QLineEdit(groupBox_9);
+	AlphaLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	groupBox_10 = new QGroupBox(groupBox);
+	groupBox_10->setGeometry(QRect(10, 520, 101, 91));
+	groupBox_10->setTitle(QStringLiteral(u"Эл. длина в рад."));
+	LLambdaLineEdit = new QLineEdit(groupBox_10);
+	LLambdaLineEdit->setGeometry(QRect(10, 40, 81, 24));
+	label_2 = new QLabel(groupBox_10);
+	label_2->setGeometry(QRect(10, 70, 51, 16));
+	label_2->setText(QStringLiteral(u"макс = "));
+	LLambdaLabel = new QLabel(groupBox_10);
+	LLambdaLabel->setGeometry(QRect(54, 69, 51, 21));
+	LLambdaLabel->setText("0.499");
+	groupBox_11 = new QGroupBox(groupBox);
+	groupBox_11->setGeometry(QRect(120, 520, 101, 91));
+	groupBox_11->setTitle(QStringLiteral(u"Эл. длина в мм."));
+	LElMMLineEdit = new QLineEdit(groupBox_11);
+	LElMMLineEdit->setGeometry(QRect(10, 40, 71, 24));
+	label_3 = new QLabel(groupBox_11);
+	label_3->setGeometry(QRect(10, 70, 41, 16));
+	label_3->setText(QStringLiteral(u"макс = "));
+	LElMMLabel = new QLabel(groupBox_11);
+	LElMMLabel->setGeometry(QRect(60, 70, 21, 20));
+	LElMMLabel->setText("149");
+	DrawButton = new QPushButton(this);
+	DrawButton->setGeometry(QRect(0, 730, 391, 25));
+	DrawButton->setText(QStringLiteral(u"Нарисовать"));
+	OKButton = new QPushButton(this);
+	OKButton->setGeometry(QRect(0, 760, 391, 25));
+	OKButton->setText("OK");
+}
+
+/// <summary>
+/// Изменение текстБокса электрической проницаемости.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onErLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -177,22 +283,26 @@ void EditWidget::onErLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setDisabled(true);
-		ui->LElMMLineEdit->setDisabled(true);
-		ui->LPhMMLineEdit->setDisabled(true);
+		LLambdaLineEdit->setDisabled(true);
+		LElMMLineEdit->setDisabled(true);
+		LPhMMLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setEnabled(true);
-		ui->LElMMLineEdit->setEnabled(true);
-		ui->LPhMMLineEdit->setEnabled(true);
+		LLambdaLineEdit->setEnabled(true);
+		LElMMLineEdit->setEnabled(true);
+		LPhMMLineEdit->setEnabled(true);
 		isUpdating = false;
 		recalculateFromEr();
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса электрической длины в радианах.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLLambdaLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -202,18 +312,22 @@ void EditWidget::onLLambdaLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LElMMLineEdit->setText("");
-		ui->LPhMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LElMMLineEdit->setText("");
+		LPhMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromLambda();
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса электрической длины в мм.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLElMMLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -223,18 +337,22 @@ void EditWidget::onLElMMLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setText("");
-		ui->LPhMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LLambdaLineEdit->setText("");
+		LPhMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromElMM();
 	}
 }
 
+/// <summary>
+/// Изменение текстБокса физической длины в мм.
+/// </summary>
+/// <param name="text">Строковое значение.</param>
 void EditWidget::onLPhMMLineEditChanged(const QString& text)
 {
 	if (isUpdating)
@@ -244,73 +362,273 @@ void EditWidget::onLPhMMLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setText("");
-		ui->LElMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LLambdaLineEdit->setText("");
+		LElMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromPhMM();
 	}
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической проницаемости.
+/// </summary>
 void EditWidget::recalculateFromEr()
 {
 	isUpdating = true;
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble()/sqrt(ui->ErLineEdit->text().toDouble())));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble()/sqrt(ErLineEdit->text().toDouble())));
 	QLocale locale(QLocale::C);
-	QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ui->ErLineEdit->text().toDouble()), 2, this);
+	QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ErLineEdit->text().toDouble()), 2, this);
 	phValidator->setLocale(locale);
-	ui->LPhMMLineEdit->setValidator(phValidator);
-	ui->LPhMMLabel->setText(QString::number(149.5 / sqrt(ui->ErLineEdit->text().toDouble())));
+	LPhMMLineEdit->setValidator(phValidator);
+	LPhMMLabel->setText(QString::number(149.5 / sqrt(ErLineEdit->text().toDouble())));
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической длины в мм.
+/// </summary>
 void EditWidget::recalculateFromElMM()
 {
 	isUpdating = true;
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() / sqrt(ui->ErLineEdit->text().toDouble())));
-	ui->LLambdaLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() *1e6/ 299792458));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() / sqrt(ErLineEdit->text().toDouble())));
+	LLambdaLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() *1e6/ 299792458));
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из физической длины в мм.
+/// </summary>
 void EditWidget::recalculateFromPhMM()
 {
 	isUpdating = true;
-	ui->LElMMLineEdit->setText(QString::number(ui->LPhMMLineEdit->text().toDouble() * sqrt(ui->ErLineEdit->text().toDouble())));
-	ui->LLambdaLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() * 1e6 / 299792458));
+	LElMMLineEdit->setText(QString::number(LPhMMLineEdit->text().toDouble() * sqrt(ErLineEdit->text().toDouble())));
+	LLambdaLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() * 1e6 / 299792458));
 	isUpdating = false;
 }
 
+/// <summary>
+/// Пересчёт других текстБоксов исходя из электрической длины в радианах.
+/// </summary>
 void EditWidget::recalculateFromLambda()
 {
 	isUpdating = true;
-	ui->LElMMLineEdit->setText(QString::number(ui->LLambdaLineEdit->text().toDouble()* 299792458/1e6));
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() / sqrt(ui->ErLineEdit->text().toDouble())));
+	LElMMLineEdit->setText(QString::number(LLambdaLineEdit->text().toDouble()* 299792458/1e6));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() / sqrt(ErLineEdit->text().toDouble())));
 	isUpdating = false;
 }
 
+/// <summary>
+/// Применение изменений с закрытием окна.
+/// </summary>
 void EditWidget::OKButton_clicked()
 {
 	DrawButton_clicked();
 	this->close();
 }
 
+/// <summary>
+/// Закрытие окна
+/// </summary>
+/// <param name="event">Событие закрытия.</param>
 void EditWidget::closeEvent(QCloseEvent* event)
 {
 	SystemParameters::edit = false;
 }
 
+/// <summary>
+/// Применение изменений без закрытия окна.
+/// </summary>
 void EditWidget::DrawButton_clicked()
 {
 	bool correct = true;
+	AddResistor(correct);
+	AddCapacitor(correct);
+	AddInduction(correct);
+	AddTransform(correct);
+	AddLines(correct);
+	if (correct)
+	{
+		int j = 0;
+		for (auto var : circuitElements->GetCircuitElements())
+		{
+			if (var == edited)
+			{
+				break;
+			}
+			j++;
+		}
+		QList <Element*> temp = {};
+		for (int firstj = j; firstj < circuitElements->GetCircuitElements().size(); firstj++)
+		{
+			temp.append(circuitElements->GetCircuitElements()[firstj]);
+		}
+		Complex z;
+		Complex y;
+		Complex g;
+		Complex tempZ;
+		Complex tempY;
+		for (j; j < circuitElements->GetCircuitElements().size(); j++)
+		{
+			if (j != 0)
+			{
+				z = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Z);
+				y = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Y);
+				g = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(G);
+			}
+			else
+			{
+				z = circuitElements->z;
+				y = circuitElements->y;
+				g = circuitElements->g;
+			}
+			switch (circuitElements->GetCircuitElements()[j]->GetMode())
+			{
+				case ResistorShunt:
+				{
+					Complex params = SystemParameters::EditResistorShunt(circuitElements, z, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case InductionShunt:
+				{
+					long double r1 = z.imag();
+					long double r2 = circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint + r1;
+					Complex params= SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case CapacitorShunt:
+				{
+					long double r1 = z.imag();
+					long double r2 = r1 - 1 / (circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint);
+					Complex params = SystemParameters::EditCapIndShunt(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case ResistorParallel:
+				{
+					Complex params = SystemParameters::EditResistorParallel(circuitElements, y, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case InductionParallel:
+				{
+					long double r1 = y.imag();
+					long double r2 = r1 - (M_PI * 500 * 100) / (circuitElements->GetCircuitElements()[j]->GetValue() * circuitElements->frequencyFirstPoint * 1e9 / 1e6);
+					Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case CapacitorParallel:
+				{
+					long double r1 = y.imag();
+					long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue() * M_PI * circuitElements->frequencyFirstPoint * 1e12 / 1e6) / 500;
+					Complex params = SystemParameters::EditCapIndParallel(circuitElements, j, r1, r2);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case Line:
+				{
+					Complex params = SystemParameters::EditLine(circuitElements, z, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					break;
+				}
+				case OSLine:
+				{
+					VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
+					long double tn;
+					long double angle = 2 * M_PI * elem->GetLambda();
+					if (elem->GetLambda() > 0.25)
+					{
+						angle -= M_PI;
+					}
+					tn = tan(angle) * 1000 / elem->GetValue();
+					Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
+					long double theta;
+					long double o;
+					o = atan((y3.imag() - y.imag()) / 1000 * elem->GetValue());
+					if (o < 0)
+					{
+						o += M_PI;
+					}
+					theta = o * 180 / M_PI;
+					elem->SetTheta(theta);
+					break;
+				}
+				case SSLine:
+				{
+					VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
+					long double tn;
+					long double angle = 2 * M_PI * elem->GetLambda();
+					if (elem->GetLambda() > 0.25)
+					{
+						angle -= M_PI;
+					}
+					tn = -1000 / tan(angle) / elem->GetValue();
+					Complex params = SystemParameters::EditOSSSLine(circuitElements, y, tn, elem, j);
+					SystemParameters::AddElement(circuitElements, params.real(), params.imag(), j);
+					Complex y3 = SystemParameters::yCalculation(params.real(), params.imag());
+					long double theta;
+					long double o;
+					o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
+					if (o < 0)
+					{
+						o += M_PI;
+					}
+					theta = o * 180 / M_PI;
+					elem->SetTheta(theta);
+					break;
+				}
+				case Transform:
+				{
+					long double x;
+					long double y2;
+					long double t;
+					long double r1 = z.real();
+					long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(), 2) * r1;
+					r2 = r2 / SystemParameters::z0;
+					long double q = z.imag() / z.real();
+					long double rIm = q * r2;
+					long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;
+
+					if (denominator != 0) {
+						x = (r2 * r2 + rIm * rIm - 1) / denominator;
+						y2 = (2 * rIm) / denominator;
+					}
+					else {
+						x = -1;
+						y2 = 0;
+					}
+					y2 *= -1;
+					SystemParameters::AddElement(circuitElements, x, y2, j);
+					break;
+				}
+			}
+			SystemParameters::tunedElements = temp;
+			SystemParameters::edited = true;
+		}
+	}
+	
+}
+
+/// <summary>
+/// Изменяется резистор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
+void EditWidget::AddResistor(bool& correct)
+{
 	if (edited->GetMode() == ResistorParallel || edited->GetMode() == ResistorShunt)
 	{
-		QString tempR = ui->RLineEdit->text();
+		QString tempR = RLineEdit->text();
 		bool validateR = true;
-		long double valueR = ui->RLineEdit->text().toFloat(&validateR);
+		long double valueR = RLineEdit->text().toFloat(&validateR);
 		if (!validateR || valueR <= 0)
 		{
 			correct = false;
@@ -323,30 +641,38 @@ void EditWidget::DrawButton_clicked()
 		}
 		else
 		{
-			if (ui->RComboBox->currentIndex() == 0)
+			if (RComboBox->currentIndex() == 0)
 			{
 				valueR /= 1e3;
 			}
-			else if (ui->RComboBox->currentIndex() == 2)
+			else if (RComboBox->currentIndex() == 2)
 			{
 				valueR *= 1e3;
 			}
-			else if (ui->RComboBox->currentIndex() == 3)
+			else if (RComboBox->currentIndex() == 3)
 			{
 				valueR *= 1e6;
 			}
-			else if (ui->RComboBox->currentIndex() == 4)
+			else if (RComboBox->currentIndex() == 4)
 			{
 				valueR *= 1e9;
 			}
 			edited->SetValue(valueR);
 		}
 	}
-	else if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
+}
+
+/// <summary>
+/// Изменяется конденсатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
+void EditWidget::AddCapacitor(bool& correct)
+{
+	if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
 	{
-		QString tempC = ui->CLineEdit->text();
+		QString tempC = CLineEdit->text();
 		bool validateC = true;
-		long double valueC = ui->CLineEdit->text().toFloat(&validateC);
+		long double valueC = CLineEdit->text().toFloat(&validateC);
 		if (!validateC || valueC <= 0)
 		{
 			correct = false;
@@ -358,11 +684,11 @@ void EditWidget::DrawButton_clicked()
 		}
 		else
 		{
-			if (ui->CComboBox->currentIndex() == 0)
+			if (CComboBox->currentIndex() == 0)
 			{
 				valueC /= 1e6;
 			}
-			else if (ui->CComboBox->currentIndex() == 1)
+			else if (CComboBox->currentIndex() == 1)
 			{
 				valueC /= 1e9;
 			}
@@ -373,11 +699,19 @@ void EditWidget::DrawButton_clicked()
 			edited->SetValue(valueC);
 		}
 	}
-	else if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
+}
+
+/// <summary>
+/// Изменяется катушка.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
+void EditWidget::AddInduction(bool& correct)
+{
+	if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
 	{
-		QString tempL = ui->LLineEdit->text();
-		bool validateL= true;
-		long double valueL = ui->LLineEdit->text().toFloat(&validateL);
+		QString tempL = LLineEdit->text();
+		bool validateL = true;
+		long double valueL = LLineEdit->text().toFloat(&validateL);
 		if (!validateL || valueL <= 0)
 		{
 			correct = false;
@@ -389,11 +723,11 @@ void EditWidget::DrawButton_clicked()
 		}
 		else
 		{
-			if (ui->LComboBox->currentIndex() == 0)
+			if (LComboBox->currentIndex() == 0)
 			{
 				valueL /= 1e6;
 			}
-			else if (ui->LComboBox->currentIndex() == 1)
+			else if (LComboBox->currentIndex() == 1)
 			{
 				valueL /= 1e9;
 			}
@@ -404,11 +738,19 @@ void EditWidget::DrawButton_clicked()
 			edited->SetValue(valueL);
 		}
 	}
-	else if (edited->GetMode() == Transform)
+}
+
+/// <summary>
+/// Изменяется трансформатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
+void EditWidget::AddTransform(bool& correct)
+{
+	if (edited->GetMode() == Transform)
 	{
-		QString tempN = ui->NLineEdit->text();
+		QString tempN = NLineEdit->text();
 		bool validateN = true;
-		long double valueN = ui->NLineEdit->text().toFloat(&validateN);
+		long double valueN = NLineEdit->text().toFloat(&validateN);
 		if (!validateN || valueN <= 0)
 		{
 			correct = false;
@@ -423,24 +765,32 @@ void EditWidget::DrawButton_clicked()
 			edited->SetValue(valueN);
 		}
 	}
-	else if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)
+}
+
+/// <summary>
+/// Изменяется линия передач/шлейф.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
+void EditWidget::AddLines(bool& correct)
+{
+	if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)
 	{
-		QString tempZ0 = ui->Z0LineEdit->text();
-		QString tempEr = ui->ErLineEdit->text();
-		QString tempLambda = ui->LLambdaLineEdit->text();
-		QString tempLEl = ui->LElMMLineEdit->text();
-		QString tempLPh = ui->LPhMMLineEdit->text();
+		QString tempZ0 = Z0LineEdit->text();
+		QString tempEr = ErLineEdit->text();
+		QString tempLambda = LLambdaLineEdit->text();
+		QString tempLEl = LElMMLineEdit->text();
+		QString tempLPh = LPhMMLineEdit->text();
 		bool validateZ0 = true;
 		bool validateEr = true;
 		bool validateLambda = true;
 		bool validateLEl = true;
 		bool validateLPh = true;
-		long double valueZ0 = ui->Z0LineEdit->text().toFloat(&validateZ0);
-		long double valueEr = ui->ErLineEdit->text().toFloat(&validateEr);
-		long double valueLambda = ui->LLambdaLineEdit->text().toFloat(&validateLambda);
-		long double valueLEl = ui->LElMMLineEdit->text().toFloat(&validateLEl);
-		long double valueLPh = ui->LPhMMLineEdit->text().toFloat(&validateLPh);
-		if (!validateZ0 || !validateEr || !validateLambda || !validateLEl || !validateLPh || valueZ0 <= 0 || valueEr<=0 || valueLambda<=0 || valueLambda>0.5 || valueLEl<=0 || valueLPh<=0)
+		long double valueZ0 = Z0LineEdit->text().toFloat(&validateZ0);
+		long double valueEr = ErLineEdit->text().toFloat(&validateEr);
+		long double valueLambda = LLambdaLineEdit->text().toFloat(&validateLambda);
+		long double valueLEl = LElMMLineEdit->text().toFloat(&validateLEl);
+		long double valueLPh = LPhMMLineEdit->text().toFloat(&validateLPh);
+		if (!validateZ0 || !validateEr || !validateLambda || !validateLEl || !validateLPh || valueZ0 <= 0 || valueEr <= 0 || valueLambda <= 0 || valueLambda > 0.5 || valueLEl <= 0 || valueLPh <= 0)
 		{
 			correct = false;
 			QMessageBox* bx = new QMessageBox();
@@ -469,1538 +819,11 @@ void EditWidget::DrawButton_clicked()
 			}
 		}
 	}
-	if (correct)
-	{
-		int j = 0;
-		for (auto var : circuitElements->GetCircuitElements())
-		{
-			if (var == edited)
-			{
-				break;
-			}
-			j++;
-		}
-		QList <Element*> temp = {};
-		for (int firstj = j; firstj < circuitElements->GetCircuitElements().size(); firstj++)
-		{
-			temp.append(circuitElements->GetCircuitElements()[firstj]);
-		}
-		Complex z;
-		Complex y;
-		Complex g;
-		Complex tempZ;
-		Complex tempY;
-		for (j; j < circuitElements->GetCircuitElements().size(); j++)
-		{
-			int max_step = 0;
-			if (j != 0)
-			{
-				z = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Z);
-				y = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(Y);
-				g = circuitElements->GetCircuitElements()[j - 1]->GetParameter().at(G);
-			}
-			else
-			{
-				z = circuitElements->z;
-				y = circuitElements->y;
-				g = circuitElements->g;
-			}
-			long double step = 0.1;
-			switch (circuitElements->GetCircuitElements()[j]->GetMode())
-			{
-			case ResistorShunt:
-			{
-				long double x;
-				long double y2;
-				long double r1 = z.real();
-				long double r2 = r1 + circuitElements->GetCircuitElements()[j]->GetValue();
-				long double tempy;
-				r2 = r2 / SystemParameters::z0;
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(RealImpedance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(ImagImpedance);
-					tempy = circuitElements->GetCircuitElements()[j - 1]->GetPoint().y;
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(ImagImpedance);
-					tempy = circuitElements->firstPoint.y;
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				if (tempy < 0)
-				{
-					flag2 = true;
-				}
-				else
-				{
-					flag2 = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = 1 + (1 / r) * cos_t;
-				y2 = (1 / r) + (1 / r) * sin_t;
-				y2 = y2 * (-1);
-				while (max_step < 5000)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if ((flag == false && flag2 == false) || (flag == true && flag2 == true))
-					{
-						t += step;
-					}
-					else
-					{
-						t -= step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = 1 + (1 / r) * cos_t;
-					y2 = (1 / r) + (1 / r) * sin_t;
-					y2 = y2 * (-1);
-					if (abs(y2) >= 0 && abs(y2) < 0.0001)
-					{
-						if (flag2)
-						{
-							y2 = -0.0001;
-						}
-						else
-						{
-							y2 = 0.0001;
-						}
-					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (cos_t2 < 0 && sin_t2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else if (cos_t2 > 0 && sin_t2 < 0)
-					{
-						t1 = 2 * M_PI - abs(t1);
-					}
-					else if (sin_t2 > 0 && cos_t2 < 0)
-					{
-						t1 = M_PI - abs(t1);
-					}
-					if (x - 1 != 0)
-					{
-						r3 = (cos(t1) - x) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				if (abs(x) > 1)
-				{
-					if (flag2)
-					{
-						y2 = -0.0001;
-					}
-					else
-					{
-						y2 = 0.0001;
-					}
-					long double denominator = (r2 + 1) * (r2 + 1);
-
-					if (denominator != 0) {
-						x = (r2 * r2 - 1) / denominator;
-					}
-					else
-					{
-						x = -1;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case InductionShunt:
-			{
-				long double x;
-				long double y2;
-				long double r1 = z.imag();
-				long double r2 = circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint + r1;
-				long double step = 0.1;
-				r2 = r2 / SystemParameters::z0;
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealImpedance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealImpedance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-				y2 = (1 / (r + 1)) * sin_t;
-				if (y2 >= 0 && y2 < 0.0001)
-				{
-					y2 = 0.0001;
-				}
-				else if (y2 <= 0 && y2 > -0.0001)
-				{
-					y2 = -0.0001;
-				}
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-					y2 = (1 / (r + 1)) * sin_t;
-					if (y2 >= 0 && y2 < 0.0001)
-					{
-						y2 = 0.0001;
-					}
-					else if (y2 <= 0 && y2 > -0.0001)
-					{
-						y2 = -0.0001;
-					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(cos_t2 / sin_t2);
-					if (y2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else
-					{
-						t1 += 2 * M_PI;
-					}
-					if (x - 1 != 0)
-					{
-						r3 = cos(t1) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 < 0)
-					{
-						r3 = abs(r3);
-					}
-					else
-					{
-						r3 = abs(r3) * (-1);
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case CapacitorShunt:
-			{
-				long double x;
-				long double y2;
-				long double r1 = z.imag();
-				long double r2 = r1 - 1 / (circuitElements->GetCircuitElements()[j]->GetValue() * 2 * M_PI * circuitElements->frequencyFirstPoint);
-				long double step = 0.1;
-				r2 = r2 / SystemParameters::z0;
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagImpedance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealImpedance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealImpedance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-				y2 = (1 / (r + 1)) * sin_t;
-				if (y2 >= 0 && y2 < 0.0001)
-				{
-					y2 = 0.0001;
-				}
-				else if (y2 <= 0 && y2 > -0.0001)
-				{
-					y2 = -0.0001;
-				}
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (r / (1 + r)) + (1 / (r + 1)) * cos_t;
-					y2 = (1 / (r + 1)) * sin_t;
-					if (y2 >= 0 && y2 < 0.0001)
-					{
-						y2 = 0.0001;
-					}
-					else if (y2 <= 0 && y2 > -0.0001)
-					{
-						y2 = -0.0001;
-					}
-					long double circleRadius = 1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 * (x - 1)));
-					long double xCenter = 1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(cos_t2 / sin_t2);
-					if (y2 < 0)
-					{
-						t1 += M_PI;
-					}
-					else
-					{
-						t1 += 2 * M_PI;
-					}
-					if (x - 1 != 0)
-					{
-						r3 = cos(t1) / (x - 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 < 0)
-					{
-						r3 = abs(r3);
-					}
-					else
-					{
-						r3 = abs(r3) * (-1);
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case ResistorParallel:
-			{
-				long double x;
-				long double y2;
-				long double tempy;
-				long double r1 = y.real();
-				long double r2 = 1000 / circuitElements->GetCircuitElements()[j]->GetValue() + r1;
-				long double step = 0.1;
-				r2 = r2 / (1000 / SystemParameters::z0);
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(RealAdmitance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(ImagAdmitance);
-					tempy = circuitElements->GetCircuitElements()[j - 1]->GetPoint().y;
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(ImagAdmitance);
-					tempy = circuitElements->firstPoint.y;
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				if (tempy < 0)
-				{
-					flag2 = true;
-				}
-				else
-				{
-					flag2 = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				if (flag2 == true)
-				{
-					x = (cos_t - abs(r)) / r;
-					y2 = (1 / r) + (1 / r) * sin_t;
-					y2 *= -1;
-				}
-				else
-				{
-					x = -(cos_t - abs(r)) / r;
-					y2 = -(1 / r) + (1 / r) * sin_t;
-				}
-				while (max_step < 5000)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if ((flag == false && flag2 == false) || (flag == true && flag2 == true))
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					if (flag2 == true)
-					{
-						x = (cos_t - abs(r)) / r;
-						y2 = (1 / r) + (1 / r) * sin_t;
-						y2 *= -1;
-					}
-					else
-					{
-						x = -(cos_t - abs(r)) / r;
-						y2 = -(1 / r) + (1 / r) * sin_t;
-					}
-					if (abs(y2) >= 0 && abs(y2) < 0.0001)
-					{
-						if (flag2)
-						{
-							y2 = -0.0001;
-						}
-						else
-						{
-							y2 = 0.0001;
-						}
-					}
-					long double circleRadius = -1 - ((pow(x, 2) + pow(y2, 2) - 1) / (2 + 2 * x));
-					long double xCenter = -1 - circleRadius;
-					long double dx = x - xCenter;
-					long double dy = y2;
-					dy *= -1;
-					long double sin_t2 = dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (cos_t2 < 0 && sin_t2 < 0)
-					{
-						t1 = abs(t1) - M_PI;
-					}
-					else if (sin_t2 > 0 && cos_t2 < 0)
-					{
-						t1 = M_PI - abs(t1);
-					}
-					if (x - 1 != 0)
-					{
-						r3 = abs((cos(t1) - x) / (x + 1));
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				if (abs(x) > 1)
-				{
-					if (flag2)
-					{
-						y2 = -0.0001;
-					}
-					else
-					{
-						y2 = 0.0001;
-					}
-					long double denominator = (1 + r2) * (1 + r2);
-
-					if (denominator != 0) {
-						x = (1 - r2 * r2) / denominator;
-					}
-					else {
-						x = -1;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case InductionParallel:
-			{
-				long double x;
-				long double y2;
-				long double r1 = y.imag();
-				long double r2 = r1 - (M_PI * 500 * 100) / (circuitElements->GetCircuitElements()[j]->GetValue() * circuitElements->frequencyFirstPoint * 1e9 / 1e6);
-				r2 *= -1;
-				long double step = 0.1;
-				r2 = r2 / (1000 / SystemParameters::z0);
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealAdmitance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (cos(t) - r) / (r + 1);
-				y2 = (1 / (r + 1)) * sin_t * -1;
-				if (y2 >= 0 && y2 < 0.0001)
-				{
-					y2 = 0.0001;
-				}
-				else if (y2 <= 0 && y2 > -0.0001)
-				{
-					y2 = -0.0001;
-				}
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (cos(t) - r) / (r + 1);
-					y2 = (1 / (r + 1)) * sin_t * -1;
-					if (y2 >= 0 && y2 < 0.0001)
-					{
-						y2 = 0.0001;
-					}
-					else if (y2 <= 0 && y2 > -0.0001)
-					{
-						y2 = -0.0001;
-					}
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case CapacitorParallel:
-			{
-				long double x;
-				long double y2;
-				long double r1 = y.imag();
-				long double r2 = r1 + (circuitElements->GetCircuitElements()[j]->GetValue() * M_PI * circuitElements->frequencyFirstPoint * 1e12 / 1e6) / 500;
-				r2 *= -1;
-				long double step = 0.1;
-				r2 = r2 / (1000 / SystemParameters::z0);
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealAdmitance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (cos(t) - r) / (r + 1);
-				y2 = (1 / (r + 1)) * sin_t * -1;
-				if (y2 >= 0 && y2 < 0.0001)
-				{
-					y2 = 0.0001;
-				}
-				else if (y2 <= 0 && y2 > -0.0001)
-				{
-					y2 = -0.0001;
-				}
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (cos(t) - r) / (r + 1);
-					y2 = (1 / (r + 1)) * sin_t * -1;
-					if (y2 >= 0 && y2 < 0.0001)
-					{
-						y2 = 0.0001;
-					}
-					else if (y2 <= 0 && y2 > -0.0001)
-					{
-						y2 = -0.0001;
-					}
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					t1 = atan(sin_t2 / cos_t2);
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			case Line:
-			{
-				long double x;
-				long double y2;
-				if (j != 0)
-				{
-					x = circuitElements->GetCircuitElements()[j - 1]->GetPoint().x;
-					y2 = circuitElements->GetCircuitElements()[j - 1]->GetPoint().y;
-				}
-				else
-				{
-					x = circuitElements->firstPoint.x;
-					y2 = circuitElements->firstPoint.y;
-				}
-				LinesElement* elem = dynamic_cast<LinesElement*>(circuitElements->GetCircuitElements()[j]);
-				long double z0 = elem->GetValue();
-				long double lambda = elem->GetLambda();
-				Complex g1 = (z - SystemParameters::z0) / (z + SystemParameters::z0);
-				Complex z3 = z0 * (z + Complex(0, z0)) / (z0 + Complex(0, 1) * z);
-				Complex g3 = (z3 - SystemParameters::z0) / (z3 + SystemParameters::z0);
-				long double center = 0.5 * (pow(g1.real(), 2) + pow(g1.imag(), 2) - pow(g3.real(), 2) - pow(g3.imag(), 2)) / (g1.real() - g3.real());
-				long double R = abs(center - g1);
-				long double dx = x - center;
-				long double dy = y2;
-				dy *= -1;
-				long double sin_t = dy;
-				long double cos_t = dx;
-				long double t = atan(sin_t / cos_t);
-				if (cos_t >= 0)
-				{
-					t *= -1;
-				}
-				else if (sin_t <= 0)
-				{
-					t = M_PI - t;
-				}
-				else
-				{
-					t = -M_PI - t;
-				}
-				long double r = center;
-
-				long double RL = z.real();
-				long double XL = z.imag();
-				long double newLambda = 0;
-				long double Length;
-				long double L;
-				long double Theta;
-				long double step = M_PI / 2;
-				bool flag = true;
-				while (max_step < 500)
-				{
-					if (flag == true)
-					{
-						t += step;
-					}
-					else
-					{
-						t -= step;
-					}
-					if (t > M_PI)
-					{
-						t = -M_PI;
-						step /= 2;
-					}
-					else if (t < -M_PI)
-					{
-						t = M_PI;
-						step /= 2;
-					}
-					long double cos_t1 = cos(t);
-					long double sin_t1 = sin(t);
-					x = cos_t1 * R + center;
-					y2 = sin_t1 * R;
-					if (y2 >= 0 && y2 < 0.0001)
-					{
-						y2 = 0.0001;
-					}
-					else if (y2 <= 0 && y2 > -0.0001)
-					{
-						y2 = -0.0001;
-					}
-					SystemParameters::rImpedanceRealCalculation(x, y2);
-					SystemParameters::rImpedanceImagCalculation(x, y2);
-					long double R3 = SystemParameters::impedanceRealR;
-					long double X3 = SystemParameters::impedanceImagR;
-					long double RR3 = R3 - RL;
-					long double sq3 = -sqrt(RR3 * (RL * (pow(X3, 2) + pow(R3, 2)) - R3 * (pow(XL, 2) + pow(RL, 2)))) / RR3;
-					long double tanO13 = RR3 * sq3 / (R3 * XL + RL * X3);
-					long double tanO23 = -RR3 * sq3 / (R3 * XL + RL * X3);
-					long double z03;
-					long double O3;
-					if (sq3 > 0)
-					{
-						z03 = sq3;
-						O3 = atan(tanO13);
-					}
-					else
-					{
-						z03 = -sq3;
-						O3 = atan(tanO23);
-					}
-					if (O3 < 0)
-					{
-						O3 += M_PI;
-					}
-					Theta = O3 * 180 / M_PI;
-					L = O3 * 299792458 / (2 * M_PI * 1e9);
-					Length = L * 1e3;
-					newLambda = L * 1e9 / 299792458;
-					if (newLambda > lambda && flag == true)
-					{
-						flag = false;
-						step /= 2;
-					}
-					else if (newLambda < lambda && flag == false)
-					{
-						flag = true;
-						step /= 2;
-					}
-					else if (newLambda == lambda)
-					{
-						break;
-					}
-					max_step++;
-				}
-
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				elem->SetTheta(Theta);
-				break;
-			}
-			case OSLine:
-			{
-				long double x;
-				long double y2;
-				long double r1 = y.imag();
-				VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
-				long double tn;
-				long double angle = 2 * M_PI * elem->GetLambda();
-				if (elem->GetLambda() > 0.25)
-				{
-					angle -= M_PI;
-				}
-				tn = tan(angle) * 1000 / elem->GetValue();
-				long double r2 = r1 + tn;
-				r2 *= -1;
-				long double step = 0.1;
-				r2 = r2 / (1000 / SystemParameters::z0);
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealAdmitance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (cos(t) - r) / (r + 1);
-				y2 = (1 / (r + 1)) * sin_t * -1;
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (cos(t) - r) / (r + 1);
-					y2 = (1 / (r + 1)) * sin_t * -1;
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					if (abs(y2) <= 1e-6 && abs(y2) >= 0)
-					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = M_PI / 2;
-						}
-						else if (x < -0.99)
-						{
-							t1 = -M_PI / 2;
-						}
-						else
-						{
-							t1 = 0;
-						}
-					}
-					else
-					{
-						t1 = atan(sin_t2 / cos_t2);
-					}
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
-						t1 = -M_PI / 2;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				long double theta;
-				long double o;
-				o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
-				if (o < 0)
-				{
-					o += M_PI;
-				}
-				theta = o * 180 / M_PI;
-				elem->SetTheta(theta);
-				break;
-			}
-			case SSLine:
-			{
-				long double x;
-				long double y2;
-				long double r1 = y.imag();
-				VerticalLinesElement* elem = dynamic_cast<VerticalLinesElement*>(circuitElements->GetCircuitElements()[j]);
-				long double tn;
-				long double angle = 2 * M_PI * elem->GetLambda();
-				if (elem->GetLambda() > 0.25)
-				{
-					angle -= M_PI;
-				}
-				tn = -1000 / tan(angle) / elem->GetValue();
-				long double r2 = r1 + tn;
-				r2 *= -1;
-				long double step = 0.1;
-				r2 = r2 / (1000 / SystemParameters::z0);
-				tuple<long double, long double> tuple1 = circuitElements->GetCircuitElements()[j]->GetChartParameters().at(ImagAdmitance);
-				tuple<long double, long double> tuple2;
-				if (j != 0)
-				{
-					tuple2 = circuitElements->GetCircuitElements()[j - 1]->GetChartParameters().at(RealAdmitance);
-				}
-				else
-				{
-					tuple2 = circuitElements->chart.at(RealAdmitance);
-				}
-				long double r = get<0>(tuple2);
-				long double r3 = get<0>(tuple1);
-				bool flag;
-				bool flag2;
-				if (r3 > r2)
-				{
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-				}
-				long double t = get<1>(tuple2);
-				long double cos_t = cos(t);
-				long double sin_t = sin(t);
-				x = (cos(t) - r) / (r + 1);
-				y2 = (1 / (r + 1)) * sin_t * -1;
-				while (max_step < 500)
-				{
-					if (r3 > r2 && flag == true)
-					{
-						step /= 2;
-						flag = false;
-					}
-					else if (r3 < r2 && flag == false)
-					{
-						step /= 2;
-						flag = true;
-					}
-					if (flag == false)
-					{
-						t -= step;
-					}
-					else
-					{
-						t += step;
-					}
-					cos_t = cos(t);
-					sin_t = sin(t);
-					x = (cos(t) - r) / (r + 1);
-					y2 = (1 / (r + 1)) * sin_t * -1;
-					long double circleRadius = (pow(x, 2) + 2 * x + 1 + pow(y2, 2)) / (-2 * y2);
-					long double yCenter = -circleRadius;
-					long double dx = x + 1;
-					long double dy = y2 - yCenter;
-					long double sin_t2 = -dy;
-					long double cos_t2 = dx;
-					long double t1;
-					if (abs(y2) <= 1e-6 && abs(y2) >= 0)
-					{
-						if (y2 == 0 && x < -0.99)
-						{
-							t1 = M_PI / 2;
-						}
-						else if (x < -0.99)
-						{
-							t1 = -M_PI / 2;
-						}
-						else
-						{
-							t1 = 0;
-						}
-					}
-					else
-					{
-						t1 = atan(sin_t2 / cos_t2);
-					}
-					if (x + 1 != 0)
-					{
-						r3 = cos(t1) / (x + 1);
-					}
-					else
-					{
-						r3 = 1e9;
-					}
-					if (y2 > 0)
-					{
-						r3 *= -1;
-					}
-					if (y2 == 0)
-					{
-						r3 = 0;
-						t1 = -M_PI / 2;
-					}
-					max_step++;
-					if (max_step == 500)
-					{
-						max_step = 0;
-						break;
-					}
-				}
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				long double theta;
-				long double o;
-				o = -atan(1 / ((y3.imag() - y.imag()) / 1000 * elem->GetValue()));
-				if (o < 0)
-				{
-					o += M_PI;
-				}
-				theta = o * 180 / M_PI;
-				elem->SetTheta(theta);
-				break;
-			}
-			case Transform:
-			{
-				long double x;
-				long double y2;
-				long double t;
-				long double r1 = z.real();
-				long double r2 = pow(circuitElements->GetCircuitElements()[j]->GetValue(), 2) * r1;
-				r2 = r2 / SystemParameters::z0;
-				long double q = z.imag() / z.real();
-				long double rIm = q * r2;
-				long double denominator = (r2 + 1) * (r2 + 1) + rIm * rIm;
-
-				if (denominator != 0) {
-					x = (r2 * r2 + rIm * rIm - 1) / denominator;
-					y2 = (2 * rIm) / denominator;
-				}
-				else {
-					x = -1;
-					y2 = 0;
-				}
-				y2 *= -1;
-				Point point;
-				point.x = x;
-				point.y = y2;
-				circuitElements->GetCircuitElements()[j]->SetPoint(point);
-				Complex z2 = SystemParameters::zCalculation(x, y2);
-				Complex y3 = SystemParameters::yCalculation(x, y2);
-				map<parameterMode, Complex> parameter;
-				parameter[Z] = z2;
-				parameter[Y] = y3;
-				Complex g;
-				if (x >= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), atan(y2 / x) * 180 / M_PI * -1);
-				}
-				else if (y2 <= 0)
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), 180 - atan(y2 / x) * 180 / M_PI);
-				}
-				else
-				{
-					g = Complex(pow(x, 2) + pow(y2, 2), -180 - atan(y2 / x) * 180 / M_PI);
-				}
-				parameter[G] = g;
-				map<chartMode, tuple<long double, long double>> chart;
-				Complex rRealImpedance = SystemParameters::impedanceRealChartParameters(x, y2);
-				Complex rImagImpedance = SystemParameters::impedanceImagChartParameters(x, y2);
-				Complex rRealAdmitance = SystemParameters::admitanceRealChartParameters(x, y2);
-				Complex rImagAdmitance = SystemParameters::admitanceImagChartParameters(x, y2);
-				chart[RealImpedance] = make_tuple(rRealImpedance.real(), rRealImpedance.imag());
-				chart[RealAdmitance] = make_tuple(rRealAdmitance.real(), rRealAdmitance.imag());
-				chart[ImagAdmitance] = make_tuple(rImagAdmitance.real(), rImagAdmitance.imag());
-				chart[ImagImpedance] = make_tuple(rImagImpedance.real(), rImagImpedance.imag());
-				circuitElements->GetCircuitElements()[j]->SetChartParameters(chart);
-				circuitElements->GetCircuitElements()[j]->SetParameter(parameter);
-				break;
-			}
-			}
-			SystemParameters::tunedElements = temp;
-			SystemParameters::edited = true;
-		}
-	}
-	
 }
 
+/// <summary>
+/// Деструктор класса.
+/// </summary>
 EditWidget::~EditWidget()
 {
-	delete ui;
 }

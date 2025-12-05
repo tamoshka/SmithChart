@@ -1,7 +1,7 @@
 ﻿#include "GrafOne.h"
 #include "S2p.h"
 #include <QString>
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса GrafOne.
 /// </summary>
@@ -48,48 +48,53 @@ void GrafOne::Load()
     plotWidget->clearGraphs();
     s = t.Load2P(fileName.toStdString().c_str());
 
-    x = QVector<double>(s.f.begin(), s.f.end());
-    y1 = QVector<double>(s.S11.begin(), s.S11.end());
-    y2 = QVector<double>(s.S22.begin(), s.S22.end());
-    double m1, m2;
-    hX = s.f[s.f.size() - 1] / 4;
-
-    xBegin = 0;
-    xEnd = s.f[s.f.size() - 1];
-    m1 = y1[0];
-    m2 = y2[0];
-    for (int j = 0; j < s.S11.size() - 1; j++)
-    {
-        if (y1[j + 1] < m1)
-        {
-            m1 = y1[j + 1];
-        }
-    }
-    for (int j = 0; j < s.S22.size() - 1; j++)
-    {
-        if (y2[j + 1] < m2)
-        {
-            m2 = y2[j + 1];
-        }
-    }
-    if (extension == "S1P" || extension == "s1p")
-    {
-        hY = m1 / 5;
-        yBegin = m1 * 1.25;
-        yEnd = 0;
-    }
-    else if (m2 < m1)
-    {
-        hY = m2 / 5;
-        yBegin = m2 * 1.25;
-        yEnd = 0;
-    }
-    else
-    {
-        hY = m1 / 5;
-        yBegin = m1 * 1.25;
-        yEnd = 0;
-    }
+	x.resize(s.f.size());
+	for (int i = 0; i < s.f.size(); i++) {
+		x[i] = s.f[i];
+	}
+	y1.resize(s.S11.size());
+	for (int i = 0; i < s.S11.size(); i++) {
+		y1[i] = s.S11[i];
+	}
+	y2.resize(s.S22.size());
+	for (int i = 0; i < s.S22.size(); i++) {
+		y2[i] = s.S22[i];
+	}
+	double m1, m2;
+	double yBegin, yEnd;
+	m1 = y1[0];
+	m2 = y2[0];
+	for (int j = 0; j < s.S11.size() - 1; j++)
+	{
+		if (y1[j + 1] < m1)
+		{
+			m1 = y1[j + 1];
+		}
+	}
+	for (int j = 0; j < s.S22.size() - 1; j++)
+	{
+		if (y2[j + 1] < m2)
+		{
+			m2 = y2[j + 1];
+		}
+	}
+	if (extension == "S1P" || extension == "s1p")
+	{
+		yBegin = m1 * 1.25;
+		yEnd = 0;
+	}
+	else if (m2 < m1)
+	{
+		yBegin = m2 * 1.25;
+		yEnd = 0;
+	}
+	else
+	{
+		yBegin = m1 * 1.25;
+		yEnd = 0;
+	}
+	Paint(extension, yBegin, yEnd, s);
+}
 
     plotWidget->xAxis->setRange(xBegin, xEnd);
     plotWidget->xAxis->setLabel("f[Hz]");

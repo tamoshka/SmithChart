@@ -1,12 +1,15 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include "renderarea.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class CirclesWidget; };
-#endif
-QT_END_NAMESPACE
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QVBoxLayout>
 
 /// <summary>
 /// Класс выбора и отображения вспомогательных кругов.
@@ -18,6 +21,7 @@ class CirclesWidget : public QWidget
 public:
 	CirclesWidget(QWidget* parent = nullptr, CircuitElements* circuit = nullptr);
 	~CirclesWidget();
+	CircuitElements* circuitElements;
 
 signals:
 	void circle();
@@ -42,12 +46,54 @@ public slots:
 	void Load();
 
 private:
-	CircuitElements* circuitElements;
-	Ui::CirclesWidget *ui;
+    QVBoxLayout* verticalLayout;
+    QTabWidget* tabWidget;
+    QWidget* QTab;
+    QGroupBox* groupBox_4;
+    QPushButton* InsertButtonQ;
+    QPushButton* DeleteButtonQ;
+    QPushButton* ClearAllOtherButtonQ;
+    QListWidget* listWidgetQ;
+    QLineEdit* FieldQ;
+    QGroupBox* groupBox_5;
+    QCheckBox* checkBox10Q;
+    QCheckBox* checkBox5Q;
+    QCheckBox* checkBox2Q;
+    QCheckBox* checkBox1Q;
+    QCheckBox* checkBox0point5Q;
+    QCheckBox* checkBox0point2Q;
+    QPushButton* SelectAllButtonQ;
+    QPushButton* ClearAllDefinedButtonQ;
+    QWidget* GainTab;
+    QWidget* VSWRTab;
+    QGroupBox* groupBox_2;
+    QCheckBox* checkBox10VSWR;
+    QCheckBox* checkBox5VSWR;
+    QCheckBox* checkBox3VSWR;
+    QCheckBox* checkBox2VSWR;
+    QCheckBox* checkBox1point5VSWR;
+    QCheckBox* checkBox1point2VSWR;
+    QPushButton* SelectAllButtonVSWR;
+    QPushButton* ClearAllDefinedButtonVSWR;
+    QGroupBox* groupBox_3;
+    QPushButton* InsertButtonVSWR;
+    QPushButton* DeleteButtonVSWR;
+    QPushButton* ClearAllOtherButtonVSWR;
+    QListWidget* listWidgetVSWR;
+    QLineEdit* FieldVSWR;
+    QWidget* StabilityTab;
+    QWidget* NoiseTab;
+    QGroupBox* groupBox;
+    QHBoxLayout* horizontalLayout;
+    QPushButton* OkButton;
+    QPushButton* CancelButton;
+
 	QMap<QCheckBox*, qreal> checkBoxVSWRIndex;
 	QMap<qreal, QCheckBox*> reverseCheckBoxVSWRIndex;
 	QMap<QCheckBox*, qreal> checkBoxQIndex;
 	QMap<qreal, QCheckBox*> reverseCheckBoxQIndex;
 	void addVSWR(double);
 	void addQ(double);
+	void clearOnLoad();
+	void SetupUI();
 };

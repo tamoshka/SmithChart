@@ -1,4 +1,4 @@
-#include "ElementFactory.h"
+﻿#include "ElementFactory.h"
 #include "Element.h"
 #include "VerticalLinesElement.h"
 #include "Line.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include "S2p.h"
@@ -42,16 +42,17 @@ private:
 	QPointF compute_real(float t);
 	QPointF compute_imaginary(float t);
 	QPixmap m_cache;
-	QColor mBackGroundColor;
-	QColor mShapeColor;
 	bool m_cacheValid;
 	void drawStaticObjects(QPainter&);
 	void generateCache();
 	float defaultScale = 200;
-	qreal m_scaleFactor;
 	float scale = 200;
-	float scaleFactor;
-
+	float scaleFactorX;
+	float scaleFactorY;
+	void ImpedanceImagLines(long double, long double, QPainter&);
+	void ImpedanceRealLines(long double, long double, QPainter&);
+	void AdmitanceImagLines(long double, long double, QPainter&);
+	void AdmitanceRealLines(long double, long double, QPainter&);
 	//Тип параметра (S11,S22)
 	ParameterType currentType;
 };

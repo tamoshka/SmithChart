@@ -1,4 +1,4 @@
-#include "GrafTwo.h"
+﻿#include "GrafTwo.h"
 #include <QMessageBox>
 #include <QtMath>
 #include <QThread>
@@ -7,7 +7,7 @@
 #include <QString>
 #include "S2p.h"
 #include "ColourSetting.h"
-
+#include "systemParameters.h"
 /// <summary>
 /// Конструктор класса GrafTwo.
 /// </summary>

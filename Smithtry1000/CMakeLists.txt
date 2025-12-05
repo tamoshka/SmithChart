@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(Smithtry1000 LANGUAGES CXX)
+﻿cmake_minimum_required(VERSION 3.16)
+project(smith-chart-tool LANGUAGES CXX)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/qt.cmake")
     include(qt.cmake)
@@ -10,9 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-D_WIN32_DCOM)
 
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets PrintSupport SvgWidgets)
 
-find_package(Qt6 COMPONENTS Core Widgets)
-find_package(cadmw-ui-ds REQUIRED)
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
 # Иначе настраиваем вручную
 if(COMMAND qt_standard_project_setup)
@@ -39,11 +38,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     ElementFactory.cpp
     Element.h
     Element.cpp
-    EditWidget.ui
     EditWidget.h
     EditWidget.cpp
+    PreSaveDialog.h
+    PreSaveDialog.cpp
     main.cpp
-    Smithtry1000.ui
     Smithtry1000.h
     Smithtry1000.cpp
     circuitWidget.h
@@ -57,7 +56,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     circuitElements.cpp
     qcustomplot.h
     qcustomplot.cpp
-    AmplitudeFrequency.ui
     AmplitudeFrequency.h
     AmplitudeFrequency.cpp
     Timedes.h
@@ -69,7 +67,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
-    ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
     SDiagram1.h
@@ -80,13 +77,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     SDiagram2.cpp
     SParamTable.h
     SParamTable.cpp
-    ColourSetting.ui
     ColourSetting.h
     ColourSetting.cpp
-    CirclesWidget.ui
     CirclesWidget.h
     CirclesWidget.cpp
-    TuneWidget.ui
     TuneWidget.h
     TuneWidget.cpp
     Line.h
@@ -115,65 +109,22 @@ else()
 endif()
 
 # Свойства для Windows
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
-
-# Линковка Qt библиотек
-# Линковка Qt библиотек (в конце файла, где у вас target_link_libraries)
-if(USING_CONAN)
-    target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
-        Qt::SvgWidgets
-        Qt::PrintSupport
-        cadmw-ui-ds::cadmw-ui-ds
-    )
-else()
-    target_link_libraries(${PROJECT_NAME} PUBLIC
-        Qt6::Core
-        Qt6::Gui
-        Qt6::Widgets
-        Qt6::SvgWidgets
-        Qt6::PrintSupport
-        cadmw-ui-ds::cadmw-ui-ds
-    )
-endif()
-
-# Настройки для разных типов сборки
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_BUILD)
-endif()
-
-# Дополнительные флаги компиляции для лучшей диагностики
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
-endif()
-
-# Установка
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-)
-
-# Установка Qt DLL на Windows (если нужно)
 if(WIN32)
-    # Копирование Qt DLL рядом с исполняемым файлом для удобства отладки
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(QT_DLL_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin")
-    else()
-        set(QT_DLL_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin")
-    endif()
-    
-    # Эта команда выполнится после сборки
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Qt DLLs should be in PATH or copied manually from ${QT_DLL_DIR}"
-        VERBATIM
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
     )
 endif()
 
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /EHsc)
-endif()
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Svg
+    Qt6::PrintSupport
+    Qt6::SvgWidgets
+)
+
+# Установка исполняемого файла
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin/
+)

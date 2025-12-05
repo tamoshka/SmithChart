@@ -1,14 +1,14 @@
-﻿#pragma once
+#pragma once
 
 #include <QWidget>
 #include <QLabel>
-#include <qsvgwidget.h>
+#include <QSvgWidget>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QSlider>
 #include "circuitElements.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class TuneWidget; };
-#endif
-QT_END_NAMESPACE
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 /// <summary>
 /// Класс, позволяющий проводить настройку элементов в цепи.
@@ -20,11 +20,18 @@ class TuneWidget : public QWidget
 public:
 	TuneWidget(QWidget *parent = nullptr, CircuitElements* circuitElements = new CircuitElements());
 	~TuneWidget();
+	void RemoveOnLoad();
+	CircuitElements* circuitElements;
 
 private:
-	Ui::TuneWidget *ui;
+	QVBoxLayout* verticalLayout;
+	QScrollArea* scrollArea;
+	QWidget* scrollAreaWidgetContents;
+	QGroupBox* groupBox;
+	QPushButton* RemoveAllButton;
+	QPushButton* MinMaxButton;
+	QPushButton* OKButton;
 	CircuitElements* tuned;
-	CircuitElements* circuitElements;
 	QWidget* mainWidget = new QWidget(this);
 	QList<QGroupBox*> boxes;
 	QList<QGroupBox*> slidersBoxes;
@@ -37,6 +44,7 @@ private:
 	QList<double> maxValue;
 	QList<double> minValue;
 	int count;
+	void SwitchMode(Complex, Complex, int);
 
 private slots:
 	void OKButton_clicked();

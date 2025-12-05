@@ -1,5 +1,6 @@
-﻿#include "Element.h"
+﻿#include "circuitElements.h"
 #include <QColor>
+#include <QSvgWidget>
 
 /// <summary>
 /// Статический класс, хранящий все цвета, ряд методов и параметров необходимых другим классам (сервисный класс).
@@ -91,12 +92,8 @@ public:
 	static long double frequency;
 	static long double Im;
 	static long double Re;
-	static QList<Point> morePoints;
-	static int index;
-	static int dpIndex;
 	static long double lastPointX;
 	static long double lastPointY;
-	static long double scale;
 	static QList<QSvgWidget*> svgWidgets;
 	static long double impedanceRealR;
 	static long double impedanceImagR;
@@ -120,13 +117,18 @@ public:
 	static double alpha;
 	static double lambda;
 	static bool sizeChanged;
+	static bool unresized;
 	static systemMode sys;
 	static valueMode val;
-	static int portNumbers;
+	static long double scale;
 	//0 - Диаграмма, 1 - Цепь
 	static int saved;
 
 	static bool exc;
+
+	static int index;
+	static int dpIndex;
+	static int allpointindex;
 
 	static void SaveToJSON();
 	static void deserializeFromJson();
@@ -143,6 +145,14 @@ public:
 	static Complex impedanceImagChartParameters(long double, long double);
 	static Complex admitanceRealChartParameters(long double, long double);
 	static Complex admitanceImagChartParameters(long double, long double);
+
+	static Complex EditResistorShunt(CircuitElements*, Complex, int);
+	static Complex EditResistorParallel(CircuitElements*, Complex, int);
+	static Complex EditCapIndShunt(CircuitElements*, int, long double, long double);
+	static Complex EditCapIndParallel(CircuitElements*, int, long double, long double);
+	static Complex EditLine(CircuitElements*, Complex, int);
+	static Complex EditOSSSLine(CircuitElements*, Complex, long double, VerticalLinesElement*, int);
+	static void AddElement(CircuitElements*, long double, long double, int);
 private:
 	static QString colorToString(const QColor&);
 	static QColor stringToColor(const QString&);

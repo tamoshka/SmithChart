@@ -1,16 +1,13 @@
 ﻿#pragma once
 
 #include <QWidget>
+#include <QPushButton>
 #include "circuitElements.h"
 #include "general.h"
 #include "qcustomplot.h"
 #include "ColourSetting.h"
-#include "ui_AmplitudeFrequency.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class AmplitudeFrequency; };
-#endif
-QT_END_NAMESPACE
+#include <QSpacerItem>
+#include <QGridLayout>
 
 /// <summary>
 /// Класс расчёта и отображения АЧХ.
@@ -20,21 +17,19 @@ class AmplitudeFrequency : public QWidget
 	Q_OBJECT
 
 private:
-	CircuitElements* circuitElements;
-	Complex gamma1; // reflection coefficient
-	Complex gamma2; // reflection coefficient
-	void SetGamma1(Complex);
-	void SetGamma2(Complex);
 	QVector<long double> freqs;
+	QPushButton* saveButton;
+	QSpacerItem* horizontalSpacer;
+	QCustomPlot* widget;
+	QGridLayout* gridLayout;
 public slots:
 	void SaveAmpFr();
 public:
+	CircuitElements* circuitElements;
 	void Clear();
-	Complex GetGamma1();
-	Complex GetGamma2();
 	AmplitudeFrequency(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
 	void MatrixCalculation();
 	void SetPoint(long double[], long double[], long double[]);
+	void CalculateMatrix(Complex(&first)[2][2], Complex(&second)[2][2], QList<Element*> circuit, long double w);
 	~AmplitudeFrequency();
-	Ui::AmplitudeFrequency *ui;
 };

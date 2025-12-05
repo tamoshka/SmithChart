@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include "systemParameters.h"
 
 /// <summary>
 /// Конструктор класса KeyboardDialog.
@@ -12,7 +13,7 @@ KeyboardDialog::KeyboardDialog(QWidget* parent, CircuitElements* circuit)
     : QDialog(parent)
 {
     circuitElements = circuit;
-    this->setWindowTitle("Data Point"); 
+    this->setWindowTitle(QStringLiteral(u"Свободные точки"));
     this->setFixedSize(250, 400);
     okButton = new QPushButton("OK", this);
     chartSystem = new QGroupBox(this);
@@ -28,16 +29,16 @@ KeyboardDialog::KeyboardDialog(QWidget* parent, CircuitElements* circuit)
     valuesBox->addWidget(ImBox);
     Re = new QLineEdit(ReBox);
     Im = new QLineEdit(ImBox);
-    ReBox->setTitle("Re"); 
-    ImBox->setTitle("Im");
-    frequencyBox->setTitle("frequency, MHz");
+    ReBox->setTitle(QStringLiteral(u"Действительное"));
+    ImBox->setTitle(QStringLiteral(u"Мнимое"));
+    frequencyBox->setTitle(QStringLiteral(u"Частота"));
     Re->move(5, 20);
     Im->move(5, 20); 
     powerBox = new QComboBox(this);
-    powerBox->addItem("Hz");
-    powerBox->addItem("KHz");
-    powerBox->addItem("MHz");
-    powerBox->addItem("GHz");
+    powerBox->addItem(QStringLiteral(u"Гц"));
+    powerBox->addItem(QStringLiteral(u"КГц"));
+    powerBox->addItem(QStringLiteral(u"МГц"));
+    powerBox->addItem(QStringLiteral(u"ГГц"));
     powerBox->setCurrentIndex(0);
     long double val = 1;
     if (SystemParameters::defaultFrequency > 1e9)
@@ -59,17 +60,17 @@ KeyboardDialog::KeyboardDialog(QWidget* parent, CircuitElements* circuit)
     tempfrequency->addWidget(frequencyLine);
     tempfrequency->addWidget(powerBox);
     QVBoxLayout* temp = new QVBoxLayout(chartSystem);
-    impedance = new QRadioButton("impedance", this);
+    impedance = new QRadioButton(QStringLiteral(u"Сопротивление"), this);
     impedance->setChecked(true);
-    admittance = new QRadioButton("admittance", this);
-    reflectionCoefficient = new QRadioButton("reflection coefficient", this);
+    admittance = new QRadioButton(QStringLiteral(u"Проводимость"), this);
+    reflectionCoefficient = new QRadioButton(QStringLiteral(u"Коэффициент отражения"), this);
     temp->addWidget(impedance);
     temp->addWidget(admittance);
     temp->addWidget(reflectionCoefficient);
     QVBoxLayout* temp2 = new QVBoxLayout(valuesType);
-    cartesian = new QRadioButton("cartesian", this);
+    cartesian = new QRadioButton(QStringLiteral(u"Декартовы координаты"), this);
     cartesian->setChecked(true);
-    polar = new QRadioButton("polar", this);
+    polar = new QRadioButton(QStringLiteral(u"Полярные координаты"), this);
     temp2->addWidget(cartesian);
     temp2->addWidget(polar);
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -139,7 +140,7 @@ void KeyboardDialog::onAccept()
             {
                 power = 1000000000;
             }
-            if (dpIndex == 0)
+            if (SystemParameters::dpIndex == 0)
             {
                 SystemParameters::frequency = valueFrequency * power;
             }
@@ -168,12 +169,12 @@ void KeyboardDialog::onChanged()
     QRadioButton* rButton = qobject_cast<QRadioButton*>(sender());
     if (rButton == polar)
     {
-        ReBox->setTitle("Magnitude");
-        ImBox->setTitle("Angle [degrees]");
+        ReBox->setTitle(QStringLiteral(u"Магнитуда"));
+        ImBox->setTitle(QStringLiteral(u"Угол (в градусах)"));
     }
     else if (rButton == cartesian)
     {
-        ReBox->setTitle("Re");
-        ImBox->setTitle("Im");
+        ReBox->setTitle(QStringLiteral(u"Действительное"));
+        ImBox->setTitle(QStringLiteral(u"Мнимое"));
     }
 }

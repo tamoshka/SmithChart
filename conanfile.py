@@ -1,36 +1,75 @@
-﻿import os
-from conan import ConanFile
-from conan.tools.files import copy
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
+import os
 
 class Smithtry1000Conan(ConanFile):
-    name = "smith_chart_tool"
+    name = "smith-chart-tool"
     version = "1.0.0"
     requires = ["cadmw-ui-ds/0.4.0", "qt/6.5.3"]
     default_options = {
-        "qt/6.5.3:qtsvg": True,
-        "qt/6.5.3:shared": True,
-        "qt/6.5.3:with_sqlite3": False,
-        "qt/6.5.3:qtdeclarative": False,
-        "qt/6.5.3:with_pq": False,
-        "qt/6.5.3:with_md4c": False,
-        "qt/6.5.3:with_odbc": False
+        "shared": False,
+        "fPIC": True,
+        "qt/*:shared": True,
+        "qt/*:with_gui": True,
+        "qt/*:with_widgets": True,
+        "qt/*:with_svg": True,
+        "qt/*:with_printSupport": True,
+        "qt/*:qtsvg": True
     }
-    package_type = "application"
-    generators = "CMakeDeps"
-    settings = "os", "compiler", "build_type", "arch"
-
+    
+    exports_sources = "CMakeLists.txt", "Smithtry1000/*"
+    
+    def requirements(self):
+        self.requires("qt/6.5.3")       
+        
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.generate()
+        
+        deps = CMakeDeps(self)
+        deps.generate()
+        
     def layout(self):
         cmake_layout(self)
         
-    def generate(self):
-        version_parts = self.version.split('.')
-        major = version_parts[0] if len(version_parts) > 0 else "0"
-        minor = version_parts[1] if len(version_parts) > 1 else "0"
-        patch = version_parts[2] if len(version_parts) > 2 else "0"
-        tc = CMakeToolchain(self)
-        tc.variables["PROJECT_VERSION"] = self.version
-        tc.variables["PROJECT_VERSION_MAJOR"] = major
-        tc.variables["PROJECT_VERSION_MINOR"] = minor
-        tc.variables["PROJECT_VERSION_PATCH"] = patch
-        tc.generate()
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
+        
+    def package(self):
+        print(f"Package folder: {self.package_folder}")
+        print(f"Build folder: {self.build_folder}")
+        
+        # Создаем папку bin в пакете
+        bin_folder = os.path.join(self.package_folder, "bin")
+        os.makedirs(bin_folder, exist_ok=True)
+        
+        print(f"Bin folder created: {bin_folder}")
+        
+        if self.settings.os == "Windows":
+            copy(self, "*.exe",
+                src=self.build_folder,
+                dst=bin_folder,
+                keep_path=False)
+            self._copy_qt_runtime()
+        else:
+            # Для Linux - используем прямой путь к исполняемому файлу
+            source_file = "smith-chart-tool"
+            source_path = os.path.join(self.build_folder, "Smithtry1000", source_file)
+            
+            if os.path.exists(source_path):
+                print(f"Found executable at: {source_path}")
+                copy(self, source_file, src=os.path.dirname(source_path), dst=bin_folder, keep_path=False)
+                print(f"File copied successfully to: {bin_folder}")
+            else:
+                print("Executable file not found!")
+                print(f"Expected path: {source_path}")
+                
+                # Выводим список файлов в build_folder для диагностики
+                print("Build folder contents:")
+                for root, dirs, files in os.walk(self.build_folder):
+                    level = root.replace(self.build_folder, '').count(os.sep)
+                    indent = ' ' * 2 * level
+                    print(f"{indent}{os.path.basename(root)}/")
+                    subindent = ' ' * 2 * (level + 1)
+                    for file in files:
+                        print(f"{subindent}{file}")

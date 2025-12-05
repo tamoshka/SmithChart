@@ -15,6 +15,7 @@ private:
 	long double value;
 	void SetMode(mode);
 	void SetFrequency(long double);
+	void SwitchMode(QString&, QList<int>&, int&, int&, QString&, QString&, double&, bool&, bool&, int&) const;
 public:
 	mode GetMode();
 	long double GetValue();
@@ -28,7 +29,6 @@ public:
 	map<parameterMode, Complex> GetParameter();
 	Element()
 	{
-
 	};
 	Element(mode, long double, long double, Point, map<chartMode, tuple<long double, long double>>, map<parameterMode, Complex>);
 	Element& operator=(const Element& other) {
@@ -50,7 +50,6 @@ public:
 		elementMode(other.elementMode),
 		value(other.value)
 	{
-		// Все поля копируются автоматически, так как они имеют правильные конструкторы копирования
 	}
 	virtual ~Element();
 	virtual QJsonObject toJson() const;

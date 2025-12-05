@@ -31,7 +31,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-
+build/
+build-*/
+cmake-build-*/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -406,3 +408,35 @@ FodyWeavers.xsd
 /out/build/x64-debug
 /CMakeUserPresets.json
 
+
+Smithtry1000/ARCHITECTURE.md
+Smithtry1000/c1-context.puml
+Smithtry1000/c2-containers.puml
+Smithtry1000/c3-components.puml
+Smithtry1000/c3-diagram.md
+Smithtry1000/c3-diagram.puml
+Smithtry1000/c4-classes.puml
+Smithtry1000/class-diagram.html
+Smithtry1000/class-diagram.md
+Smithtry1000/comprehensive-uml-diagram.md
+Smithtry1000/smith-chart-class-diagram.md
+out/
+
+
+build/
+.vscode/
+# Deb packages
+*.deb
+
+#Qt generated files
+*.pro.user
+*.autosave
+
+#Compiled files
+*.o
+*.so
+*.a
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+/build

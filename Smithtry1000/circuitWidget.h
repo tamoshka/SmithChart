@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <qpainterpath.h>
+#include <QtSvg>
+#include <QSvgWidget>
 #include "general.h"
 #include <QWidget>
 #include <QScrollArea>
@@ -16,13 +18,17 @@ class CircuitWidget : public QWidget
 public:
     CircuitWidget(QWidget* parent = nullptr, CircuitElements* = new CircuitElements());
     ~CircuitWidget();
+    QList<QString> paths;
     void addSvg(QString, int, int);
     void removeLastSvg();
+    CircuitElements* circuitElements;
 private:
     QList<int> tuned;
-    QList<QString> paths;
-    CircuitElements* circuitElements;
     CircuitElements* tuneElements;
+    void TunedPaint(QPainter&);
+    void ElementValuesPaint(QPainter&);
+    void CurrentValuePaint(QPainter&);
+    void mousePressEvent(QMouseEvent* event) override;
     bool left;
 signals:
     void clicked(Element* tuned, QString path);

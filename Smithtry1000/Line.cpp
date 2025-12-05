@@ -54,6 +54,15 @@ LinesElement::LinesElement(mode mode, long double value, long double frequency, 
     return json;
 }
 
+ /// <summary>
+ /// Сериализация элемента для САПР.
+ /// </summary>
+ /// <param name="node">Текущий узел.</param>
+ /// <param name="nodeMax">Максимальный узел.</param>
+ /// <param name="prevTransform">До этого трансформатор/нет.</param>
+ /// <param name="prevParallel">До этого параллельный элемент/нет.</param>
+ /// <param name="prevOSSS">До этого шлейф/нет.</param>
+ /// <returns>JsonObject.</returns>
  QJsonObject LinesElement::toCircuitJson(int& node, int& nodeMax, bool& prevTransform, bool& prevParallel, bool& prevOSSS)
  {
      QJsonObject json;
@@ -61,20 +70,21 @@ LinesElement::LinesElement(mode mode, long double value, long double frequency, 
      QString modelName;
      int rotation = 0;
      QList<int> pinArray;
-     QString paramName;
-     double paramValue;
-     QString paramFactor;
-     QString secondParamName;
-     double secondParamValue;
-     QString secondParamFactor;
-     modelName = "MLIN";
-     pinArray.append(node);
-     pinArray.append(nodeMax + 1);
-     node = nodeMax + 1;
-     nodeMax++;
-     paramName = "R";
-     paramFactor = "";
-     ///paramValue = this->value;
+     modelName = "TLINP";
+     if (prevOSSS)
+     {
+         pinArray.append(nodeMax + 1);
+         pinArray.append(nodeMax + 2);
+         node = nodeMax + 2;
+         nodeMax+=2;
+     }
+     else
+     {
+         pinArray.append(node);
+         pinArray.append(nodeMax+1);
+         node = nodeMax + 1;
+         nodeMax++;
+     }
      prevTransform = false;
      prevParallel = false;
      prevOSSS = false;
@@ -96,11 +106,35 @@ LinesElement::LinesElement(mode mode, long double value, long double frequency, 
      json["pins"] = pins;
      QJsonArray jsonParameters;
      QJsonObject firstParameters;
-     firstParameters["name"] = paramName;
-     firstParameters["value"] = paramValue;
-     firstParameters["factor"] = paramFactor;
+     firstParameters["name"] = "Z0";
+     firstParameters["value"] = (double)this->GetValue();
+     firstParameters["factor"] = "";
+     QJsonObject secondParameters;
+     secondParameters["name"] = "L";
+     secondParameters["value"] = (double)this->GetElectricalLength();
+     secondParameters["factor"] = "u";
+     QJsonObject thirdParameters;
+     thirdParameters["name"] = "F0";
+     thirdParameters["value"] = (double)this->GetFrequency() / 1e9;
+     thirdParameters["factor"] = "G";
+     QJsonObject fourthParameters;
+     fourthParameters["name"] = "Ere";
+     fourthParameters["value"] = (double)pow(this->GetElectricalLength() / this->GetMechanicalLength(), 2);
+     fourthParameters["factor"] = "";
+     QJsonObject fifthParameters;
+     fifthParameters["name"] = "A";
+     fifthParameters["value"] = 0;
+     fifthParameters["factor"] = "";
+     QJsonObject sixParameters;
+     sixParameters["name"] = "TanD";
+     sixParameters["value"] = 0;
+     sixParameters["factor"] = "";
      jsonParameters.append(firstParameters);
+     jsonParameters.append(secondParameters);
+     jsonParameters.append(thirdParameters);
+     jsonParameters.append(fourthParameters);
+     jsonParameters.append(fifthParameters);
+     jsonParameters.append(sixParameters);
      json["parameters"] = jsonParameters;
-
      return json;
  }
