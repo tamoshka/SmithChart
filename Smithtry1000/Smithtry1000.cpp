@@ -317,7 +317,7 @@ void Smithtry1000::Reverse()
 /// <returns>Успешно/нет.</returns>
 void Smithtry1000::ExportToAWR()
 {
-    if (SystemParameters::index > 1)
+    /*if (SystemParameters::index > 1)
     {
         if (!awr.Initialize())
         {
@@ -589,7 +589,7 @@ void Smithtry1000::ExportToAWR()
         if (awr.SaveProject(L"C:\\Projects\\SmithMatch.emp")) {
             qDebug() << "Project saved successfully!";
         }
-    }
+    }*/
 }
 
 /// <summary>
@@ -2156,7 +2156,7 @@ void Smithtry1000::AppendPoint(long double x, long double y)
     if (SystemParameters::index == 0)
     {
         rTable->setItem(3, 3, new QTableWidgetItem(QString::number((double)SystemParameters::frequency)));
-        if (y >= 0 && y < 0.0001)
+        if (y > 0 && y < 0.0001)
         {
             y = 0.0001;
         }
@@ -5034,7 +5034,7 @@ void Smithtry1000::onGraph_buttonClicked()
 /// </summary>
 void Smithtry1000::onS11_buttonClicked()
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p *.s1p *.S2P *.S1P);;All Files (*)"));
     sParameters->Show();
 }
 
@@ -5043,7 +5043,7 @@ void Smithtry1000::onS11_buttonClicked()
 /// </summary>
 void Smithtry1000::onS22_buttonClicked()
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p *.s1p *.S2P *.S1P);;All Files (*)"));
     sParameters->Show();
 }
 
