@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-D_WIN32_DCOM)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets PrintSupport SvgWidgets)
-
+find_package(cadmw-ui-ds REQUIRED)
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
 # Иначе настраиваем вручную
 if(COMMAND qt_standard_project_setup)
@@ -122,6 +122,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Svg
     Qt6::PrintSupport
     Qt6::SvgWidgets
+    cadmw-ui-ds::cadmw-ui-ds
 )
 
 # Установка исполняемого файла
