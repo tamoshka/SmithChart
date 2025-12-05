@@ -35,6 +35,8 @@ void SParameters::createContainers()
     d4Container->setFixedSize(500,500);
     d4Container->setMinimumSize(500,500);
     d4Container->setMaximumSize(900,900);
+    setContainer->setMinimumSize(500,500);
+    setContainer->setMaximumSize(770,600);
 }   
 
 /// <summary>
