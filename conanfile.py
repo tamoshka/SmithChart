@@ -1,4 +1,7 @@
 import os
+from conan import ConanFile
+from conan.tools.files import copy
+from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 
 class Smithtry1000Conan(ConanFile):
     name = "smith-chart-tool"
