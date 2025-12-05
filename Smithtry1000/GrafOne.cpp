@@ -1,7 +1,7 @@
-﻿#include "GrafOne.h"
+﻿﻿#include "GrafOne.h"
 #include "S2p.h"
 #include <QString>
-#include "systemParameters.h"
+
 /// <summary>
 /// Конструктор класса GrafOne.
 /// </summary>
@@ -20,15 +20,15 @@ void GrafOne::setupUI()
 
     mainLayout = new QVBoxLayout(this);
     saveButton = new QPushButton("Save", this);
-    
+
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(saveButton);
     buttonLayout->addStretch();
-    
+
     plotWidget = new QCustomPlot(this);
     mainLayout->addLayout(buttonLayout);
     mainLayout->addWidget(plotWidget);
-    
+
     connect(saveButton, &QPushButton::clicked, this, &GrafOne::SaveGrafOne);
     setLayout(mainLayout);
 }
@@ -42,59 +42,54 @@ void GrafOne::Load()
     auto extension = fileName.toStdString();
     size_t last_dot = extension.find_last_of('.');
     extension = last_dot != std::string::npos ? extension.substr(last_dot + 1) : "";
-    
+
     TouchstoneFile t;
     spar_t s;
     plotWidget->clearGraphs();
     s = t.Load2P(fileName.toStdString().c_str());
 
-	x.resize(s.f.size());
-	for (int i = 0; i < s.f.size(); i++) {
-		x[i] = s.f[i];
-	}
-	y1.resize(s.S11.size());
-	for (int i = 0; i < s.S11.size(); i++) {
-		y1[i] = s.S11[i];
-	}
-	y2.resize(s.S22.size());
-	for (int i = 0; i < s.S22.size(); i++) {
-		y2[i] = s.S22[i];
-	}
-	double m1, m2;
-	double yBegin, yEnd;
-	m1 = y1[0];
-	m2 = y2[0];
-	for (int j = 0; j < s.S11.size() - 1; j++)
-	{
-		if (y1[j + 1] < m1)
-		{
-			m1 = y1[j + 1];
-		}
-	}
-	for (int j = 0; j < s.S22.size() - 1; j++)
-	{
-		if (y2[j + 1] < m2)
-		{
-			m2 = y2[j + 1];
-		}
-	}
-	if (extension == "S1P" || extension == "s1p")
-	{
-		yBegin = m1 * 1.25;
-		yEnd = 0;
-	}
-	else if (m2 < m1)
-	{
-		yBegin = m2 * 1.25;
-		yEnd = 0;
-	}
-	else
-	{
-		yBegin = m1 * 1.25;
-		yEnd = 0;
-	}
-	Paint(extension, yBegin, yEnd, s);
-}
+    x = QVector<double>(s.f.begin(), s.f.end());
+    y1 = QVector<double>(s.S11.begin(), s.S11.end());
+    y2 = QVector<double>(s.S22.begin(), s.S22.end());
+    double m1, m2;
+    hX = s.f[s.f.size() - 1] / 4;
+
+    xBegin = 0;
+    xEnd = s.f[s.f.size() - 1];
+    m1 = y1[0];
+    m2 = y2[0];
+    for (int j = 0; j < s.S11.size() - 1; j++)
+    {
+        if (y1[j + 1] < m1)
+        {
+            m1 = y1[j + 1];
+        }
+    }
+    for (int j = 0; j < s.S22.size() - 1; j++)
+    {
+        if (y2[j + 1] < m2)
+        {
+            m2 = y2[j + 1];
+        }
+    }
+    if (extension == "S1P" || extension == "s1p")
+    {
+        hY = m1 / 5;
+        yBegin = m1 * 1.25;
+        yEnd = 0;
+    }
+    else if (m2 < m1)
+    {
+        hY = m2 / 5;
+        yBegin = m2 * 1.25;
+        yEnd = 0;
+    }
+    else
+    {
+        hY = m1 / 5;
+        yBegin = m1 * 1.25;
+        yEnd = 0;
+    }
 
     plotWidget->xAxis->setRange(xBegin, xEnd);
     plotWidget->xAxis->setLabel("f[Hz]");
@@ -181,17 +176,17 @@ void GrafOne::updateGrafOneColor()
 /// </summary>
 void GrafOne::SaveGrafOne()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,"Save the graph",QDir::homePath() + "/graph.png","PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save the graph", QDir::homePath() + "/graph.png", "PNG Files (*.png);;JPEG Files (*.jpg);;PDF Files (*.pdf)");
 
-    if (!fileName.isEmpty()) 
+    if (!fileName.isEmpty())
     {
         bool success = false;
 
-        if (fileName.endsWith(".png", Qt::CaseInsensitive)) 
+        if (fileName.endsWith(".png", Qt::CaseInsensitive))
         {
             success = plotWidget->savePng(fileName, plotWidget->width() * 2, plotWidget->height() * 2, 2.0);
         }
-        else if (fileName.endsWith(".jpg", Qt::CaseInsensitive)) 
+        else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
         {
             success = plotWidget->saveJpg(fileName, plotWidget->width(), plotWidget->height());
         }
@@ -200,11 +195,11 @@ void GrafOne::SaveGrafOne()
             success = plotWidget->savePdf(fileName);
         }
 
-        if (success) 
+        if (success)
         {
             QMessageBox::information(this, "Success", QString("The graph is saved to a file:\n%1").arg(fileName));
         }
-        else 
+        else
         {
             QMessageBox::warning(this, "Error", "Couldn't save graph!");
         }
