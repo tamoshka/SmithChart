@@ -1,7 +1,22 @@
 ﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_Smithtry1000.h"
+#include <QMdiArea>
+#include <QIcon>
+#include <QAction>
+#include <QFormLayout>
+#include <QFrame>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QMenuBar>
+#include <QPushButton>
+#include <QStatusBar>
+#include <QTableWidget>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QMdiSubWindow>
 #include <qgraphicsscene.h>
 #include <qpainterpath.h>
 #include <QtSvg>
@@ -15,6 +30,7 @@
 #include "PreSaveDialog.h"
 #include "VerticalLinesDialog.h"
 #include "AmplitudeFrequency.h"
+#include "circuitWidget.h"
 #include "SParameters.h"
 #include "ExportNetlist.h"
 #include "renderarea.h"
@@ -34,7 +50,7 @@ class Smithtry1000 : public QMainWindow
 {
     Q_OBJECT
 
-public: 
+public:
     Smithtry1000(QWidget* parent = nullptr, SParameters* = nullptr);
     ~Smithtry1000();
     CircuitElements* circuitElements = new CircuitElements();
@@ -48,6 +64,10 @@ public slots:
     void getallchangedsignal();
     void Reverse();
     void GetEditSignal(Element* element);
+    void getLeftClicked(QPoint, bool);
+    void getReleased();
+    void getMoved(QPoint);
+    void getResized(long double, long double, long double, long double);
 
 signals:
     void left();
@@ -84,11 +104,64 @@ private slots:
     void Save();
     void Load();
     void Redo();
-    void AWR_buttonClicked();
+    void ExportToAWR();
     void CAD_export();
 
 private:
     ///AWRInterface awr = AWRInterface();
+
+    QToolBar* toolbar;
+    QAction* actionColors;
+    QWidget* centralWidget;
+    QVBoxLayout* verticalLayout_3;
+    QVBoxLayout* verticalLayout;
+    QAction* OpenButton;
+    QAction* SaveButton;
+    QAction* CopyButton;
+    QAction* StepBackButton;
+    QAction* StepForwardButton;
+    QAction* PrintButton;
+    QAction* MouseButton;
+    QAction* KeyboardButton;
+    QAction* S11Button;
+    QAction* S22Button;
+    QAction* PlusSizeButton;
+    QAction* MinusSizeButton;
+    QAction* OneToOneButton;
+    QAction* Resistor_button;
+    QAction* Induction_button;
+    QAction* Capacitor_button;
+    QAction* ResistorParallel_button;
+    QAction* InductionParallel_button;
+    QAction* CapacitorParallel_button;
+    QAction* GraphButton;
+    QAction* ExportNetlistButton;
+    QAction* Tune;
+    QAction* Line_button;
+    QAction* SSLine_button;
+    QAction* OSLine_button;
+    QAction* CirclesButton;
+    QAction* ParametersButton;
+    QAction* Transform_button;
+    QAction* AWRButton;
+    QAction* Diagram_button;
+    QAction* SPlotButton;
+    QAction* CADButton;
+    QScrollArea* scrollAreaDiagram;
+    QScrollArea* scrollArea;
+    CircuitWidget* circuitWidget;
+    QTableWidget* rTable;
+    QTableWidget* pointTable;
+    QMenuBar* menuBar;
+    QMenu* menuEdit;
+    QMenu* menuMode;
+    QMenu* menuTools;
+    QMenu* menuZoom;
+    QMenu* menuWindow;
+    QMenu* menuHelp;
+    QStatusBar* statusBar;
+
+    QMdiArea* mdiArea;
     friend class AWRExportThread;
     EditWidget* edit;
     SParameters* sParameters;
@@ -97,25 +170,24 @@ private:
     CircuitElements tempCircuit;
     TuneWidget* tuneWidget = new TuneWidget(nullptr, circuitElements);
     CirclesWidget* circlesWidget = new CirclesWidget(nullptr, circuitElements);
+    void SetupUI();
     void ImaginaryImpedance();
     void ImaginaryAdmitance();
     void VerticalLines();
-    bool ExportToAWR();
     void mousePressEvent(QMouseEvent* event) override;
-    Ui::Smithtry1000Class* ui;
     bool trackingEnabled;
     bool leftClicked;
     bool rightClicked;
-    bool tableChanged=false;
+    bool tableChanged = false;
     QList<long double> pointsX;
     QList<long double> pointsY;
     QPoint lastPos;
-    bool moving=false;
+    bool moving = false;
     long double t;
     long double tmin;
     long double tmax;
     long double step;
-    long double r;   
+    long double r;
     long double intervalLength = 2 * M_PI;
     bool firstDeleted = true;
     QPoint getPointOnCircle(int, int);
@@ -148,7 +220,4 @@ private:
 
 protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
-    void resizeEvent(QResizeEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
 };

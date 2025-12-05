@@ -103,6 +103,7 @@ long double SystemParameters::admitanceRealR = 0;
 int SystemParameters::saved = 0;
 bool SystemParameters::exc = false;
 bool SystemParameters::rotate = false;
+bool SystemParameters::unresized = false;
 mode SystemParameters::Model = Default;
 long double SystemParameters::scale=200;
 long double SystemParameters::lastPointX = 0;
@@ -748,6 +749,13 @@ QColor SystemParameters::stringToColor(const QString& colorString)
     return QColor(colorString);
 }
 
+/// <summary>
+/// Редактирование последовательного резистора.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="j">Номер элемента.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditResistorShunt(CircuitElements* circuitElements, Complex z, int j)
 {
 	int max_step = 0;
@@ -796,7 +804,7 @@ Complex SystemParameters::EditResistorShunt(CircuitElements* circuitElements, Co
 	x = 1 + (1 / r) * cos_t;
 	y2 = (1 / r) + (1 / r) * sin_t;
 	y2 = y2 * (-1);
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -859,6 +867,15 @@ Complex SystemParameters::EditResistorShunt(CircuitElements* circuitElements, Co
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Редактирование последовательной катушки/конденсатора.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="j">Номер элемента.</param>
+/// <param name="r1">Радиус первой окружности.</param>
+/// <param name="r2">Радиус второй окружности.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditCapIndShunt(CircuitElements* circuitElements, int j, long double r1, long double r2)
 {
 	int max_step = 0;
@@ -901,7 +918,7 @@ Complex SystemParameters::EditCapIndShunt(CircuitElements* circuitElements, int 
 	{
 		y2 = -0.0001;
 	}
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -945,6 +962,15 @@ Complex SystemParameters::EditCapIndShunt(CircuitElements* circuitElements, int 
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Редактирование параллельной катушки/конденсатора.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="j">Номер элемента.</param>
+/// <param name="r1">Радиус первой окружности.</param>
+/// <param name="r2">Радиус второй окружности.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditCapIndParallel(CircuitElements* circuitElements, int j, long double r1, long double r2)
 {
 	int max_step = 0;
@@ -988,7 +1014,7 @@ Complex SystemParameters::EditCapIndParallel(CircuitElements* circuitElements, i
 	{
 		y2 = -0.0001;
 	}
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -1032,6 +1058,13 @@ Complex SystemParameters::EditCapIndParallel(CircuitElements* circuitElements, i
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Редактирование параллельного резистора.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексная проводимость.</param>
+/// <param name="j">Номер элемента.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditResistorParallel(CircuitElements* circuitElements, Complex y, int j)
 {
 	int max_step = 0;
@@ -1163,6 +1196,13 @@ Complex SystemParameters::EditResistorParallel(CircuitElements* circuitElements,
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Редактирование линии передач.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="j">Номер элемента.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditLine(CircuitElements* circuitElements, Complex z, int j)
 {
 	int max_step = 0;
@@ -1214,7 +1254,7 @@ Complex SystemParameters::EditLine(CircuitElements* circuitElements, Complex z, 
 	long double Theta;
 	long double step = M_PI / 2;
 	bool flag = true;
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (flag == true)
 		{
@@ -1296,6 +1336,15 @@ Complex SystemParameters::EditLine(CircuitElements* circuitElements, Complex z, 
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Редактирование шлейфа.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="z">Комплексная проводимость.</param>
+/// <param name="tn">Параметр для расчёта радиуса второй окружности.</param>
+/// <param name="elem">Элемент.</param>
+/// <param name="j">Номер элемента.</param>
+/// <returns>Координаты.</returns>
 Complex SystemParameters::EditOSSSLine(CircuitElements* circuitElements, Complex y, long double tn, VerticalLinesElement* elem, int j)
 {
 	int max_step = 0;
@@ -1338,7 +1387,7 @@ Complex SystemParameters::EditOSSSLine(CircuitElements* circuitElements, Complex
 	long double sin_t = sin(t);
 	x = (cos(t) - r) / (r + 1);
 	y2 = (1 / (r + 1)) * sin_t * -1;
-	while (max_step < 500)
+	while (max_step < 5000)
 	{
 		if (r3 > r2 && flag == true)
 		{
@@ -1374,6 +1423,13 @@ Complex SystemParameters::EditOSSSLine(CircuitElements* circuitElements, Complex
 	return Complex(x, y2);
 }
 
+/// <summary>
+/// Изменение характеристик элемента и таблицы точек.
+/// </summary>
+/// <param name="circuitElements">Цепь.</param>
+/// <param name="x">x.</param>
+/// <param name="y2">y.</param>
+/// <param name="j">Номер элемента в цепи.</param>
 void SystemParameters::AddElement(CircuitElements* circuitElements, long double x, long double y2, int j)
 {
 	Point point;

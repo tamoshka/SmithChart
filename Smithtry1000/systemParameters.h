@@ -117,6 +117,7 @@ public:
 	static double alpha;
 	static double lambda;
 	static bool sizeChanged;
+	static bool unresized;
 	static systemMode sys;
 	static valueMode val;
 	static long double scale;

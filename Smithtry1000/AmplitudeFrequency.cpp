@@ -7,14 +7,30 @@
 /// <param name="circuitElements">Цепь.</param>
 AmplitudeFrequency::AmplitudeFrequency(QWidget *parent, CircuitElements* circuitElements)
 	: QWidget(parent)
-	, ui(new Ui::AmplitudeFrequency())
 {
-	ui->setupUi(this);
-    setMinimumSize(150, 150);
+    setMinimumSize(400, 300);
+    this->setWindowTitle(QStringLiteral(u"АЧХ"));
+    gridLayout = new QGridLayout(this);
+    gridLayout->setSpacing(6);
+    gridLayout->setContentsMargins(11, 11, 11, 11);
+    saveButton = new QPushButton(this);
+    saveButton->setText(QStringLiteral(u"Сохранить"));
+    gridLayout->addWidget(saveButton, 0, 0, 1, 1);
+    horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    gridLayout->addItem(horizontalSpacer, 0, 1, 1, 1);
+    widget = new QCustomPlot(this);
+    gridLayout->addWidget(widget, 1, 0, 1, 2);
     this->circuitElements = circuitElements;
-    connect(ui->SaveAmpFr, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
+    connect(saveButton, &QPushButton::clicked, this, &AmplitudeFrequency::SaveAmpFr);
 }
 
+/// <summary>
+/// Рассчёт A-матрицы.
+/// </summary>
+/// <param name="first">Первая матрица.</param>
+/// <param name="second">Вторая матрица.</param>
+/// <param name="circuit">Цеп.</param>
+/// <param name="w">Угловая частота.</param>
 void AmplitudeFrequency::CalculateMatrix(Complex(&first)[2][2], Complex(&second)[2][2], QList<Element*> circuit, long double w)
 {
     for (int i = circuitElements->GetCircuitElements().size() - 1; i >= 0; i--)
@@ -226,7 +242,7 @@ void AmplitudeFrequency::MatrixCalculation()
 /// <param name="z">S21.</param>
 void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double z[])
 {
-    ui->widget->clearGraphs();
+    widget->clearGraphs();
     QVector<double> x1, y1, z1;
     for (int i = 0; i < 100; i++)
     {
@@ -264,39 +280,42 @@ void AmplitudeFrequency::SetPoint(long double x[], long double y[], long double 
             zEnd = z1[i + 1];
         }
     }
-    ui->widget->xAxis->setRange(xBegin, xEnd);
-    ui->widget->xAxis->setLabel(QStringLiteral(u"Частота в Гц"));
-    ui->widget->yAxis->setRange(0, 1);
-    ui->widget->yAxis->setLabel(QStringLiteral(u"S11 в разах"));
-    ui->widget->yAxis2->setRange(0, 1);
-    ui->widget->yAxis2->setLabel(QStringLiteral(u"S21 в разах"));
-    ui->widget->yAxis2->setVisible(true);
+    widget->xAxis->setRange(xBegin, xEnd);
+    widget->xAxis->setLabel(QStringLiteral(u"Частота в Гц"));
+    widget->yAxis->setRange(0, 1);
+    widget->yAxis->setLabel(QStringLiteral(u"S11 в разах"));
+    widget->yAxis2->setRange(0, 1);
+    widget->yAxis2->setLabel(QStringLiteral(u"S21 в разах"));
+    widget->yAxis2->setVisible(true);
     QPen pen1(SystemParameters::ampS11Color, SystemParameters::ampFrline[0]);
-    ui->widget->setInteraction(QCP::iRangeZoom, true);
-    ui->widget->setInteraction(QCP::iRangeDrag, true);
-    ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis2);
-    ui->widget->graph(0)->addData(x1, y1);
-    ui->widget->graph(0)->setPen(pen1);
-    ui->widget->addGraph(ui->widget->xAxis, ui->widget->yAxis);
-    ui->widget->graph(1)->addData(x1, z1);
+    widget->setInteraction(QCP::iRangeZoom, true);
+    widget->setInteraction(QCP::iRangeDrag, true);
+    widget->addGraph(widget->xAxis, widget->yAxis2);
+    widget->graph(0)->addData(x1, y1);
+    widget->graph(0)->setPen(pen1);
+    widget->addGraph(widget->xAxis, widget->yAxis);
+    widget->graph(1)->addData(x1, z1);
     QPen pen(SystemParameters::ampS21Color, SystemParameters::ampFrline[1]);
-    ui->widget->graph(1)->setPen(pen);
-    ui->widget->replot();
+    widget->graph(1)->setPen(pen);
+    widget->replot();
 
-    ui->widget->setInteraction(QCP::iRangeZoom, true);
-    ui->widget->setInteraction(QCP::iRangeDrag, true);
+    widget->setInteraction(QCP::iRangeZoom, true);
+    widget->setInteraction(QCP::iRangeDrag, true);
     QList<QCPAxis*> axises;
-    axises.append(ui->widget->xAxis);
-    axises.append(ui->widget->yAxis);
-    axises.append(ui->widget->yAxis2);
-    ui->widget->axisRect()->setRangeDragAxes(axises);
-    ui->widget->axisRect()->setRangeZoomAxes(axises);
+    axises.append(widget->xAxis);
+    axises.append(widget->yAxis);
+    axises.append(widget->yAxis2);
+    widget->axisRect()->setRangeDragAxes(axises);
+    widget->axisRect()->setRangeZoomAxes(axises);
 }
 
+/// <summary>
+/// Очистка графиков.
+/// </summary>
 void AmplitudeFrequency::Clear()
 {
-    ui->widget->clearGraphs();
-    ui->widget->replot();
+    widget->clearGraphs();
+    widget->replot();
 }
 
 /// <summary>
@@ -312,15 +331,15 @@ void AmplitudeFrequency::SaveAmpFr()
 
         if (fileName.endsWith(".png", Qt::CaseInsensitive))
         {
-            success = ui->widget->savePng(fileName, ui->widget->width() * 2, ui->widget->height() * 2, 2.0);
+            success = widget->savePng(fileName, widget->width() * 2, widget->height() * 2, 2.0);
         }
         else if (fileName.endsWith(".jpg", Qt::CaseInsensitive))
         {
-            success = ui->widget->saveJpg(fileName, ui->widget->width(), ui->widget->height());
+            success = widget->saveJpg(fileName, widget->width(), widget->height());
         }
         else if (fileName.endsWith(".pdf", Qt::CaseInsensitive))
         {
-            success = ui->widget->savePdf(fileName);
+            success = widget->savePdf(fileName);
         }
 
         if (success)

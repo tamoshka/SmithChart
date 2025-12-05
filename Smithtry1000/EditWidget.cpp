@@ -1,5 +1,4 @@
 ﻿#include "EditWidget.h"
-#include "ui_EditWidget.h"
 #include "systemParameters.h"
 
 /// <summary>
@@ -10,144 +9,143 @@
 /// <param name="elem">Элемент.</param>
 EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 	: QWidget(parent)
-	, ui(new Ui::EditWidget())
 {
-	ui->setupUi(this);
+	SetupUI();
 	this->setMinimumSize(400, 800);
 	circuitElements = circuit;
 	edited = elem;
-	ui->RLineEdit->setDisabled(true);
-	ui->RComboBox->addItem(QStringLiteral(u"mOhm"));
-	ui->RComboBox->addItem(QStringLiteral(u"Ohm"));
-	ui->RComboBox->addItem(QStringLiteral(u"KOhm"));
-	ui->RComboBox->addItem(QStringLiteral(u"MOhm"));
-	ui->RComboBox->addItem(QStringLiteral(u"GOhm"));
-	ui->RComboBox->setCurrentIndex(1);
-	ui->RComboBox->setDisabled(true);
-	ui->LLineEdit->setDisabled(true);
-	ui->LComboBox->addItem(QStringLiteral(u"uH"));
-	ui->LComboBox->addItem(QStringLiteral(u"nH"));
-	ui->LComboBox->addItem(QStringLiteral(u"pH"));
-	ui->LComboBox->setCurrentIndex(1);
-	ui->LComboBox->setDisabled(true);
-	ui->CLineEdit->setDisabled(true);
-	ui->CComboBox->addItem(QStringLiteral(u"uF"));
-	ui->CComboBox->addItem(QStringLiteral(u"nF"));
-	ui->CComboBox->addItem(QStringLiteral(u"pF"));
-	ui->CComboBox->setCurrentIndex(2);
-	ui->CComboBox->setDisabled(true);
-	ui->NLineEdit->setDisabled(true);
-	ui->Z0LineEdit->setDisabled(true);
-	ui->ErLineEdit->setDisabled(true);
-	ui->LLambdaLineEdit->setDisabled(true);
-	ui->LElMMLineEdit->setDisabled(true);
-	ui->LPhMMLineEdit->setDisabled(true);
-	ui->AlphaLineEdit->setDisabled(true);
+	RLineEdit->setDisabled(true);
+	RComboBox->addItem(QStringLiteral(u"mOhm"));
+	RComboBox->addItem(QStringLiteral(u"Ohm"));
+	RComboBox->addItem(QStringLiteral(u"KOhm"));
+	RComboBox->addItem(QStringLiteral(u"MOhm"));
+	RComboBox->addItem(QStringLiteral(u"GOhm"));
+	RComboBox->setCurrentIndex(1);
+	RComboBox->setDisabled(true);
+	LLineEdit->setDisabled(true);
+	LComboBox->addItem(QStringLiteral(u"uH"));
+	LComboBox->addItem(QStringLiteral(u"nH"));
+	LComboBox->addItem(QStringLiteral(u"pH"));
+	LComboBox->setCurrentIndex(1);
+	LComboBox->setDisabled(true);
+	CLineEdit->setDisabled(true);
+	CComboBox->addItem(QStringLiteral(u"uF"));
+	CComboBox->addItem(QStringLiteral(u"nF"));
+	CComboBox->addItem(QStringLiteral(u"pF"));
+	CComboBox->setCurrentIndex(2);
+	CComboBox->setDisabled(true);
+	NLineEdit->setDisabled(true);
+	Z0LineEdit->setDisabled(true);
+	ErLineEdit->setDisabled(true);
+	LLambdaLineEdit->setDisabled(true);
+	LElMMLineEdit->setDisabled(true);
+	LPhMMLineEdit->setDisabled(true);
+	AlphaLineEdit->setDisabled(true);
 	mode curMode = elem->GetMode();
 	if (curMode == ResistorParallel || curMode == ResistorShunt)
 	{
-		ui->RLineEdit->setEnabled(true);
-		ui->RComboBox->setEnabled(true);
+		RLineEdit->setEnabled(true);
+		RComboBox->setEnabled(true);
 		long double val = 1e-3;
-		ui->RComboBox->setCurrentIndex(0);
+		RComboBox->setCurrentIndex(0);
 		if (elem->GetValue() > 1e9)
 		{
 			val = 1e9;
-			ui->RComboBox->setCurrentIndex(4);
+			RComboBox->setCurrentIndex(4);
 		}
 		else if (elem->GetValue() > 1e6)
 		{
 			val = 1e6;
-			ui->RComboBox->setCurrentIndex(3);
+			RComboBox->setCurrentIndex(3);
 		}
 		else if (elem->GetValue() > 1e3)
 		{
 			val = 1e3;
-			ui->RComboBox->setCurrentIndex(2);
+			RComboBox->setCurrentIndex(2);
 		}
 		else if (elem->GetValue() > 1)
 		{
 			val = 1;
-			ui->RComboBox->setCurrentIndex(1);
+			RComboBox->setCurrentIndex(1);
 		}
-		ui->RLineEdit->setText(QString::number((double)(elem->GetValue() / val)));
+		RLineEdit->setText(QString::number((double)(elem->GetValue() / val)));
 	}
 	else if (curMode == CapacitorParallel || curMode == CapacitorShunt)
 	{
-		ui->CLineEdit->setEnabled(true);
-		ui->CComboBox->setEnabled(true);
+		CLineEdit->setEnabled(true);
+		CComboBox->setEnabled(true);
 		long double val = elem->GetValue();
-		ui->CComboBox->setCurrentIndex(0);
+		CComboBox->setCurrentIndex(0);
 		QString power;
 		val *= 1e12;
 		if (val < 1000)
 		{
-			ui->CComboBox->setCurrentIndex(2);
+			CComboBox->setCurrentIndex(2);
 		}
 		else if (val < 1000000)
 		{
 			val /= 1e3;
-			ui->CComboBox->setCurrentIndex(1);
+			CComboBox->setCurrentIndex(1);
 		}
 		else
 		{
 			val /= 1e6;
-			ui->CComboBox->setCurrentIndex(0);
+			CComboBox->setCurrentIndex(0);
 		}
-		ui->CLineEdit->setText(QString::number((double)val));
+		CLineEdit->setText(QString::number((double)val));
 	}
 	else if (curMode == InductionParallel || curMode == InductionShunt)
 	{
-		ui->LLineEdit->setEnabled(true);
-		ui->LComboBox->setEnabled(true);
+		LLineEdit->setEnabled(true);
+		LComboBox->setEnabled(true);
 		long double val = elem->GetValue();
-		ui->LComboBox->setCurrentIndex(0);
+		LComboBox->setCurrentIndex(0);
 		QString power;
 		val *= 1e9;
 		if (val < 1)
 		{
 			val *= 1e3;
-			ui->LComboBox->setCurrentIndex(2);
+			LComboBox->setCurrentIndex(2);
 		}
 		else if (val < 1000)
 		{
-			ui->LComboBox->setCurrentIndex(1);
+			LComboBox->setCurrentIndex(1);
 		}
 		else
 		{
 			val /= 1e3;
-			ui->LComboBox->setCurrentIndex(0);
+			LComboBox->setCurrentIndex(0);
 		}
-		ui->LLineEdit->setText(QString::number((double)val));
+		LLineEdit->setText(QString::number((double)val));
 	}
 	else if (curMode == Transform)
 	{
-		ui->NLineEdit->setEnabled(true);
-		ui->NLineEdit->setText(QString::number((double)elem->GetValue()));
+		NLineEdit->setEnabled(true);
+		NLineEdit->setText(QString::number((double)elem->GetValue()));
 	}
 	else if (curMode==OSLine || curMode==SSLine||curMode==Line)
 	{
-		ui->Z0LineEdit->setEnabled(true);
-		ui->ErLineEdit->setEnabled(true);
-		ui->LLambdaLineEdit->setEnabled(true);
-		ui->LElMMLineEdit->setEnabled(true);
-		ui->LPhMMLineEdit->setEnabled(true);
-		ui->Z0LineEdit->setText(QString::number((double)elem->GetValue()));
+		Z0LineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
+		LLambdaLineEdit->setEnabled(true);
+		LElMMLineEdit->setEnabled(true);
+		LPhMMLineEdit->setEnabled(true);
+		Z0LineEdit->setText(QString::number((double)elem->GetValue()));
 		if (curMode == OSLine || curMode == SSLine)
 		{
 			VerticalLinesElement* vl = dynamic_cast<VerticalLinesElement*>(edited);
-			ui->ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
-			ui->LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
-			ui->LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
-			ui->LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
+			ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
+			LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
+			LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
+			LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
 		}
 		else
 		{
 			LinesElement* vl = dynamic_cast<LinesElement*>(edited);
-			ui->ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
-			ui->LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
-			ui->LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
-			ui->LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
+			ErLineEdit->setText(QString::number((double)pow(vl->GetElectricalLength() / vl->GetMechanicalLength(), 2)));
+			LLambdaLineEdit->setText(QString::number((double)vl->GetLambda()));
+			LElMMLineEdit->setText(QString::number((double)vl->GetElectricalLength()));
+			LPhMMLineEdit->setText(QString::number((double)vl->GetMechanicalLength()));
 		}
 		QLocale locale(QLocale::C);
 		QDoubleValidator* z0Validator = new QDoubleValidator(0.0, 999999.0, 2, this);
@@ -158,22 +156,118 @@ EditWidget::EditWidget(QWidget *parent, CircuitElements* circuit, Element* elem)
 		lambdaValidator->setLocale(locale);
 		QDoubleValidator* elValidator = new QDoubleValidator(0.0, 149.5, 2, this);
 		elValidator->setLocale(locale);
-		QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ui->ErLineEdit->text().toDouble()), 2, this);
+		QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ErLineEdit->text().toDouble()), 2, this);
 		phValidator->setLocale(locale);
-		ui->LPhMMLabel->setText(QString::number(149.5 / sqrt(ui->ErLineEdit->text().toDouble())));
-		ui->Z0LineEdit->setValidator(z0Validator);
-		ui->ErLineEdit->setValidator(erValidator);
-		ui->LLambdaLineEdit->setValidator(lambdaValidator);
-		ui->LElMMLineEdit->setValidator(elValidator);
-		ui->LPhMMLineEdit->setValidator(phValidator);
+		LPhMMLabel->setText(QString::number(149.5 / sqrt(ErLineEdit->text().toDouble())));
+		Z0LineEdit->setValidator(z0Validator);
+		ErLineEdit->setValidator(erValidator);
+		LLambdaLineEdit->setValidator(lambdaValidator);
+		LElMMLineEdit->setValidator(elValidator);
+		LPhMMLineEdit->setValidator(phValidator);
 	}
 	isUpdating = false;
-	connect(ui->OKButton, &QPushButton::clicked, this, &EditWidget::OKButton_clicked);
-	connect(ui->DrawButton, &QPushButton::clicked, this, &EditWidget::DrawButton_clicked);
-	connect(ui->ErLineEdit, &QLineEdit::textChanged, this, &EditWidget::onErLineEditChanged);
-	connect(ui->LLambdaLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLLambdaLineEditChanged);
-	connect(ui->LElMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLElMMLineEditChanged);
-	connect(ui->LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
+	connect(OKButton, &QPushButton::clicked, this, &EditWidget::OKButton_clicked);
+	connect(DrawButton, &QPushButton::clicked, this, &EditWidget::DrawButton_clicked);
+	connect(ErLineEdit, &QLineEdit::textChanged, this, &EditWidget::onErLineEditChanged);
+	connect(LLambdaLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLLambdaLineEditChanged);
+	connect(LElMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLElMMLineEditChanged);
+	connect(LPhMMLineEdit, &QLineEdit::textChanged, this, &EditWidget::onLPhMMLineEditChanged);
+}
+
+/// <summary>
+/// Настройка пользовательского интерфейса.
+/// </summary>
+void EditWidget::SetupUI()
+{
+	this->setWindowTitle(QStringLiteral(u"Изменение элемента"));
+	this->setFixedSize(400, 800);
+	this->resize(400, 800);
+	groupBox = new QGroupBox(this);
+	groupBox->setGeometry(QRect(0, 10, 391, 711));
+	groupBox->setTitle(QStringLiteral(u"Введите новые значения"));
+	groupBox_2 = new QGroupBox(groupBox);
+	groupBox_2->setGeometry(QRect(10, 30, 311, 80));
+	groupBox_2->setTitle("R");
+	RLineEdit = new QLineEdit(groupBox_2);
+	RLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	RComboBox = new QComboBox(groupBox_2);
+	RComboBox->setGeometry(QRect(190, 40, 111, 24));
+	groupBox_3 = new QGroupBox(groupBox);
+	groupBox_3->setGeometry(QRect(10, 130, 311, 80));
+	groupBox_3->setTitle("L");
+	LComboBox = new QComboBox(groupBox_3);
+	LComboBox->setGeometry(QRect(190, 40, 111, 24));
+	LLineEdit = new QLineEdit(groupBox_3);
+	LLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	groupBox_4 = new QGroupBox(groupBox);
+	groupBox_4->setGeometry(QRect(10, 230, 311, 80));
+	groupBox_4->setTitle("C");
+	CLineEdit = new QLineEdit(groupBox_4);
+	CLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	CComboBox = new QComboBox(groupBox_4);
+	CComboBox->setGeometry(QRect(190, 40, 111, 24));
+	groupBox_5 = new QGroupBox(groupBox);
+	groupBox_5->setGeometry(QRect(10, 330, 211, 80));
+	groupBox_5->setTitle(QStringLiteral(u"Коэффициент передачи"));
+	NLineEdit = new QLineEdit(groupBox_5);
+	NLineEdit->setGeometry(QRect(10, 40, 171, 24));
+	groupBox_6 = new QGroupBox(groupBox);
+	groupBox_6->setGeometry(QRect(10, 430, 211, 80));
+	groupBox_6->setTitle(QStringLiteral(u"Волновое сопротивление"));
+	Z0LineEdit = new QLineEdit(groupBox_6);
+	Z0LineEdit->setGeometry(QRect(10, 40, 131, 24));
+	label = new QLabel(groupBox_6);
+	label->setGeometry(QRect(160, 45, 55, 16));
+	label->setLineWidth(0);
+	label->setText(QStringLiteral(u"Ом"));
+	groupBox_7 = new QGroupBox(groupBox);
+	groupBox_7->setGeometry(QRect(230, 430, 151, 80));
+	groupBox_7->setTitle(QStringLiteral(u"Коэффициент электрической проводимости"));
+	ErLineEdit = new QLineEdit(groupBox_7);
+	ErLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	groupBox_8 = new QGroupBox(groupBox);
+	groupBox_8->setGeometry(QRect(230, 520, 151, 91));
+	groupBox_8->setTitle(QStringLiteral(u"Физ. длина в мм."));
+	LPhMMLineEdit = new QLineEdit(groupBox_8);
+	LPhMMLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	label_4 = new QLabel(groupBox_8);
+	label_4->setGeometry(QRect(10, 70, 41, 16));
+	label_4->setText(QStringLiteral(u"макс = "));
+	LPhMMLabel = new QLabel(groupBox_8);
+	LPhMMLabel->setGeometry(QRect(60, 70, 61, 16));
+	groupBox_9 = new QGroupBox(groupBox);
+	groupBox_9->setGeometry(QRect(230, 620, 151, 80));
+	groupBox_9->setTitle(QStringLiteral(u"Коэф. затухания"));
+	AlphaLineEdit = new QLineEdit(groupBox_9);
+	AlphaLineEdit->setGeometry(QRect(10, 40, 131, 24));
+	groupBox_10 = new QGroupBox(groupBox);
+	groupBox_10->setGeometry(QRect(10, 520, 101, 91));
+	groupBox_10->setTitle(QStringLiteral(u"Эл. длина в рад."));
+	LLambdaLineEdit = new QLineEdit(groupBox_10);
+	LLambdaLineEdit->setGeometry(QRect(10, 40, 81, 24));
+	label_2 = new QLabel(groupBox_10);
+	label_2->setGeometry(QRect(10, 70, 51, 16));
+	label_2->setText(QStringLiteral(u"макс = "));
+	LLambdaLabel = new QLabel(groupBox_10);
+	LLambdaLabel->setGeometry(QRect(54, 69, 51, 21));
+	LLambdaLabel->setText("0.499");
+	groupBox_11 = new QGroupBox(groupBox);
+	groupBox_11->setGeometry(QRect(120, 520, 101, 91));
+	groupBox_11->setTitle(QStringLiteral(u"Эл. длина в мм."));
+	LElMMLineEdit = new QLineEdit(groupBox_11);
+	LElMMLineEdit->setGeometry(QRect(10, 40, 71, 24));
+	label_3 = new QLabel(groupBox_11);
+	label_3->setGeometry(QRect(10, 70, 41, 16));
+	label_3->setText(QStringLiteral(u"макс = "));
+	LElMMLabel = new QLabel(groupBox_11);
+	LElMMLabel->setGeometry(QRect(60, 70, 21, 20));
+	LElMMLabel->setText("149");
+	DrawButton = new QPushButton(this);
+	DrawButton->setGeometry(QRect(0, 730, 391, 25));
+	DrawButton->setText(QStringLiteral(u"Нарисовать"));
+	OKButton = new QPushButton(this);
+	OKButton->setGeometry(QRect(0, 760, 391, 25));
+	OKButton->setText("OK");
 }
 
 /// <summary>
@@ -189,17 +283,17 @@ void EditWidget::onErLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setDisabled(true);
-		ui->LElMMLineEdit->setDisabled(true);
-		ui->LPhMMLineEdit->setDisabled(true);
+		LLambdaLineEdit->setDisabled(true);
+		LElMMLineEdit->setDisabled(true);
+		LPhMMLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setEnabled(true);
-		ui->LElMMLineEdit->setEnabled(true);
-		ui->LPhMMLineEdit->setEnabled(true);
+		LLambdaLineEdit->setEnabled(true);
+		LElMMLineEdit->setEnabled(true);
+		LPhMMLineEdit->setEnabled(true);
 		isUpdating = false;
 		recalculateFromEr();
 	}
@@ -218,14 +312,14 @@ void EditWidget::onLLambdaLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LElMMLineEdit->setText("");
-		ui->LPhMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LElMMLineEdit->setText("");
+		LPhMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromLambda();
 	}
 }
@@ -243,14 +337,14 @@ void EditWidget::onLElMMLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setText("");
-		ui->LPhMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LLambdaLineEdit->setText("");
+		LPhMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromElMM();
 	}
 }
@@ -268,14 +362,14 @@ void EditWidget::onLPhMMLineEditChanged(const QString& text)
 	if (text.isEmpty())
 	{
 		isUpdating = true;
-		ui->LLambdaLineEdit->setText("");
-		ui->LElMMLineEdit->setText("");
-		ui->ErLineEdit->setDisabled(true);
+		LLambdaLineEdit->setText("");
+		LElMMLineEdit->setText("");
+		ErLineEdit->setDisabled(true);
 		isUpdating = false;
 	}
 	else
 	{
-		ui->ErLineEdit->setEnabled(true);
+		ErLineEdit->setEnabled(true);
 		recalculateFromPhMM();
 	}
 }
@@ -286,12 +380,12 @@ void EditWidget::onLPhMMLineEditChanged(const QString& text)
 void EditWidget::recalculateFromEr()
 {
 	isUpdating = true;
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble()/sqrt(ui->ErLineEdit->text().toDouble())));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble()/sqrt(ErLineEdit->text().toDouble())));
 	QLocale locale(QLocale::C);
-	QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ui->ErLineEdit->text().toDouble()), 2, this);
+	QDoubleValidator* phValidator = new QDoubleValidator(0.0, 149.5 / sqrt(ErLineEdit->text().toDouble()), 2, this);
 	phValidator->setLocale(locale);
-	ui->LPhMMLineEdit->setValidator(phValidator);
-	ui->LPhMMLabel->setText(QString::number(149.5 / sqrt(ui->ErLineEdit->text().toDouble())));
+	LPhMMLineEdit->setValidator(phValidator);
+	LPhMMLabel->setText(QString::number(149.5 / sqrt(ErLineEdit->text().toDouble())));
 	isUpdating = false;
 }
 
@@ -301,8 +395,8 @@ void EditWidget::recalculateFromEr()
 void EditWidget::recalculateFromElMM()
 {
 	isUpdating = true;
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() / sqrt(ui->ErLineEdit->text().toDouble())));
-	ui->LLambdaLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() *1e6/ 299792458));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() / sqrt(ErLineEdit->text().toDouble())));
+	LLambdaLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() *1e6/ 299792458));
 	isUpdating = false;
 }
 
@@ -312,8 +406,8 @@ void EditWidget::recalculateFromElMM()
 void EditWidget::recalculateFromPhMM()
 {
 	isUpdating = true;
-	ui->LElMMLineEdit->setText(QString::number(ui->LPhMMLineEdit->text().toDouble() * sqrt(ui->ErLineEdit->text().toDouble())));
-	ui->LLambdaLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() * 1e6 / 299792458));
+	LElMMLineEdit->setText(QString::number(LPhMMLineEdit->text().toDouble() * sqrt(ErLineEdit->text().toDouble())));
+	LLambdaLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() * 1e6 / 299792458));
 	isUpdating = false;
 }
 
@@ -323,8 +417,8 @@ void EditWidget::recalculateFromPhMM()
 void EditWidget::recalculateFromLambda()
 {
 	isUpdating = true;
-	ui->LElMMLineEdit->setText(QString::number(ui->LLambdaLineEdit->text().toDouble()* 299792458/1e6));
-	ui->LPhMMLineEdit->setText(QString::number(ui->LElMMLineEdit->text().toDouble() / sqrt(ui->ErLineEdit->text().toDouble())));
+	LElMMLineEdit->setText(QString::number(LLambdaLineEdit->text().toDouble()* 299792458/1e6));
+	LPhMMLineEdit->setText(QString::number(LElMMLineEdit->text().toDouble() / sqrt(ErLineEdit->text().toDouble())));
 	isUpdating = false;
 }
 
@@ -524,13 +618,17 @@ void EditWidget::DrawButton_clicked()
 	
 }
 
+/// <summary>
+/// Изменяется резистор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddResistor(bool& correct)
 {
 	if (edited->GetMode() == ResistorParallel || edited->GetMode() == ResistorShunt)
 	{
-		QString tempR = ui->RLineEdit->text();
+		QString tempR = RLineEdit->text();
 		bool validateR = true;
-		long double valueR = ui->RLineEdit->text().toFloat(&validateR);
+		long double valueR = RLineEdit->text().toFloat(&validateR);
 		if (!validateR || valueR <= 0)
 		{
 			correct = false;
@@ -543,19 +641,19 @@ void EditWidget::AddResistor(bool& correct)
 		}
 		else
 		{
-			if (ui->RComboBox->currentIndex() == 0)
+			if (RComboBox->currentIndex() == 0)
 			{
 				valueR /= 1e3;
 			}
-			else if (ui->RComboBox->currentIndex() == 2)
+			else if (RComboBox->currentIndex() == 2)
 			{
 				valueR *= 1e3;
 			}
-			else if (ui->RComboBox->currentIndex() == 3)
+			else if (RComboBox->currentIndex() == 3)
 			{
 				valueR *= 1e6;
 			}
-			else if (ui->RComboBox->currentIndex() == 4)
+			else if (RComboBox->currentIndex() == 4)
 			{
 				valueR *= 1e9;
 			}
@@ -564,13 +662,17 @@ void EditWidget::AddResistor(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется конденсатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddCapacitor(bool& correct)
 {
 	if (edited->GetMode() == CapacitorParallel || edited->GetMode() == CapacitorShunt)
 	{
-		QString tempC = ui->CLineEdit->text();
+		QString tempC = CLineEdit->text();
 		bool validateC = true;
-		long double valueC = ui->CLineEdit->text().toFloat(&validateC);
+		long double valueC = CLineEdit->text().toFloat(&validateC);
 		if (!validateC || valueC <= 0)
 		{
 			correct = false;
@@ -582,11 +684,11 @@ void EditWidget::AddCapacitor(bool& correct)
 		}
 		else
 		{
-			if (ui->CComboBox->currentIndex() == 0)
+			if (CComboBox->currentIndex() == 0)
 			{
 				valueC /= 1e6;
 			}
-			else if (ui->CComboBox->currentIndex() == 1)
+			else if (CComboBox->currentIndex() == 1)
 			{
 				valueC /= 1e9;
 			}
@@ -599,13 +701,17 @@ void EditWidget::AddCapacitor(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется катушка.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddInduction(bool& correct)
 {
 	if (edited->GetMode() == InductionParallel || edited->GetMode() == InductionShunt)
 	{
-		QString tempL = ui->LLineEdit->text();
+		QString tempL = LLineEdit->text();
 		bool validateL = true;
-		long double valueL = ui->LLineEdit->text().toFloat(&validateL);
+		long double valueL = LLineEdit->text().toFloat(&validateL);
 		if (!validateL || valueL <= 0)
 		{
 			correct = false;
@@ -617,11 +723,11 @@ void EditWidget::AddInduction(bool& correct)
 		}
 		else
 		{
-			if (ui->LComboBox->currentIndex() == 0)
+			if (LComboBox->currentIndex() == 0)
 			{
 				valueL /= 1e6;
 			}
-			else if (ui->LComboBox->currentIndex() == 1)
+			else if (LComboBox->currentIndex() == 1)
 			{
 				valueL /= 1e9;
 			}
@@ -634,13 +740,17 @@ void EditWidget::AddInduction(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется трансформатор.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddTransform(bool& correct)
 {
 	if (edited->GetMode() == Transform)
 	{
-		QString tempN = ui->NLineEdit->text();
+		QString tempN = NLineEdit->text();
 		bool validateN = true;
-		long double valueN = ui->NLineEdit->text().toFloat(&validateN);
+		long double valueN = NLineEdit->text().toFloat(&validateN);
 		if (!validateN || valueN <= 0)
 		{
 			correct = false;
@@ -657,25 +767,29 @@ void EditWidget::AddTransform(bool& correct)
 	}
 }
 
+/// <summary>
+/// Изменяется линия передач/шлейф.
+/// </summary>
+/// <param name="correct">Изменение корректно.</param>
 void EditWidget::AddLines(bool& correct)
 {
 	if (edited->GetMode() == OSLine || edited->GetMode() == SSLine || edited->GetMode() == Line)
 	{
-		QString tempZ0 = ui->Z0LineEdit->text();
-		QString tempEr = ui->ErLineEdit->text();
-		QString tempLambda = ui->LLambdaLineEdit->text();
-		QString tempLEl = ui->LElMMLineEdit->text();
-		QString tempLPh = ui->LPhMMLineEdit->text();
+		QString tempZ0 = Z0LineEdit->text();
+		QString tempEr = ErLineEdit->text();
+		QString tempLambda = LLambdaLineEdit->text();
+		QString tempLEl = LElMMLineEdit->text();
+		QString tempLPh = LPhMMLineEdit->text();
 		bool validateZ0 = true;
 		bool validateEr = true;
 		bool validateLambda = true;
 		bool validateLEl = true;
 		bool validateLPh = true;
-		long double valueZ0 = ui->Z0LineEdit->text().toFloat(&validateZ0);
-		long double valueEr = ui->ErLineEdit->text().toFloat(&validateEr);
-		long double valueLambda = ui->LLambdaLineEdit->text().toFloat(&validateLambda);
-		long double valueLEl = ui->LElMMLineEdit->text().toFloat(&validateLEl);
-		long double valueLPh = ui->LPhMMLineEdit->text().toFloat(&validateLPh);
+		long double valueZ0 = Z0LineEdit->text().toFloat(&validateZ0);
+		long double valueEr = ErLineEdit->text().toFloat(&validateEr);
+		long double valueLambda = LLambdaLineEdit->text().toFloat(&validateLambda);
+		long double valueLEl = LElMMLineEdit->text().toFloat(&validateLEl);
+		long double valueLPh = LPhMMLineEdit->text().toFloat(&validateLPh);
 		if (!validateZ0 || !validateEr || !validateLambda || !validateLEl || !validateLPh || valueZ0 <= 0 || valueEr <= 0 || valueLambda <= 0 || valueLambda > 0.5 || valueLEl <= 0 || valueLPh <= 0)
 		{
 			correct = false;
@@ -712,5 +826,4 @@ void EditWidget::AddLines(bool& correct)
 /// </summary>
 EditWidget::~EditWidget()
 {
-	delete ui;
 }

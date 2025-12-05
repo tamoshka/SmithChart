@@ -232,6 +232,19 @@ QJsonObject Element::toCircuitJson(int &node, int &nodeMax, bool &prevTransform,
     return json;
 }
 
+/// <summary>
+/// Добавление элемента в JSON по режиму (определение узлов).
+/// </summary>
+/// <param name="modelName">Название элемента в САПР.</param>
+/// <param name="pinArray">Массив коннектов.</param>
+/// <param name="node">Текущий узел.</param>
+/// <param name="nodeMax">Максимальный узел.</param>
+/// <param name="paramName">Имя параметра.</param>
+/// <param name="paramFactor">Единица измерения параметра.</param>
+/// <param name="paramValue">Значение параметра.</param>
+/// <param name="prevTransform">Элемент трансформатор.</param>
+/// <param name="prevParallel">Элемент параллельный/трансформатор.</param>
+/// <param name="rotation">Поворот элемента.</param>
 void Element::SwitchMode(QString& modelName, QList<int>& pinArray, int& node, int& nodeMax, QString& paramName,
     QString& paramFactor, double& paramValue, bool& prevTransform, bool& prevParallel, int& rotation) const
 {

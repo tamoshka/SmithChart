@@ -176,6 +176,12 @@ void SDiagram2::drawStaticObjects(QPainter& painter)
     
 }
 
+/// <summary>
+/// Отрисовка линий мнимого сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void SDiagram2::ImpedanceImagLines(long double step, long double intervalLength, QPainter& painter)
 {
     QPointF iPoint;
@@ -249,6 +255,12 @@ void SDiagram2::ImpedanceImagLines(long double step, long double intervalLength,
     }
 }
 
+/// <summary>
+/// Отрисовка линий реального сопротивления.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void SDiagram2::ImpedanceRealLines(long double step, long double intervalLength, QPainter& painter)
 {
     QPointF iPoint;
@@ -290,6 +302,12 @@ void SDiagram2::ImpedanceRealLines(long double step, long double intervalLength,
     }
 }
 
+/// <summary>
+/// Отрисовка линий мнимой проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void SDiagram2::AdmitanceImagLines(long double step, long double intervalLength, QPainter& painter)
 {
     QPointF iPoint;
@@ -364,6 +382,12 @@ void SDiagram2::AdmitanceImagLines(long double step, long double intervalLength,
     }
 }
 
+/// <summary>
+/// Отрисовка линий реальной проводимости.
+/// </summary>
+/// <param name="step">Шаг.</param>
+/// <param name="intervalLength">Интервал.</param>
+/// <param name="painter">Объект для рисования.</param>
 void SDiagram2::AdmitanceRealLines(long double step, long double intervalLength, QPainter& painter)
 {
     QPointF iPoint;

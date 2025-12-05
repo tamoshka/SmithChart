@@ -1,5 +1,4 @@
 ﻿#include "TuneWidget.h"
-#include "ui_TuneWidget.h"
 #include "systemParameters.h"
 /// <summary>
 /// Конструктор класса TuneWidget.
@@ -8,19 +7,52 @@
 /// <param name="circuit">Цепь.</param>
 TuneWidget::TuneWidget(QWidget* parent, CircuitElements* circuit)
 	: QWidget(parent)
-	, ui(new Ui::TuneWidget())
 {
-	ui->setupUi(this);
 	this->setMinimumSize(400, 300);
+	this->setWindowTitle(QStringLiteral(u"Тюнер"));
+	verticalLayout = new QVBoxLayout(this);
+	verticalLayout->setSpacing(6);
+	verticalLayout->setContentsMargins(11, 11, 11, 11);
+	scrollArea = new QScrollArea(this);
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sizePolicy.setHorizontalStretch(0);
+	sizePolicy.setVerticalStretch(0);
+	sizePolicy.setHeightForWidth(scrollArea->sizePolicy().hasHeightForWidth());
+	scrollArea->setSizePolicy(sizePolicy);
+	scrollArea->setMinimumSize(QSize(380, 220));
+	scrollArea->setWidgetResizable(true);
+	verticalLayout->addWidget(scrollArea);
+	groupBox = new QGroupBox(this);
+	QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	sizePolicy1.setHorizontalStretch(0);
+	sizePolicy1.setVerticalStretch(0);
+	sizePolicy1.setHeightForWidth(scrollArea->sizePolicy().hasHeightForWidth());
+	groupBox->setSizePolicy(sizePolicy1);
+	groupBox->setMinimumSize(QSize(380, 50));
+	RemoveAllButton = new QPushButton(groupBox);
+	RemoveAllButton->setGeometry(QRect(190, 10, 81, 24));
+	RemoveAllButton->setText(QStringLiteral(u"Убрать все"));
+	QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	sizePolicy2.setHorizontalStretch(0);
+	sizePolicy2.setVerticalStretch(0);
+	sizePolicy2.setHeightForWidth(scrollArea->sizePolicy().hasHeightForWidth());
+	RemoveAllButton->setSizePolicy(sizePolicy2);
+	MinMaxButton = new QPushButton(groupBox);
+	MinMaxButton->setGeometry(QRect(60, 10, 111, 24));
+	MinMaxButton->setText(QStringLiteral(u"Сброс мин/макс"));
+	OKButton = new QPushButton(groupBox);
+	OKButton->setGeometry(QRect(10, 10, 31, 24));
+	OKButton->setText("OK");
+	verticalLayout->addWidget(groupBox);
 	circuitElements = circuit;
 	count = 0;
 	tuned = new CircuitElements();
-	ui->scrollArea->setWidget(mainWidget);
-	ui->scrollArea->setWidgetResizable(true);
-	ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	connect(ui->OKButton, &QPushButton::clicked, this, &TuneWidget::OKButton_clicked);
-	connect(ui->MinMaxButton, &QPushButton::clicked, this, &TuneWidget::MinMaxButton_clicked);
-	connect(ui->RemoveAllButton, &QPushButton::clicked, this, &TuneWidget::RemoveAll);
+	scrollArea->setWidget(mainWidget);
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	connect(OKButton, &QPushButton::clicked, this, &TuneWidget::OKButton_clicked);
+	connect(MinMaxButton, &QPushButton::clicked, this, &TuneWidget::MinMaxButton_clicked);
+	connect(RemoveAllButton, &QPushButton::clicked, this, &TuneWidget::RemoveAll);
 }
 
 /// <summary>
@@ -28,7 +60,6 @@ TuneWidget::TuneWidget(QWidget* parent, CircuitElements* circuit)
 /// </summary>
 TuneWidget::~TuneWidget()
 {
-	delete ui;
 }
 
 /// <summary>
@@ -468,6 +499,12 @@ void TuneWidget::ValueChanged(int value)
 	update();
 }
 
+/// <summary>
+/// Настройка элементов по режиму.
+/// </summary>
+/// <param name="z">Комплексное сопротивление.</param>
+/// <param name="y">Комплексная проводимость.</param>
+/// <param name="j">Номер элемента в цепи.</param>
 void TuneWidget::SwitchMode(Complex z, Complex y, int j)
 {
 
@@ -720,6 +757,9 @@ void TuneWidget::MinMaxButton_clicked()
 	update();
 }
 
+/// <summary>
+/// Удаление элементов из тюнера при загрузке.
+/// </summary>
 void TuneWidget::RemoveOnLoad()
 {
 	RemoveAll();

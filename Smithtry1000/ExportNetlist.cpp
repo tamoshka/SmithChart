@@ -1,16 +1,12 @@
 ﻿#include "ExportNetlist.h"
-#include "ui_ExportNetlist.h"
 
 /// <summary>
 /// Конструктор класса ExportNetlist.
 /// </summary>
 /// <param name="parent"></param>
 /// <param name="circuitElements">Цепь.</param>
-ExportNetlist::ExportNetlist(QWidget* parent, CircuitElements* circuitElements)
-    : QWidget(parent)
-    , ui(new Ui::ExportNetlist())
+ExportNetlist::ExportNetlist(CircuitElements* circuitElements)
 {
-    ui->setupUi(this);
     circuit = circuitElements;
 }
 
@@ -399,5 +395,4 @@ QString ExportNetlist::generateElementLineScs(Element* element, int& nodeCounter
 /// </summary>
 ExportNetlist::~ExportNetlist()
 {
-    delete ui;
 }

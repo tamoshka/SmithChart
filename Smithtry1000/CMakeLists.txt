@@ -29,8 +29,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set(PROJECT_SOURCES
     #awr_interface.h
     #AWR.cpp
-    AWRExportThread.h
-    AWRExportThread.cpp
     KeyboardDialog.h
     KeyboardDialog.cpp
     systemParameters.h
@@ -40,13 +38,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     ElementFactory.cpp
     Element.h
     Element.cpp
-    EditWidget.ui
     EditWidget.h
     EditWidget.cpp
     PreSaveDialog.h
     PreSaveDialog.cpp
     main.cpp
-    Smithtry1000.ui
     Smithtry1000.h
     Smithtry1000.cpp
     circuitWidget.h
@@ -60,7 +56,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     circuitElements.cpp
     qcustomplot.h
     qcustomplot.cpp
-    AmplitudeFrequency.ui
     AmplitudeFrequency.h
     AmplitudeFrequency.cpp
     Timedes.h
@@ -74,7 +69,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
-    ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
     SDiagram1.ui
@@ -89,13 +83,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     SParamTable.ui
     SParamTable.h
     SParamTable.cpp
-    ColourSetting.ui
     ColourSetting.h
     ColourSetting.cpp
-    CirclesWidget.ui
     CirclesWidget.h
     CirclesWidget.cpp
-    TuneWidget.ui
     TuneWidget.h
     TuneWidget.cpp
     Line.h

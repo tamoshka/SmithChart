@@ -24,12 +24,20 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 signals:
+    void moved(QPoint);
+    void released();
+    void leftsignal(QPoint, bool);
+    void resized(long double, long double, long double, long double);
 
 public slots:
 
 private:
+    void mousePressEvent(QMouseEvent* event) override;
     long double r;
     QPointF center;
     Point compute_real(long double t);
@@ -41,6 +49,7 @@ private:
     QPoint cursorPos;
     QPixmap m_cache;
     bool m_cacheValid;
+    bool leftClicked = false;
     void drawStaticObjects(QPainter&);
     void drawDynamicObject(QPainter&);
     void generateCache();

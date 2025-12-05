@@ -76,6 +76,13 @@ void GrafOne::Load()
 	Paint(extension, yBegin, yEnd, s);
 }
 
+/// <summary>
+/// Отрисовка графиков.
+/// </summary>
+/// <param name="extension">Расширение файла.</param>
+/// <param name="yBegin">Начальная y.</param>
+/// <param name="yEnd">Конечная y.</param>
+/// <param name="s">S-параметры.</param>
 void GrafOne::Paint(string extension, double yBegin, double yEnd, spar_t s)
 {
 
