@@ -1,15 +1,15 @@
 ﻿#pragma once
 
 #include <QWidget>
-#include "ui_GrafOne.h"
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFileDialog>
+#include <QMessageBox>
+#include "qcustomplot.h"
 #include "S2p.h"
 #include <QVector>
 #include "ColourSetting.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class GrafOneClass; };
-#endif
-QT_END_NAMESPACE
 
 /// <summary>
 /// Класс для отображения графика S11/S22.
@@ -28,10 +28,14 @@ public slots:
 	void updateGrafOneColor();
 	void SaveGrafOne();
 private:
-	Ui::GrafOneClass* ui;
-	QVector<double> x, y1, y2;
-	void Paint(string, double, double, spar_t);
+    QCustomPlot* plotWidget = nullptr;
+    QPushButton* saveButton = nullptr;
+    QVBoxLayout* mainLayout = nullptr;
+
+    double xBegin, xEnd, yBegin, yEnd, hY, hX;
+    QVector<double> x, y1, y2;
 private:
 	QCPGraph* GraphS11 = nullptr;
 	QCPGraph* GraphS22 = nullptr;
+	void setupUI();
 };

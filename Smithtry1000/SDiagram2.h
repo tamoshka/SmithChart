@@ -9,11 +9,6 @@
 #include <QPoint>
 #include <QEvent>
 #include "ColourSetting.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class SDiagram2; };
-#endif
-QT_END_NAMESPACE
 
 /// <summary>
 /// Класс для отображения S11 и S22 кругов.

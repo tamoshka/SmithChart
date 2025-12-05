@@ -1,50 +1,71 @@
 ﻿#include "SaveDialog.h"
 #include "systemParameters.h"
-#include "ui_SaveDialog.h"
 
-/// <summary>
-/// Конструктор класса SaveDialog.
-/// </summary>
-/// <param name="parent"></param>
 SaveDialog::SaveDialog(QWidget *parent)
-	: QDialog(parent)
-	, ui(new Ui::SaveDialog())
+    : QWidget(parent)
 {
-	ui->setupUi(this);
-	this->setFixedSize(250, 150);
-	ui->DiagramRadioButton->setChecked(true);
-	connect(ui->SaveButton, &QPushButton::clicked, this, &SaveDialog::Save);
-	connect(ui->CancelButton, &QPushButton::clicked, this, &SaveDialog::Cancel);
+    SDialog = new ModalWindow("SaveDialog", parent);
+    SDialog->setMinimumSize(250, 200);
+    
+    m_mainLayout = new QVBoxLayout(SDialog);
+    m_mainLayout->setContentsMargins(20, 20, 20, 20);
+    m_mainLayout->setSpacing(10);
+
+    Circuit = new RadioButton("Circuit", SDialog);
+    Diagram = new RadioButton("Diagram", SDialog);
+    
+    m_mainLayout->addWidget(Circuit);
+    m_mainLayout->addSpacing(15);
+    m_mainLayout->addWidget(Diagram);
+    m_mainLayout->addSpacing(15);
+
+    m_buttonsLayout = new QHBoxLayout();
+    m_buttonsLayout->setSpacing(10);
+
+    SaveButton = new SecondaryButton("Save", SDialog);
+    CancelButton = new SecondaryButton("Cancel", SDialog);
+
+    m_buttonsLayout->addWidget(SaveButton);
+    m_buttonsLayout->addStretch();
+    m_buttonsLayout->addWidget(CancelButton);
+
+    m_mainLayout->addLayout(m_buttonsLayout);
+    m_mainLayout->addSpacing(15);
+
+    SDialog->setLayout(m_mainLayout);
+
+    SDialog->setFixedSize(250, 200);
+    Circuit->setChecked(true);
+
+    connect(SaveButton, &SecondaryButton::clicked, this, &SaveDialog::Save);
+    connect(CancelButton, &SecondaryButton::clicked, this, &SaveDialog::Cancel);
+    
+    this->setVisible(false);
 }
 
-/// <summary>
-/// Деструктор класса SaveDialog.
-/// </summary>
 SaveDialog::~SaveDialog()
 {
-	delete ui;
 }
 
-/// <summary>
-/// Выбор сохраняемого объекта и принятие.
-/// </summary>
 void SaveDialog::Save()
 {
-	if (ui->DiagramRadioButton->isChecked())
+    if (Circuit->isChecked()) 
 	{
-		SystemParameters::saved = 0;
-	}
-	else
+        SystemParameters::saved = 0;
+    } else if (Diagram->isChecked()) 
 	{
-		SystemParameters::saved = 1;
-	}
-	accept();
+        SystemParameters::saved = 1;
+    }
+    m_result = QDialog::Accepted;
+    SDialog->accept();
+    emit finished(m_result);
+    SDialog->hide();
 }
 
-/// <summary>
-/// Отмена.
-/// </summary>
 void SaveDialog::Cancel()
 {
-	reject();
+    m_result = QDialog::Rejected;
+    SDialog->reject();
+    emit finished(m_result);
+    SDialog->hide();
 }

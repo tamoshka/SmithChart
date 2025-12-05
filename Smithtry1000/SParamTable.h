@@ -2,13 +2,8 @@
 
 #include "S2p.h"
 #include <QWidget>
-#include "ui_SParamTable.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class SParamTableClass; };
-#endif
-QT_END_NAMESPACE
-
+#include <ui_ds/controls/organisms/table_view/table_view.h>
+using namespace ui::ds::controls::organisms::table_view;
 /// <summary>
 /// Класс отображения таблиц S-параметров.
 /// </summary>
@@ -30,8 +25,6 @@ signals:
 	void rowSelected(int row);
 	void rowClicked(int row);
 private:
-	Ui::SParamTableClass* ui;
-
-	//Хранит выбор (STable1,STable2)
 	TableType currentType;
+	TableView* tableWidget;
 };

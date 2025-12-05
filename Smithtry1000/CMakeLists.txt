@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-D_WIN32_DCOM)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets PrintSupport SvgWidgets)
-
+find_package(cadmw-ui-ds REQUIRED)
 # Если qt.cmake включает qt_standard_project_setup(), то используем его
 # Иначе настраиваем вручную
 if(COMMAND qt_standard_project_setup)
@@ -61,26 +61,20 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     Timedes.h
     S2p.h
     S2p.cpp
-    GrafOne.ui
     GrafOne.h
     GrafOne.cpp
-    GrafTwo.ui
     GrafTwo.h
     GrafTwo.cpp
     SParameters.h
     SParameters.cpp
     ExportNetlist.h
     ExportNetlist.cpp
-    SDiagram1.ui
     SDiagram1.h
     SDiagram1.cpp
-    SDiagram2.ui
     SDiagram2.h
-    SaveDialog.ui
     SaveDialog.h
     SaveDialog.cpp
     SDiagram2.cpp
-    SParamTable.ui
     SParamTable.h
     SParamTable.cpp
     ColourSetting.h
@@ -128,6 +122,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt6::Svg
     Qt6::PrintSupport
     Qt6::SvgWidgets
+    cadmw-ui-ds::cadmw-ui-ds
 )
 
 # Установка исполняемого файла

@@ -1,17 +1,9 @@
-from conan import ConanFile
-from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout, CMake
-from conan.tools.files import copy, collect_libs
 import os
 
 class Smithtry1000Conan(ConanFile):
     name = "smith-chart-tool"
     version = "1.0.0"
-    package_type = "application"
-    settings = "os", "compiler", "build_type", "arch"
-    options = {
-        "shared": [True, False],
-        "fPIC": [True, False]
-    }
+    requires = ["cadmw-ui-ds/0.4.0", "qt/6.5.3"]
     default_options = {
         "shared": False,
         "fPIC": True,
