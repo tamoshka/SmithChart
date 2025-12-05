@@ -13,9 +13,6 @@ SDiagram1::SDiagram1(ParameterType type,QWidget* parent)
 	mBackGroundColor(255, 255, 255),
 	currentType(type)
 {
-	setFixedSize(600, 600);
-	setMinimumSize(450, 450);
-	setMaximumSize(900, 900);
 	this->setStyleSheet("background-color: white;");
 }
 

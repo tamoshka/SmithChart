@@ -6,7 +6,7 @@
 /// Конструктор класса SParameters.
 /// </summary>
 SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, SDiagram1& d21, SDiagram2& d11, SDiagram2& d22, SParamTable& t1, SParamTable& t2, ColourSetting& set1)
-    : grafOne(&grafOne1), grafTwo(&grafTwo1),d1(&d12), d2(&d21), d3(&d11), d4(&d22),stable1(&t1), stable2(&t2), set(&set1)
+    : set(&set1), d1(&d12), d2(&d21), d3(&d11), d4(&d22), grafOne(&grafOne1), grafTwo(&grafTwo1),stable1(&t1), stable2(&t2)
 {
 
     createContainers();
@@ -14,16 +14,28 @@ SParameters::SParameters(GrafOne& grafOne1, GrafTwo& grafTwo1, SDiagram1& d12, S
 
 void SParameters::createContainers()
 {
-    grafOneContainer = new WindowContainer(QString("S-Parameters Graph One"),grafOne,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    grafTwoContainer = new WindowContainer(QString("S-Parameters Graph Two"),grafTwo,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    d1Container = new WindowContainer(QString("S12 Diagram"),d1,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    d2Container = new WindowContainer(QString("S21 Diagram"),d2,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    d3Container = new WindowContainer(QString("S11 Diagram"),d3,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    d4Container = new WindowContainer(QString("S22 Diagram"),d4,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    stable1Container = new WindowContainer(QString("S-Parameters Table"),stable1,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    stable2Container = new WindowContainer(QString("Mag/Msg/K/mu Parameters Table"),stable2,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-    setContainer = new WindowContainer(QString("Color Settings"),set,WindowHeader::ShowButtons(WindowHeader::ShowButton::All),nullptr);
-}
+    grafOneContainer = new WindowContainer(QString("S-Parameters Graph One"),grafOne);
+    grafTwoContainer = new WindowContainer(QString("S-Parameters Graph Two"),grafTwo);
+    d1Container = new WindowContainer(QString("S12 Diagram"),d1);
+    d2Container = new WindowContainer(QString("S21 Diagram"),d2);
+    d3Container = new WindowContainer(QString("S11 Diagram"),d3);
+    d4Container = new WindowContainer(QString("S22 Diagram"),d4);
+    stable1Container = new WindowContainer(QString("S-Parameters Table"),stable1);
+    stable2Container = new WindowContainer(QString("Mag/Msg/K/mu Parameters Table"),stable2);
+    setContainer = new WindowContainer(QString("Color Settings"),set);
+    d1Container->setFixedSize(500,500);
+    d1Container->setMinimumSize(500,500);
+    d1Container->setMaximumSize(900,900);
+    d2Container->setFixedSize(500,500);
+    d2Container->setMinimumSize(500,500);
+    d2Container->setMaximumSize(900,900);
+    d3Container->setFixedSize(500,500);
+    d3Container->setMinimumSize(500,500);
+    d3Container->setMaximumSize(900,900);
+    d4Container->setFixedSize(500,500);
+    d4Container->setMinimumSize(500,500);
+    d4Container->setMaximumSize(900,900);
+}   
 
 /// <summary>
 /// Выбор отображаемых окон.

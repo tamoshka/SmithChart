@@ -30,7 +30,7 @@ public:
     GrafTwo* grafTwo;
     SParamTable* stable1;
     SParamTable* stable2;
-    
+    WindowContainer* setContainer = nullptr;
 private:
     WindowContainer* grafOneContainer = nullptr;
     WindowContainer* grafTwoContainer = nullptr;
@@ -39,8 +39,7 @@ private:
     WindowContainer* d3Container = nullptr;
     WindowContainer* d4Container = nullptr;
     WindowContainer* stable1Container = nullptr;
-    WindowContainer* stable2Container = nullptr;
-    WindowContainer* setContainer = nullptr;
+    WindowContainer* stable2Container = nullptr; 
     
     void createContainers();
 };

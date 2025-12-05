@@ -91,7 +91,7 @@ Smithtry1000::Smithtry1000(QWidget* parent, SParameters* sParameters1)
     connect(ui->PlusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onPlusSize_buttonClicked);
     connect(ui->MinusSizeButton, &QPushButton::clicked, this, &Smithtry1000::onMinusSize_buttonClicked);
     connect(ui->OneToOneButton, &QPushButton::clicked, this, &Smithtry1000::onDefaultSize_buttonClicked);
-    //connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
+    connect(ui->S11Button, &QPushButton::clicked, this, &Smithtry1000::onS11_buttonClicked);
     //connect(ui->S22Button, &QPushButton::clicked, this, &Smithtry1000::onS22_buttonClicked);
     connect(ui->ExportNetlist, &QPushButton::clicked, this, &Smithtry1000::onExportNetlist_buttonClicked);
     connect(ui->Tune, &QPushButton::clicked, this, &Smithtry1000::onTune_buttonClicked);
@@ -5115,7 +5115,7 @@ void Smithtry1000::onGraph_buttonClicked()
 /// </summary>
 void Smithtry1000::onS11_buttonClicked()
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p;*.S2P;*.S1P);;All Files (*)"));
     sParameters->Show();
 }
 
@@ -5124,7 +5124,7 @@ void Smithtry1000::onS11_buttonClicked()
 /// </summary>
 void Smithtry1000::onS22_buttonClicked()
 {
-    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p);;All Files (*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open S-Parameter File"), "", tr("S2P Files (*.s2p;*.s1p;*.S2P;*.S1P);;All Files (*)"));
     sParameters->Show();
 }
 
@@ -5145,7 +5145,7 @@ void Smithtry1000::getsignal()
 /// </summary>
 void Smithtry1000::onMenuToolsCliked()
 {
-    sParameters->set->show();
+    sParameters->setContainer->show();
     amplitudeFrequence->activateWindow();
 }
 

@@ -40,11 +40,9 @@ void SParamTable::Load()
     spar_t s;
     s = t.Load2P(fileName.toStdString().c_str());
 
-    QFont paragraphSemibold = ui::ds::atoms::typography::Typography::instance()
-        .getFont(ui::ds::atoms::typography::TFontName::PARAGRAPH_SEMIBOLD);
+    QFont paragraphSemibold = Typography::instance().getFont(TFontName::PARAGRAPH_SEMIBOLD);
     
-    QFont paragraphMedium = ui::ds::atoms::typography::Typography::instance()
-        .getFont(ui::ds::atoms::typography::TFontName::PARAGRAPH_MEDIUM);
+    QFont paragraphMedium =Typography::instance().getFont(TFontName::PARAGRAPH_MEDIUM);
 
     if (currentType == TableType::STable2) 
     {

@@ -63,10 +63,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     Timedes.h
     S2p.h
     S2p.cpp
-    GrafOne.ui
     GrafOne.h
     GrafOne.cpp
-    GrafTwo.ui
     GrafTwo.h
     GrafTwo.cpp
     SParameters.h
@@ -74,10 +72,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     ExportNetlist.ui
     ExportNetlist.h
     ExportNetlist.cpp
-    SDiagram1.ui
     SDiagram1.h
     SDiagram1.cpp
-    SDiagram2.ui
     SDiagram2.h
     SaveDialog.h
     SaveDialog.cpp

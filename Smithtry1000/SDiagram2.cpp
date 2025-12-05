@@ -1,5 +1,4 @@
 ﻿#include "SDiagram2.h"
-#include "ui_SDiagram2.h"
 #include "S2p.h"
 #include "math.h"
 #include <QPaintEvent>
@@ -19,9 +18,6 @@ SDiagram2::SDiagram2(ParameterType type, QWidget* parent)
     mShapeColor(0, 0, 0),
     currentType(type)
 {
-    setFixedSize(600, 600);
-    setMinimumSize(450, 450);
-    setMaximumSize(900, 900);
     m_cacheValid = false;
     m_scaleFactor = 2.0;
     scaleFactor = qMin(this->width(), this->height()) / 450.0f;

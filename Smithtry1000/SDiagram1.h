@@ -7,11 +7,6 @@
 #include "qcolor.h"
 #include <QEvent>
 #include "ColourSetting.h"
-QT_BEGIN_NAMESPACE
-#ifndef __EAXML__
-namespace Ui { class S12ParamClass; };
-#endif
-QT_END_NAMESPACE
 
 /// <summary>
 /// Класс отображения кругов S12 и S21.
